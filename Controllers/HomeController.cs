@@ -12,7 +12,7 @@ namespace ClinicX.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ClinicalContext _context;
-
+        //here is a random comment for no reason
         public HomeController(ILogger<HomeController> logger, ClinicalContext context)
         {
             _logger = logger;
