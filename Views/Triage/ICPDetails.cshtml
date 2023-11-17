@@ -1,0 +1,401 @@
+﻿@model ClinicX.ViewModels.ICPVM
+@{
+    ViewData["Title"] = "Clinic-X - ICP Details";
+}
+
+<div class="row mb-5 g-5">
+    <div class="col-md-2">
+    @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Index</a>
+    </div>
+    <div class="col-md-1">
+        <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.triage.MPI)>Patient Details</a>        
+    </div>    
+</div>
+
+<h1>ICP Details</h1>
+
+<div class="container">
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.triage.Name):
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.triage.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.triage.RefDate):
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.triage.RefDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.triage.ReferralPathway):
+        </dt>
+        <dd class="col-sm-10" id="referralPathway">
+            @Html.DisplayFor(model => model.triage.ReferralPathway)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.triage.CGU_No)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.triage.CGU_No)
+        </dd>
+    </dl>    
+</div>
+
+<div class="container">
+    
+    <form id="formICPGeneral" asp-action="DoGeneralTriage">
+        <div id="metadata-general" hidden="true">
+            <input value=@Html.DisplayFor(model => model.triage.ICPID) name="iIcpID" />
+            <input id="txtTP1" name="iTP" />
+            <input id="txtTP2" name="iTP2" />
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <label>Treatment Pathway:</label>
+            </div>
+            <div class="col-md-8">
+                <select id="ddlTreatPath1" name="iTP">
+                    @*
+                    <option value="1">None</option>
+                    <option value="2">No Clinic Appt</option>
+                    <option value="3">GC Only Appt</option>
+                    <option value="4">Cons. Only Appt</option>
+                    <option value="5">Cons. and GC Appt</option>*@
+                    @foreach(var item in Model.generalActionsList)
+                    {
+                        <option value=@item.ID>@item.Action</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <select id="ddlTreatPath2-Clinic" name="iTP2">
+                    @*<option value="1">None</option>
+                    <option value="2">Call To Book</option>
+                    <option value="3">CLICS</option>
+                    <option value="4">Exclude From CTB</option>
+                    <option value="5">Send to GA</option>
+                    <option value="6">Send to GenP</option>*@
+                    @foreach(var item in Model.generalActionsList2)
+                    {
+                        if(item.Clinic == true)
+                        {
+                            <option value=@item.ID>@item.Action</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <select id="ddlTreatPath2-NoClinic">
+                    @*<option value="1">None</option>                
+                    <option value="6">Dictate Letter</option>
+                    <option value="7">Send Reject Letter</option>                
+                    <option value="8">Seen in Clinic</option>*@
+                    @foreach (var item in Model.generalActionsList2)
+                    {
+                        if (item.Clinic == false)
+                        {
+                            <option value=@item.ID>@item.Action</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2"></div>
+        </div>        
+        <div id="WaitingListDetails">
+            <div class="row mb-5 g-5">
+                <h5 id="lblWaitingList">Waiting list details:</h5>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label for="ddlFacility" id="lblFacility">Clinic:</label>
+                </div>
+
+                <div class="col-md-6">
+                    <select id="ddlFacility" name="sFacility">
+                        <option value="" selected></option>
+                        @foreach (var f in Model.clinicalFacilityList)
+                        {
+                            <option value=@f.FACILITY>@f.NAME</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label for="ddlIsSPR" id="lblIsSPR">Suitable for SpR:</label>
+                </div>
+                <div class="col-md-2">
+                    <select id="ddlIsSPR" name="isSPR">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="ddlIsChild" id="lblIsChild">Is child required:</label>
+                </div>
+
+                <div class="col-md-2">
+                    <select id="ddlIsChild" name="isChild">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label for="txtComment" id="lblComment">Comments:</label>
+                </div>
+                <div class="col-md-6">
+                    <textarea id="txtComment" name="sComment"></textarea>
+                </div>
+                <div class="col-md-2">
+                    <label for="txtComment" id="lblDuration">Duration:</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="txtComment" name="iDuration" />
+                </div>
+
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <button id="btnGeneralTriage" class="btn btn-default btn-success">Complete Triage</button>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+
+    </form>
+
+    <form id="formICPCancer" asp-action="DoCancerTriage">
+        <div id="metadata-cancer" hidden="true">
+            <input value=@Html.DisplayFor(model => model.triage.ICPID) name="iIcpID" />
+        </div>
+        <div class="row">            
+            <div class="col-md-2">
+                <label>Action on Referral Letter</label>
+            </div>
+            <div class="col-md-10">
+                <select id="ddlCancerAction" name=iAction>                    
+                    @foreach(var item in @Model.cancerActionsList)
+                    {
+                        <option value=@item.ID>@item.Action</option>
+                    }
+                </select>
+            </div>
+            <div class="row mb-5 g-5">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <button id="btnCancerTriage" class="btn btn-default btn-success">Complete Triage</button>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        </div>
+
+    </form>
+
+</div>
+
+
+
+<script type="text/javascript">
+
+    //document.getElementById("btnBack").addEventListener("click", GoBack);
+    document.getElementById("ddlTreatPath1").addEventListener("change", DoTreatPath1);
+    document.getElementById("ddlTreatPath2-Clinic").addEventListener("change", DoTreatPath2);
+    document.getElementById("ddlTreatPath2-NoClinic").addEventListener("change", DoTreatPath2);
+    document.getElementById("btnGeneralTriage").addEventListener("click", DoGeneralTriage);
+    document.getElementById("btnCancerTriage").addEventListener("click", DoCancerTriage);
+    window.addEventListener("load", LoadClinic);
+
+    function GoBack() 
+    {
+        window.history.back();
+        //window.close();
+    }
+
+    function DoTreatPath1()
+    {
+        let _tp = document.getElementById("ddlTreatPath1")        
+        //window.alert(_tp.value);
+        document.getElementById("txtTP1").value = _tp.value;
+        switch(_tp.value){
+            case "1":
+                //window.alert("None");
+                document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
+                document.getElementById("ddlTreatPath2-Clinic").hidden = true;
+            break;
+            case "2":
+                //window.alert("No Clinic Appt");
+                document.getElementById("ddlTreatPath2-NoClinic").hidden = false;
+                document.getElementById("ddlTreatPath2-Clinic").hidden = true;
+            break;
+            case "3":
+                //window.alert("GC Only")
+                document.getElementById("ddlTreatPath2-Clinic").hidden = false;
+                document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
+                document.getElementById("ddlIsSPR").hidden = true;
+            break;
+            case "4":
+                //window.alert("Consultant Only")
+               document.getElementById("ddlTreatPath2-Clinic").hidden = false;
+               document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
+           break;
+           default:
+                //window.alert("Consultant and GC Appt");
+                document.getElementById("ddlTreatPath2-Clinic").hidden = false;
+                document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
+        }
+    }
+
+    function DoTreatPath2()
+    {        
+        let _tp = ""
+        if (!document.getElementById("ddlTreatPath2-Clinic").hidden)
+        {
+            _tp = document.getElementById("ddlTreatPath2-Clinic");            
+            document.getElementById("WaitingListDetails").hidden = false;
+            if (_tp.value == "3") {
+                document.getElementById("lblIsSPR").hidden = true;
+                document.getElementById("ddlIsSPR").hidden = true;
+            }
+            else
+            {
+                document.getElementById("lblIsSPR").hidden = false;
+                document.getElementById("ddlIsSPR").hidden = false;            
+            }
+        }
+
+        if (!document.getElementById("ddlTreatPath2-NoClinic").hidden) {
+            _tp = document.getElementById("ddlTreatPath2-NoClinic");            
+            document.getElementById("WaitingListDetails").hidden = true;
+        }
+        
+        document.getElementById("txtTP2").value = _tp.value;
+        
+        if (_tp.value == "1")
+        {
+            document.getElementById("btnGeneralTriage").hidden = true;
+            document.getElementById("WaitingListDetails").hidden = true;
+        }
+
+        else
+        {
+            document.getElementById("WaitingListDetails").hidden = false;
+            document.getElementById("btnGeneralTriage").hidden = false;            
+        }       
+    }
+
+
+    function LoadClinic() {
+        
+        //window.alert("hello");
+        var _rp = "@(Model.triage.ReferralPathway)";
+        var _gc = "@(Model.triage.GCTriaged)";
+        var _cons = "@(Model.triage.ConsTriaged)";
+        document.getElementById("formICPGeneral").hidden = true;
+        document.getElementById("formICPCancer").hidden = true;
+        
+        if (_rp.match("Gen*")) {
+            //window.alert("General Referral");
+            document.getElementById("formICPGeneral").hidden = false;
+            document.getElementById("metadata-general").hidden = true;
+            document.getElementById("WaitingListDetails").hidden = true;
+            document.getElementById("ddlTreatPath2-Clinic").hidden = true;
+            document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
+            document.getElementById("btnGeneralTriage").hidden = true;
+            
+
+            if (_cons == "True") {
+                //window.alert("Cons triaged");
+                var _tp1 = document.getElementById("ddlTreatPath1");
+                _tp1.value = "@(Model.triage.TreatPath)";
+                document.getElementById("txtTP1").value = _tp1.value;
+                DoTreatPath1();
+                _tp1.disabled = true;
+            }
+
+            if (_gc == "True") {
+                var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
+                var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
+
+                if (!_tp2c.hidden) {
+                    _tp2c.value = "@(Model.triage.TreatPath2)";
+                    document.getElementById("txtTP2").value = _tp2c.value;
+                    _tp2c.disabled = true;                   
+                    document.getElementById("WaitingListDetails").hidden = false;
+                }
+
+                if (!_tp2nc.hidden) {
+                    _tp2nc.value = "@(Model.triage.TreatPath2)";
+                    document.getElementById("txtTP2").value = _tp2nc.value;
+                    document.getElementById("WaitingListDetails").hidden = true;
+                    _tp2nc.disabled = true;
+                }
+            }
+
+            document.getElementById("ddlIsSPR").value = "@(Model.triage.ConsWLForSPR)";            
+            
+        }
+        
+        else {
+            //window.alert("Cancer Referral");
+            document.getElementById("formICPCancer").hidden = false;
+        }
+    }
+
+
+    function DoGeneralTriage()
+    {
+        var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
+        var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
+        var _facility = document.getElementById("ddlFacility");
+
+        if (!_tp2c.hidden) 
+        {            
+            _tp2c.disabled = true;
+            //window.alert(_tp2c.value);
+        }
+
+        if (!_tp2nc.hidden) 
+        {        
+            _tp2nc.disabled = true;
+            //window.alert(_tp2nc.value);
+        }
+        //window.alert(_facility.value);
+        if (CheckFormValid() == 1) {
+            //window.alert("Submitted!");
+            document.getElementById("formICPGeneral").submit;
+        }        
+    }
+
+    function DoCancerTriage()
+    {
+        document.getElementById("formICPCancer").submit;
+    }
+
+
+
+    function CheckFormValid() { //validation to ensure all required data is entered
+
+        if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "") {
+            window.alert("Please choose a treatment pathway.");
+            return 0;
+        }
+
+        return 1;
+    }
+
+</script>

@@ -1,0 +1,155 @@
+﻿@model ClinicX.Models.Test
+
+@{
+    ViewData["Title"] = "Clinic-X - Test Details";
+}
+
+<div class="mb-5">
+    <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
+    @*<a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.MPI)>Back to Test List</a>*@
+</div>
+
+
+<h1>Record Test for @Html.ValueFor(Model => Model.FIRSTNAME) @Html.ValueFor(Model => Model.LASTNAME) </h1>
+<div>
+    <dl class="row mb-5">
+        <dt class="col-sm-2">
+            Test:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TEST)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DATE_REQUESTED):
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DATE_REQUESTED)
+        </dd>
+        <dt class="col-sm-2">
+            Requested by:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NAME)
+        </dd>
+        <dt class="col-sm-2">
+            Sent to Lab:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LOCATION)
+        </dd>
+    </dl>
+</div>
+
+<div class="container mb-5">
+    <form id="TestForm" asp-action="Edit">
+        <div id="metadata" hidden="true">
+            <input asp-for=@Model.TestID type="text" id="txtTestID" name="iTestID" />
+        </div>
+        <div class="row mb-5">
+            <div class="col-md-1">
+                Result:
+            </div>
+            <div class="col-md-5">
+                <input asp-for=@Model.RESULT id="txtResult" type="text" name="sResult" />
+            </div>
+            <div class="col-md-1">
+                Comments:
+            </div>
+            <div class="col-md-5">
+                <input asp-for=@Model.COMMENTS id="txtComments" type="text" name="sComments" />
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-md-1">
+                Date Received:
+            </div>
+            <div class="col-md-4">
+                <input asp-for=@Model.DATE_RECEIVED id="txtDateRec" type="text" name="sReceived" />
+            </div>
+            <div class="col-md-1">
+                Date Given to Patient:
+            </div>
+            <div class="col-md-4">
+                <input asp-for=@Model.ResultGivenDate id="txtDateGib" type="text" name="sGiven" />
+            </div>
+            <div class="col-md-1">Complete:</div>
+            <div class="col-md-1">
+                <select asp-for=@Model.COMPLETE id="ddlComplete" name="iComplete">
+                    @*because obviously a yes/no field is an integer not a boolean!*@
+                    <option value=-1>Yes</option>
+                    <option value=0>No</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveTest" />
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </form>
+</div>
+
+<script>
+
+    window.addEventListener("load", LoadTestData);
+    document.getElementById("btnSaveTest").addEventListener("click", SaveTest);
+    document.getElementById("btnBack").addEventListener("click", GoBack);
+   
+    
+    function GoBack()
+    {
+        window.history.back();
+        //window.close();
+    }
+
+   function LoadTestData()   
+   {
+
+        var _complete = "@(Model.COMPLETE)";
+        document.getElementById("ddlComplete").value = "@(Model.COMPLETE)";
+        document.getElementById("txtResult").value = "@(Model.RESULT)";
+        document.getElementById("txtComments").value = "@(Model.COMMENTS)";
+        document.getElementById("txtDateRec").value = "@(Model.DATE_RECEIVED)".slice(0,10) //toString("dd/MM/yyyy"); //- for some reason it won't display dd/m/yyyy!!! 
+        document.getElementById("txtDateGib").value = "@(Model.ResultGivenDate)".slice(0,10) //toString("dd/MM/yyyy"); //so we have to manually cut the time off it.
+        document.getElementById("txtTestID").value = "@(Model.TestID)";
+
+        if (_complete == -1) 
+        {
+            document.getElementById("ddlComplete").disabled = true;
+            document.getElementById("txtResult").disabled = true;
+            document.getElementById("txtComments").disabled = true;
+            document.getElementById("txtDateRec").disabled = true;
+            document.getElementById("txtDateGib").disabled = true;
+            document.getElementById("btnSaveTest").disabled = true;
+        }               
+   }
+
+    function SaveTest()
+    {
+        if (CheckFormValid() == 1) 
+        {
+            document.getElementById("TestForm").submit();
+        }
+    }
+
+    function CheckFormValid() 
+    {   
+        if(document.getElementById("txtDateGib").value == "" && document.getElementById("ddlComplete").value == -1)
+        {
+            window.alert("You haven't given the result to the patient yet!");
+            return 0;
+        }
+        
+        //gotta protect against those SQL injections!
+        if (document.getElementById("txtComments").value.match(/};.*/) || document.getElementById("txtResult").value.match(/};.*/)) 
+        {
+            window.alert("Oi! Stop trying to inject SQL code into my form!");
+            return 0;
+        }
+        
+        return 1;
+    }
+
+</script>

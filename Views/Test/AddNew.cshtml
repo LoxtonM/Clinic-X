@@ -1,0 +1,103 @@
+﻿@model ClinicX.ViewModels.TestDiseaseVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Add New Test";
+}
+
+<divclass ="row g-5 mb-5">
+    <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
+    @*<a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Test List</a>*@
+</divclass>
+
+<h1>Add new test for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME)</h1>
+
+<div class="container">
+    <form id="AddTestForm" asp-action="AddNew">
+        <div id="metadata" hidden="true">
+            <input id="txtMPI" name="iMPI" />
+        </div>
+        <div class="row g-5 mb-5">
+            <div class="col-md-2">
+                Test:
+            </div>
+            <div class="col-md-4">
+                <select id="ddlTest" name="sTest">
+                    <option value="" selected>select...</option>
+                    @foreach (var t in Model.testList)
+                    {
+                        <option value="@t.TEST ">@t.TEST</option>
+                    }
+                </select>
+                <div class="col-md-2">Sent to:</div>
+                <div class="col-md-4"><input id="txtSentTo" type="text" name="sSentTo" /></div>
+            </div>
+        </div>
+
+        @*<div class="row g-5 mb-5">
+            <div class="col-md-2">Results:</div>
+            <div class="col-md-4"><input type="text" name="sResults" /></div>
+            <div class="col-md-2">Comments:</div>
+            <div class="col-md-4"><input type="text" name="sComments" /></div>
+        </div>*@
+
+
+        <div class="row g-5 mb-5">
+            <div class="col-md-2">
+                <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+
+    window.addEventListener("load", LoadData)
+    document.getElementById("btnBack").addEventListener("click", GoBack);
+    document.getElementById("btnSave").addEventListener("click", AddTest);
+
+
+    function GoBack() 
+    {
+        window.history.back();
+        //window.close();
+    }
+    
+    function LoadData()
+    {
+        document.getElementById("txtMPI").value = "@(Model.patient.MPI)";
+        //document.getElementById("metadata").hidden = true;
+    }
+
+    function AddTest()
+    {
+        if (CheckFormValid() == 1) 
+        {
+            document.getElementById("AddTestForm").submit();
+        }
+    }
+
+    function CheckFormValid() 
+    { //validation to ensure all required data is entered
+        
+        if (document.getElementById("ddlTest").value == null || document.getElementById("ddlTest").value == "") 
+        {
+            window.alert("Please select a test.");
+            return 0;
+        }
+
+        if (document.getElementById("txtSentTo").value == null || document.getElementById("txtSentTo").value == "") 
+        {
+            window.alert("Please enter some text.");
+            return 0;
+        }
+
+        if (document.getElementById("txtSentTo").value.match(/};.*/)) 
+        {
+            window.alert("Oi! Stop trying to inject SQL code into my form!");
+            return 0;
+        }
+        
+        return 1;
+    }
+
+</script>

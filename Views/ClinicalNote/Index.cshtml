@@ -1,0 +1,104 @@
+﻿@model IEnumerable<ClinicX.Models.ClinicalNotes>
+
+@{
+    ViewData["Title"] = "Clinic-X - Clinical Notes";
+}
+
+<div class="row mb-5 g-5">
+    @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+    <div class="col-md-2">
+        <a type="button" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Clinics</a>
+    </div>
+    <div class="col-md-2">
+        @*<a id="btnCreateNote-existing" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Create" asp-route-id="@Html.ValueFor(model => model.FirstOrDefault().RefID)">Create New</a>*@
+        <button type="button" id="btnCreateNote-none" class="btn btn-default btn-success">Create New</button>
+    </div>
+    <div class="col-md-8"></div>
+</div>
+
+
+@if(Model.Count() > 0)
+{
+    <h1>Clinical Notes for @Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</h1>    
+}
+else
+{
+    <h1>There are no clinical notes for this patient.</h1>    
+}
+<div class="row g-5 mb-5">
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Note Type</th>
+                <th>RefID</th>
+                <th>@Html.DisplayNameFor(model => model.CreatedDate)</th>
+                <th>@Html.DisplayNameFor(model => model.CreatedTime)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {   
+                <tr>
+                    <td><a asp-controller="ClinicalNote" asp-action="Edit" asp-route-id=@item.ClinicalNoteID>Select</a></td>
+                    <td>@item.NoteType</td>
+                    <td>@item.RefID</td>
+                    <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy")</td>
+                    <td>@item.CreatedTime.Value.ToString("HH:mm")</td>
+                </tr>               
+            }
+
+        </tbody>
+    </table>    
+        @*<div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <a id="btnCreateNote-existing" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Create" asp-route-id="@Html.ValueFor(model => model.FirstOrDefault().RefID)">Create New</a>
+                <button id="btnCreateNote-none" class="btn btn-default btn-success">Create New</button>
+            </div>
+            <div class="col-md-10"></div>
+        </div>*@
+    @*}*@
+
+    <div id="metadata" hidden="true">
+        <span id="theurl">@Context.Request.Path</span>
+        <span id="thehost">@Context.Request.Host</span>
+        <span id="count">@Model.Count()</span>        
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    //document.getElementById("btnBack").addEventListener("click", GoBack);
+    document.getElementById("btnCreateNote-none").addEventListener("click", OpenNoteForm);
+    window.addEventListener("load", LoadPage);
+
+    function GoBack() 
+    {
+        window.history.back();
+        //window.close();
+    }
+
+    
+    function LoadPage()
+    {   
+        //document.getElementById("metadata").hidden = true;
+        //const _url = window.location.toString();
+        //window.alert(_url.substring(_url.indexOf("=")+1, _url.length));        
+    }
+
+    function OpenNoteForm() 
+    {
+        //this incredibly round-about method is necessary because apparently it is impossible to simply pass the URL parameter into the button!
+        var surl = "https://" + document.getElementById("thehost").innerHTML + document.getElementById("theurl").innerHTML;
+        const _url = window.location.toString();                
+        const smpi = _url.substring(_url.indexOf("=")+1, _url.length);        
+        //surl = surl.replace("Index", "ChooseAppt");
+        surl = surl + "/ChooseAppt?id=" + smpi;
+        window.location.href=(surl);
+    }
+  
+
+</script>

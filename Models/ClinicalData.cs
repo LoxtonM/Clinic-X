@@ -1,0 +1,596 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ClinicX.Models
+{
+    [Table("ViewPatientDemographicDetails", Schema="dbo")]
+    public class Patients
+    {
+        [Key]
+        public int MPI { get; set; }
+        public int INTID { get; set; }
+        public string? Title { get; set; }
+        [Display(Name ="Date of Birth")]
+        [DataType(DataType.Date)]
+        public DateTime? DOB { get; set; }
+        [Display(Name = "Forename")]
+        public string? FIRSTNAME { get; set; }
+        [Display(Name = "Surname")]
+        public string? LASTNAME { get; set; }
+        [Display(Name = "CGU Number")]
+        public string? CGU_No { get; set; }
+        [Display(Name = "NHS Number")]
+        public string? SOCIAL_SECURITY { get; set; }
+        public string? ADDRESS1 { get; set; }
+        public string? ADDRESS2 { get; set; }
+        public string? ADDRESS3 { get; set; }
+        public string? ADDRESS4 { get; set; }
+        public string? POSTCODE { get; set; }
+        public string? TEL { get; set; }
+        public string? PtTelMobile { get; set; }
+        //public string? EmailAddress { get; set; }
+        public int WMFACSID { get; set; }     
+        public string? EmailCommsConsent { get; set; }
+        public string? EmailAddress { get; set; }
+        public string? PrimaryLanguage { get; set; }
+        public string? IsInterpreterReqd { get; set; }
+        public string? GP { get; set; }   
+        public string? GP_Facility { get; set; }
+        public string? PtAKA { get; set; }
+        public string? Ethnic { get; set; }
+        public string? EthnicCode { get; set; }
+        public string? DCTM_Folder_ID { get; set; }
+    }   
+
+    [Table("ViewPatientRelativeDetails", Schema = "dbo")]
+    public class Relatives
+    {
+        [Key]
+        public int relsid { get; set; }
+        public int WMFACSID { get; set; }
+        public string? Name { get; set; }
+        public string? RelTitle { get; set; }
+        public string? RelSurname { get; set; }
+        public string? RelSurnameBirth { get; set; }
+        public string? RelForename1 { get; set; }
+        public string? RelForename2 { get; set; }
+        public string? RelAKA { get; set; }
+        [Display(Name = "Date of Birth")]
+        [DataType(DataType.Date)]
+        public DateTime? DOB { get; set; }
+        [Display(Name = "Date of Death")]
+        [DataType(DataType.Date)]
+        public DateTime? DOD { get; set; }
+        public string? RelAffected { get; set; }
+        public string? RelAlive { get; set; }
+        public string? Sex { get; set; }
+        public string? Diagnosis { get; set; }
+        public string? Status { get; set; }
+        public string? SiteCode { get; set; }
+        public string? Relation { get; set; }
+    }   
+    
+    [Table("ViewPatientAppointmentDetails", Schema="dbo")]
+    public class Clinics
+    {
+        [Key]
+        public int RefID { get; set; }
+        public int MPI { get; set; }
+        [Display(Name = "Booked Date")]
+        [DataType(DataType.Date)]
+        public DateTime? BOOKED_DATE { get; set; }
+        [Display(Name = "Booked Time")]
+        [DataType(DataType.Time)]
+        public DateTime? BOOKED_TIME { get; set; }
+        [Display(Name ="Appt With")]
+        public string STAFF_CODE_1 { get; set; }
+        public string AppType { get; set; }
+        public string? Attendance { get; set; }
+        public string Clinician { get; set; }
+        public string Clinic { get; set; }
+        public string FIRSTNAME { get; set; }
+        public string LASTNAME { get; set; }
+        public string CGU_No { get; set; }
+        [DataType(DataType.Time)]
+        public DateTime? ArrivalTime { get; set; }
+        public string? SeenBy { get; set; }
+        public string? SeenByClinician { get; set; }
+        public Int16? NoPatientsSeen { get; set; }
+        public Int16? Duration { get; set; }
+        public bool? isClockStop { get; set; }
+        public string? LetterRequired { get; set; }
+        public string LoginDetails { get; set; }
+    }
+
+    [Table("ViewPatientReferralDetails", Schema ="dbo")]
+    public class Referrals
+    {
+        [Key]
+        public int refid { get; set; }
+        public int MPI { get; set; }
+        public string? INDICATION { get; set; }
+        public string? LeadClinician { get; set; }
+        public string? GC { get; set; }
+        public string? ReferringClinician { get; set; }
+        public string? ReferrerCode { get; set; }
+        public string? ReferringFacility { get; set; }
+        public DateTime? RefDate { get; set; }
+        public string? RefType { get; set; }
+        public string? COMPLETE { get; set; }
+        public DateTime? ClockStartDate { get; set; }
+        public DateTime? ClockStopDate { get; set; }
+        public string? PATHWAY { get; set; }
+    }
+
+    [Table("MasterActivityTable", Schema="dbo")]
+    public class ActivityItems
+    {
+        [Key]
+        public int RefID { get; set; }
+        public int MPI { get; set; }            
+        public string? COUNSELED { get; set; }        
+        public DateTime? ARRIVAL_TIME { get; set; }
+        public string? SEEN_BY { get; set; }
+        public Int16? NOPATIENTS_SEEN { get; set; }
+        public Int16? EST_DURATION_MINS { get; set; }
+        public bool? ClockStop { get; set; }
+        public string? LetterReq { get; set; }
+        [Display(Name = "Booked Date")]
+        [DataType(DataType.Date)]
+        public DateTime? BOOKED_DATE { get; set; }
+        [Display(Name = "Booked Time")]
+        [DataType(DataType.Time)]
+        public DateTime? BOOKED_TIME { get; set; }        
+        public string STAFF_CODE_1 { get; set; }
+        [Display(Name = "Appointment Type")]
+        public string TYPE { get; set; }
+        [Display(Name = "Clinic Venue")]
+        public string FACILITY { get; set; }        
+    }
+
+    [Table("ViewTriageDetails", Schema = "dbo")]
+    public class Triages
+    {
+        [Key]
+        public int ICPID { get; set; }        
+        public int RefID { get; set; }
+        public int MPI { get; set; }
+        public string ReferralPathway { get; set; }
+        public string RefType { get; set; }
+        public string CGU_No { get; set; }
+        public string ConsultantCode { get; set; }
+        public string GCCode { get; set; }
+        public string Name { get; set; }
+        public bool? GCToTriage { get; set; }
+        public bool? ConsToTriage { get; set; }
+        public bool? GCTriaged { get; set; }
+        public bool? ConsTriaged { get; set; }        
+        [DataType(DataType.Date)]
+        public DateTime? RefDate { get; set; }
+        public string LoginDetails { get; set; }
+        public string Clinician { get; set; }
+        public int? TreatPath { get; set; }
+        public int? TreatPath2 { get; set; }
+        public bool? ConsWLForSPR { get; set; }
+    }
+
+    [Table("ViewPatientReviews", Schema = "dbo")]
+    public class Reviews
+    {
+        [Key]
+        public int ReviewID { get; set; }
+        public int MPI {  get; set; }
+        public string CGU_No { get; set; }
+        public string? Title { get; set; }
+        public string? FIRSTNAME { get; set; }
+        public string? LASTNAME { get; set; }
+        public string? Category { get; set; }
+        public string? Comments { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? Created_Date { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? Planned_Date { get; set; }
+        public string? Owner { get; set; }
+        public string? Recipient { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? Completed_Date { get; set; }
+        public string? Review_Status { get; set; }
+        public string? Review_Recipient { get; set; }
+        public string? RecipientLogin { get; set; }
+    }
+
+    [Table("ICP_General", Schema = "dbo")]
+    public class ICPGeneral
+    {
+        [Key]
+        public int ICP_General_ID { get; set; }
+        public int ICPID { get; set; }
+        public int? TreatPath { get; set; }
+        public int? TreatPath2 { get; set; }        
+        public bool? ConsWLForSPR { get; set; }
+    }
+
+    [Table("ViewPatientCancerICP", Schema = "dbo")]
+    public class ICPCancer
+    {
+        [Key]
+        public int ICP_Cancer_ID { get; set; }
+        public int ICPID { get; set; }
+        public int MPI { get; set; }
+        public string? CGU_No {  get; set; }
+        public string? FIRSTNAME { get; set; }
+        public string? LASTNAME { get; set; }
+        public DateTime? REFERRAL_DATE { get; set; }
+        //public int ICPID { get; set; }
+        public int? ActOnRef { get; set; }
+        //public string ActRefInfo { get; set; }
+        public string? ActOnRefBy { get; set; }
+        //public int FHFNotRet { get; set; }
+        public bool FHFRev { get; set; }
+        public bool PedRev { get; set; }
+        public bool ConfRev { get; set; }
+        public bool PathRepRev { get; set; }
+        public bool RiskAssessment { get; set; }
+        //public int ReviewedOption { get; set; }
+        public string? FinalReviewed { get; set; }
+        public string? GC_CODE { get; set; }
+        public string? WaitingListClinician { get; set; }
+        public string? WaitingListVenue { get; set; }
+        public string? WaitingListComments { get; set; }
+        public string? ReferralAction { get; set; }
+    }
+
+    [Table("CLIN_FACILITIES", Schema = "dbo")]
+    public class ClinicalFacilityList
+    {
+        [Key]
+        public string FACILITY { get; set; }
+        public string NAME { get; set; }
+        public Int16 NON_ACTIVE { get; set; }
+    }
+
+    [Table("ViewPatientClinicalNoteDetails", Schema = "dbo" )]
+    public class ClinicalNotes
+    {
+        [Key]
+        public int? ClinicalNoteID { get; set; }
+        public int? RefID { get; set; }
+        public int? MPI { get; set; }
+        public string? ClinicalNote { get; set; }
+        public int? CN_DCTM_sts { get; set; }
+        [Display(Name = "Created Date")]
+        [DataType(DataType.Date)]
+        public DateTime? CreatedDate { get; set; }
+        [Display(Name = "Created Time")]
+        [DataType(DataType.Time)]
+        public DateTime? CreatedTime { get; set; }
+        public string? FIRSTNAME { get; set; }
+        public string? LASTNAME { get; set; }
+        public string? CGU_No { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? NoteType { get; set; }
+    }
+
+    [Table("ClinicalNotes", Schema = "dbo")]
+    public class NoteItems
+    {
+        [Key]
+        public int ClinicalNoteID { get; set; }
+        public int? RefID { get; set; }
+        public int? MPI { get; set; }
+        public string? ClinicalNote { get; set; }
+        public int CN_DCTM_sts { get; set; }        
+        public string? NoteType { get; set; }
+    }
+
+    [Table("STAFF", Schema = "dbo")]
+    public class StaffMemberList
+    {
+        [Key]
+        public string STAFF_CODE { get; set; }
+        public string EMPLOYEE_NUMBER { get; set; }
+        public string NAME { get; set; }
+        public string CLINIC_SCHEDULER_GROUPS { get; set; }
+        public bool InPost { get; set; }
+    }
+
+    [Table("ViewPatientDiagnosisDetails", Schema = "dbo")]
+    public class Diagnosis
+    {
+        [Key]
+        public int ID { get; set; }
+        public int MPI { get; set; }
+        public string CGU_No { get; set; }
+        public string Title { get; set; }
+        public string FIRSTNAME { get; set; }
+        public string LASTNAME { get; set; }
+        public string? DISEASE_CODE { get; set; }
+        public string? DESCRIPTION { get; set; }        
+        public string? STATUS { get; set; }
+        public string? MAIN_SUB { get; set; }
+        public string? NAME { get; set; }
+        [Display(Name = "Date Diagnosed")]
+        [DataType(DataType.Date)]
+        public DateTime ENTEREDDATE { get; set; }
+    }
+
+    [Table("ViewPatientTestDetails", Schema = "dbo")]
+    public class Test
+    {
+        [Key]
+        public int TestID { get; set; }
+        public int MPI { get; set; }
+        public string CGU_No { get; set; }
+        public string Title { get; set; }
+        public string FIRSTNAME { get; set; }
+        public string LASTNAME { get; set; }
+        public string? TEST { get; set; }
+        public string? ORDEREDBY { get; set; }
+        public string? LOCATION { get; set; }
+        public string? NAME { get; set; }
+        [Display(Name = "Requested Date")]
+        [DataType(DataType.Date)]
+        public DateTime? DATE_REQUESTED { get; set; }
+        [Display(Name = "Received Date")]
+        [DataType(DataType.Date)]
+        public DateTime? DATE_RECEIVED { get; set; }
+        public string? RESULT { get; set; }
+        [Display(Name = "Given to Patient")]
+        [DataType(DataType.Date)]
+        public DateTime? ResultGivenDate { get; set; }
+        public string COMPLETE { get; set; }
+        public string? COMMENTS { get; set; }
+    }
+
+    [Table("CLIN_OUTCOMES", Schema = "dbo")]
+    public class OutcomeList
+    {
+        [Key]
+        public string CLINIC_OUTCOME { get; set;}
+        public string DEFAULT_CLINIC_STATUS { get; set; }
+    }
+
+    [Table("ClinicalNoteTypes", Schema = "dbo")]
+    public class  NoteTypeList
+    {
+        [Key]
+        public int NoteTypeID { get; set; }
+        public string NoteType { get; set; }
+        public bool NoteInUse { get; set; }
+    }
+
+    [Table("HPOTerm", Schema = "dbo")]
+    public class HPOTerms
+    {
+        [Key]
+        public int ID { get; set; }
+        public string Term { get; set; }
+        public string TermCode { get; set; }
+    }
+
+    [Table("ClinicalNotesHPOTerm", Schema = "dbo")]
+    public class ClinicalNoteHPOTerms
+    {
+        [Key]
+        public int ID { get; set; }
+        public int ClinicalNoteID { get; set; }
+        public int HPOTermID { get; set; }
+    }
+
+    [Table("ViewClinicalNoteHPOTermDetails", Schema = "dbo")]
+    public class HPOTermDetails
+    {
+        [Key]
+        public int ID { get; set; }
+        public int ClinicalNoteID { get; set; }  
+        public int MPI { get;set; }
+        public string? Term { get; set; }
+        public string? TermCode { get; set; }
+    }
+
+    [Table("DISEASE", Schema = "dbo")]
+    public class DiseaseList
+    {
+        [Key]
+        public string DISEASE_CODE { get; set; }
+        public string DESCRIPTION { get; set; }
+    }
+
+    [Table("PAT_TESTTYPE", Schema = "dbo")]
+    public class TestList
+    {
+        [Key]
+        public string TEST { get; set; }
+    }
+
+    [Table("DISEASE_STATUS", Schema = "dbo")]
+    public class  DiseaseStatusList
+    {
+        [Key]
+        public string DISEASE_STATUS { get; set; }
+    }
+
+    [Table("View_ETHNICITY_as_ListEthnicOrigin", Schema = "dbo")]
+    public class Ethnicity
+    {
+        [Key]
+        public string EthnicCode { get; set; }
+        public string Ethnic { get; set; }
+        public string NHSEthnicCode { get; set; }
+    }
+
+    [Table("ListICPActions", Schema = "dbo")]
+    public class ICPActionsList
+    {
+        [Key]
+        public int ID { get; set; }
+        public string Action { get; set; }
+        public bool InUse { get; set; }
+    }
+
+    [Table("ListICPGeneralActions", Schema = "dbo")]
+    public class ICPGeneralActionsList
+    {
+        [Key]
+        public int ID { get; set; }
+        public string Action { get; set; }
+        public bool InUse { get; set; }
+    }
+
+    [Table("ListICPGeneralActions2", Schema = "dbo")]
+    public class ICPGeneralActionsList2
+    {
+        [Key]
+        public int ID { get; set; }
+        public string Action { get; set; }
+        public bool InUse { get; set; }
+        public bool Clinic { get; set; }
+        public bool NoClinic { get; set; }
+    }
+
+    [Table("DictatedLetters", Schema = "dbo")]
+    public class DictatedLetters
+    {
+        [Key]
+        public int DoTID { get; set; }
+        public int? MPI { get; set; }
+        public int? RefID { get; set; }
+        public string? LetterTo { get; set; }
+        public string? LetterRe { get; set; }
+        public string? LetterFrom { get; set; }
+        public string? LetterFromCode { get; set; }
+        public string? LetterContent { get; set; }
+        public string? LetterContentBold { get; set; }
+        public string? Status { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DateDictated { get; set; }
+    }
+
+    [Table("DictatedLettersPatients", Schema = "dbo")]
+    public class DictatedLettersPatients
+    {
+        [Key]
+        public int DOTPID { get; set; }
+        public int DOTID { get; set; }
+        public int MPI { get; set; }
+        public int RefID { get; set; }
+    }
+
+    [Table("DictatedLettersCopies", Schema = "dbo")]
+    public class DictatedLettersCopies
+    {
+        [Key]
+        public int CCID { get; set; }
+        public int DotID { get; set; }
+        public string CC { get; set; }
+    }
+
+    [Table("ViewPatientPathwayAll", Schema = "dbo")]
+    [Keyless]
+    public class PatientPathway
+    {        
+        public int MPI { get; set; }
+        public string cgu_no { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public DateTime REFERRAL_DATE { get; set; }
+        public int Triaged { get; set; }
+        public int AppointmentBooked { get; set; }
+        public int Seen { get; set; }
+        public int LetterDictated { get; set; }
+        public int LetterPrinted { get; set; }
+        public int ReviewPlanned { get; set; }
+        public string ClockStatus { get; set; }
+        public string? PATHWAY { get; set; }
+        public int? ToBeSeenByGC { get; set; }
+        public int? ToBeSeenByCons {  get; set; }
+    }
+
+    [Table("ViewCaseloadOverview", Schema = "dbo")]
+    [Keyless]
+    public class Caseload
+    {
+        public int MPI { get; set; }
+        public string StaffCode { get; set; }
+        public string Type  { get; set; }
+        public DateTime? BookedDate { get; set; }
+        public DateTime? BookedTime { get; set; }
+        public string? State { get; set; }
+        public string CGU_No { get; set; }
+        public string Name { get; set; }
+        public string Clinician { get; set; }
+    }
+
+    [Table("View_Alerts", Schema = "dbo")]
+    public class Alert
+    {
+        [Key]
+        public int AlertID { get; set; }
+        public int MPI { get; set; }
+        public string CGU_No { get; set; }
+        public bool ProtectedAddress { get; set; }
+        public DateTime EffectiveFromDate { get; set; }
+        public DateTime? EffectiveToDate { get; set; }
+        public string AlertType { get; set; }
+        public string Comments { get; set; }
+    }
+
+    [Table("ViewPatientRisk", Schema = "dbo")]
+    public class Risk
+    {
+        [Key]
+        public int RiskID { get; set; }
+        public int RefID { get; set; }
+        public int MPI { get; set; }
+        public string CGU_No { get; set; }
+        public string? FIRSTNAME { get; set; }
+        public string? LASTNAME { get; set; }       
+        [DataType(DataType.Date)]
+        public DateTime? RiskDate { get; set; }
+        public string? RiskCode { get; set; }
+        public string? RiskClinCode { get; set; }
+        public string? RiskComments { get; set; }
+        public Int16? IncludeLetter { get; set; }
+        public double? R25_29 { get; set; }
+        public double? R30_40 { get; set; }
+        public double? R40_50 { get; set; }
+        public double? R50_60 { get; set; }
+        public string? CalculationToolUsed { get; set; }
+        public string? SurvSiteCode { get; set; }
+        public double? LifetimeRiskPercentage { get; set; }
+        public string? Clinician { get; set; }
+        public int ICPID { get; set; }
+    }
+
+    [Table("ViewPatientSurveillance", Schema = "dbo")]
+    public class Surveillance
+    {
+        [Key]
+        public int SurvRecID { get; set; }
+        public int RiskID { get; set; }
+        public string? Clinician { get; set; }
+        public int MPI { get; set; }
+        public string? FIRSTNAME { get; set; }
+        public string? LASTNAME { get; set; }
+        public string? SurvFreqCode { get; set; }
+        public int? SurvStartAge { get; set; }
+        public int? SurvStopAge { get; set; }
+        public string? SurvSiteCode { get; set; }
+        public string? SurvRecHoCode { get; set; }
+    }
+
+    [Table("ViewTestingEligibility", Schema = "dbo")]
+    public class Eligibility
+    {
+        [Key]
+        public int ID { get; set; }
+        public int MPI { get; set; }
+        public string? FIRSTNAME { get; set; }
+        public string? LASTNAME { get; set; }
+        public string? CalcTool { get; set; }
+        public int? Gene { get; set; }
+        public string? Score { get; set; }
+        public string? OfferTesting { get; set; }
+    }
+}

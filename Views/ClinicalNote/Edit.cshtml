@@ -1,0 +1,112 @@
+﻿@model ClinicX.Models.NoteItems
+@{
+    ViewData["Title"] = "Clinic-X - Edit Clinical Note";
+}
+
+<div class=" row mb-5 g-5">
+    @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+    <div class="col-md-2">
+        <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.MPI)>Back to Index</a>
+    </div>
+    <div class="col-md-2">
+        <input type="submit" class="btn btn-default btn-success" value="Save" id="btnSaveNote" />
+    </div>
+    <div class="col-md-2">
+        <a type="button" class="btn btn-default btn-success" id="btnHPO" asp-controller="HPO" asp-action="HPOTerm" asp-route-id=@Html.ValueFor(model => model.ClinicalNoteID)>HPO Terms</a>
+    </div>
+    <div class="col-md-2">
+        <a type="button" class="btn btn-default btn-success" id="btnFinalise" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Html.ValueFor(model => model.ClinicalNoteID)>Finalise</a>
+    </div>
+</div>
+
+<h1>Edit Clinical Note</h1>
+
+<div class="container mb-5">
+    <form id="ClinicalNote" asp-action="Edit">
+        <div id="metadata" hidden="true">
+            @*We absolutely must have these fields if they're in the data source, otherwise they will be wiped when we do the update!!*@
+            @*<input asp-for="RefID" />
+            <input asp-for="MPI" />*@
+            <input asp-for="ClinicalNoteID" name="iNoteID" />
+            <input id="txtDCTMSts" asp-for="CN_DCTM_sts" />
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-2">
+                Note Type:
+            </div>
+            <div class="col-md-4">                
+                <input id="txtNoteType" asp-for="NoteType" readonly="readonly" />
+            </div>
+            <div class="col-md-6"></div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-2">Details:</div>
+            <div class="col-md-8">
+                <textarea id="txtClinicalNote" rows="20" cols="150" asp-for="ClinicalNote" name="sClinicalNote"></textarea>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row mb-5">
+            <p>Enter your note and save. Click "Finalise" when done editing.</p>
+        </div>        
+    </form>
+</div>
+
+<script type="text/javascript">
+    //document.getElementById("btnBack").addEventListener("click", GoBack);
+    document.getElementById("btnSaveNote").addEventListener("click", SaveNote);
+    window.addEventListener("load", LoadNote);
+
+    function LoadNote()
+    {
+        //document.getElementById("metadata").hidden = true;
+        
+        if (document.getElementById("txtDCTMSts").value == 1)
+        {
+            document.getElementById("txtNoteType").disabled = true;
+            document.getElementById("txtClinicalNote").disabled = true;
+            document.getElementById("btnSaveNote").hidden = true;
+            document.getElementById("btnFinalise").hidden = true;
+        }                
+    }
+
+    function GoBack() 
+    {
+        window.history.back();
+    }
+
+    function SaveNote() 
+    {
+        if (CheckFormValid() == 1) 
+        {            
+            document.getElementById("ClinicalNote").submit();
+        }
+    }
+
+    function CheckFormValid() 
+    { //validation to ensure all required data is entered
+        
+        if (document.getElementById("txtClinicalNote").value == null || document.getElementById("txtClinicalNote").value == "") {
+            window.alert("Please enter some text.");
+            return 0;
+        }
+        
+        if (document.getElementById("txtClinicalNote").value.match(/};.*/)) {
+            window.alert("Oi! Stop trying to inject SQL code into my form!");
+            return 0;
+        }
+        
+        return 1;
+    }
+
+
+</script>
+
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+            }

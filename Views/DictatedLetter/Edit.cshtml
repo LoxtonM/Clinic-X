@@ -1,0 +1,226 @@
+﻿@model ClinicX.ViewModels.DictatedLetterVM
+@{
+    ViewData["Title"] = "Clinic-X - Edit Dictated Letter";
+}
+
+<div class=" row mb-5 g-5">
+    <div class="col-md-2">
+        <a type="button" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Index">Back to Index</a>
+    </div>
+    <div class="col-md-2">
+        <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveLetter" />
+    </div>    
+    <div class="col-md-2">
+        <input type="button" class="btn btn-default btn-success" value="Approve" id="btnApprove" />
+        <input type="button" class="btn btn-default btn-success" value="Unapprove" id="btnUnapprove" />
+    </div>    
+    <div class="col-md-6"></div>
+</div>
+
+<h1>Dictated Letter For:</h1>
+<h2>@Html.ValueFor(model => model.dictatedLetters.LetterRe)</h2>
+
+<div class="container mb-5">
+    <form id="ClinicalNote" asp-action="Edit">
+        <div id="metadata">
+            @*We absolutely must have these fields if they're in the data source, otherwise they will be wiped when we do the update!!*@
+            <input asp-for="dictatedLetters.RefID" />
+            <input asp-for="dictatedLetters.MPI" />
+            <input asp-for="dictatedLetters.DoTID" />
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2" style="text-align:right">
+                Letter To:
+            </div>
+            <div class="col-md-4">
+                <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo"></textarea>
+            </div>
+            <div class="col-md-2" style="text-align:right">
+                Letter From:
+            </div>
+            <div class="col-md-4">
+                <textarea id="txtLetterFrom" rows="8" cols="40" asp-for="dictatedLetters.LetterFrom"></textarea>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2" style="text-align:right">
+                Letter Status:
+            </div>
+            <div class="col-md-4">
+                <select id="ddlLetterStatus" asp-for="dictatedLetters.Status">
+                    <option value="" selected></option>
+                    <option value="Draft">Draft</option>
+                    <option value="For Approval">For Approval</option>
+                    <option value="For Corrections">For Corrections</option>
+                    <option id="optPrint" value="For Printing">For Printing</option>
+                    <option id="optICP" value="ICP Draft">ICP Draft</option>
+                </select>
+            </div>
+            <div class="col-md-6"></div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2" style="text-align:right">Summary:</div>
+            <div class="col-md-8">
+                <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold"></textarea>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-2">Content:</div>
+            <div id="editor" class="col-md-10">
+                <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent"></textarea>
+            </div>
+        </div>
+        <div class="row mb-5">
+            
+        </div>       
+    </form>
+
+    <div class="row mb-5 g-5">
+        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Patients</button>
+    </div>
+
+    <div class="collapse" id="collapsePatientsTable">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>CGU Number</th>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>NHS Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.patients)
+                {
+                    <tr>
+                        <td>@item.CGU_No</td>
+                        <td>@item.FIRSTNAME @item.LASTNAME</td>
+                        <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                        <td>@item.SOCIAL_SECURITY</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="row mb-5 g-5">
+        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseCopiesTable" aria-expanded="false" aria-controls="collapseExample">CCs</button>
+    </div>
+
+    <div class="collapse" id="collapseCopiesTable">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>CC Address</th>                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.dictatedLettersCopies)
+                {
+                    <tr>
+                        <td>@item.CC</td>                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+
+
+
+
+<script type="text/javascript">
+    
+    document.getElementById("btnSaveLetter").addEventListener("click", SaveLetter);
+    document.getElementById("btnApprove").addEventListener("click", ApproveLetter);
+    document.getElementById("btnUnapprove").addEventListener("click", UnapproveLetter);
+    window.addEventListener("load", LoadLetter);
+
+    var quill = new Quill('#editor', {
+        theme: 'snow'
+    });
+
+    function LoadLetter() 
+    { 
+        document.getElementById("metadata").hidden = true;
+        document.getElementById("btnApprove").hidden = true;
+        document.getElementById("btnUnapprove").hidden = true;
+        
+        
+
+        if (document.getElementById("ddlLetterStatus").value == "For Approval") 
+        {
+            document.getElementById("btnApprove").hidden = false;
+            document.getElementById("ddlLetterStatus").disabled = true;
+        }
+        else if (document.getElementById("ddlLetterStatus").value == "For Printing") 
+        {
+            document.getElementById("btnUnapprove").hidden = false;
+            document.getElementById("ddlLetterStatus").disabled = true;
+            document.getElementById("txtLetterTo").disabled = true;
+            document.getElementById("txtLetterFrom").disabled = true;
+            document.getElementById("txtLetterContentBold").disabled = true;
+            quill.enable(false); //we can't simply disable the text box, that doesn't work with Quill
+        }
+        else
+        {
+            document.getElementById("optPrint").hidden = true;
+            if (document.getElementById("ddlLetterStatus").value == "ICP Draft") 
+            { 
+                document.getElementById("ddlLetterStatus").value = "Draft";
+                document.getElementById("optICP").hidden = true;
+            }
+        }        
+    }
+
+    function SaveLetter() 
+    { 
+        window.alert("Saved!");
+    }
+
+    function ApproveLetter()
+    {
+        window.alert("Approved!");
+        
+        document.getElementById("btnApprove").hidden = true;
+        document.getElementById("btnUnapprove").hidden = false;
+        document.getElementById("ddlLetterStatus").disabled = false;
+        document.getElementById("optPrint").hidden = false;
+        document.getElementById("ddlLetterStatus").value = "For Printing";
+        document.getElementById("ddlLetterStatus").disabled = true;
+        document.getElementById("txtLetterTo").disabled = true;
+        document.getElementById("txtLetterFrom").disabled = true;
+        document.getElementById("txtLetterContentBold").disabled = true;
+        quill.enable(false);
+    }
+
+    function UnapproveLetter() 
+    {
+        window.alert("Unapproved!");
+        document.getElementById("btnApprove").hidden = false;
+        document.getElementById("btnUnapprove").hidden = true;
+        document.getElementById("ddlLetterStatus").disabled = false;
+        document.getElementById("ddlLetterStatus").value = "For Approval";
+        document.getElementById("optPrint").hidden = true;
+        document.getElementById("ddlLetterStatus").disabled = true;
+        document.getElementById("txtLetterTo").disabled = false;
+        document.getElementById("txtLetterFrom").disabled = false;
+        document.getElementById("txtLetterContentBold").disabled = false;
+        quill.enable(true);
+    }
+
+</script>
+
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+            }

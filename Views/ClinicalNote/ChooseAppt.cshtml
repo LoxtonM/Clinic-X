@@ -1,0 +1,52 @@
+﻿@model IEnumerable<ClinicX.Models.Clinics>
+@{
+    ViewData["Title"] = "Clinic-X - Choose Appointment";
+}
+
+<div class="row g-5 mb-5">
+    @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+    <div class="col-md-2">
+        <a type="button" id="btnBack" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Back to Index</a>
+    </div>
+</div>
+
+<div class ="row g-5 mb-5">
+    <h2>Appointments for @Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</h2>
+</div>
+
+<div class="row g-5 mb-5">
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>                
+                <th>Clinic</th>
+                <th>@Html.DisplayNameFor(model => model.BOOKED_DATE)</th>
+                <th>@Html.DisplayNameFor(model => model.BOOKED_TIME)</th>                
+            </tr>
+        </thead>
+        <tbody>           
+            @foreach (var item in Model)
+            {                   
+                <tr>
+                    <td><a asp-controller="ClinicalNote" asp-action="Create" asp-route-id=@item.RefID>Select</a></td>                            
+                    <td>@item.Clinic</td>
+                    <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                    <td>@item.BOOKED_TIME.Value.ToString("hh:mm")</td>
+                </tr>                   
+            }          
+        </tbody>
+    </table>
+</div>
+
+
+<script type="text/javascript">
+
+    document.getElementById("btnBack").addEventListener("click", GoBack);
+    
+
+    function GoBack() {
+        window.history.back();
+        //window.close();
+    }
+
+ </script>

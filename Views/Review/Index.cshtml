@@ -1,0 +1,52 @@
+﻿@model IEnumerable<ClinicX.Models.Reviews>
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Clinic-X - Reviews";
+}
+
+<div class="row mb-5 g-5">
+    <h2>Outstanding Reviews</h2>
+</div>
+
+<div class="row g-5 mb-5">
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>CGU No</th>
+                <th>Patient</th>
+                <th>Category</th>
+                <th>@Html.DisplayNameFor(model => model.Planned_Date)</th>                
+                <th>Owner/Requester</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><a asp-action="Edit" asp-route-id=@item.ReviewID>Select</a></td>
+                    <td>@item.CGU_No</td>
+                    <td>@item.FIRSTNAME @item.LASTNAME</td>
+                    <td>@item.Category</td>
+                    @if (@item.Planned_Date != null)
+                    {
+                        <td>@item.Planned_Date.Value.ToString("dd/MM/yyyy")</td>
+                    }
+                    else
+                    {
+                        <td>N/A</td>
+                    }
+                    <td>@item.Owner</td>
+                </tr>                
+            }
+        </tbody>
+    </table>
+</div>
+@*
+<div class="row mb-5 g-5">
+    <h2>Requested Reviews</h2>
+</div>
+*@
