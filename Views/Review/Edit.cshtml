@@ -15,7 +15,7 @@
 </div>
 
 <div class="row mb-5 g-5">
-    <h1>Review for @Model.FIRSTNAME @Model.LASTNAME</h1>
+    <h1>Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.MPI)>@Html.DisplayFor(model => model.FIRSTNAME) @Html.DisplayFor(model => model.LASTNAME)</a></h1>
 </div>
 
 <div>

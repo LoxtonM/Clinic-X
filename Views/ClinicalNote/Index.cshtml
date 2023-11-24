@@ -19,7 +19,7 @@
 
 @if(Model.Count() > 0)
 {
-    <h1>Clinical Notes for @Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</h1>    
+    <h1>Clinical Notes for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>@Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</a></h1>
 }
 else
 {

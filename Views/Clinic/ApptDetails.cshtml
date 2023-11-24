@@ -44,8 +44,8 @@
         <dt class="col-sm-2">
             Patient:
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FIRSTNAME) @Html.DisplayFor(model => model.LASTNAME)
+        <dd class="col-sm-10">            
+            <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.MPI)>@Html.DisplayFor(model => model.FIRSTNAME) @Html.DisplayFor(model => model.LASTNAME)</a>
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.AppType):

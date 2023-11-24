@@ -11,8 +11,8 @@
 
 
 @if (Model.Count() >= 1)
-{    
-    <h1 class="text-center">Tests for @Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</h1>
+{
+    <h1 class="text-center">Tests for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>@Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</a></h1>
 
     <div class="row g-5 mb-5">
         <table class="table">
