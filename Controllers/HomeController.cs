@@ -22,15 +22,22 @@ namespace ClinicX.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var user = await _context.StaffMembers.FirstOrDefaultAsync(u => u.EMPLOYEE_NUMBER == User.Identity.Name);
-            var caseload = from cl in _context.Caseload
-                    where cl.StaffCode == user.STAFF_CODE
-                    orderby cl.BookedDate
-                    select cl;
+            try
+            {
+                var user = await _context.StaffMembers.FirstOrDefaultAsync(u => u.EMPLOYEE_NUMBER == User.Identity.Name);
+                var caseload = from cl in _context.Caseload
+                               where cl.StaffCode == user.STAFF_CODE
+                               orderby cl.BookedDate
+                               select cl;
 
-            //return View(user);
-            return View(await caseload.ToListAsync());
-            //return View();
+                //return View(user);
+                return View(await caseload.ToListAsync());
+                //return View();
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         public IActionResult Privacy()

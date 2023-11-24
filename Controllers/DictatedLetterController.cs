@@ -20,63 +20,84 @@ namespace ClinicX.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            if (User.Identity.Name is null)
+            try
             {
-                return NotFound();
+                if (User.Identity.Name is null)
+                {
+                    return NotFound();
+                }
+
+                var users = await _context.StaffMembers.FirstOrDefaultAsync(u => u.EMPLOYEE_NUMBER == User.Identity.Name);
+
+                string strStaffCode = users.STAFF_CODE;
+
+                var letters = from l in _context.DictatedLetters
+                              where l.LetterFromCode == strStaffCode && l.MPI != null && l.RefID != null && l.Status != "Printed"
+                              orderby l.DateDictated descending
+                              select l;
+
+                //letters = letters.OrderByDescending(l => l.DateDictated);
+
+                return View(await letters.ToListAsync());
             }
-
-            var users = await _context.StaffMembers.FirstOrDefaultAsync(u => u.EMPLOYEE_NUMBER == User.Identity.Name);            
-
-            string strStaffCode = users.STAFF_CODE;
-
-            var letters = from l in _context.DictatedLetters
-                          where l.LetterFromCode == strStaffCode && l.MPI != null && l.RefID != null && l.Status != "Printed"
-                          orderby l.DateDictated descending
-                          select l;
-
-            //letters = letters.OrderByDescending(l => l.DateDictated);
-
-            return View(await letters.ToListAsync());
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            //var letter = await _context.DictatedLetters.FirstOrDefaultAsync(c => c.DoTID == id);
+            try
+            {
+                //var letter = await _context.DictatedLetters.FirstOrDefaultAsync(c => c.DoTID == id);
 
-            //return View(letter);
-            DictatedLetterVM lvm = new DictatedLetterVM();
-            VMData vm = new VMData(_context);
-            lvm.dictatedLetters = vm.GetDictatedLetterDetails(id);
-            lvm.dictatedLettersPatients = vm.GetDictatedLettersPatients(id);
-            lvm.dictatedLettersCopies = vm.GetDictatedLettersCopies(id);
-            lvm.patients = vm.GetPatients(id);
+                //return View(letter);
+                DictatedLetterVM lvm = new DictatedLetterVM();
+                VMData vm = new VMData(_context);
+                lvm.dictatedLetters = vm.GetDictatedLetterDetails(id);
+                lvm.dictatedLettersPatients = vm.GetDictatedLettersPatients(id);
+                lvm.dictatedLettersCopies = vm.GetDictatedLettersCopies(id);
+                lvm.patients = vm.GetPatients(id);
 
-            return View(lvm);
+                return View(lvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("DoTID,RefID,MPI,Status,LetterContent,LetterContentBold")] DictatedLetters dictatedLetters)
         {
-            if (id != dictatedLetters.DoTID)
+            try
             {
-                return NotFound();
-            }
+                if (id != dictatedLetters.DoTID)
+                {
+                    return NotFound();
+                }
 
-            if (ModelState.IsValid)
-            {
-                
-                _context.Update(dictatedLetters);
-                //based on Clinical Note creation - review later
-                await _context.SaveChangesAsync();
-                Console.WriteLine("done");
-                
-                return RedirectToAction("Edit", new { id = dictatedLetters.DoTID });
+                if (ModelState.IsValid)
+                {
+
+                    _context.Update(dictatedLetters);
+                    //based on Clinical Note creation - review later
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine("done");
+
+                    return RedirectToAction("Edit", new { id = dictatedLetters.DoTID });
+                }
+                else
+                {
+                    return View(dictatedLetters);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return View(dictatedLetters);
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
             }
         }        
     }

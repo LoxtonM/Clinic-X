@@ -23,22 +23,43 @@ namespace ClinicX.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> RelativeDetails(int id)
         {
-            var rel = await _context.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
-            return View(rel);
+            try
+            {
+                var rel = await _context.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
+                return View(rel);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var rel = await _context.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
-            return View(rel);
+            try
+            {
+                var rel = await _context.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
+                return View(rel);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpPost]
@@ -46,46 +67,60 @@ namespace ClinicX.Controllers
             string sForename2, string sSurname, string sRelation, string sDOB, string sDOD,
             int isAffected, string sSex)
         {
-            var rel = await _context.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
-                       
-        
-            DateTime dDOB = new DateTime();
-            DateTime dDOD = new DateTime();
-
-            if (sDOB != null)
+            try
             {
-                dDOB = DateTime.Parse(sDOB);
-            }
-            else
-            {
-                dDOB = DateTime.Parse("1/1/1900");
-            }
+                var rel = await _context.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
 
-            if (sDOD != null)
-            {
-                dDOD = DateTime.Parse(sDOD);
-            }
-            else
-            {
-                dDOD = DateTime.Parse("1/1/1900");
-            }
 
-            if (sForename2 == null)
-            {
-                sForename2 = "";
+                DateTime dDOB = new DateTime();
+                DateTime dDOD = new DateTime();
+
+                if (sDOB != null)
+                {
+                    dDOB = DateTime.Parse(sDOB);
+                }
+                else
+                {
+                    dDOB = DateTime.Parse("1/1/1900");
+                }
+
+                if (sDOD != null)
+                {
+                    dDOD = DateTime.Parse(sDOD);
+                }
+                else
+                {
+                    dDOD = DateTime.Parse("1/1/1900");
+                }
+
+                if (sForename2 == null)
+                {
+                    sForename2 = "";
+                }
+
+                CRUD crud = new CRUD(_config);
+                crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
+                        User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
+
+                return RedirectToAction("RelativeDetails", "Relative", new { id = id });
             }
-
-            CRUD crud = new CRUD(_config);
-            crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
-                    User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
-
-            return RedirectToAction("RelativeDetails", "Relative", new { id = id });
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> AddNew(int WMFACSID)
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpPost]
@@ -93,39 +128,46 @@ namespace ClinicX.Controllers
             string sForename2, string sSurname, string sRelation, string sDOB, string sDOD, 
             int isAffected, string sSex)
         {
-            DateTime dDOB = new DateTime();
-            DateTime dDOD = new DateTime();
+            try
+            {
+                DateTime dDOB = new DateTime();
+                DateTime dDOD = new DateTime();
 
-            if(sDOB != null)
-            {
-                dDOB = DateTime.Parse(sDOB);
-            }
-            else
-            {
-                dDOB = DateTime.Parse("1/1/1900");
-            }
-           
-            if(sDOD != null)
-            {          
-                dDOD = DateTime.Parse(sDOD);
-            }
-            else
-            {
-                dDOD = DateTime.Parse("1/1/1900");
-            }
+                if (sDOB != null)
+                {
+                    dDOB = DateTime.Parse(sDOB);
+                }
+                else
+                {
+                    dDOB = DateTime.Parse("1/1/1900");
+                }
 
-            if(sForename2 == null)
-            {
-                sForename2 = "";
-            }
-            
-            CRUD crud = new CRUD(_config);
-            crud.CallStoredProcedure("Relative", "Create", WMFACSID, isAffected, 0, sTitle, sForename1, sForename2, sSurname, 
-                User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
-            
-            var patient = _context.Patients.FirstOrDefault(p => p.WMFACSID == WMFACSID);
+                if (sDOD != null)
+                {
+                    dDOD = DateTime.Parse(sDOD);
+                }
+                else
+                {
+                    dDOD = DateTime.Parse("1/1/1900");
+                }
 
-            return RedirectToAction("PatientDetails", "Patient", new { id = patient.MPI });
+                if (sForename2 == null)
+                {
+                    sForename2 = "";
+                }
+
+                CRUD crud = new CRUD(_config);
+                crud.CallStoredProcedure("Relative", "Create", WMFACSID, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
+                    User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
+
+                var patient = _context.Patients.FirstOrDefault(p => p.WMFACSID == WMFACSID);
+
+                return RedirectToAction("PatientDetails", "Patient", new { id = patient.MPI });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
     }

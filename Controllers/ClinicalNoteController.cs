@@ -24,26 +24,39 @@ namespace ClinicX.Controllers
         [Authorize]
         public async Task<IActionResult> Index(int id)
         {
+            try
+            {
+                var notes = from c in _context.ClinicalNotes
+                            where c.MPI.Equals(id) //& c.ClinicalNote != null
+                            orderby c.CreatedDate, c.CreatedTime descending
+                            select c;
 
-            var notes = from c in _context.ClinicalNotes
-                        where c.MPI.Equals(id) //& c.ClinicalNote != null
-                        orderby c.CreatedDate, c.CreatedTime descending
-                        select c;
+                int count = notes.Count();
 
-            int count = notes.Count();
-
-            return View(await notes.ToListAsync());            
+                return View(await notes.ToListAsync());
+            }
+            catch(Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Create(int id)
-        {                        
-            ClinicVM cvm = new ClinicVM();
-            VMData vm = new VMData(_context);
-            cvm.activityItem = vm.GetClinicDetails(id);
-            cvm.noteTypeList = vm.GetNoteTypes();
+        {
+            try
+            {
+                ClinicVM cvm = new ClinicVM();
+                VMData vm = new VMData(_context);
+                cvm.activityItem = vm.GetClinicDetails(id);
+                cvm.noteTypeList = vm.GetNoteTypes();
 
-            return View(cvm);
+                return View(cvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpPost]
@@ -51,77 +64,120 @@ namespace ClinicX.Controllers
         //public async Task<IActionResult> Create([Bind("MPI, RefID, CreatedBy, NoteType, ClinicalNote, CN_DCTM_sts")] NoteItems noteItems)
         public async Task<IActionResult> Create(int iMPI, int iRefID, string sNoteType, string sClinicalNote)
         {
-            //if (ModelState.IsValid)
-            //{                 
-            int iNoteID;
-                          
-            CRUD crud = new CRUD(_config);
-            crud.CallStoredProcedure("Clinical Note", "Create", iMPI, iRefID, 0, sNoteType, "", "", 
-                sClinicalNote, User.Identity.Name);
+            try
+            {
+                //if (ModelState.IsValid)
+                //{                 
+                int iNoteID;
 
-            iNoteID = GetClinicalNoteID(iRefID);
+                CRUD crud = new CRUD(_config);
+                crud.CallStoredProcedure("Clinical Note", "Create", iMPI, iRefID, 0, sNoteType, "", "",
+                    sClinicalNote, User.Identity.Name);
 
-            return RedirectToAction("Edit", new {id = iNoteID });
-            //}
-            //return View();
+                iNoteID = GetClinicalNoteID(iRefID);
+
+                return RedirectToAction("Edit", new { id = iNoteID });
+                //}
+                //return View();
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var notes = await _context.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
-            return View(notes);
+            try
+            {
+                var notes = await _context.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
+                return View(notes);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]        
         public async Task<IActionResult> Edit(int iNoteID, string sClinicalNote)
         {
-            if(iNoteID == null)
+            try
             {
-                return RedirectToAction("NotFound", "WIP");
+                if (iNoteID == null)
+                {
+                    return RedirectToAction("NotFound", "WIP");
+                }
+
+                CRUD crud = new CRUD(_config);
+                crud.CallStoredProcedure("Clinical Note", "Update", iNoteID, 0, 0, "", "", "", sClinicalNote, User.Identity.Name);
+
+                return RedirectToAction("Edit", new { id = iNoteID });
             }
-
-            CRUD crud = new CRUD(_config);
-            crud.CallStoredProcedure("Clinical Note", "Update", iNoteID, 0, 0, "", "", "", sClinicalNote, User.Identity.Name);
-
-            return RedirectToAction("Edit", new { id = iNoteID });                    
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         public async Task<IActionResult> ChooseAppt(int id)
         {
-            var appts = from c in _context.Clinics
-                        where c.MPI.Equals(id)
-                        orderby c.BOOKED_DATE descending
-                        select c;
+            try
+            {
+                var appts = from c in _context.Clinics
+                            where c.MPI.Equals(id)
+                            orderby c.BOOKED_DATE descending
+                            select c;
 
-            //appts = appts.OrderByDescending(c => c.BOOKED_DATE);
+                //appts = appts.OrderByDescending(c => c.BOOKED_DATE);
 
-            return View(await appts.ToListAsync());
+                return View(await appts.ToListAsync());
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         public async Task<IActionResult> Finalise(int id)
         {
-            CRUD crud = new CRUD(_config);
-            crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
+            try
+            {
+                CRUD crud = new CRUD(_config);
+                crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
 
-            var note = await _context.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
+                var note = await _context.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
 
-            return RedirectToAction("Index", new { id = note.MPI });
+                return RedirectToAction("Index", new { id = note.MPI });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         public int GetClinicalNoteID(int iRefID)
         {
-            int iNoteID;
-            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
-            conn.Open();
-            SqlCommand cmd2 = new SqlCommand("select top 1 clinicalnoteid from clinicalnotes " +
-                    "where refid = " + iRefID.ToString() + " order by createddate desc, createdtime desc", conn);
+            try
+            {
+                int iNoteID;
+                SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+                conn.Open();
+                SqlCommand cmd2 = new SqlCommand("select top 1 clinicalnoteid from clinicalnotes " +
+                        "where refid = " + iRefID.ToString() + " order by createddate desc, createdtime desc", conn);
 
-            iNoteID = (int)(cmd2.ExecuteScalar());
+                iNoteID = (int)(cmd2.ExecuteScalar());
 
-            conn.Close();
-            return iNoteID;
+                conn.Close();
+                return iNoteID;
+            }
+            catch (Exception ex)
+            {
+                RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return 0;
+            }
         }
 
     }

@@ -18,22 +18,28 @@ namespace ClinicX.Controllers
 
         [Authorize]
         public async Task<IActionResult> PatientDetails(int id)
-        {            
-            PatientVM pvm = new PatientVM();
-            VMData vm = new VMData(_context);
-            pvm.patient = vm.GetPatientDetails(id);
-            if (pvm.patient == null)
+        {
+            try
             {
-                return RedirectToAction("NotFound", "WIP");
-            }
-            pvm.relatives = vm.GetRelativesDetails(id);
-            pvm.hpoTermDetails = vm.GetHPOTerms(id);            
-            pvm.referrals = vm.GetReferrals(id);
-            pvm.patientPathway = vm.GetPathwayDetails(id);
-            pvm.alerts = vm.GetAlerts(id);
+                PatientVM pvm = new PatientVM();
+                VMData vm = new VMData(_context);
+                pvm.patient = vm.GetPatientDetails(id);
+                if (pvm.patient == null)
+                {
+                    return RedirectToAction("NotFound", "WIP");
+                }
+                pvm.relatives = vm.GetRelativesDetails(id);
+                pvm.hpoTermDetails = vm.GetHPOTerms(id);
+                pvm.referrals = vm.GetReferrals(id);
+                pvm.patientPathway = vm.GetPathwayDetails(id);
+                pvm.alerts = vm.GetAlerts(id);
 
-            return View(pvm);            
-        }
-        
+                return View(pvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }        
     }
 }

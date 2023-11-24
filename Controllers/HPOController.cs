@@ -24,64 +24,100 @@ namespace ClinicX.Controllers
         [HttpGet]
         public async Task<IActionResult> HPOTerm(int id)
         {
-            HPOVM hpo = new HPOVM();
-            VMData vm = new VMData(_context);
-            hpo.clinicalNote = vm.GetClinicalNoteDetails(id);
-            hpo.hpoTermDetails = vm.GetExistingHPOTerms(id);
-            hpo.hpoTerms = vm.GetHPOTerms();
-            hpo.hpoExtractVM = vm.GetExtractedTerms(id, _config);
+            try
+            {
+                HPOVM hpo = new HPOVM();
+                VMData vm = new VMData(_context);
+                hpo.clinicalNote = vm.GetClinicalNoteDetails(id);
+                hpo.hpoTermDetails = vm.GetExistingHPOTerms(id);
+                hpo.hpoTerms = vm.GetHPOTerms();
+                hpo.hpoExtractVM = vm.GetExtractedTerms(id, _config);
 
-            return View(hpo);
+                return View(hpo);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> AddHPOTerm(int iNoteID, int iTermID)
-        {            
-            CRUD crud = new CRUD(_config);
-            crud.CallStoredProcedure("Clinical Note", "Add HPO Term", iNoteID, iTermID, 0, "", "", "", "", User.Identity.Name);
-            
-            return RedirectToAction("HPOTerm", new {id = iNoteID});
+        {
+            try
+            {
+                CRUD crud = new CRUD(_config);
+                crud.CallStoredProcedure("Clinical Note", "Add HPO Term", iNoteID, iTermID, 0, "", "", "", "", User.Identity.Name);
+
+                return RedirectToAction("HPOTerm", new { id = iNoteID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
                 
         [HttpPost]
         public async Task<IActionResult> AddHPOTermFromText(int iTermID, int iNoteID)
-        {      
-            CRUD crud = new CRUD(_config);
-            crud.CallStoredProcedure("Clinical Note", "Add HPO Term", iNoteID, iTermID, 0, "", "", "", "", User.Identity.Name);
+        {
+            try
+            {
+                CRUD crud = new CRUD(_config);
+                crud.CallStoredProcedure("Clinical Note", "Add HPO Term", iNoteID, iTermID, 0, "", "", "", "", User.Identity.Name);
 
-            return RedirectToAction("HPOTerm", new { id = iNoteID });
+                return RedirectToAction("HPOTerm", new { id = iNoteID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteHPOTermFromNote(int iID)
-        {          
-            int iNoteID = 0;
-            
-            CRUD crud = new CRUD(_config);
-            crud.CallStoredProcedure("Clinical Note", "Delete HPO Term", iID, 0, 0, "", "", "", "", User.Identity.Name);
+        {
+            try
+            {
+                int iNoteID = 0;
 
-            iNoteID = GetNoteID(iID);
+                CRUD crud = new CRUD(_config);
+                crud.CallStoredProcedure("Clinical Note", "Delete HPO Term", iID, 0, 0, "", "", "", "", User.Identity.Name);
 
-            return RedirectToAction("HPOTerm", new { id = iNoteID });
+                iNoteID = GetNoteID(iID);
+
+                return RedirectToAction("HPOTerm", new { id = iNoteID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
         }     
         
         private int GetNoteID(int iID)
         {
-            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
-            conn.Open();
-
-            SqlCommand cmd1 = new SqlCommand("select ClinicalNoteID from ClinicalNotesHPOTerm where ID=" + iID, conn);
-
-            int iNoteID = 0;
-            using (var reader = cmd1.ExecuteReader())
+            try
             {
-                while (reader.Read())
+                SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+                conn.Open();
+
+                SqlCommand cmd1 = new SqlCommand("select ClinicalNoteID from ClinicalNotesHPOTerm where ID=" + iID, conn);
+
+                int iNoteID = 0;
+                using (var reader = cmd1.ExecuteReader())
                 {
-                    iNoteID = reader.GetInt32(0);
+                    while (reader.Read())
+                    {
+                        iNoteID = reader.GetInt32(0);
+                    }
                 }
+                conn.Close();
+                return iNoteID;
             }
-            conn.Close();
-            return iNoteID;
+            catch (Exception ex)
+            {
+                RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return 0;
+            }
         }
 
     }
