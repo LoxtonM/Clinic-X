@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using ClinicX.Data;
 using ClinicX.ViewModels;
-using ClinicX.Models;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.Meta;
 
@@ -14,11 +13,19 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _context;
         private readonly IConfiguration _config;
+        private readonly VMData vm;
+        private readonly CRUD crud;
+        private readonly ClinicVM cvm;
+        private readonly MiscData misc;
 
         public ClinicalNoteController(ClinicalContext context, IConfiguration config)
         {
             _context = context;
             _config = config;
+            vm = new VMData(_context);
+            crud = new CRUD(_config);
+            cvm = new ClinicVM();
+            misc = new MiscData(_config);
         }       
         
         [Authorize]
@@ -27,7 +34,7 @@ namespace ClinicX.Controllers
             try
             {
                 var notes = from c in _context.ClinicalNotes
-                            where c.MPI.Equals(id) //& c.ClinicalNote != null
+                            where c.MPI.Equals(id)
                             orderby c.CreatedDate, c.CreatedTime descending
                             select c;
 
@@ -45,9 +52,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Create(int id)
         {
             try
-            {
-                ClinicVM cvm = new ClinicVM();
-                VMData vm = new VMData(_context);
+            {                
                 cvm.activityItem = vm.GetClinicDetails(id);
                 cvm.noteTypeList = vm.GetNoteTypes();
 
@@ -61,24 +66,18 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("MPI, RefID, CreatedBy, NoteType, ClinicalNote, CN_DCTM_sts")] NoteItems noteItems)
         public async Task<IActionResult> Create(int iMPI, int iRefID, string sNoteType, string sClinicalNote)
         {
             try
-            {
-                //if (ModelState.IsValid)
-                //{                 
+            {                                
                 int iNoteID;
 
-                CRUD crud = new CRUD(_config);
                 crud.CallStoredProcedure("Clinical Note", "Create", iMPI, iRefID, 0, sNoteType, "", "",
                     sClinicalNote, User.Identity.Name);
 
-                iNoteID = GetClinicalNoteID(iRefID);
+                iNoteID = misc.GetClinicalNoteID(iRefID);
 
-                return RedirectToAction("Edit", new { id = iNoteID });
-                //}
-                //return View();
+                return RedirectToAction("Edit", new { id = iNoteID });                
             }
             catch (Exception ex)
             {
@@ -111,7 +110,6 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                CRUD crud = new CRUD(_config);
                 crud.CallStoredProcedure("Clinical Note", "Update", iNoteID, 0, 0, "", "", "", sClinicalNote, User.Identity.Name);
 
                 return RedirectToAction("Edit", new { id = iNoteID });
@@ -129,9 +127,7 @@ namespace ClinicX.Controllers
                 var appts = from c in _context.Clinics
                             where c.MPI.Equals(id)
                             orderby c.BOOKED_DATE descending
-                            select c;
-
-                //appts = appts.OrderByDescending(c => c.BOOKED_DATE);
+                            select c;                
 
                 return View(await appts.ToListAsync());
             }
@@ -145,7 +141,6 @@ namespace ClinicX.Controllers
         {
             try
             {
-                CRUD crud = new CRUD(_config);
                 crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
 
                 var note = await _context.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
@@ -158,27 +153,27 @@ namespace ClinicX.Controllers
             }
         }
 
-        public int GetClinicalNoteID(int iRefID)
-        {
-            try
-            {
-                int iNoteID;
-                SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
-                conn.Open();
-                SqlCommand cmd2 = new SqlCommand("select top 1 clinicalnoteid from clinicalnotes " +
-                        "where refid = " + iRefID.ToString() + " order by createddate desc, createdtime desc", conn);
+        //public int GetClinicalNoteID(int iRefID)
+        //{
+        //    try
+        //    {
+        //        int iNoteID;
+        //        SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+        //        conn.Open();
+        //        SqlCommand cmd2 = new SqlCommand("select top 1 clinicalnoteid from clinicalnotes " +
+        //                "where refid = " + iRefID.ToString() + " order by createddate desc, createdtime desc", conn);
 
-                iNoteID = (int)(cmd2.ExecuteScalar());
+        //        iNoteID = (int)(cmd2.ExecuteScalar());
 
-                conn.Close();
-                return iNoteID;
-            }
-            catch (Exception ex)
-            {
-                RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
-                return 0;
-            }
-        }
+        //        conn.Close();
+        //        return iNoteID;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+        //        return 0;
+        //    }
+        // }
 
     }
 }

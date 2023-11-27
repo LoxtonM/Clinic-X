@@ -14,11 +14,17 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _context;
         private readonly IConfiguration _config;
+        private readonly ClinicVM cvm;
+        private readonly VMData vm;
+        private readonly CRUD crud;
 
         public ClinicController(ClinicalContext context, IConfiguration config)
         {
             _context = context;
             _config = config;
+            cvm = new ClinicVM();
+            vm = new VMData(_context);
+            crud = new CRUD(_config);
         }
 
         [Authorize]
@@ -71,9 +77,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             try
-            {
-                ClinicVM cvm = new ClinicVM();
-                VMData vm = new VMData(_context);
+            {                
                 cvm.staffMembers = vm.GetStaffMember();
                 cvm.activityItems = vm.GetClinicDetailsList(id);
                 cvm.activityItem = vm.GetClinicDetails(id);
@@ -117,8 +121,7 @@ namespace ClinicX.Controllers
                 {
                     sEthnicity = "";
                 }
-
-                CRUD crud = new CRUD(_config);
+                
                 crud.CallStoredProcedure("Appointment", "Update", iRefID, iNoSeen, 0, sCounseled, sSeenBy,
                     sLetterRequired, sEthnicity, User.Identity.Name, dArrivalTime, null, isClockStop, isComplete);
 

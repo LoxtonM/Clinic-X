@@ -14,18 +14,21 @@ namespace ClinicX.Controllers;
 public class LetterController : Controller
 {
     private readonly DocumentContext _context;
+    private readonly LetterVM lvm;
+    private readonly VMData vm;
 
     public LetterController(DocumentContext context)
     {
         _context = context;
+        lvm = new LetterVM();
+        vm = new VMData(_context);
     }
 
     public async Task<IActionResult> Letter(int id, int impi, string suser, string sref)
     {
         try
         {
-            LetterVM lvm = new LetterVM();
-            VMData vm = new VMData(_context);
+            
             lvm.staffMember = vm.GetStaffMember(suser);
             lvm.patient = vm.GetPatient(impi);
             lvm.documentsContent = vm.GetDocument(id);
@@ -44,9 +47,7 @@ public class LetterController : Controller
     public void DoPDF(int id, int impi, int irefid, string suser, string sref, string? sAdditionalText = "")
     {
         try
-        {
-            LetterVM lvm = new LetterVM();
-            VMData vm = new VMData(_context);
+        {            
             lvm.staffMember = vm.GetStaffMember(suser);
             lvm.patient = vm.GetPatient(impi);
             lvm.documentsContent = vm.GetDocument(id);

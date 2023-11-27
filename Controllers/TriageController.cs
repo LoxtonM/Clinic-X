@@ -15,12 +15,19 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _context;
         private readonly DocumentContext _docContext;
         private readonly IConfiguration _config;
+        private readonly ICPVM ivm;
+        private readonly VMData vm;
+        private readonly CRUD crud;
+
 
         public TriageController(ClinicalContext context, DocumentContext docContext, IConfiguration config)
         {
             _context = context;
             _docContext = docContext;
             _config = config;
+            ivm = new ICPVM();
+            vm = new VMData(_context);
+            crud = new CRUD(_config);
         }
 
         [Authorize]
@@ -28,8 +35,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                ICPVM ivm = new ICPVM();
-                VMData vm = new VMData(_context);
+               
                 ivm.triages = vm.GetTriageList(User.Identity.Name);
                 ivm.icpCancerList = vm.GetCancerICPList(User.Identity.Name);
                 return View(ivm);
@@ -51,9 +57,7 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-
-                ICPVM ivm = new ICPVM();
-                VMData vm = new VMData(_context);
+                
                 ivm.triage = vm.GetTriageDetails(id);
                 ivm.clinicalFacilityList = vm.GetClinicalFacilities();
                 ivm.icpGeneral = vm.GetGeneralICPDetails(id);
@@ -93,7 +97,7 @@ namespace ClinicX.Controllers
                     sApptIntent = "CLICS";
                 }
 
-                CRUD crud = new CRUD(_config);
+                
 
 
                 if (sStaffType == "Consultant")
@@ -197,9 +201,7 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-
-                ICPVM ivm = new ICPVM();
-                VMData vm = new VMData(_context);
+                
                 ivm.clinicalFacilityList = vm.GetClinicalFacilities();
                 ivm.staffMembers = vm.GetClinicians();
                 ivm.icpCancer = vm.GetCancerICPDetails(id);
@@ -229,9 +231,7 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-
-                ICPVM ivm = new ICPVM();
-                VMData vm = new VMData(_context);
+                
                 ivm.riskDetails = vm.GetRiskDetails(id);
                 var icp = _context.ICPCancer.FirstOrDefault(i => i.ICPID == ivm.riskDetails.ICPID);
                 ivm.surveillanceList = vm.GetSurveillanceList(icp.ICP_Cancer_ID).Where(s => s.RiskID == id).ToList();

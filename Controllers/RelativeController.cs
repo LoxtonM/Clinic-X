@@ -1,6 +1,6 @@
 ﻿using ClinicX.Data;
 using Microsoft.AspNetCore.Mvc;
-using ClinicX.Data;
+using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.Models;
@@ -13,11 +13,13 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _context;
         private readonly IConfiguration _config;
+        private readonly CRUD crud;
 
         public RelativeController(ClinicalContext context, IConfiguration config)
         {
             _context = context;
             _config = config;
+            crud = new CRUD(_config);
         }
 
         [Authorize]
@@ -98,7 +100,6 @@ namespace ClinicX.Controllers
                     sForename2 = "";
                 }
 
-                CRUD crud = new CRUD(_config);
                 crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
                         User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
 
@@ -156,7 +157,6 @@ namespace ClinicX.Controllers
                     sForename2 = "";
                 }
 
-                CRUD crud = new CRUD(_config);
                 crud.CallStoredProcedure("Relative", "Create", WMFACSID, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
                     User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
 

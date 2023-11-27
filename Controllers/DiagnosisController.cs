@@ -14,11 +14,17 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _context;
         private readonly IConfiguration _config;
+        private readonly TestDiseaseVM dvm;
+        private readonly VMData vm;
+        private readonly CRUD crud;
 
         public DiagnosisController(ClinicalContext context, IConfiguration config)
         {
             _context = context;
             _config = config;
+            dvm = new TestDiseaseVM();
+            vm = new VMData(_context);
+            crud = new CRUD(_config);
         }
 
 
@@ -43,9 +49,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> AddNew(int id)
         {
             try
-            {
-                TestDiseaseVM dvm = new TestDiseaseVM();
-                VMData vm = new VMData(_context);
+            {                
                 dvm.diseaseList = vm.GetDisease();
                 dvm.patient = vm.GetPatientDetails(id);
                 dvm.statusList = vm.GetStatusList();
@@ -81,9 +85,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             try
-            {
-                TestDiseaseVM dvm = new TestDiseaseVM();
-                VMData vm = new VMData(_context);
+            {                
                 dvm.Diagnosis = vm.GetDiagnosisDetails(id);
                 int iMPI = dvm.Diagnosis.MPI;
                 dvm.patient = vm.GetPatientDetails(iMPI);
@@ -115,8 +117,7 @@ namespace ClinicX.Controllers
 
                 var patient = await _context.Diagnosis.FirstOrDefaultAsync(d => d.ID == iDiagID);
                 int iMPI = patient.MPI;
-
-                CRUD crud = new CRUD(_config);
+                                
                 crud.CallStoredProcedure("Diagnosis", "Update", iDiagID, 0, 0, sStatus, "", "", sComments, User.Identity.Name);
 
                 return RedirectToAction("Index", new { id = iMPI });

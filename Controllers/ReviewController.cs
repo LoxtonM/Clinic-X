@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using ClinicX.Meta;
 using System.Security.Cryptography.X509Certificates;
 
 namespace ClinicX.Controllers
@@ -10,11 +11,13 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _context;
         private readonly IConfiguration _config;
+        private readonly CRUD crud;
 
         public ReviewController(ClinicalContext context, IConfiguration config)
         {
             _context = context;
             _config = config;
+            crud = new CRUD(_config);
         }
 
         [Authorize]
@@ -81,8 +84,7 @@ namespace ClinicX.Controllers
                 {
                     dDate = DateTime.Parse("1/1/1900");
                 }
-
-                CRUD crud = new CRUD(_config);
+                               
                 crud.CallStoredProcedure("Review", "Edit", id, 0, 0, sStatus, sComments, "", "", User.Identity.Name,
                     dDate);
 

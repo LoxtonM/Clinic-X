@@ -10,19 +10,21 @@ namespace ClinicX.Controllers
     public class PatientController : Controller
     {
         private readonly ClinicalContext _context;
+        private readonly PatientVM pvm;
+        private readonly VMData vm;
 
         public PatientController(ClinicalContext context)
         {
             _context = context;
+            pvm = new PatientVM();
+            vm = new VMData(_context);
         }
 
         [Authorize]
         public async Task<IActionResult> PatientDetails(int id)
         {
             try
-            {
-                PatientVM pvm = new PatientVM();
-                VMData vm = new VMData(_context);
+            {                
                 pvm.patient = vm.GetPatientDetails(id);
                 if (pvm.patient == null)
                 {

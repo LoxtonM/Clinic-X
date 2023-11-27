@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-namespace ClinicX.Controllers
+namespace ClinicX.Meta
 {
     public class CRUD
     {

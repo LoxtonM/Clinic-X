@@ -11,10 +11,14 @@ namespace ClinicX.Controllers
     public class DictatedLetterController : Controller
     {
         private readonly ClinicalContext _context;
+        private readonly DictatedLetterVM lvm;
+        private readonly VMData vm;
 
         public DictatedLetterController(ClinicalContext context)
         {
             _context = context;
+            lvm = new DictatedLetterVM();
+            vm = new VMData(_context);
         }
 
         [Authorize]
@@ -50,12 +54,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             try
-            {
-                //var letter = await _context.DictatedLetters.FirstOrDefaultAsync(c => c.DoTID == id);
-
-                //return View(letter);
-                DictatedLetterVM lvm = new DictatedLetterVM();
-                VMData vm = new VMData(_context);
+            {   
                 lvm.dictatedLetters = vm.GetDictatedLetterDetails(id);
                 lvm.dictatedLettersPatients = vm.GetDictatedLettersPatients(id);
                 lvm.dictatedLettersCopies = vm.GetDictatedLettersCopies(id);

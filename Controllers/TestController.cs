@@ -14,11 +14,17 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _context;
         private readonly IConfiguration _config;
+        private readonly TestDiseaseVM tvm;
+        private readonly VMData vm;
+        private readonly CRUD crud;
 
         public TestController(ClinicalContext context, IConfiguration config)
         {
             _context = context;
             _config = config;
+            tvm = new TestDiseaseVM();
+            vm = new VMData(_context);
+            crud = new CRUD(_config);
         }
 
         [Authorize]
@@ -63,8 +69,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                TestDiseaseVM tvm = new TestDiseaseVM();
-                VMData vm = new VMData(_context);
+                
                 tvm.testList = vm.GetTests();
                 tvm.patient = vm.GetPatientDetails(id);
                 return View(tvm);
@@ -79,8 +84,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> AddNew(int iMPI, string sTest, string sSentTo)
         {
             try
-            {
-                CRUD crud = new CRUD(_config);
+            {                
                 crud.CallStoredProcedure("Test", "Create", iMPI, 0, 0, sTest, sSentTo, "", "", User.Identity.Name);
 
                 return RedirectToAction("Index", new { id = iMPI });
@@ -155,8 +159,7 @@ namespace ClinicX.Controllers
 
                 var patient = await _context.Test.FirstOrDefaultAsync(t => t.TestID == iTestID);
                 int iMPI = patient.MPI;
-
-                CRUD crud = new CRUD(_config);
+                                
                 crud.CallStoredProcedure("Test", "Update", iTestID, iComplete, 0, sResult, "", "", sComments, User.Identity.Name, dReceived, dGiven);
 
                 return RedirectToAction("Index", new { id = iMPI });

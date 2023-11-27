@@ -2,20 +2,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using ClinicX.Data;
-using ClinicX.Models;
 
 namespace ClinicX.Controllers
 {
     public class HomeController : Controller
-    {
-        private readonly ILogger<HomeController> _logger;
+    {        
         private readonly ClinicalContext _context;
-        //here is a random comment for no reason
+        
         public HomeController(ILogger<HomeController> logger, ClinicalContext context)
         {
-            _logger = logger;
             _context = context;
         }
 
@@ -29,10 +25,8 @@ namespace ClinicX.Controllers
                                where cl.StaffCode == user.STAFF_CODE
                                orderby cl.BookedDate
                                select cl;
-
-                //return View(user);
-                return View(await caseload.ToListAsync());
-                //return View();
+                                
+                return View(await caseload.ToListAsync());                
             }
             catch (Exception ex)
             {
