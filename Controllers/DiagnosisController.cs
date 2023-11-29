@@ -70,7 +70,7 @@ namespace ClinicX.Controllers
                 {
                     sComments = "";
                 }
-                CRUD crud = new CRUD(_config);
+                
                 crud.CallStoredProcedure("Diagnosis", "Create", iMPI, 0, 0, sDiseaseCode, sStatus, "", sComments, User.Identity.Name);
 
                 return RedirectToAction("Index", new { id = iMPI });

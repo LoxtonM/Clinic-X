@@ -11,8 +11,14 @@
         <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveLetter" />
     </div>    
     <div class="col-md-2">
-        <input type="button" class="btn btn-default btn-success" value="Approve" id="btnApprove" />
-        <input type="button" class="btn btn-default btn-success" value="Unapprove" id="btnUnapprove" />
+        <form id="DictatedLetterApproval" asp-action="Approve">
+            <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+            <input type="button" class="btn btn-default btn-success" value="Approve" id="btnApprove" />
+        </form>
+        <form id="DictatedLetterUnapproval" asp-action="Unapprove">
+            <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+            <input type="button" class="btn btn-default btn-success" value="Unapprove" id="btnUnapprove" />
+        </form>
     </div>    
     <div class="col-md-6"></div>
 </div>
@@ -21,12 +27,12 @@
 <h2>@Html.ValueFor(model => model.dictatedLetters.LetterRe)</h2>
 
 <div class="container mb-5">
-    <form id="ClinicalNote" asp-action="Edit">
+    <form id="DictatedLetter" asp-action="Edit">
         <div id="metadata">
             @*We absolutely must have these fields if they're in the data source, otherwise they will be wiped when we do the update!!*@
             <input asp-for="dictatedLetters.RefID" />
             <input asp-for="dictatedLetters.MPI" />
-            <input asp-for="dictatedLetters.DoTID" />
+            <input asp-for="dictatedLetters.DoTID" name="iDID" />
         </div>
 
         <div class="row mb-5 g-5">
@@ -49,7 +55,7 @@
                 Letter Status:
             </div>
             <div class="col-md-4">
-                <select id="ddlLetterStatus" asp-for="dictatedLetters.Status">
+                <select id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="sStatus">
                     <option value="" selected></option>
                     <option value="Draft">Draft</option>
                     <option value="For Approval">For Approval</option>
@@ -62,16 +68,22 @@
         </div>
         <div class="row mb-5 g-5">
             <div class="col-md-2" style="text-align:right">Summary:</div>
-            <div class="col-md-8">
-                <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold"></textarea>
+            <div class="col-md-10">
+                <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold" name="sLetterContentBold"></textarea>
+                @*<div class="col-md-10" id="letterSummary" contenteditable="true">
+                    @Html.Raw(@Model.dictatedLetters.LetterContentBold)
+                </div>*@
             </div>
             <div class="col-md-2"></div>
         </div>
 
         <div class="row mb-5">
-            <div class="col-md-2">Content:</div>
-            <div id="editor" class="col-md-10">
-                <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent"></textarea>
+            <div class="col-md-2" style="text-align:right">Content:</div>
+            <div class="col-md-10">
+                <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="sLetterContent" hidden="true"></textarea>
+                <div style="border:solid" class="col-md-10" id="letterText" contenteditable="true">
+                    @Html.Raw(@Model.dictatedLetters.LetterContent)
+                </div>
             </div>
         </div>
         <div class="row mb-5">
@@ -143,9 +155,9 @@
     document.getElementById("btnUnapprove").addEventListener("click", UnapproveLetter);
     window.addEventListener("load", LoadLetter);
 
-    var quill = new Quill('#editor', {
-        theme: 'snow'
-    });
+    //var quill = new Quill('#editor', {
+    //    theme: 'snow'
+    //});
 
     function LoadLetter() 
     { 
@@ -181,13 +193,20 @@
     }
 
     function SaveLetter() 
-    { 
-        window.alert("Saved!");
+    {
+        //window.alert(document.getElementById("letterText").innerHTML.trim());
+        //document.getElementById("txtLetterContentBold").value = document.getElementById("letterSummary").innerHTML.trim();
+        document.getElementById("txtLetterContent").value = document.getElementById("letterText").innerHTML.trim();
+        //we have to enable them or it won't pass the parameters to the function!
+        document.getElementById("ddlLetterStatus").disabled = false;
+        //document.getElementById("txtLetterContent").disabled = false;
+        document.getElementById("DictatedLetter").submit();        
     }
 
     function ApproveLetter()
     {
-        window.alert("Approved!");
+        //window.alert("Approved!");
+        document.getElementById("DictatedLetterApproval").submit();        
         
         document.getElementById("btnApprove").hidden = true;
         document.getElementById("btnUnapprove").hidden = false;
@@ -203,7 +222,9 @@
 
     function UnapproveLetter() 
     {
-        window.alert("Unapproved!");
+        //window.alert("Unapproved!");
+        document.getElementById("DictatedLetterUnapproval").submit();
+        
         document.getElementById("btnApprove").hidden = false;
         document.getElementById("btnUnapprove").hidden = true;
         document.getElementById("ddlLetterStatus").disabled = false;

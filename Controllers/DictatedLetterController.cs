@@ -5,20 +5,25 @@ using Microsoft.AspNetCore.Authorization;
 using ClinicX.Models;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
+using System.Net.NetworkInformation;
 
 namespace ClinicX.Controllers
 {
     public class DictatedLetterController : Controller
     {
         private readonly ClinicalContext _context;
+        private readonly IConfiguration _config;
         private readonly DictatedLetterVM lvm;
         private readonly VMData vm;
+        private readonly CRUD crud;
 
-        public DictatedLetterController(ClinicalContext context)
+        public DictatedLetterController(IConfiguration config, ClinicalContext context)
         {
             _context = context;
+            _config = config;
             lvm = new DictatedLetterVM();
             vm = new VMData(_context);
+            crud = new CRUD(_config);
         }
 
         [Authorize]
@@ -69,35 +74,58 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DoTID,RefID,MPI,Status,LetterContent,LetterContentBold")] DictatedLetters dictatedLetters)
+        public async Task<IActionResult> Edit(int iDID, string sStatus, string sLetterContent, string sLetterContentBold)
         {
+            int groop = sLetterContentBold.Length;
             try
             {
-                if (id != dictatedLetters.DoTID)
+                if(sLetterContentBold == null)
                 {
-                    return NotFound();
+                    sLetterContentBold = "";
                 }
 
-                if (ModelState.IsValid)
-                {
+                crud.CallStoredProcedure("Letter", "Update", iDID, 0, 0, sStatus, "", sLetterContentBold, sLetterContent, User.Identity.Name);
 
-                    _context.Update(dictatedLetters);
-                    //based on Clinical Note creation - review later
-                    await _context.SaveChangesAsync();
-                    Console.WriteLine("done");
-
-                    return RedirectToAction("Edit", new { id = dictatedLetters.DoTID });
-                }
-                else
-                {
-                    return View(dictatedLetters);
-                }
+                return RedirectToAction("Edit", new { id = iDID });
+                
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
             }
-        }        
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> Approve(int iDID)
+        {
+            try
+            {
+                crud.CallStoredProcedure("Letter", "Approve", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+
+                return RedirectToAction("Edit", new { id = iDID });
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Unapprove(int iDID)
+        {
+            try
+            {
+                crud.CallStoredProcedure("Letter", "Unapprove", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+
+                return RedirectToAction("Edit", new { id = iDID });
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
+
     }
 }

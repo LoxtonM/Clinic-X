@@ -4,11 +4,12 @@ namespace ClinicX.Controllers
 {
     public class ErrorController : Controller
     {
-        public string strError { get; set; }
+        //public string strError; //{ get; set; }
+        
+        [HttpGet]
         public IActionResult ErrorHome(string sError)
-        {
-            strError = sError;
-            return View();
+        {            
+            return View("ErrorHome", sError);
         }
     }
 }
