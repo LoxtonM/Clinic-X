@@ -6,13 +6,13 @@
 <div class=" row mb-5 g-5">
     @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
     <div class="col-md-2">
-        <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.MPI)>Back to Index</a>
+        <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.MPI)>Back to Clinical Notes Index</a>
     </div>
     <div class="col-md-2">
         <input type="submit" class="btn btn-default btn-success" value="Save" id="btnSaveNote" />
     </div>
     <div class="col-md-2">
-        <a type="button" class="btn btn-default btn-success" id="btnHPO" asp-controller="HPO" asp-action="HPOTerm" asp-route-id=@Html.ValueFor(model => model.ClinicalNoteID)>HPO Terms</a>
+        <a type="button" class="btn btn-default btn-success" id="btnHPO" asp-controller="HPO" asp-action="HPOTerm" asp-route-id=@Html.ValueFor(model => model.ClinicalNoteID)>Extract HPO Codes</a>
     </div>
     <div class="col-md-2">
         <a type="button" class="btn btn-default btn-success" id="btnFinalise" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Html.ValueFor(model => model.ClinicalNoteID)>Finalise</a>

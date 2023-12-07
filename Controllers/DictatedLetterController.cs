@@ -64,6 +64,17 @@ namespace ClinicX.Controllers
                 lvm.dictatedLettersPatients = vm.GetDictatedLettersPatients(id);
                 lvm.dictatedLettersCopies = vm.GetDictatedLettersCopies(id);
                 lvm.patients = vm.GetPatients(id);
+                lvm.staffMemberList = vm.GetClinicians();
+                int? iMPI = lvm.dictatedLetters.MPI;
+                int? iRefID = lvm.dictatedLetters.RefID;
+                lvm.patientDetails = vm.GetPatientDetails(iMPI.GetValueOrDefault());
+                lvm.referralDetails = vm.GetReferralDetails(iRefID.GetValueOrDefault());
+                string sGPCode = lvm.patientDetails.GP_Facility_Code;
+                string sRefFacCode = lvm.referralDetails.ReferringFacilityCode;
+                lvm.referrerFacility = vm.GetFacilityDetails(sRefFacCode);
+                lvm.GPFacility = vm.GetFacilityDetails(sGPCode);
+                lvm.facilities = vm.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
+                lvm.clinicians = vm.GetClinicianList().Where(f => f.Is_Gp == 0 && f.NAME != null && f.FACILITY != null).ToList();
 
                 return View(lvm);
             }
@@ -74,9 +85,9 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int iDID, string sStatus, string sLetterContent, string sLetterContentBold)
+        public async Task<IActionResult> Edit(int iDID, string sStatus, string sLetterTo, string sLetterFrom, string sLetterContent, string sLetterContentBold, 
+            bool isAddresseeChanged, string sSecTeam, string sConsultant, string sGC, string sDateDictated)
         {
-            int groop = sLetterContentBold.Length;
             try
             {
                 if(sLetterContentBold == null)
@@ -84,18 +95,52 @@ namespace ClinicX.Controllers
                     sLetterContentBold = "";
                 }
 
-                crud.CallStoredProcedure("Letter", "Update", iDID, 0, 0, sStatus, "", sLetterContentBold, sLetterContent, User.Identity.Name);
+                DateTime dDateDictated = new DateTime();
 
-                return RedirectToAction("Edit", new { id = iDID });
-                
+                if (sDateDictated != null)
+                {
+                    dDateDictated = DateTime.Parse(sDateDictated);
+                }
+                else
+                {
+                    dDateDictated = DateTime.Parse("1/1/1900");
+                }
+                //two updates required - one to update the addressee (if addressee has changed)
+                if (isAddresseeChanged)
+                {
+                    crud.CallStoredProcedure("Letter", "UpdateAddresses", iDID, 0, 0, "", "", sLetterFrom, sLetterTo, User.Identity.Name);
+                }
+
+                crud.CallStoredProcedure("Letter", "Update", iDID, 0, 0, sStatus, "", sLetterContentBold, sLetterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, sSecTeam, sConsultant, sGC);
+                                
+                                
+                return RedirectToAction("Edit", new { id = iDID });                
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
             }
         }
-        
-        [HttpPost]
+
+        public async Task<IActionResult> Create(int id)
+        {
+            try
+            {
+                crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", "", "", User.Identity.Name);
+
+                var dot = await _context.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
+                int iDID = dot.DoTID;
+
+                return RedirectToAction("Edit", new { id = iDID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
+
+
+            [HttpPost]
         public async Task<IActionResult> Approve(int iDID)
         {
             try
@@ -120,6 +165,35 @@ namespace ClinicX.Controllers
 
                 return RedirectToAction("Edit", new { id = iDID });
 
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPatientToDOT(int iPID, int iDID)
+        {
+            try
+            {                
+                crud.CallStoredProcedure("Letter", "AddFamilyMember", iDID, iPID, 0, "", "", "", "", User.Identity.Name);
+
+                return RedirectToAction("Edit", new { id = iDID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddCCToDOT(int iDID, string sCC)
+        {
+            try
+            {
+                crud.CallStoredProcedure("Letter", "AddCC", iDID, 0, 0, sCC, "", "", "", User.Identity.Name);
+                return RedirectToAction("Edit", new { id = iDID });
             }
             catch (Exception ex)
             {

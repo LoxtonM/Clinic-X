@@ -7,7 +7,7 @@
 <div class="row mb-5 g-5">
     <div class="col-md-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Index</a>
+        <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Triage Index</a>
     </div>
     <div class="col-md-1">
         <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.icpCancer.MPI)>Patient Details</a>

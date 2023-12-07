@@ -5,8 +5,8 @@
 }
 
 <div class="mb-5">
-    <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
-    @*<a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.MPI)>Back to Test List</a>*@
+    @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+    <a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Diagnosis List</a>
 </div>
 
 

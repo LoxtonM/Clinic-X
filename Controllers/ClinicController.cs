@@ -78,9 +78,9 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                cvm.staffMembers = vm.GetStaffMember();
+                cvm.staffMembers = vm.GetClinicians();
                 cvm.activityItems = vm.GetClinicDetailsList(id);
-                cvm.activityItem = vm.GetClinicDetails(id);
+                cvm.activityItem = vm.GetActivityDetails(id);
                 cvm.outcomes = vm.GetOutcomes();
                 cvm.ethnicities = vm.GetEthnicitiesList();
                 int iMPI = cvm.activityItem.MPI;

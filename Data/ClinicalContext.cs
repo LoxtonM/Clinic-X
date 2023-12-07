@@ -49,5 +49,7 @@ namespace ClinicX.Data
         public DbSet<Risk> Risk { get; set; }
         public DbSet<Surveillance> Surveillance { get; set; }
         public DbSet<Eligibility> Eligibility { get; set; }
+        public DbSet<ExternalFacility> ExternalFacility { get; set; }
+        public DbSet<ExternalClinician> ExternalClinician { get; set; }
     }
 }

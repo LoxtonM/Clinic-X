@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClinicX.Models
 {
-    [Table("ViewPatientDemographicDetails", Schema="dbo")]
+    [Table("ViewPatientDemographicDetails", Schema="dbo")] //Patient demographic data
     public class Patients
     {
         [Key]
@@ -20,6 +20,7 @@ namespace ClinicX.Models
         public string? LASTNAME { get; set; }
         [Display(Name = "CGU Number")]
         public string? CGU_No { get; set; }
+        public string? PEDNO { get; set; }
         [Display(Name = "NHS Number")]
         public string? SOCIAL_SECURITY { get; set; }
         public string? ADDRESS1 { get; set; }
@@ -35,15 +36,17 @@ namespace ClinicX.Models
         public string? EmailAddress { get; set; }
         public string? PrimaryLanguage { get; set; }
         public string? IsInterpreterReqd { get; set; }
-        public string? GP { get; set; }   
+        public string? GP { get; set; }
+        public string? GP_Code { get; set; }
         public string? GP_Facility { get; set; }
+        public string? GP_Facility_Code { get; set; }
         public string? PtAKA { get; set; }
         public string? Ethnic { get; set; }
         public string? EthnicCode { get; set; }
         public string? DCTM_Folder_ID { get; set; }
     }   
 
-    [Table("ViewPatientRelativeDetails", Schema = "dbo")]
+    [Table("ViewPatientRelativeDetails", Schema = "dbo")] //Patients' relatives
     public class Relatives
     {
         [Key]
@@ -71,7 +74,7 @@ namespace ClinicX.Models
         public string? Relation { get; set; }
     }   
     
-    [Table("ViewPatientAppointmentDetails", Schema="dbo")]
+    [Table("ViewPatientAppointmentDetails", Schema="dbo")] //Appointment data
     public class Clinics
     {
         [Key]
@@ -103,7 +106,7 @@ namespace ClinicX.Models
         public string LoginDetails { get; set; }
     }
 
-    [Table("ViewPatientReferralDetails", Schema ="dbo")]
+    [Table("ViewPatientReferralDetails", Schema ="dbo")] //Referral data
     public class Referrals
     {
         [Key]
@@ -115,6 +118,7 @@ namespace ClinicX.Models
         public string? ReferringClinician { get; set; }
         public string? ReferrerCode { get; set; }
         public string? ReferringFacility { get; set; }
+        public string? ReferringFacilityCode { get; set; }
         public DateTime? RefDate { get; set; }
         public string? RefType { get; set; }
         public string? COMPLETE { get; set; }
@@ -123,7 +127,7 @@ namespace ClinicX.Models
         public string? PATHWAY { get; set; }
     }
 
-    [Table("MasterActivityTable", Schema="dbo")]
+    [Table("MasterActivityTable", Schema="dbo")] //Any activity
     public class ActivityItems
     {
         [Key]
@@ -142,14 +146,15 @@ namespace ClinicX.Models
         [Display(Name = "Booked Time")]
         [DataType(DataType.Time)]
         public DateTime? BOOKED_TIME { get; set; }        
-        public string STAFF_CODE_1 { get; set; }
+        public string? STAFF_CODE_1 { get; set; }
         [Display(Name = "Appointment Type")]
         public string TYPE { get; set; }
         [Display(Name = "Clinic Venue")]
-        public string FACILITY { get; set; }        
+        public string? FACILITY { get; set; }
+        public string? PATHWAY { get; set; }
     }
 
-    [Table("ViewTriageDetails", Schema = "dbo")]
+    [Table("ViewTriageDetails", Schema = "dbo")] //Cases to be triaged
     public class Triages
     {
         [Key]
@@ -175,7 +180,7 @@ namespace ClinicX.Models
         public bool? ConsWLForSPR { get; set; }
     }
 
-    [Table("ViewPatientReviews", Schema = "dbo")]
+    [Table("ViewPatientReviews", Schema = "dbo")] //Requested reviews
     public class Reviews
     {
         [Key]
@@ -200,7 +205,7 @@ namespace ClinicX.Models
         public string? RecipientLogin { get; set; }
     }
 
-    [Table("ICP_General", Schema = "dbo")]
+    [Table("ICP_General", Schema = "dbo")] //General ICP
     public class ICPGeneral
     {
         [Key]
@@ -211,7 +216,7 @@ namespace ClinicX.Models
         public bool? ConsWLForSPR { get; set; }
     }
 
-    [Table("ViewPatientCancerICP", Schema = "dbo")]
+    [Table("ViewPatientCancerICP", Schema = "dbo")] //Cancer ICP
     public class ICPCancer
     {
         [Key]
@@ -241,7 +246,7 @@ namespace ClinicX.Models
         public string? ReferralAction { get; set; }
     }
 
-    [Table("CLIN_FACILITIES", Schema = "dbo")]
+    [Table("CLIN_FACILITIES", Schema = "dbo")] //Facilities where we hold clinics
     public class ClinicalFacilityList
     {
         [Key]
@@ -250,7 +255,7 @@ namespace ClinicX.Models
         public Int16 NON_ACTIVE { get; set; }
     }
 
-    [Table("ViewPatientClinicalNoteDetails", Schema = "dbo" )]
+    [Table("ViewPatientClinicalNoteDetails", Schema = "dbo" )] //Clinical notes (including patient data)
     public class ClinicalNotes
     {
         [Key]
@@ -272,7 +277,7 @@ namespace ClinicX.Models
         public string? NoteType { get; set; }
     }
 
-    [Table("ClinicalNotes", Schema = "dbo")]
+    [Table("ClinicalNotes", Schema = "dbo")] //Clinical notes (just the note data)
     public class NoteItems
     {
         [Key]
@@ -284,7 +289,7 @@ namespace ClinicX.Models
         public string? NoteType { get; set; }
     }
 
-    [Table("STAFF", Schema = "dbo")]
+    [Table("STAFF", Schema = "dbo")] //Staff members
     public class StaffMemberList
     {
         [Key]
@@ -292,10 +297,11 @@ namespace ClinicX.Models
         public string EMPLOYEE_NUMBER { get; set; }
         public string NAME { get; set; }
         public string CLINIC_SCHEDULER_GROUPS { get; set; }
+        public string POSITION { get; set; }
         public bool InPost { get; set; }
     }
 
-    [Table("ViewPatientDiagnosisDetails", Schema = "dbo")]
+    [Table("ViewPatientDiagnosisDetails", Schema = "dbo")] //Patients' diagnoses
     public class Diagnosis
     {
         [Key]
@@ -315,7 +321,7 @@ namespace ClinicX.Models
         public DateTime ENTEREDDATE { get; set; }
     }
 
-    [Table("ViewPatientTestDetails", Schema = "dbo")]
+    [Table("ViewPatientTestDetails", Schema = "dbo")] //Patients' tests requested
     public class Test
     {
         [Key]
@@ -343,7 +349,7 @@ namespace ClinicX.Models
         public string? COMMENTS { get; set; }
     }
 
-    [Table("CLIN_OUTCOMES", Schema = "dbo")]
+    [Table("CLIN_OUTCOMES", Schema = "dbo")] //List of possible outcomes for appointments
     public class OutcomeList
     {
         [Key]
@@ -351,7 +357,7 @@ namespace ClinicX.Models
         public string DEFAULT_CLINIC_STATUS { get; set; }
     }
 
-    [Table("ClinicalNoteTypes", Schema = "dbo")]
+    [Table("ClinicalNoteTypes", Schema = "dbo")]//List of types of clinical note
     public class  NoteTypeList
     {
         [Key]
@@ -360,7 +366,7 @@ namespace ClinicX.Models
         public bool NoteInUse { get; set; }
     }
 
-    [Table("HPOTerm", Schema = "dbo")]
+    [Table("HPOTerm", Schema = "dbo")] //List of all HPO codes
     public class HPOTerms
     {
         [Key]
@@ -369,7 +375,7 @@ namespace ClinicX.Models
         public string TermCode { get; set; }
     }
 
-    [Table("ClinicalNotesHPOTerm", Schema = "dbo")]
+    [Table("ClinicalNotesHPOTerm", Schema = "dbo")] //HPO codes applied to a clinical note (just the IDs)
     public class ClinicalNoteHPOTerms
     {
         [Key]
@@ -378,7 +384,7 @@ namespace ClinicX.Models
         public int HPOTermID { get; set; }
     }
 
-    [Table("ViewClinicalNoteHPOTermDetails", Schema = "dbo")]
+    [Table("ViewClinicalNoteHPOTermDetails", Schema = "dbo")] //HPO codes applied to a clinical note (including MPI and HPO data)
     public class HPOTermDetails
     {
         [Key]
@@ -389,7 +395,7 @@ namespace ClinicX.Models
         public string? TermCode { get; set; }
     }
 
-    [Table("DISEASE", Schema = "dbo")]
+    [Table("DISEASE", Schema = "dbo")] //List of all diseases
     public class DiseaseList
     {
         [Key]
@@ -397,21 +403,21 @@ namespace ClinicX.Models
         public string DESCRIPTION { get; set; }
     }
 
-    [Table("PAT_TESTTYPE", Schema = "dbo")]
+    [Table("PAT_TESTTYPE", Schema = "dbo")] //List of all tests
     public class TestList
     {
         [Key]
         public string TEST { get; set; }
     }
 
-    [Table("DISEASE_STATUS", Schema = "dbo")]
+    [Table("DISEASE_STATUS", Schema = "dbo")] //List of all statuses for diagnoses
     public class  DiseaseStatusList
     {
         [Key]
         public string DISEASE_STATUS { get; set; }
     }
 
-    [Table("View_ETHNICITY_as_ListEthnicOrigin", Schema = "dbo")]
+    [Table("View_ETHNICITY_as_ListEthnicOrigin", Schema = "dbo")] //List of ethnicities
     public class Ethnicity
     {
         [Key]
@@ -420,7 +426,7 @@ namespace ClinicX.Models
         public string NHSEthnicCode { get; set; }
     }
 
-    [Table("ListICPActions", Schema = "dbo")]
+    [Table("ListICPActions", Schema = "dbo")] //List of ICP actions (duh!)
     public class ICPActionsList
     {
         [Key]
@@ -429,7 +435,7 @@ namespace ClinicX.Models
         public bool InUse { get; set; }
     }
 
-    [Table("ListICPGeneralActions", Schema = "dbo")]
+    [Table("ListICPGeneralActions", Schema = "dbo")] //List of treatpath actions
     public class ICPGeneralActionsList
     {
         [Key]
@@ -438,7 +444,7 @@ namespace ClinicX.Models
         public bool InUse { get; set; }
     }
 
-    [Table("ListICPGeneralActions2", Schema = "dbo")]
+    [Table("ListICPGeneralActions2", Schema = "dbo")] //List of trheatpath2 actions
     public class ICPGeneralActionsList2
     {
         [Key]
@@ -449,7 +455,7 @@ namespace ClinicX.Models
         public bool NoClinic { get; set; }
     }
 
-    [Table("DictatedLetters", Schema = "dbo")]
+    [Table("DictatedLetters", Schema = "dbo")] //Dictated le'ahs
     public class DictatedLetters
     {
         [Key]
@@ -465,9 +471,13 @@ namespace ClinicX.Models
         public string? Status { get; set; }
         [DataType(DataType.Date)]
         public DateTime? DateDictated { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? SecTeam { get; set; }
+        public string? Consultant { get; set; }
+        public string? GeneticCounsellor { get; set; }
     }
 
-    [Table("DictatedLettersPatients", Schema = "dbo")]
+    [Table("DictatedLettersPatients", Schema = "dbo")] //Patients added to DOT
     public class DictatedLettersPatients
     {
         [Key]
@@ -477,7 +487,7 @@ namespace ClinicX.Models
         public int RefID { get; set; }
     }
 
-    [Table("DictatedLettersCopies", Schema = "dbo")]
+    [Table("DictatedLettersCopies", Schema = "dbo")] //CC copies added to DOTs
     public class DictatedLettersCopies
     {
         [Key]
@@ -486,7 +496,7 @@ namespace ClinicX.Models
         public string CC { get; set; }
     }
 
-    [Table("ViewPatientPathwayAll", Schema = "dbo")]
+    [Table("ViewPatientPathwayAll", Schema = "dbo")] //Patient pathway overview
     [Keyless]
     public class PatientPathway
     {        
@@ -507,7 +517,7 @@ namespace ClinicX.Models
         public int? ToBeSeenByCons {  get; set; }
     }
 
-    [Table("ViewCaseloadOverview", Schema = "dbo")]
+    [Table("ViewCaseloadOverview", Schema = "dbo")] //Caseload overview
     [Keyless]
     public class Caseload
     {
@@ -522,7 +532,7 @@ namespace ClinicX.Models
         public string Clinician { get; set; }
     }
 
-    [Table("View_Alerts", Schema = "dbo")]
+    [Table("View_Alerts", Schema = "dbo")] //Alerts
     public class Alert
     {
         [Key]
@@ -536,7 +546,7 @@ namespace ClinicX.Models
         public string Comments { get; set; }
     }
 
-    [Table("ViewPatientRisk", Schema = "dbo")]
+    [Table("ViewPatientRisk", Schema = "dbo")] //Cancer risk items
     public class Risk
     {
         [Key]
@@ -563,7 +573,7 @@ namespace ClinicX.Models
         public int ICPID { get; set; }
     }
 
-    [Table("ViewPatientSurveillance", Schema = "dbo")]
+    [Table("ViewPatientSurveillance", Schema = "dbo")] //Surveillance recommendations
     public class Surveillance
     {
         [Key]
@@ -580,7 +590,7 @@ namespace ClinicX.Models
         public string? SurvRecHoCode { get; set; }
     }
 
-    [Table("ViewTestingEligibility", Schema = "dbo")]
+    [Table("ViewTestingEligibility", Schema = "dbo")] //Testing eligibility
     public class Eligibility
     {
         [Key]
@@ -592,5 +602,33 @@ namespace ClinicX.Models
         public int? Gene { get; set; }
         public string? Score { get; set; }
         public string? OfferTesting { get; set; }
+    }
+
+    [Table("MasterFacilityTable", Schema = "dbo")] //External clinical facilities
+    public class ExternalFacility
+    {
+        [Key]
+        public string MasterFacilityCode { get; set; }
+        public string? NAME { get; set; }
+        public string? ADDRESS { get; set; }
+        public string? CITY { get; set; }
+        public string? STATE { get; set; }
+        public string? ZIP { get; set; }
+        public Int16 NONACTIVE { get; set; }
+        public Int16 IS_GP_SURGERY { get; set; }
+    }
+
+    [Table("MasterClinicianTable", Schema = "dbo")] //External clinicians
+    public class ExternalClinician
+    {
+        [Key]
+        public string MasterClinicianCode { get; set; }
+        public string? TITLE { get; set; }
+        public string? FIRST_NAME { get; set; }
+        public string? NAME { get; set; }
+        public string? SPECIALITY { get; set; }
+        public string? FACILITY { get; set; }
+        public Int16 NON_ACTIVE { get; set; }
+        public Int16 Is_Gp { get; set; }
     }
 }

@@ -26,13 +26,13 @@ namespace ClinicX.Meta
         {
             var patient = _context.Patients?.FirstOrDefault(i => i.MPI == id);
             return patient;
-        }
+        } //Get patient details from MPI
 
         public PatientPathway GetPathwayDetails(int id)
         {
             var pathway = _context.PatientPathway.OrderBy(i => i.REFERRAL_DATE).FirstOrDefault(i => i.MPI == id);
             return pathway;
-        }
+        } //Get earliest active pathway for patient by MPI
 
         public List<Alert> GetAlerts(int id)
         {
@@ -42,9 +42,21 @@ namespace ClinicX.Meta
                         select a;            
 
             return alerts.ToList();
-        }
+        } //Get list of alerts for patient by MPI
         
-        public List<Referrals> GetReferrals(int id)
+        public Referrals GetReferralDetails(int id)
+        {
+            var referral = _context.Referrals?.FirstOrDefault(i => i.refid == id);
+            return referral;
+        } //Get details of referral by RefID
+
+        public ActivityItems GetActivityDetails(int id) //Get details of any activity item by RefID
+        {
+            var referral = _context.ActivityItems?.FirstOrDefault(i => i.RefID == id);
+            return referral;
+        }                
+
+        public List<Referrals> GetReferrals(int id) //Get list of active referrals for patient by MPI
         {
             var referrals = from r in _context.Referrals
                            where r.MPI == id & r.RefType.Contains("Referral") & r.COMPLETE != "Complete"
@@ -54,7 +66,7 @@ namespace ClinicX.Meta
             return referrals.ToList();
         }
 
-        public List<Relatives> GetRelativesDetails(int id)
+        public List<Relatives> GetRelativesDetails(int id) //Get list of relatives of patient by MPI
         {
             var patient = _context.Patients.FirstOrDefault(i => i.MPI == id);
             int iWmfacsID = patient.WMFACSID;
@@ -73,7 +85,7 @@ namespace ClinicX.Meta
                         select n;            
 
             return notes.ToList();
-        }
+        } //Get list of HPO codes added to a patient by MPI
 
         public List<DiseaseList> GetDisease()
         {
@@ -82,7 +94,7 @@ namespace ClinicX.Meta
                         select i;           
 
             return items.ToList();
-        }
+        } //Get list of all diseases
 
         public List<DiseaseStatusList> GetStatusList()
         {
@@ -90,23 +102,23 @@ namespace ClinicX.Meta
                         select i;
             
             return items.ToList();
-        }
+        } //Get list of all possible disease statuses
         
-        public Diagnosis GetDiagnosisDetails(int id)
+        public Diagnosis GetDiagnosisDetails(int id) //Get details of diagnosis by the diagnosis ID
         {
             var diagnosis = _context.Diagnosis.FirstOrDefault(i => i.ID == id);
 
             return diagnosis;
-        }
+        }  
 
-        public DictatedLetters GetDictatedLetterDetails(int iDotID)
+        public DictatedLetters GetDictatedLetterDetails(int iDotID) //Get details of DOT letter by its DotID
         {
             var letter = _context.DictatedLetters.FirstOrDefault(l => l.DoTID == iDotID);
 
             return letter;
         }
 
-        public List<DictatedLettersPatients> GetDictatedLettersPatients(int iDotID)
+        public List<DictatedLettersPatients> GetDictatedLettersPatients(int iDotID) //Get list of patients added to a DOT letter by the DotID
         {
             var patient = from p in _context.DictatedLettersPatients
                           where p.DOTID == iDotID
@@ -122,36 +134,29 @@ namespace ClinicX.Meta
             return patients;
         }
 
-        public List<DictatedLettersCopies> GetDictatedLettersCopies(int iDotID)
+        public List<DictatedLettersCopies> GetDictatedLettersCopies(int iDotID) //Get list of all CCs added to a DOT letter by DotID
         {
             var copies = from c in _context.DictatedLettersCopies
                        where c.DotID == iDotID
                        select c;            
 
             return copies.ToList();
-        }
+        }        
 
-        public List<Patients> GetPatients(int iDotID)
+        public List<Patients> GetPatients(int iDotID) //Get list of all patients in the family that can be added to a DOT, by the DotID
         {
-            var mpi = from m in _context.DictatedLettersPatients
-                      where m.DOTID == iDotID
-                      select m;
+            var letter = _context.DictatedLetters.FirstOrDefault(l => l.DoTID == iDotID);
+            int? impi = letter.MPI;
+            var pat = _context.Patients.FirstOrDefault(p => p.MPI == impi.GetValueOrDefault());
 
-            List<Patients> patients = new List<Patients>();
+            var patients = from p in _context.Patients
+                           where p.PEDNO == pat.PEDNO
+                           select p;
 
-            foreach (var m in mpi.ToList())
-            {
-
-                var patient = _context.Patients.FirstOrDefault(p => p.MPI == m.MPI);
-                int impi = patient.MPI;
-                string name = patient.FIRSTNAME + " " + patient.LASTNAME;
-
-                patients.Add(new Patients() { MPI = patient.MPI, FIRSTNAME = patient.FIRSTNAME, LASTNAME = patient.LASTNAME, DOB = patient.DOB, SOCIAL_SECURITY = patient.SOCIAL_SECURITY, CGU_No = patient.CGU_No });
-            }
-            return patients;
+            return patients.ToList();
         }
 
-        public List<HPOTerms> GetHPOTerms()
+        public List<HPOTerms> GetHPOTerms() //Get list of all possible HPO codes
         {
             var terms = from t in _context.HPOTerms
                        select t;            
@@ -159,7 +164,7 @@ namespace ClinicX.Meta
             return terms.ToList();
         }
 
-        public List<HPOTermDetails> GetExistingHPOTerms(int id)
+        public List<HPOTermDetails> GetExistingHPOTerms(int id) //Get list of all HPO codes added to a clinical note, by the ClinicalNoteID
         {
             var terms = from t in _context.HPOTermDetails
                        where t.ClinicalNoteID == id
@@ -168,14 +173,14 @@ namespace ClinicX.Meta
             return terms.ToList();
         }
 
-        public ClinicalNotes GetClinicalNoteDetails(int? iNoteID)
+        public ClinicalNotes GetClinicalNoteDetails(int? iNoteID) //Get details of a clinical note by ClinicalNotesID
         {
             var note = _context.ClinicalNotes.FirstOrDefault(i => i.ClinicalNoteID == iNoteID);
 
             return note;
         }
 
-        public List<HPOExtractVM> GetExtractedTerms(int iNoteID, IConfiguration _config)
+        public List<HPOExtractVM> GetExtractedTerms(int iNoteID, IConfiguration _config) //Get list of HPO codes that can be extracted from a clinical note, by ClinicalNoteID
         {
             var model = new List<HPOExtractVM>();
 
@@ -206,7 +211,7 @@ namespace ClinicX.Meta
             return (model);
         }
 
-        public List<TestList> GetTests()
+        public List<TestList> GetTests() //Get list of all available tests
         {
             var items = from i in _context.Tests
                         select i;           
@@ -214,13 +219,13 @@ namespace ClinicX.Meta
             return items.ToList();
         }
 
-        public Triages GetTriageDetails(int? iIcpID)
+        public Triages GetTriageDetails(int? iIcpID) //Get details of ICP from the IcpID
         {
             var icp = _context.Triages.FirstOrDefault(i => i.ICPID == iIcpID);
             return icp;
         }
 
-        public List<Triages> GetTriageList(string sUsername)
+        public List<Triages> GetTriageList(string sUsername) //Get list of all outstanding triages for a specific user (by login name)
         {
             var triages = from t in _context.Triages
                          where t.LoginDetails == sUsername
@@ -230,7 +235,7 @@ namespace ClinicX.Meta
             return triages.ToList();
         }
 
-        public List<ICPCancer> GetCancerICPList(string sUsername)
+        public List<ICPCancer> GetCancerICPList(string sUsername) //Get list of all open Cancer ICP Reviews for a specific user (by login name)
         {
             var user = _context.StaffMembers.FirstOrDefault(s => s.EMPLOYEE_NUMBER == sUsername);
             string sStaffCode = user.STAFF_CODE;
@@ -242,7 +247,7 @@ namespace ClinicX.Meta
             return icps.ToList();
         }
 
-        public List<ICPActionsList> GetICPCancerActionsList()
+        public List<ICPActionsList> GetICPCancerActionsList() //Get list of all triage actions for Cancer ICPs
         {
             var actions = from a in _context.ICPCancerActionsList
                          where a.InUse == true
@@ -252,7 +257,7 @@ namespace ClinicX.Meta
             return actions.ToList();
         }
 
-        public List<ICPGeneralActionsList> GetICPGeneralActionsList()
+        public List<ICPGeneralActionsList> GetICPGeneralActionsList() //Get list of all "treatpath" items for General ICPs
         {
             var actions = from a in _context.ICPGeneralActionsList
                          where a.InUse == true
@@ -262,7 +267,7 @@ namespace ClinicX.Meta
             return actions.ToList();
         }
 
-        public List<ICPGeneralActionsList2> GetICPGeneralActionsList2()
+        public List<ICPGeneralActionsList2> GetICPGeneralActionsList2() //Get list of all "treatpath2" items for General ICPs
         {
             var actions = from a in _context.ICPGeneralActionsList2
                          where a.InUse == true
@@ -272,7 +277,7 @@ namespace ClinicX.Meta
             return actions.ToList();
         }
 
-        public List<ClinicalFacilityList> GetClinicalFacilities()
+        public List<ClinicalFacilityList> GetClinicalFacilities() //Get list of all clinic facilities where we hold clinics
         {
             var facs = from f in _context.ClinicalFacilities
                       where f.NON_ACTIVE == 0
@@ -281,28 +286,39 @@ namespace ClinicX.Meta
             return facs.ToList();
         }
 
-        public List<StaffMemberList> GetClinicians()
+        public List<StaffMemberList> GetClinicians() //Get list of all clinical staff members currently in post
         {
             var clinicians = from s in _context.StaffMembers
                         where s.InPost == true && (s.CLINIC_SCHEDULER_GROUPS == "GC" || s.CLINIC_SCHEDULER_GROUPS == "Consultant")
+                        orderby s.NAME
                         select s;
           
             return clinicians.ToList();
         }
 
-        public ICPGeneral GetGeneralICPDetails(int? iIcpID)
+        public List<StaffMemberList> GetStaffMember() //Get list of all staff members currently in post 
+        {
+            var sm = from s in _context.StaffMembers
+                     where s.InPost.Equals(true)
+                     orderby s.NAME
+                     select s;
+
+            return sm.ToList();
+        }
+
+        public ICPGeneral GetGeneralICPDetails(int? iIcpID) //Get details of a general ICP by the IcpID
         {
             var icp = _context.ICPGeneral.FirstOrDefault(c => c.ICPID == iIcpID);
             return icp;
         }
 
-        public ICPCancer GetCancerICPDetails(int? iIcpID)
+        public ICPCancer GetCancerICPDetails(int? iIcpID) //Get details of a cancer ICP by the IcpID
         {
             var icp = _context.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == iIcpID);
             return icp;
         }
 
-        public List<Risk> GetRiskList(int? iIcpID)
+        public List<Risk> GetRiskList(int? iIcpID) //Get list of all risk items for an ICP (by IcpID)
         {
             var icp = _context.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == iIcpID);
 
@@ -313,7 +329,7 @@ namespace ClinicX.Meta
             return risks.ToList();
         }
 
-        public List<Surveillance> GetSurveillanceList(int? iIcpID)
+        public List<Surveillance> GetSurveillanceList(int? iIcpID) //Get list of all surveillance recommendations for an ICP (by IcpID)
         {
             var icp = _context.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == iIcpID);
 
@@ -324,19 +340,19 @@ namespace ClinicX.Meta
             return surveillances.ToList();
         }
 
-        public Risk GetRiskDetails(int? iRiskID)
+        public Risk GetRiskDetails(int? iRiskID) //Get details of risk item by RiskID
         {
             var risk = _context.Risk.FirstOrDefault(c => c.RiskID == iRiskID);
             return risk;
         }
 
-        public Surveillance GetSurvDetails(int? iRiskID)
+        public Surveillance GetSurvDetails(int? iRiskID) //Get details of surveillance recommendation by RiskID
         {
             var surv = _context.Surveillance.FirstOrDefault(c => c.RiskID == iRiskID);
             return surv;
         }
 
-        public List<Eligibility> GetTestingEligibilityList(int? iIcpID)
+        public List<Eligibility> GetTestingEligibilityList(int? iIcpID) //Get list of testing aligibility codes by IcpID
         {
             var icp = _context.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == iIcpID);
 
@@ -346,15 +362,8 @@ namespace ClinicX.Meta
 
             return eligibilities.ToList();
         }
-
-        public ActivityItems GetClinicDetails(int iRefID)
-        {
-            var clinics = _context.ActivityItems.FirstOrDefault(c => c.RefID == iRefID);
-
-            return clinics;
-        }
-
-        public List<NoteTypeList> GetNoteTypes()
+        
+        public List<NoteTypeList> GetNoteTypes() //Get list of possible types of clinical note
         {
             var notetypes = from t in _context.NoteTypes
                            where t.NoteInUse == true
@@ -363,17 +372,7 @@ namespace ClinicX.Meta
             return notetypes.ToList();
         }
 
-        public List<StaffMemberList> GetStaffMember()
-        {
-            var sm = from s in _context.StaffMembers
-                     where s.InPost.Equals(true) & (s.CLINIC_SCHEDULER_GROUPS.Equals("GC") || s.CLINIC_SCHEDULER_GROUPS.Equals("Consultant"))
-                     orderby s.NAME
-                     select s;
-
-            return sm.ToList();
-        }               
-
-        public List<ActivityItems> GetClinicDetailsList(int iRefId)
+        public List<ActivityItems> GetClinicDetailsList(int iRefId) //Get details of an appointment by the RefID
         {
             var cl = from c in _context.ActivityItems
                      where c.RefID == iRefId
@@ -426,7 +425,7 @@ namespace ClinicX.Meta
             return clinics;
         }
 
-        public List<OutcomeList> GetOutcomes()
+        public List<OutcomeList> GetOutcomes() //Get list of outcomes for clinic appointments
         {
             var outcomes = from o in _context.Outcomes
                           where o.DEFAULT_CLINIC_STATUS.Equals("Active")
@@ -435,7 +434,7 @@ namespace ClinicX.Meta
             return outcomes.ToList();
         }
 
-        public List<Ethnicity> GetEthnicitiesList()
+        public List<Ethnicity> GetEthnicitiesList() //Get list of ethnicities
         {
             var ethnicities = from e in _context.Ethnicity
                          orderby e.Ethnic
@@ -444,25 +443,25 @@ namespace ClinicX.Meta
             return ethnicities.ToList();
         }
 
-        public StaffMember GetStaffMember(string suser)
+        public StaffMember GetStaffMember(string suser) //Get details of a staff member by login name
         {
             var item = _docContext.StaffMember.FirstOrDefault(i => i.EMPLOYEE_NUMBER == suser);
             return item;
         }
 
-        public Patient GetPatient(int impi)
+        public Patient GetPatient(int impi) //Get details about a patient (from the documents context) by MPI
         {
             var item = _docContext.Patient.FirstOrDefault(i => i.MPI == impi);
             return item;
         }
 
-        public DocumentsContent GetDocument(int id)
+        public DocumentsContent GetDocument(int id) //Get content for a type of standard letter by its ID
         {
             var item = _docContext.DocumentsContent.FirstOrDefault(d => d.DocContentID == id);
             return item;
         }
 
-        public Referrer GetReferrer(string sref)
+        public Referrer GetReferrer(string sref) //Get details about the referring clinician (by its code)
         {
             var item = _docContext.Referrer.FirstOrDefault(d => d.MasterClinicianCode == sref);
             return item;
@@ -478,6 +477,37 @@ namespace ClinicX.Meta
             return cc;
         }
 
+        public ExternalFacility GetFacilityDetails(string sref) //Get details of external/referring facility
+        {
+            var item = _context.ExternalFacility.FirstOrDefault(f => f.MasterFacilityCode == sref);
+            return item;
+        }        
+
+        public List<ExternalFacility> GetFacilityList() //Get list of all external/referring facilities
+        {
+            var facilities = from rf in _context.ExternalFacility
+                             where rf.NONACTIVE == 0
+                             orderby rf.NAME
+                             select rf;
+
+            return facilities.ToList();
+        }
+
+        public ExternalClinician GetClinicianDetails(string sref) //Get details of external/referring clinician
+        {
+            var item = _context.ExternalClinician.FirstOrDefault(f => f.MasterClinicianCode == sref);
+            return item;
+        }
+
+        public List<ExternalClinician> GetClinicianList() //Get list of all external/referring clinicians
+        {
+            var clinicians = from rf in _context.ExternalClinician
+                             where rf.NON_ACTIVE == 0
+                             orderby rf.NAME
+                             select rf;
+
+            return clinicians.ToList();
+        }
 
     }
 }

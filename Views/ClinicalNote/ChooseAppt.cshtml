@@ -6,7 +6,7 @@
 <div class="row g-5 mb-5">
     @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
     <div class="col-md-2">
-        <a type="button" id="btnBack" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Back to Index</a>
+        <a type="button" id="btnBack" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Back to Clinical Notes Index</a>
     </div>
 </div>
 

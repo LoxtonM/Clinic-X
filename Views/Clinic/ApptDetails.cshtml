@@ -6,7 +6,7 @@
 <div class="row mb-5 g-5">
     @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
     <div class="col-md-2">
-        <a class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Index</a>
+        <a class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Clinics Index</a>
     </div>
     <div class="col-md-1">
         <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.MPI)>Patient Details</a>        
@@ -24,10 +24,10 @@
         <a class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.MPI)>Clinical Notes</a>
     </div>
     <div class="col-md-1">
-        <a class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.MPI)>Dictate Letter</a>
+        <a class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Create" asp-route-id=@Html.ValueFor(model => model.RefID)>Dictate Letter</a>
     </div>
     <div class="col-md-1">
-        <a class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.RefID)>Schedule Review</a>
+        <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Create" asp-route-id=@Html.ValueFor(model => model.RefID)>Schedule Review</a>
     </div>
 </div>
 

@@ -53,7 +53,7 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                cvm.activityItem = vm.GetClinicDetails(id);
+                cvm.activityItem = vm.GetActivityDetails(id);
                 cvm.noteTypeList = vm.GetNoteTypes();
 
                 return View(cvm);

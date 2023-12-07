@@ -6,7 +6,7 @@
 <div class="row mb-5 g-5">
     @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
     <div class="col-md-2">
-        <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Index">Back to Index</a>
+        <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Index">Back to Reviews Index</a>
     </div>
     <div class="col-md-1">
         <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.MPI)>Patient Details</a>
@@ -58,7 +58,7 @@
         }
     </dl>
 
-     <form id="ReviewForm" asp-action="Edit">
+    <form id="ReviewForm" asp-action="Edit">
         <div class="row mb-5 g-5">
             <div class="col-md-2">
                 <label>Date Completed: (leave blank to use today's date)</label>
@@ -84,7 +84,7 @@
                 <label>Comments:</label>
             </div>
             <div class="col-md-10">
-                <textarea asp-for=@Model.Comments name="sComments" id="txtComments"></textarea>
+                <textarea rows="8" cols="40" asp-for=@Model.Comments name="sComments" id="txtComments"></textarea>
             </div>
         </div>
         <div class="row mb-5 g-5">
@@ -111,8 +111,7 @@
     }
 
     function CompleteReview()
-    {
-        
+    {        
         if (document.getElementById("ddlComplete").value == "Complete") 
         {
             
