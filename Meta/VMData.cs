@@ -66,6 +66,18 @@ namespace ClinicX.Meta
             return referrals.ToList();
         }
 
+        public List<Diary> GetDiaryList(int id) //Get list of diary entries for patient by MPI
+        {
+            var pat = _context.Patients.FirstOrDefault(p => p.MPI == id);
+
+            var diary = from d in _context.Diary
+                        where d.WMFACSID == pat.WMFACSID
+                        orderby d.DiaryDate
+                        select d;
+
+            return diary.ToList();
+        }
+
         public List<Relatives> GetRelativesDetails(int id) //Get list of relatives of patient by MPI
         {
             var patient = _context.Patients.FirstOrDefault(i => i.MPI == id);
@@ -507,6 +519,35 @@ namespace ClinicX.Meta
                              select rf;
 
             return clinicians.ToList();
+        }
+
+        public List<string> GetConsultantsList() //Get list of all consultants
+        {
+            var clinicians = from rf in _context.StaffMembers
+                             where rf.InPost == true && rf.CLINIC_SCHEDULER_GROUPS == "Consultant"
+                             orderby rf.NAME
+                             select rf.NAME;
+
+            return clinicians.ToList();
+        }
+
+        public List<string> GetGCList() //Get list of all GCs
+        {
+            var clinicians = from rf in _context.StaffMembers
+                             where rf.InPost == true && rf.CLINIC_SCHEDULER_GROUPS == "GC"
+                             orderby rf.NAME
+                             select rf.NAME;
+
+            return clinicians.ToList();
+        }
+
+        public List<string> GetSecTeams() //Get list of all secretarial teams
+        {
+            var secteams = from rf in _context.StaffMembers
+                             where rf.BILL_ID != null && rf.BILL_ID.Contains("Team")                            
+                             select rf.BILL_ID;
+
+            return secteams.Distinct().ToList();
         }
 
     }

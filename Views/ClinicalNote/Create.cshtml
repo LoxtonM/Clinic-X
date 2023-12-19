@@ -3,72 +3,55 @@
     ViewData["Title"] = "Clinic-X - Create Clinical Note";
 }
 
-<div class="row mb-5 g-5">
-    @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-    <div class="col-md-2">
-        <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.activityItem.MPI)>Back to Index</a>
+<div class="container">
+    <div class="row mb-5 g-5">
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.activityItem.MPI)>Back to Index</a>
+        </div>
+        <div class="col-md-2">
+            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveNote" />
+        </div>    
     </div>
-    <div class="col-md-2">
-        <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveNote" />
-    </div>    
-</div>
 
 
-<h1>New Clinical Note</h1>
+    <h1>New Clinical Note</h1>
 
 
-<div class="container mb-5">
+    <div class="container mb-5">
     
-    <form id="ClinicalNote" asp-action="Create">
-        <div id="metadata">
-            
-            @*<input name="iRefID" value="@Html.DisplayFor(model => model.RefID)" />
-            <input name="iMPI" value="@Html.DisplayFor(model => model.MPI)" />
-            <input name="sCreatedBy" value="@Html.DisplayFor(model => model.LoginDetails)" />*@
-            @*foreach (var c in Model.activityItem)
-            {
-            RefID:
-                <input id="metaRefID" value=@c.RefID />
-            MPI:
-                <input id="metaMPI" value=@c.MPI />
-            }*@
-            <input name="iRefID" value="@Html.DisplayFor(model => model.activityItem.RefID)" />
-            <input name="iMPI" value="@Html.DisplayFor(model => model.activityItem.MPI)" />
-        </div>
-
-
-
-        <div class="row mb-5">
-            <div class="col-md-2">
-                Note Type:
+        <form id="ClinicalNote" asp-action="Create">
+            <div id="metadata">
+                <input name="iRefID" value="@Html.DisplayFor(model => model.activityItem.RefID)" />
+                <input name="iMPI" value="@Html.DisplayFor(model => model.activityItem.MPI)" />
             </div>
-            <div class="col-md-4">               
-                <select id="ddlNoteType" name="sNoteType">  
-                    <option value="" selected></option>
-                    @foreach (var n in Model.noteTypeList)
-                    {
-                        <option value="@n.NoteType ">@n.NoteType</option>
-                    }
-                </select>                
-            </div>
-            <div class="col-md-6"></div>        
-        
-        </div>
 
-
-        <div class="row mb-5">
-            <div class="col-md-2">Details:</div>
-            <div class="col-md-8">
-                @*<textarea id="txtClinicalNote" rows="20" cols="150" asp-for="clinicalNotes.ClinicalNote"></textarea>*@
-                <textarea id="txtClinicalNote" rows="20" cols="150" name="sClinicalNote"></textarea>
+            <div class="row mb-5">
+                <div class="col-md-2">
+                    Note Type:
+                </div>
+                <div class="col-md-4">               
+                    <select id="ddlNoteType" name="sNoteType">  
+                        <option value="" selected></option>
+                        @foreach (var n in Model.noteTypeList)
+                        {
+                            <option value="@n.NoteType ">@n.NoteType</option>
+                        }
+                    </select>                
+                </div>
+                <div class="col-md-6"></div>
             </div>
-            <div class="col-md-2"></div>
-        </div>
-        @*<div class="row mb-5">
-            <div class="col-md-2"><input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveNote" /></div>            
-            <div class="col-md-10"></div>
-        </div>*@
-    </form>
+
+            <div class="row mb-5">
+                <div class="col-md-2">Details:</div>
+                <div class="col-md-8">
+                    @*<textarea id="txtClinicalNote" rows="20" cols="150" asp-for="clinicalNotes.ClinicalNote"></textarea>*@
+                    <textarea id="txtClinicalNote" rows="20" cols="150" name="sClinicalNote"></textarea>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </form>
+    </div>
 </div>
 
 

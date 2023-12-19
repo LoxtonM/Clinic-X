@@ -3,75 +3,77 @@
     ViewData["Title"] = "Clinic-X - New Review";
 }
 
-<div class="row mb-5 g-5">
-    @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-    <div class="col-md-2">
-        <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Index">Back to Reviews Index</a>
+<div class="container">
+    <div class="row mb-5 g-5">
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        <div class="col-md-2">
+            <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Index">Back to Reviews Index</a>
+        </div>
+        <div class="col-md-1">
+            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>Patient Details</a>
+        </div>
+        <div class="col-md-9"></div>
     </div>
-    <div class="col-md-1">
-        <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>Patient Details</a>
+
+    <div class="row mb-5 g-5">
+        <h1>Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>@Html.DisplayFor(model => model.patient.FIRSTNAME) @Html.DisplayFor(model => model.patient.LASTNAME)</a></h1>
     </div>
-    <div class="col-md-9"></div>
-</div>
 
-<div class="row mb-5 g-5">
-    <h1>Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>@Html.DisplayFor(model => model.patient.FIRSTNAME) @Html.DisplayFor(model => model.patient.LASTNAME)</a></h1>
-</div>
-
-<div>
-    <form id="ReviewForm" asp-action="Create">
-        <div class="row mb-5 g-5">
-            <div id="meta" hidden="true">
-                <input asp-for=@Model.patient.MPI name ="iMPI" />
-                <input asp-for=@Model.referrals.RefID name="iRefID" />
-                <input asp-for=@Model.referrals.PATHWAY name="sPathway" />
+    <div>
+        <form id="ReviewForm" asp-action="Create">
+            <div class="row mb-5 g-5">
+                <div id="meta" hidden="true">
+                    <input asp-for=@Model.patient.MPI name ="iMPI" />
+                    <input asp-for=@Model.referrals.RefID name="iRefID" />
+                    <input asp-for=@Model.referrals.PATHWAY name="sPathway" />
+                </div>
             </div>
-        </div>
-        <div class="row mb-5 g-5">
-            <div class="col-md-1">
-                <label>Category:</label>
+            <div class="row mb-5 g-5">
+                <div class="col-md-1">
+                    <label>Category:</label>
+                </div>
+                <div class="col-md-2">
+                    <select name="sCategory">
+                        <option value="standard">Standard</option>
+                        <option value="Non-standard">Non-standard</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label>Planned Date:</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="sDate" />
+                </div>
+                <div class="col-md-2">
+                    <label>Review Recipient: (leave blank if the review is for yourself)</label>
+                </div>
+                <div class ="col-md-4">
+                    <select name="sRecipient">
+                        <option value=""></option>
+                        @foreach (var item in Model.staffMembers)
+                        {
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
+                        }
+                    </select>                
+                </div>
             </div>
-            <div class="col-md-2">
-                <select name="sCategory">
-                    <option value="standard">Standard</option>
-                    <option value="Non-standard">Non-standard</option>
-                </select>
+            <div class="row mb-5 g-5">
+               <div class="col-md-2">
+                    <label>Details:</label>
+                </div>
+                <div class="col-md-10">
+                    <textarea rows="8" cols="40" name="sComments" id="txtComments"></textarea>
+                </div>
             </div>
-            <div class="col-md-1">
-                <label>Planned Date:</label>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <button type="button" class="btn btn-default btn-success" id="btnSave">Save</button>
+                </div>
+                <div class="col-md-2"></div>
             </div>
-            <div class="col-md-2">
-                <input type="date" name="sDate" />
-            </div>
-            <div class="col-md-2">
-                <label>Review Recipient: (leave blank if the review is for yourself)</label>
-            </div>
-            <div class ="col-md-4">
-                <select name="sRecipient">
-                    <option value=""></option>
-                    @foreach (var item in Model.staffMembers)
-                    {
-                        <option value=@item.STAFF_CODE>@item.NAME</option>
-                    }
-                </select>                
-            </div>
-        </div>
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Details:</label>
-            </div>
-            <div class="col-md-10">
-                <textarea rows="8" cols="40" name="sComments" id="txtComments"></textarea>
-            </div>
-        </div>
-        <div class="row mb-5 g-5">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-                <button type="button" class="btn btn-default btn-success" id="btnSave">Save</button>
-            </div>
-            <div class="col-md-2"></div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 <script>

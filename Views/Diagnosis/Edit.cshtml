@@ -4,57 +4,58 @@
     ViewData["Title"] = "Clinic-X - Diagnosis Details";
 }
 
-<div class="mb-5">
-    @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-    <a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Diagnosis List</a>
-</div>
+<div class="container">
+    <div class="mb-5">
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        <a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Diagnosis List</a>
+    </div>
 
+    <h1>Diagnosis details for @Html.ValueFor(Model => Model.patient.FIRSTNAME) @Html.ValueFor(Model => Model.patient.LASTNAME) </h1>
+    <div>
+        <dl class="row mb-5">
+            <dt class="col-sm-2">
+                Diagnosis:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Diagnosis.DISEASE_CODE) - @Html.DisplayFor(model => model.Diagnosis.DESCRIPTION)
+            </dd>
+            <dt class="col-sm-2">
+                Entered by:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Diagnosis.NAME) on @Html.DisplayFor(model => model.Diagnosis.ENTEREDDATE)
+            </dd>
+        </dl>
+    </div>
 
-<h1>Diagnosis details for @Html.ValueFor(Model => Model.patient.FIRSTNAME) @Html.ValueFor(Model => Model.patient.LASTNAME) </h1>
-<div>
-    <dl class="row mb-5">
-        <dt class="col-sm-2">
-            Diagnosis:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Diagnosis.DISEASE_CODE) - @Html.DisplayFor(model => model.Diagnosis.DESCRIPTION)
-        </dd>
-        <dt class="col-sm-2">
-            Entered by:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Diagnosis.NAME) on @Html.DisplayFor(model => model.Diagnosis.ENTEREDDATE)
-        </dd>
-    </dl>
-</div>
-
-<div class="container mb-5">
-    <form id="DiagForm" asp-action="Edit">
-        <div id="metadata" hidden="true">
-            <input asp-for=@Model.Diagnosis.ID type="text" id="txtDiagID" name="iDiagID" />
-        </div>
-        <div class="row mb-5">            
-            <div class="col-md-2">Disease status:</div>
-            <div class="col-md-2">
-                <select asp-for=@Model.Diagnosis.STATUS id="ddlStatus" name="sStatus">
-                    <option value="" selected>select...</option>
-                    @foreach (var d in Model.statusList)
-                    {
-                        <option value="@d.DISEASE_STATUS">@d.DISEASE_STATUS</option>
-                    }
-                </select>
+    <div class="container mb-5">
+        <form id="DiagForm" asp-action="Edit">
+            <div id="metadata" hidden="true">
+                <input asp-for=@Model.Diagnosis.ID type="text" id="txtDiagID" name="iDiagID" />
             </div>
-            <div class="col-md-2">Comments:</div>
-            <div class="col-md-6"><input asp-for=@Model.Diagnosis.MAIN_SUB type="text" id="txtComments" name="sComments" /></div>
-        </div>
-        <div class="row mb-5">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-                <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveDiag" />
+            <div class="row mb-5">            
+                <div class="col-md-2">Disease status:</div>
+                <div class="col-md-2">
+                    <select asp-for=@Model.Diagnosis.STATUS id="ddlStatus" name="sStatus">
+                        <option value="" selected>select...</option>
+                        @foreach (var d in Model.statusList)
+                        {
+                            <option value="@d.DISEASE_STATUS">@d.DISEASE_STATUS</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">Comments:</div>
+                <div class="col-md-6"><input asp-for=@Model.Diagnosis.MAIN_SUB type="text" id="txtComments" name="sComments" /></div>
             </div>
-            <div class="col-md-2"></div>
-        </div>
-    </form>
+            <div class="row mb-5">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveDiag" />
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>

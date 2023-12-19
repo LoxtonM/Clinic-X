@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using ClinicX.Models;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
-using System.Net.NetworkInformation;
 
 namespace ClinicX.Controllers
 {
@@ -23,7 +21,7 @@ namespace ClinicX.Controllers
             _config = config;
             lvm = new DictatedLetterVM();
             vm = new VMData(_context);
-            crud = new CRUD(_config);
+            crud = new CRUD(_config);            
         }
 
         [Authorize]
@@ -43,9 +41,7 @@ namespace ClinicX.Controllers
                 var letters = from l in _context.DictatedLetters
                               where l.LetterFromCode == strStaffCode && l.MPI != null && l.RefID != null && l.Status != "Printed"
                               orderby l.DateDictated descending
-                              select l;
-
-                //letters = letters.OrderByDescending(l => l.DateDictated);
+                              select l;                
 
                 return View(await letters.ToListAsync());
             }
@@ -57,9 +53,9 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
-        {
+        {            
             try
-            {   
+            {                
                 lvm.dictatedLetters = vm.GetDictatedLetterDetails(id);
                 lvm.dictatedLettersPatients = vm.GetDictatedLettersPatients(id);
                 lvm.dictatedLettersCopies = vm.GetDictatedLettersCopies(id);
@@ -75,6 +71,9 @@ namespace ClinicX.Controllers
                 lvm.GPFacility = vm.GetFacilityDetails(sGPCode);
                 lvm.facilities = vm.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
                 lvm.clinicians = vm.GetClinicianList().Where(f => f.Is_Gp == 0 && f.NAME != null && f.FACILITY != null).ToList();
+                lvm.consultants = vm.GetConsultantsList().ToList();
+                lvm.gcs = vm.GetGCList().ToList();
+                lvm.secteams = vm.GetSecTeams();
 
                 return View(lvm);
             }
@@ -90,21 +89,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                if(sLetterContentBold == null)
-                {
-                    sLetterContentBold = "";
-                }
-
                 DateTime dDateDictated = new DateTime();
-
-                if (sDateDictated != null)
-                {
-                    dDateDictated = DateTime.Parse(sDateDictated);
-                }
-                else
-                {
-                    dDateDictated = DateTime.Parse("1/1/1900");
-                }
+                dDateDictated = DateTime.Parse(sDateDictated);
                 //two updates required - one to update the addressee (if addressee has changed)
                 if (isAddresseeChanged)
                 {
@@ -112,9 +98,7 @@ namespace ClinicX.Controllers
                 }
 
                 crud.CallStoredProcedure("Letter", "Update", iDID, 0, 0, sStatus, "", sLetterContentBold, sLetterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, sSecTeam, sConsultant, sGC);
-                                
-                                
-                return RedirectToAction("Edit", new { id = iDID });                
+                return RedirectToAction("Edit", new { id = iDID });
             }
             catch (Exception ex)
             {
@@ -139,8 +123,7 @@ namespace ClinicX.Controllers
             }
         }
 
-
-            [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Approve(int iDID)
         {
             try
@@ -201,5 +184,21 @@ namespace ClinicX.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteCCFromDOT(int iID)
+        {
+            try
+            {
+                var letter = await _context.DictatedLettersCopies.FirstOrDefaultAsync(x => x.CCID == iID);
+                int iDID = letter.DotID;
+
+                crud.CallStoredProcedure("Letter", "DeleteCC", iID, 0, 0, "", "", "", "", User.Identity.Name);
+                return RedirectToAction("Edit", new { id = iDID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
     }
 }

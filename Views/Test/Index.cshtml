@@ -4,84 +4,81 @@
     ViewData["Title"] = "Clinic-X - Tests";
 }
 
-<div>
-    @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
-    @*<a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Back to Patient</a>*@
-</div>
-
-
-@if (Model.Count() >= 1)
-{
-    <h1 class="text-center">Tests for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>@Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</a></h1>
-
-    <div class="row g-5 mb-5">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Test</th>
-                    <th>Ordered by</th>  
-                    <th>Sent To</th>
-                    <th>@Html.DisplayNameFor(model => model.DATE_REQUESTED)</th>
-                    <th>@Html.DisplayNameFor(model => model.DATE_RECEIVED)</th>
-                    <th>Result</th>
-                    <th>@Html.DisplayNameFor(model => model.ResultGivenDate)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID>Select</a></td>
-                        <td>@item.TEST</td>
-                        <td>@item.NAME</td>
-                        <td>@item.LOCATION</td>
-                        <td>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
-                        @if (@item.DATE_RECEIVED.HasValue)
-                        {
-                            <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
-                        }
-                        else
-                        {
-                            <td>N/A</td>
-                        }
-                        <td>@item.RESULT</td>                       
-                        
-                        @if(@item.ResultGivenDate.HasValue)
-                        {
-                            <td>@item.ResultGivenDate.Value.ToString("dd/MM/yyyy")</td>
-                        }
-                        else
-                        {
-                            <td>N/A</td>                        
-                        }                    
-                    </tr>
-                }
-            </tbody>
-        </table>
+<div class="container">
+    <div>
+        @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
+        @*<a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Back to Patient</a>*@
     </div>
 
-    
 
-    
-}
-    else
-{   
-    <h1 style="text-align:center">There are no tests recorded for this patient.</h1>    
-}
+    @if (Model.Count() >= 1)
+    {
+        <h1 class="text-center">Tests for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>@Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</a></h1>
 
-<div class="row g-5 mb-5">        
+        <div class="row g-5 mb-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Test</th>
+                        <th>Ordered by</th>  
+                        <th>Sent To</th>
+                        <th>@Html.DisplayNameFor(model => model.DATE_REQUESTED)</th>
+                        <th>@Html.DisplayNameFor(model => model.DATE_RECEIVED)</th>
+                        <th>Result</th>
+                        <th>@Html.DisplayNameFor(model => model.ResultGivenDate)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID>Select</a></td>
+                            <td>@item.TEST</td>
+                            <td>@item.NAME</td>
+                            <td>@item.LOCATION</td>
+                            <td>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
+                            @if (@item.DATE_RECEIVED.HasValue)
+                            {
+                                <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
+                            <td>@item.RESULT</td>                       
+                        
+                            @if(@item.ResultGivenDate.HasValue)
+                            {
+                                <td>@item.ResultGivenDate.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>                        
+                            }                    
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+        else
+    {   
+        <h1 style="text-align:center">There are no tests recorded for this patient.</h1>    
+    }
+
+    <div class="row g-5 mb-5">        
         @*<div col-md-2><a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AddNew" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Add New</a></div>*@
         <div col-md-2><button id="btnAddNew" class="btn btn-default btn-success">Add New</button> </div>        
     </div>
 
-<div id="metadata" hidden="true">
-    <span id="theurl">@Context.Request.Path</span>
-    <span id="thehost">@Context.Request.Host</span>
-    <span id="count">@Model.Count()</span>
+    <div id="metadata" hidden="true">
+        <span id="theurl">@Context.Request.Path</span>
+        <span id="thehost">@Context.Request.Host</span>
+        <span id="count">@Model.Count()</span>
+    </div>
+
 </div>
-
-
 
 <script type="text/javascript">
 

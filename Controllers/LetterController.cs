@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using ClinicX.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using ClinicX.ViewModels;
 using ClinicX.Data;
 using ClinicX.Meta;
@@ -84,14 +82,27 @@ public class LetterController : Controller
             tf.Alignment = XParagraphAlignment.Left;
             tf.DrawString(lvm.patient.PtLetterAddressee, font, XBrushes.Black, new XRect(50, 235, 500, 10));
 
-            string strAddress = lvm.patient.ADDRESS1 + Environment.NewLine;
-            if (lvm.patient.ADDRESS2 != null) //this is sometimes null
+            string strAddress = "";
+
+            if (lvm.documentsContent.LetterTo == "PT")
             {
-                strAddress = strAddress + lvm.patient.ADDRESS2 + Environment.NewLine;
+                strAddress = lvm.patient.ADDRESS1 + Environment.NewLine;
+                if (lvm.patient.ADDRESS2 != null) //this is sometimes null
+                {
+                    strAddress = strAddress + lvm.patient.ADDRESS2 + Environment.NewLine;
+                }
+                strAddress = strAddress + lvm.patient.ADDRESS3 + Environment.NewLine;
+                strAddress = strAddress + lvm.patient.ADDRESS4 + Environment.NewLine;
+                strAddress = strAddress + lvm.patient.POSTCODE;
             }
-            strAddress = strAddress + lvm.patient.ADDRESS3 + Environment.NewLine;
-            strAddress = strAddress + lvm.patient.ADDRESS4 + Environment.NewLine;
-            strAddress = strAddress + lvm.patient.POSTCODE;
+            if (lvm.documentsContent.LetterTo == "RD")
+            {
+                //placeholder
+            }
+            if (lvm.documentsContent.LetterTo == "GP")
+            {
+                //placeholder
+            }
 
             tf.DrawString(strAddress, font, XBrushes.Black, new XRect(50, 250, 490, 100));
 
@@ -243,6 +254,43 @@ public class LetterController : Controller
                 iTotalLength = iTotalLength + iHig + 20;
                 tf.DrawString(strSignoff, font, XBrushes.Black, new XRect(50, iTotalLength, 500, 20));
                 strCC = strReferrer;
+            }
+
+                //Reject letter
+            if (strDocCode == "RejectCMA")
+            {
+                strQuoteRef = "Please quote this reference on all correspondence: " + lvm.patient.CGU_No + Environment.NewLine;
+                strQuoteRef = strQuoteRef + "NHS number: " + lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+                strQuoteRef = strQuoteRef + "Consultant: " + Environment.NewLine;
+                strQuoteRef = strQuoteRef + "Genetic Counsellor: ";
+                tf.DrawString(strQuoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
+
+                strContent1 = lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + lvm.documentsContent.Para2;
+                    
+
+                tf.DrawString(strContent1, font, XBrushes.Black, new XRect(50, 400, 500, strContent1.Length / 5));
+                iTotalLength = iTotalLength + strContent1.Length / 5;
+                if (strContent2 != null)
+                {
+                    tf.DrawString(strContent2, fontBold, XBrushes.Black, new XRect(50, iTotalLength, 500, strContent2.Length / 4));
+                    iTotalLength = iTotalLength + strContent2.Length / 4;
+                }
+                tf.DrawString(strContent3, font, XBrushes.Black, new XRect(50, iTotalLength, 500, strContent3.Length / 4));
+                iTotalLength = iTotalLength + strContent3.Length / 4;
+                tf.DrawString(strContent4, font, XBrushes.Black, new XRect(50, iTotalLength, 500, strContent4.Length / 4));
+                iTotalLength = iTotalLength + strContent4.Length / 4;
+
+                strSignoff = lvm.staffMember.NAME + Environment.NewLine + lvm.staffMember.POSITION;
+                strSigFilename = lvm.staffMember.StaffForename + lvm.staffMember.StaffSurname + ".jpg";
+                iTotalLength = iTotalLength + 20;
+                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + strSigFilename);
+                int iLen = imageSig.PixelWidth;
+                int iHig = imageSig.PixelHeight;
+                gfx.DrawImage(imageSig, 50, iTotalLength, iLen, iHig);
+                iTotalLength = iTotalLength + iHig + 20;
+                tf.DrawString(strSignoff, font, XBrushes.Black, new XRect(50, iTotalLength, 500, 20));
+                strCC = strReferrer;
+
             }
 
             //Add a page for all of the CC addresses (must be declared here or we can't use it)

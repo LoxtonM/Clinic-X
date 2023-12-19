@@ -3,96 +3,97 @@
     ViewData["Title"] = "Clinic-X - Relative Details";
 }
 
-<div class="row mb-5 g-5">
-    <div class="col-md-2">
-        <button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>
-        @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
-    </div>    
+<div class="container">
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            <button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>
+            @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
+        </div>    
     
-    <div class="col-md-6"></div>
-    <div class="col-md-1">
-        <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
+        <div class="col-md-6"></div>
+        <div class="col-md-1">
+            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
+        </div>
     </div>
-</div>
 
-<div class="row mb-5">
-    <hr />
-</div>
-
-<div class="row mb-5 g-5">
-    <h1>New Relative Details</h1>
-</div>
-
-<div class="row mb-5 g-5">
-    <form id="frmAddNew" asp-action="AddNew">
-    <div class="row" id="Metadata">
-        <input asp-for=@Model.WMFACSID name="WMFACSID" hidden="true"/>
+    <div class="row mb-5">
+        <hr />
     </div>
-    <dl class="row">        
-        <dt class="col-sm-1">
-            Full Name:
-        </dt>
-        <dd class="col-sm-1">
-            <label>Title:</label> 
-        </dd>
-        <dd class="col-sm-2">
-            <input asp-for=@Model.RelTitle name="sTitle" />
-        </dd>
-        <dd class="col-sm-1">
-            <label>First name(s)</label>
-        </dd>
-        <dd class="col-sm-2">
-            <input asp-for=@Model.RelForename1 name="sForename1" />
-        </dd>
-        <dd class="col-sm-2">
-            <input asp-for=@Model.RelForename2 name="sForename2" />
-        </dd>
-        <dd class="col-sm-1">
-            <label>Surname</label>
-        </dd>
-        <dd class="col-sm-2">
-            <input asp-for=@Model.RelSurname name="sSurname" />
-        </dd>
-        <dt class="col-sm-2">
-            Relation to Proband:
-        </dt>
-        <dd class="col-sm-10">
-            <input asp-for=@Model.Relation name="sRelation" />
-        </dd>
-        <dt class="col-sm-2">
-            DOB:
-        </dt>
-        <dd class="col-sm-4">
-            <input asp-for=@Model.DOB name="sDOB" />
-        </dd>               
-        <dt class="col-sm-2">DOD (if deceased)</dt>
-        <dd class="col-sm-4">
-            <input asp-for=@Model.DOD name="sDOD" />
-        </dd>        
-        <dt class="col-sm-2">
-            Sex:
-        </dt>
-        <dd class="col-sm-10">
-            <input asp-for=@Model.Sex name="sSex" />
-        </dd>
-        <dt class="col-sm-2">
-            Affected
-        </dt>
-        <dd class="col-sm-10">
-            <select asp-for=@Model.RelAffected name="isAffected">
-                <option value=0>No</option>
-                <option value=1>Yes</option>
-                <option value=2>Don't know</option>
-            </select>
-        </dd>
-    </dl>
-    </form>
 
-</div>
+    <div class="row mb-5 g-5">
+        <h1>New Relative Details</h1>
+    </div>
 
-<div class="row g-5 mb-5">
-    <div class="col-md-2">
-        <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+    <div class="row mb-5 g-5">
+        <form id="frmAddNew" asp-action="AddNew">
+            <div class="row" id="Metadata">
+                <input asp-for=@Model.WMFACSID name="WMFACSID" hidden="true"/>
+            </div>
+            <dl class="row">        
+                <dt class="col-sm-1">
+                    Full Name:
+                </dt>
+                <dd class="col-sm-1">
+                    <label>Title:</label> 
+                </dd>
+                <dd class="col-sm-2">
+                    <input asp-for=@Model.RelTitle name="sTitle" />
+                </dd>
+                <dd class="col-sm-1">
+                    <label>First name(s)</label>
+                </dd>
+                <dd class="col-sm-2">
+                    <input asp-for=@Model.RelForename1 name="sForename1" />
+                </dd>
+                <dd class="col-sm-2">
+                    <input asp-for=@Model.RelForename2 name="sForename2" />
+                </dd>
+                <dd class="col-sm-1">
+                    <label>Surname</label>
+                </dd>
+                <dd class="col-sm-2">
+                    <input asp-for=@Model.RelSurname name="sSurname" />
+                </dd>
+                <dt class="col-sm-2">
+                    Relation to Proband:
+                </dt>
+                <dd class="col-sm-10">
+                    <input asp-for=@Model.Relation name="sRelation" />
+                </dd>
+                <dt class="col-sm-2">
+                    DOB:
+                </dt>
+                <dd class="col-sm-4">
+                    <input asp-for=@Model.DOB name="sDOB" />
+                </dd>               
+                <dt class="col-sm-2">DOD (if deceased)</dt>
+                <dd class="col-sm-4">
+                    <input asp-for=@Model.DOD name="sDOD" />
+                </dd>        
+                <dt class="col-sm-2">
+                    Sex:
+                </dt>
+                <dd class="col-sm-10">
+                    <input asp-for=@Model.Sex name="sSex" />
+                </dd>
+                <dt class="col-sm-2">
+                    Affected
+                </dt>
+                <dd class="col-sm-10">
+                    <select asp-for=@Model.RelAffected name="isAffected">
+                        <option value=0>No</option>
+                        <option value=1>Yes</option>
+                        <option value=2>Don't know</option>
+                    </select>
+                </dd>
+            </dl>
+        </form>
+    </div>
+
+    <div class="row g-5 mb-5">
+        <div class="col-md-2">
+            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+        </div>
     </div>
 </div>
 
@@ -102,19 +103,23 @@
     document.getElementById("btnSave").addEventListener("click", AddRelative);
     document.getElementById("btnBack").addEventListener("click", GoBack);
 
-    function GoBack() {
+    function GoBack() 
+    {
         window.history.back();
         //window.close();
     }
 
-    function AddRelative() {
+    function AddRelative() 
+    {
 
-        if (CheckFormValid() == 1) {
+        if (CheckFormValid() == 1) 
+        {
             document.getElementById("frmAddNew").submit();
         }
     }
 
-    function CheckFormValid() { //validation to ensure all required data is entered
+    function CheckFormValid() 
+    { //validation to ensure all required data is entered
 
         
         //if (document.getElementById("txtComments").value.match(/};.*/)) {

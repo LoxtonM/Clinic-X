@@ -14,5 +14,6 @@ namespace ClinicX.ViewModels
         public List<Referrals> referrals { get; set; }
         public PatientPathway patientPathway { get; set; }
         public List<Alert> alerts { get; set; }
+        public List<Diary> diary { get; set; }
     }
 }

@@ -4,61 +4,61 @@
     ViewData["Title"] = "Clinic-X - Diagnoses";
 }
 
-<div>
-    @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
-    @*<a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Back to Patient</a>*@
-</div>
+<div class="container">
+    <div>
+        @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
+        @*<a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Back to Patient</a>*@
+    </div>
 
-@if (Model.Count() > 0)
-{
-    <h1 class="text-center">Diagnoses for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>@Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</a></h1>
+    @if (Model.Count() > 0)
+    {
+        <h1 class="text-center">Diagnoses for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>@Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</a></h1>
+
+        <div class="row g-5 mb-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Disease Code</th>
+                        <th>Disease</th>
+                        <th>Status</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {   
+                        <tr>
+                            <td><a asp-controller="Diagnosis" asp-action="Edit" asp-route-id="@item.ID">Select</a></td>
+                            <td>@item.DISEASE_CODE</td>
+                            <td>@item.DESCRIPTION</td>
+                            <td>@item.STATUS</td>
+                            <td>@item.MAIN_SUB</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <h1>There are no diagnoses  recorded for this patient.</h1>
+    }
+
 
     <div class="row g-5 mb-5">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Disease Code</th>
-                    <th>Disease</th>
-                    <th>Status</th>
-                    <th>Comments</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {   
-                    <tr>
-                        <td><a asp-controller="Diagnosis" asp-action="Edit" asp-route-id="@item.ID">Select</a></td>
-                        <td>@item.DISEASE_CODE</td>
-                        <td>@item.DESCRIPTION</td>
-                        <td>@item.STATUS</td>
-                        <td>@item.MAIN_SUB</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div col-md-2></div>
+        @*<div col-md-2><a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AddNew" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Add New</a></div>*@
+        <div col-md-2><button id="btnAddNew" class="btn btn-default btn-success">Add New</button> </div>
+        <div col-md-8></div>
     </div>
-}
-else
-{
-    <h1>There are no diagnoses  recorded for this patient.</h1>
-}
 
-
-<div class="row g-5 mb-5">
-    <div col-md-2></div>
-    @*<div col-md-2><a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AddNew" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Add New</a></div>*@
-    <div col-md-2><button id="btnAddNew" class="btn btn-default btn-success">Add New</button> </div>
-    <div col-md-8></div>
+    <div id="metadata" hidden="true">
+        <span id="theurl">@Context.Request.Path</span>
+        <span id="thehost">@Context.Request.Host</span>
+        <span id="count">@Model.Count()</span>    
+    </div>
 </div>
-
-<div id="metadata" hidden="true">
-    <span id="theurl">@Context.Request.Path</span>
-    <span id="thehost">@Context.Request.Host</span>
-    <span id="count">@Model.Count()</span>    
-</div>
-
-
 
 <script type="text/javascript">
 

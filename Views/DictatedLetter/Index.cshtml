@@ -4,117 +4,119 @@
     ViewData["Title"] = "Clinic-X - Dictated Letters";
 }
 
-@*<div>
-    <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
-</div>*@
+<div class="container">
+    @*<div>
+        <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
+    </div>*@
 
-<div class="row g-5 mb-5">
-    @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().LetterFrom)!</h1>*@
+    <div class="row g-5 mb-5">
+        @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().LetterFrom)!</h1>*@
 
-    <h2 class="text-center">Letters to approve:</h2>
-</div>
+        <h2 class="text-center">Letters to approve:</h2>
+    </div>
 
-<div class="row g-5 mb-5">
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>               
-                <th>Letter To</th>
-                <th>Letter Re</th>
-                <th>@Html.DisplayNameFor(model => model.DateDictated)</th>                
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Count() == 0)
-            {
+    <div class="row g-5 mb-5">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td>There are no letters outstanding.</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th></th>               
+                    <th>Letter To</th>
+                    <th>Letter Re</th>
+                    <th>@Html.DisplayNameFor(model => model.DateDictated)</th>                
+                    <th>Status</th>
                 </tr>
-            }
-            else
-            {
-                @foreach (var item in Model)
+            </thead>
+            <tbody>
+                @if (Model.Count() == 0)
                 {
-                    @if (item.Status != "For Printing")
-                    {
-                        <tr>
-                            <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID>@item.DoTID</a></td>
-                            <td>@item.LetterTo</td>
-                            <td>@item.LetterRe</td>
-                            @if (@item.DateDictated.HasValue)
-                            {
-                                <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
-                            }
-                            else
-                            {
-                                <td></td>
-                            }
-                        <td>@item.Status</td>
-                    </tr>                  
-                    }
-                }
-            }
-        </tbody>
-    </table>
-</div>
-
-
-<div class="row g-5 mb-5">
-    <h2 class="text-center">Letters awaiting printing:</h2>
-</div>
-
-<div class="row g-5 mb-5">
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Letter To</th>
-                <th>Letter Re</th>
-                <th>@Html.DisplayNameFor(model => model.DateDictated)</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Count() == 0)
-            {
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td>There are no letters outstanding.</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            }
-            else
-            {
-                @foreach (var item in Model)
-                {
-                    @if (item.Status == "For Printing")
-                    {
-                        <tr>
-                            <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID>@item.DoTID</a></td>
-                            <td>@item.LetterTo</td>
-                            <td>@item.LetterRe</td>
-                            @if (@item.DateDictated.HasValue)
-                            {
-                                <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
-                            }
-                            else
-                            {
-                                <td></td>
-                            }
-                        <td>@item.Status</td>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>There are no letters outstanding.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
+                }
+                else
+                {
+                    @foreach (var item in Model)
+                    {
+                        @if (item.Status != "For Printing")
+                        {
+                            <tr>
+                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID>@item.DoTID</a></td>
+                                <td>@item.LetterTo</td>
+                                <td>@item.LetterRe</td>
+                                @if (@item.DateDictated.HasValue)
+                                {
+                                    <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                            <td>@item.Status</td>
+                        </tr>                  
+                        }
                     }
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="row g-5 mb-5">
+        <h2 class="text-center">Letters awaiting printing:</h2>
+    </div>
+
+    <div class="row g-5 mb-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Letter To</th>
+                    <th>Letter Re</th>
+                    <th>@Html.DisplayNameFor(model => model.DateDictated)</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count() == 0)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>There are no letters outstanding.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in Model)
+                    {
+                        @if (item.Status == "For Printing")
+                        {
+                            <tr>
+                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID>@item.DoTID</a></td>
+                                <td>@item.LetterTo</td>
+                                <td>@item.LetterRe</td>
+                                @if (@item.DateDictated.HasValue)
+                                {
+                                    <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                            <td>@item.Status</td>
+                        </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>

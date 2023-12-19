@@ -10,6 +10,7 @@ namespace ClinicX.Models
         [Key]
         public int MPI { get; set; }
         public int INTID { get; set; }
+        public int WMFACSID { get; set; }
         public string? Title { get; set; }
         [Display(Name ="Date of Birth")]
         [DataType(DataType.Date)]
@@ -29,9 +30,7 @@ namespace ClinicX.Models
         public string? ADDRESS4 { get; set; }
         public string? POSTCODE { get; set; }
         public string? TEL { get; set; }
-        public string? PtTelMobile { get; set; }
-        //public string? EmailAddress { get; set; }
-        public int WMFACSID { get; set; }     
+        public string? PtTelMobile { get; set; }               
         public string? EmailCommsConsent { get; set; }
         public string? EmailAddress { get; set; }
         public string? PrimaryLanguage { get; set; }
@@ -152,6 +151,20 @@ namespace ClinicX.Models
         [Display(Name = "Clinic Venue")]
         public string? FACILITY { get; set; }
         public string? PATHWAY { get; set; }
+    }
+
+    [Table("PatientDiary", Schema = "dbo")]
+    public class Diary
+    {
+        [Key]
+        public int DiaryID { get; set; }
+        public int WMFACSID { get; set; }
+        public DateTime? DiaryDate { get; set; }
+        public string? DiaryWith { get; set; }
+        public string? DiaryAction { get; set; }
+        public string? DiaryText { get; set; }
+        public string? DocCode { get; set; }
+        public int RefID { get; set; }
     }
 
     [Table("ViewTriageDetails", Schema = "dbo")] //Cases to be triaged
@@ -297,6 +310,7 @@ namespace ClinicX.Models
         public string EMPLOYEE_NUMBER { get; set; }
         public string NAME { get; set; }
         public string CLINIC_SCHEDULER_GROUPS { get; set; }
+        public string? BILL_ID { get; set; }
         public string POSITION { get; set; }
         public bool InPost { get; set; }
     }

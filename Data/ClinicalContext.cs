@@ -23,6 +23,7 @@ namespace ClinicX.Data
         public DbSet<ICPCancer> ICPCancer { get; set; }
         public DbSet<StaffMemberList> StaffMembers { get; set; }
         public DbSet<ActivityItems> ActivityItems { get; set; }
+        public DbSet<Diary> Diary { get; set; }
         public DbSet<ClinicalNotes> ClinicalNotes { get; set; }
         public DbSet<NoteItems> NoteItems { get; set; }
         public DbSet<Diagnosis> Diagnosis { get; set; }

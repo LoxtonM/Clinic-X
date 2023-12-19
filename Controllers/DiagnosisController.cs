@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClinicX.Data;
 using ClinicX.ViewModels;
-using Microsoft.Data.SqlClient;
-using ClinicX.Models;
 using System.Data;
 using ClinicX.Meta;
 

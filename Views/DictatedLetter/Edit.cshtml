@@ -3,240 +3,267 @@
     ViewData["Title"] = "Clinic-X - Edit Dictated Letter";
 }
 
-<div class=" row mb-5 g-5">
-    <div class="col-md-2">
-        <a type="button" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Index">Back to Dictated Letters Index</a>
-    </div>
-    <div class="col-md-2">
-        <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveLetter" />
-    </div>    
-    <div class="col-md-2">
-        <form id="DictatedLetterApproval" asp-action="Approve">
-            <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
-            <input type="button" class="btn btn-default btn-success" value="Approve" id="btnApprove" hidden="true" />
-        </form>
-        <form id="DictatedLetterUnapproval" asp-action="Unapprove">
-            <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
-            <input type="button" class="btn btn-default btn-success" value="Unapprove" id="btnUnapprove" hidden="true" />
-        </form>
-    </div>    
-    <div class="col-md-6"></div>
-</div>
-
-<h1>Dictated Letter For:</h1>
-<h2>@Html.ValueFor(model => model.dictatedLetters.LetterRe)</h2>
-
-<div class="container mb-5">
-    <form id="DictatedLetter" asp-action="Edit">
-        <div id="metadata" hidden="true">
-            @*We absolutely must have these fields if they're in the data source, otherwise they will be wiped when we do the update!!*@
-            <input asp-for="dictatedLetters.RefID" />
-            <input asp-for="dictatedLetters.MPI" />
-            <input asp-for="dictatedLetters.DoTID" name="iDID" />
-            <input id="txtisAddressChanged" name="isAddresseeChanged" />
+<div class="container">
+    <div class=" row mb-5 g-5">
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Index">Back to Dictated Letters Index</a>
         </div>
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-1" style="text-align:right">
-                To:
-            </div>
-            <div class="col-md-2">
-                <div class="row">
-                    <select id="ddlLetterTo">
-                        <option value="" selected>Select...</option>
-                        <option value="Patient">Patient</option>
-                        <option value="Relative">Relative</option>
-                        <option value="Referrer">Referrer</option>
-                        <option value="GP">GP</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="row">
-                    <select id="ddlLetterToType" hidden="true">
-                        <option value="Screening Coordinator">Screening Coordinator</option>
-                        <option value="Genetics Lab">Genetics Lab</option>
-                        <option value="Histopathologist">Histopathologist</option>
-                        <option value="Consultant Geneticist">Consultant Geneticist</option>
-                    </select>
-                </div>
-                <div class="row">
-                    <select id="ddlLetterToClinician" hidden="true">
-                        @foreach(var item in Model.clinicians)
-                        {
-                            <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME</option>
-                        }
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo" name="sLetterTo"></textarea>
-            </div>
-            <div class="col-md-1" style="text-align:right">
-                From:
-            </div>
-            <div class="col-md-2">
-                <select id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode>
-                    <option value="">Select...</option>                    
-                    @foreach(var item in Model.staffMemberList)
-                    {
-                        <option value=@item.STAFF_CODE>@item.NAME</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-3">
-                <textarea id="txtLetterFrom" rows="8" cols="40" asp-for="dictatedLetters.LetterFrom" name="sLetterFrom"></textarea>
-            </div>
+        <div class="col-md-2">
+            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveLetter" />
+        </div>    
+        <div class="col-md-2">
+            <form id="DictatedLetterApproval" asp-action="Approve">
+                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+                <input type="button" class="btn btn-default btn-success" value="Approve" id="btnApprove" hidden="true" />
+            </form>
+            <form id="DictatedLetterUnapproval" asp-action="Unapprove">
+                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+                <input type="button" class="btn btn-default btn-success" value="Unapprove" id="btnUnapprove" hidden="true" />
+            </form>
+        </div>    
+        <div class="col-md-2"></div>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>Patient Details</a>
         </div>
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2" style="text-align:right">
-                Letter Status:
-            </div>
-            <div class="col-md-4">
-                <select id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="sStatus">
-                    <option value="" selected></option>
-                    <option value="Draft">Draft</option>
-                    <option value="For Approval">For Approval</option>
-                    <option value="For Corrections">For Corrections</option>
-                    <option id="optPrint" value="For Printing">For Printing</option>
-                    <option id="optICP" value="ICP Draft">ICP Draft</option>
-                </select>
-            </div>
-            <div class="col-md-6"></div>
+        <div class="col-md-2">
+            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
         </div>
-        <div class="row mb-5 g-5">
-            <div class="col-md-2" style="text-align:right">Summary:</div>
-            <div class="col-md-10">
-                <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold" name="sLetterContentBold"></textarea>
-            </div>
-            <div class="col-md-2"></div>
-        </div>
-
-        <div class="row mb-5">
-            <div class="col-md-1" style="text-align:right">Secreterial Team:</div>
-            <div class="col-md-2">
-                <select asp-for=@Model.dictatedLetters.SecTeam name="sSecTeam">
-                    <option value="Team 1">Team 1</option>
-                    <option value="Team 2">Team 2</option>
-                    <option value="Team 3">Team 3</option>
-                    <option value="Team 4">Team 4</option>
-                </select>
-            </div>
-            <div class="col-md-1" style="text-align:right">Consultant:</div>
-            <div class="col-md-2">
-                <select asp-for=@Model.dictatedLetters.Consultant name="sConsultant">
-                    @foreach(var item in Model.staffMemberList)
-                    {
-                        <option value=@item.NAME>@item.NAME</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-1" style="text-align:right">Genetic Counsellor:</div>
-            <div class="col-md-2">
-                <select asp-for=@Model.dictatedLetters.GeneticCounsellor name="sGC">
-                    @foreach (var item in Model.staffMemberList)
-                    {
-                        <option value=@item.NAME>@item.NAME</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-1" style="text-align:right">Date Dictated:</div>
-            <div class="col-md-2">
-                <input type=date asp-for=@Model.dictatedLetters.DateDictated name="sDateDictated" />
-            </div>
-
-        </div>
-
-        <div class="row mb-5">
-            <div class="col-md-2" style="text-align:right">Content:</div>
-            <div class="col-md-10">
-                <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="sLetterContent" hidden="true"></textarea>
-                <div style="border:solid" class="col-md-10" id="letterText" contenteditable="true">
-                    @Html.Raw(@Model.dictatedLetters.LetterContent)
-                </div>
-            </div>
-        </div>
-        <div class="row mb-5">
-            
-        </div>       
-    </form>
-
-    <div class="row mb-5 g-5">
-        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Patients</button>
     </div>
 
-    <div class="collapse" id="collapsePatientsTable">
-        <form id="frmAddPatientToDOT" asp-action="AddPatientToDOT">
-            <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
-            <input id="txtPID" name="iPID" hidden="true" />
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>CGU Number</th>
-                        <th>Name</th>
-                        <th>DOB</th>
-                        <th>NHS Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.patients)
-                    {
-                        <tr>
-                            <td><input type="submit" ID=@item.MPI value="Add Patient" class="btn btn-default btn-sm btn-success" onclick="AddToDOT(@item.MPI)" /></td>
-                            <td>@item.CGU_No</td>
-                            <td>@item.FIRSTNAME @item.LASTNAME</td>
-                            <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
-                            <td>@item.SOCIAL_SECURITY</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </form>
-    </div>
-    
-    <div class="row mb-5 g-5">
-        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseCopiesTable" aria-expanded="false" aria-controls="collapseExample">CCs</button>
-    </div>
+    <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME)</h1>
 
-    <div class="collapse" id="collapseCopiesTable">
-        <h3>CCs currently added to letter:</h3>
-        <div class="row mb-5 g-5">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>CC Address</th>                    
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.dictatedLettersCopies)
-                    {
-                        <tr>
-                            <td>@item.CC</td>                        
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        <form id="frmAddCCToDOT" asp-action="AddCCToDOT">
-            <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
-            <div class="row mb-5 g-5">            
+    <h2>Re: @Html.ValueFor(model => model.dictatedLetters.LetterRe)</h2>
+
+    <div class="container mb-5">
+        <form id="DictatedLetter" asp-action="Edit">
+            <div id="metadata" hidden="true">
+                <input asp-for="dictatedLetters.DoTID" name="iDID" />
+                <input id="txtisAddressChanged" name="isAddresseeChanged" />
+            </div>
+
+            <div class="row mb-5 g-5">
+                <div class="col-md-1" style="text-align:right">
+                    To:
+                </div>
                 <div class="col-md-2">
-                    <input type="button" id="btnAddCC" class="btn btn-default btn-success" value="Add CC" />
+                    <div class="row">
+                        <select id="ddlLetterTo">
+                            <option value="" selected>Select...</option>
+                            <option value="Patient">Patient</option>
+                            <option value="Relative">Relative</option>
+                            @if (Model.referralDetails.ReferrerCode != Model.patientDetails.GP_Code)
+                            {
+                                <option value="Referrer">Referrer</option>                            
+                            }
+                            <option value="GP">GP</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <select id="ddlLetterToType" hidden="true">
+                            <option value="Screening Coordinator">Screening Coordinator</option>
+                            <option value="Genetics Lab">Genetics Lab</option>
+                            <option value="Histopathologist">Histopathologist</option>
+                            <option value="Consultant Geneticist">Consultant Geneticist</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <select id="ddlLetterToClinician" hidden="true">
+                            @foreach(var item in Model.clinicians)
+                            {
+                                <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME</option>
+                            }
+                        </select>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <select id="ddlCC" name="sCC">
-                        @foreach (var item in Model.clinicians)
+                <div class="col-md-3">
+                    <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo" name="sLetterTo"></textarea>
+                </div>
+                <div class="col-md-1" style="text-align:right">
+                    From:
+                </div>
+                <div class="col-md-2">
+                    <select id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode>
+                        <option value="">Select...</option>                    
+                        @foreach(var item in Model.staffMemberList)
                         {
-                            <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.SPECIALITY</option>
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
                         }
                     </select>
-                </div>            
+                </div>
+                <div class="col-md-3">
+                    <textarea id="txtLetterFrom" rows="8" cols="40" asp-for="dictatedLetters.LetterFrom" name="sLetterFrom"></textarea>
+                </div>
             </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2" style="text-align:right">
+                    Letter Status:
+                </div>
+                <div class="col-md-4">
+                    <select id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="sStatus">
+                        <option value="" selected></option>
+                        <option value="Draft">Draft</option>
+                        <option value="For Approval">For Approval</option>
+                        <option value="For Corrections">For Corrections</option>
+                        <option id="optPrint" value="For Printing">For Printing</option>
+                        <option id="optICP" value="ICP Draft">ICP Draft</option>
+                    </select>
+                </div>
+                <div class="col-md-6"></div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2" style="text-align:right">Summary:</div>
+                <div class="col-md-10">
+                    <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold" name="sLetterContentBold"></textarea>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-md-1" style="text-align:right">Secreterial Team:</div>
+                <div class="col-md-2">
+                    <select id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="sSecTeam">
+                        <option value="">Select...</option>
+                        @foreach (var item in Model.secteams)
+                        {
+                            <option value=@item>@item</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-1" style="text-align:right">Consultant:</div>
+                <div class="col-md-2">
+                    <select id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="sConsultant">
+                        @foreach(var item in Model.consultants)
+                        {
+                            <option value=@item>@item</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-1" style="text-align:right">Genetic Counsellor:</div>
+                <div class="col-md-2">
+                    <select id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="sGC">
+                        @foreach (var item in Model.gcs)
+                        {
+                            <option value=@item>@item</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-1" style="text-align:right">Date Dictated:</div>
+                <div class="col-md-2">
+                    <input id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="sDateDictated" />
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-md-2" style="text-align:right">Content:</div>
+                <div class="col-md-10">
+                    <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="sLetterContent" hidden="true"></textarea>
+                    <div style="border:solid" class="col-md-10" id="letterText" contenteditable="true">
+                        @Html.Raw(@Model.dictatedLetters.LetterContent)
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-5">
+            
+            </div>       
         </form>
+
+        <div class="row mb-5 g-5">
+            <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Patients</button>
+        </div>
+
+        <div class="collapse" id="collapsePatientsTable">
+            <form id="frmAddPatientToDOT" asp-action="AddPatientToDOT">
+                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+                <input id="txtPID" name="iPID" hidden="true" />
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>CGU Number</th>
+                            <th>Name</th>
+                            <th>DOB</th>
+                            <th>NHS Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.patients)
+                        {
+                            <tr>
+                                <td><input type="submit" ID=@item.MPI value="Add Patient" class="btn btn-default btn-sm btn-success" onclick="AddToDOT(@item.MPI)" /></td>
+                                <td>@item.CGU_No</td>
+                                <td>@item.FIRSTNAME @item.LASTNAME</td>
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                <td>@item.SOCIAL_SECURITY</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    
+        <div class="row mb-5 g-5">
+            <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseCopiesTable" aria-expanded="false" aria-controls="collapseExample">CCs</button>
+        </div>
+
+        <div class="collapse" id="collapseCopiesTable">
+            <h3>CCs currently added to letter:</h3>
+            <div class="row mb-5 g-5">
+                <form id="frmDeleteCC" asp-action="DeleteCCFromDOT">                
+                    <input id="txtCCID" name="iID" hidden="true" />
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>CC Address</th>   
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.dictatedLettersCopies)
+                            {                        
+                                <tr>
+                                    <td>@item.CC</td>
+                                    <td>
+                                        <input type="button" id=@item.CC value="Delete" class="btn btn-default btn-sm btn-success" onclick="DeleteCC(@item.CCID)" />
+                                    </td>
+                                </tr>                        
+                            }
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <form id="frmAddCCToDOT" asp-action="AddCCToDOT">
+                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+                <div class="row mb-5 g-5">            
+                    <div class="col-md-2">
+                        <input type="button" id="btnAddCC" class="btn btn-default btn-success" value="Add CC" />
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <select id="ddlCCType">
+                                <option value="" selected>Select...</option>
+                                <option value="Patient">Patient</option>
+                                <option value="Relative">Relative</option>
+                                @if (Model.referralDetails.ReferrerCode != Model.patientDetails.GP_Code)
+                                {
+                                    <option value="Referrer">Referrer</option>
+                                }
+                                <option value="GP">GP</option>
+                                <option value="Other">Other</option>
+                            </select>                    
+                            <select id="ddlCC" name="sCC" hidden="true">            
+                                @foreach (var item in Model.clinicians)
+                                {
+                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.SPECIALITY</option>
+                                }
+                            </select>
+                        </div>
+                    </div>            
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
 
 
 <script type="text/javascript">
@@ -247,9 +274,18 @@
     document.getElementById("ddlLetterTo").addEventListener("change", SetLetterTo);
     document.getElementById("ddlLetterFrom").addEventListener("change", SetLetterFrom);
     document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
-    document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician)
+    document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
+    document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);    
     document.getElementById("btnAddCC").addEventListener("click", AddCC);
     window.addEventListener("load", LoadLetter);
+    window.addEventListener("load", LoadEDMSLink);
+
+    function LoadEDMSLink() 
+    {
+        document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+    }
+
+    
 
     function LoadLetter() 
     { 
@@ -285,9 +321,14 @@
     function SaveLetter() 
     {        
         document.getElementById("txtLetterContent").value = document.getElementById("letterText").innerHTML.trim();
-        //we have to enable them or it won't pass the parameters to the function!
+        //we have to enable them or it won't pass the parameters to the function
         document.getElementById("ddlLetterStatus").disabled = false;     
-        document.getElementById("DictatedLetter").submit();        
+        if (CheckFormValid())
+        {
+            document.getElementById("DictatedLetter").submit();
+        }
+        //we can't do C# validation because there's simply no way to display the message,
+        //because the only way to refresh the page wipes everything!!
     }
 
     function ApproveLetter()
@@ -374,6 +415,11 @@
         document.getElementById("ddlLetterToClinician").hidden = false;
     }
 
+    function ShowCCClinician() 
+    {
+        document.getElementById("ddlCC").hidden = false;
+    }
+
     function SetLetterToClinician() 
     { 
         const sClinCode = document.getElementById("ddlLetterToClinician").value;
@@ -418,7 +464,6 @@
         document.getElementById("txtisAddressChanged").value = "true";
     }
 
-
     function SetLetterFrom() 
     {
         const sStaffCode = document.getElementById("ddlLetterFrom").value;
@@ -428,7 +473,7 @@
         var sStaffName = "";
         var sStaffPosition = "";
         //we can't simply get the data directly from the model and use it in a Where, 
-        // //so we have to use this dumb method!
+        // so we have to use this dumb method!
         @foreach (var item in Model.staffMemberList)
         {
             @:sStaffCodeArray.push("@item.STAFF_CODE");
@@ -449,26 +494,70 @@
         document.getElementById("txtisAddressChanged").value = "true";
     }
 
-    function AddToDOT(ID) 
+    function AddToDOT(id) 
     {        
-        document.getElementById("txtPID").value = ID;        
+        document.getElementById("txtPID").value = id;        
         document.getElementById("frmAddPatientToDOT").submit();
     }
 
     function AddCC()
-    {        
-        //window.alert(document.getElementById("ddlCC").value);
+    {   
         document.getElementById("frmAddCCToDOT").submit();
+    }
+
+    function DeleteCC(id) {
+        document.getElementById("txtCCID").value = id;
+        document.getElementById("frmDeleteCC").submit();
     }
 
     function CheckFormValid() 
     {
         //gotta protect against those SQL injections!
-        if (document.getElementById("letterText").value.match(/};.*/)) {
+        if (document.getElementById("txtLetterContent").value.match(/};.*/)) 
+        {
             window.alert("Oi! Stop trying to inject SQL code into my form!");
             return 0;
         }
-
+        if (document.getElementById("txtLetterContentBold").value == "") 
+        {
+            window.alert("Please enter a summary.")        
+            return 0;
+        }
+        if (document.getElementById("txtLetterContent").value == "") 
+        { 
+            window.alert("Please enter some text.")
+            return 0;
+        }
+        if (document.getElementById("ddlSecTeam").value == "") 
+        {
+            window.alert("Please select a secreterial team.")
+            return 0;
+        }
+        if (document.getElementById("ddlConsultant").value == "") 
+        {
+            window.alert("Please select a consultant.")
+            return 0;
+        }        
+        if (document.getElementById("ddlGC").value == "") 
+        {
+            window.alert("Please select a GC.")
+            return 0;
+        }
+        if (document.getElementById("txtLetterTo").value == "") 
+        {
+            window.alert("Please choose a recipient.")
+            return 0;
+        }
+        if (document.getElementById("txtLetterFrom").value == "") 
+        {
+            window.alert("Please choose a sender.")
+            return 0;
+        }
+        if (document.getElementById("txtDateDictated").value == "") 
+        {
+            window.alert("Please specify a dictated date.")
+            return 0;
+        }
         return 1;
     }
 

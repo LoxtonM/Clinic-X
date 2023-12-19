@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 using ClinicX.Data;
-using ClinicX.Models;
 using ClinicX.ViewModels;
-using System.Security.Cryptography;
 using ClinicX.Meta;
 
 namespace ClinicX.Controllers

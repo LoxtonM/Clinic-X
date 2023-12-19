@@ -4,54 +4,56 @@
     ViewData["Title"] = "Clinic-X - Add New Diagnosis";
 }
 
-<div class ="row g-5 mb-5">
-    <div class="col-md-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        <a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Diagnosis List</a>
+<div class="container">
+    <div class ="row g-5 mb-5">
+        <div class="col-md-2">
+            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+            <a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Diagnosis List</a>
+        </div>
     </div>
-</div>
 
-<h1>Add new diagnosis for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME)</h1>
+    <h1>Add new diagnosis for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME)</h1>
 
-<form id="frmAddNew" asp-action="AddNew">
+    <form id="frmAddNew" asp-action="AddNew">
+        <div class="row g-5 mb-5">
+            <div class="col-md-2">
+                Diagnosis:
+            </div>
+            <div class="col-md-4">
+                <select id="ddlDiag" name="sDiseaseCode">
+                    <option value="" selected>select...</option>
+                    @foreach (var d in Model.diseaseList)
+                    {
+                        <option value="@d.DISEASE_CODE">@d.DISEASE_CODE - @d.DESCRIPTION</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row g-5 mb-5">   
+            <div class="col-md-2">Disease status:</div>
+            <div class="col-md-2">
+                <select id="ddlStatus" name="sStatus">
+                    <option value="" selected>select...</option>
+                    @foreach (var d in Model.statusList)
+                    {
+                        <option value="@d.DISEASE_STATUS">@d.DISEASE_STATUS</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">Comments:</div>
+            <div class="col-md-6"><input type="text" id="txtComments" name="sComments" /></div>
+        </div>
+
+        <div id="metadata" hidden="true">
+            <input name="iMPI" value="@Html.DisplayFor(model => model.patient.MPI)" />
+        </div>
+    </form>
+
     <div class="row g-5 mb-5">
         <div class="col-md-2">
-            Diagnosis:
+            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
         </div>
-        <div class="col-md-4">
-            <select id="ddlDiag" name="sDiseaseCode">
-                <option value="" selected>select...</option>
-                @foreach (var d in Model.diseaseList)
-                {
-                    <option value="@d.DISEASE_CODE">@d.DISEASE_CODE - @d.DESCRIPTION</option>
-                }
-            </select>
-        </div>
-    </div>
-
-    <div class="row g-5 mb-5">   
-        <div class="col-md-2">Disease status:</div>
-        <div class="col-md-2">
-            <select id="ddlStatus" name="sStatus">
-                <option value="" selected>select...</option>
-                @foreach (var d in Model.statusList)
-                {
-                    <option value="@d.DISEASE_STATUS">@d.DISEASE_STATUS</option>
-                }
-            </select>
-        </div>
-        <div class="col-md-2">Comments:</div>
-        <div class="col-md-6"><input type="text" id="txtComments" name="sComments" /></div>
-    </div>
-
-    <div id="metadata" hidden="true">
-        <input name="iMPI" value="@Html.DisplayFor(model => model.patient.MPI)" />
-    </div>
-</form>
-
-<div class="row g-5 mb-5">
-    <div class="col-md-2">
-        <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
     </div>
 </div>
 

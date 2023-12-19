@@ -3,17 +3,18 @@
     ViewData["Title"] = "Clinic-X - HPO Term Extraction";
 }
 
-<div class="mb-5">
-    @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-    <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Edit" asp-route-id=@Html.ValueFor(Model => Model.clinicalNote.ClinicalNoteID)>Back to Note</a>
-</div>
+<div class="container">
+    <div class="mb-5">
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Edit" asp-route-id=@Html.ValueFor(Model => Model.clinicalNote.ClinicalNoteID)>Back to Note</a>
+    </div>
 
 
-<h1>Clinical Note HPO Terms</h1>
+    <h1>Clinical Note HPO Terms</h1>
 
-<div>
-    <form id="ExtractHPOTerms">        
-        <div class="row mb-2 g-2">
+    <div>
+        <form id="ExtractHPOTerms">        
+            <div class="row mb-2 g-2">
                 <div class="row">
                     <div class="col-sm-2">
                         Note:
@@ -32,99 +33,99 @@
                     NoteID:<input id="metaNoteID" name="iNoteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) />
                     DCTMSTS:<input id="txtDCTMSts" value=@Html.DisplayFor(Model => Model.clinicalNote.CN_DCTM_sts) />
                 </div>
-
-    </form>
-</div>
-
-<div class="row">
-<h4>Existing HPO codes:</h4>
-    <form id="DeleteHPOTermFromNote" asp-action="DeleteHPOTermFromNote">
-    <input id="txtID" name="iID" hidden="true" />
-    
-    @foreach (var e in Model.hpoTermDetails)
-    {
-        <div class="row mb-2 g-2">
-            <div class="col-sm-2">
-                    <input type="submit" ID=@e.ID value="Delete" class="btn btn-default btn-sm btn-success" onclick="DeleteTermFromText(@e.ID)" />
-            </div>            
-            <div class="col-sm-10">
-                @e.TermCode - @e.Term
             </div>
-        </div>
-    }
-    </form>
-</div>
+        </form>
+    </div>
 
-<div class="row g-5 mb-5">
-    <hr />
-</div>
-
-<div class="row">    
-    <h4>Suggested HPO codes:</h4>
-    <br /><br />
-    <form id="AddHPOTermFromText" asp-action="AddHPOTermFromText">
-        <input id="txtNoteID1" name="iNoteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) hidden="true" /> <input id="txtTermID" name="iTermID" hidden="true" />
-    @if(Model.hpoExtractVM.Count > 0)
-    {
-        <h5>The following HPO terms have been found:</h5>
-            
-        @foreach (var t in Model.hpoExtractVM)
+    <div class="row">
+    <h4>Existing HPO codes:</h4>
+        <form id="DeleteHPOTermFromNote" asp-action="DeleteHPOTermFromNote">
+        <input id="txtID" name="iID" hidden="true" />
+    
+        @foreach (var e in Model.hpoTermDetails)
         {
             <div class="row mb-2 g-2">
                 <div class="col-sm-2">
-                    <input type="button" id=@t.HPOTermID value="Add Term" class="btn btn-default btn-sm btn-success" onclick="AddTermFromText(@t.HPOTermID)"  />
-                </div>                
-                <div class="col-sm-10">
-                    @t.TermCode - @t.Term
+                        <input type="button" ID=@e.ID value="Delete" class="btn btn-default btn-sm btn-success" onclick="DeleteTermFromText(@e.ID)" />
                 </div>            
+                <div class="col-sm-10">
+                    @e.TermCode - @e.Term
+                </div>
             </div>
         }
-    }
-    else
-    {
-        <h5>No HPO terms can be extracted from the note provided.</h5>
-    }
-    </form>
-</div>
+        </form>
+    </div>
 
-<div class="row g-5 mb-5">
-    <hr />
-</div>
+    <div class="row g-5 mb-5">
+        <hr />
+    </div>
 
-<div>
-    <h4>Add other HPO codes:</h4>
-    <form id="AddHPOTerm" asp-action="AddHPOTerm">        
-        <div class="row">
-            <div class="col-md-2">
-                HPO Terms:
+    <div class="row">    
+        <h4>Suggested HPO codes:</h4>
+        <br /><br />
+        <form id="AddHPOTermFromText" asp-action="AddHPOTermFromText">
+            <input id="txtNoteID1" name="iNoteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) hidden="true" /> <input id="txtTermID" name="iTermID" hidden="true" />
+            @if(Model.hpoExtractVM.Count > 0)
+            {
+                <h5>The following HPO terms have been found:</h5>
+            
+                @foreach (var t in Model.hpoExtractVM)
+                {
+                    <div class="row mb-2 g-2">
+                        <div class="col-sm-2">
+                            <input type="button" id=@t.HPOTermID value="Add Term" class="btn btn-default btn-sm btn-success" onclick="AddTermFromText(@t.HPOTermID)"  />
+                        </div>                
+                        <div class="col-sm-10">
+                            @t.TermCode - @t.Term
+                        </div>            
+                    </div>
+                }
+            }
+            else
+            {
+                <h5>No HPO terms can be extracted from the note provided.</h5>
+            }
+        </form>
+    </div>
+
+    <div class="row g-5 mb-5">
+        <hr />
+    </div>
+
+    <div>
+        <h4>Add other HPO codes:</h4>
+        <form id="AddHPOTerm" asp-action="AddHPOTerm">        
+            <div class="row">
+                <div class="col-md-2">
+                    HPO Terms:
+                </div>
+    
+                <div class="col-md-6">
+                    <select id="ddlHPO" name="iTermID">
+                    @foreach (var t in Model.hpoTerms)
+                    {
+                        <option value="@t.ID">@t.TermCode - @t.Term</option>
+                    }
+                    </select>
+                </div>    
+                <div class="col-md-4"></div>
+            </div>
+        @*there is, apparently, no way to stop the drop-down list from growing dynamically, so I have to put the button on another line.*@
+            <div class="row">
+                <div class="col-md-10"></div>
+                <div class="col-md-2"><input type="button" value="Add Term" id="btnAdd" class="btn btn-default btn-success" asp-controller="HPO" asp-action="AddHPOTerm" /></div>    
             </div>
     
-            <div class="col-md-6">
-                <select id="ddlHPO" name="iTermID">
-                @foreach (var t in Model.hpoTerms)
-                {
-                    <option value="@t.ID">@t.TermCode - @t.Term</option>
-                }
-                </select>
-            </div>    
-            <div class="col-md-4"></div>
-        </div>
-    @*there is, apparently, no way to stop the drop-down list from growing dynamically, so I have to put the button on another line.*@
-        <div class="row">
-            <div class="col-md-10"></div>
-            <div class="col-md-2"><input type="button" value="Add Term" id="btnAdd" class="btn btn-default btn-success" asp-controller="HPO" asp-action="AddHPOTerm" /></div>    
-        </div>
-
+            <div class="row mb-5 g-5">        
+                <input id="txtNoteID2" name="iNoteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) hidden="true" />
+            </div>
+        </form>
     
-        <div class="row mb-5 g-5">        
-            <input id="txtNoteID2" name="iNoteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) hidden="true" />
-        </div>
-    </form>
-    
-</div>
+    </div>
 
-<div class="row g-5 mb-5">
-    <hr />
+    <div class="row g-5 mb-5">
+        <hr />
+    </div>
 </div>
 
 
@@ -135,7 +136,8 @@
     document.getElementById("btnAdd").addEventListener("click", AddTerm);
     window.addEventListener("load", LoadNote);
 
-    function LoadNote() {        
+    function LoadNote() 
+    {        
 
         if (document.getElementById("txtDCTMSts").value == 1) 
         {            
@@ -143,22 +145,26 @@
         }
     }
 
-    function ExtractTerms(){
+    function ExtractTerms()
+    {
         document.getElementById("ExtractHPOTerms").submit();
     }
 
-    function AddTerm() {        
+    function AddTerm() 
+    {        
         document.getElementById("AddHPOTerm").submit();
     }
 
-    function AddTermFromText(termID){
+    function AddTermFromText(termID)
+    {
         //there is no way to call the function with the two parameters being in separate places, so we have to
         //cheat it by putting the termID parameter into a field it can access
         document.getElementById("txtTermID").value = termID;
         document.getElementById("AddHPOTermFromText").submit();
     }    
 
-    function DeleteTermFromText(ID){
+    function DeleteTermFromText(ID)
+    {
         //same as above, we have to cheat it by putting the ID into a field that can pass it to the c#
         document.getElementById("txtID").value = ID;
         document.getElementById("DeleteHPOTermFromNote").submit();

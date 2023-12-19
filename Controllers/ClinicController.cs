@@ -3,9 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ClinicX.Data;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using ClinicX.Models;
 using System.Data;
-using Microsoft.Data.SqlClient;
 using ClinicX.Meta;
 
 namespace ClinicX.Controllers
@@ -124,6 +122,12 @@ namespace ClinicX.Controllers
                 
                 crud.CallStoredProcedure("Appointment", "Update", iRefID, iNoSeen, 0, sCounseled, sSeenBy,
                     sLetterRequired, sEthnicity, User.Identity.Name, dArrivalTime, null, isClockStop, isComplete);
+
+                if(sLetterRequired != "No")
+                {
+                    crud.CallStoredProcedure("Letter", "Create", 0, iRefID, 0, "", "",
+                    "", "", User.Identity.Name);
+                }
 
                 return RedirectToAction("ApptDetails", new { id = iRefID });
                 //}

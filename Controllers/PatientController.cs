@@ -2,7 +2,6 @@
 using ClinicX.Data;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
-using ClinicX.Models;
 using ClinicX.Meta;
 
 namespace ClinicX.Controllers
@@ -35,6 +34,7 @@ namespace ClinicX.Controllers
                 pvm.referrals = vm.GetReferrals(id);
                 pvm.patientPathway = vm.GetPathwayDetails(id);
                 pvm.alerts = vm.GetAlerts(id);
+                pvm.diary = vm.GetDiaryList(id);
 
                 return View(pvm);
             }

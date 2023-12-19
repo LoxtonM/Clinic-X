@@ -4,76 +4,77 @@
     ViewData["Title"] = "Clinic-X - Tests";
 }
 
-<div>
-    @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>        *@
-</div>
-
-
-@if  (Model.Count() == 0)
-{    
-    <h1 style="text-align:center">There are no tests outstanding.</h1>    
-}
-else
-{
-    <h1>Outstanding results</h1>
-
-    <div class="row g-5 mb-5">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Test</th>
-                    <th>Ordered for</th>  
-                    <th>Sent To</th>
-                    <th>@Html.DisplayNameFor(model => model.DATE_REQUESTED)</th>
-                    <th>@Html.DisplayNameFor(model => model.DATE_RECEIVED)</th>
-                    <th>Result</th>
-                    <th>@Html.DisplayNameFor(model => model.ResultGivenDate)</th>
-                    <th>Complete</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID>Select</a></td>
-                        <td>@item.TEST</td>
-                        <td>@item.FIRSTNAME @item.LASTNAME</td>
-                        <td>@item.LOCATION</td>
-                        <td>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
-                        @if (@item.DATE_RECEIVED.HasValue)
-                        {
-                            <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
-                        }
-                        else
-                        {
-                            <td>N/A</td>
-                        }
-                        <td>@item.RESULT</td>
-                        
-                        @if(@item.ResultGivenDate.HasValue)
-                        {
-                            <td>@item.ResultGivenDate.Value.ToString("dd/MM/yyyy")</td>
-                        }
-                        else
-                        {
-                            <td>N/A</td>                        
-                        }
-                        <td>@item.COMPLETE</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+<div class="container">
+    <div>
+        @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>        *@
     </div>
-}
 
-<div id="metadata" hidden="true">
-    <span id="theurl">@Context.Request.Path</span>
-    <span id="thehost">@Context.Request.Host</span>
-    <span id="count">@Model.Count()</span>
+
+    @if  (Model.Count() == 0)
+    {    
+        <h1 style="text-align:center">There are no tests outstanding.</h1>    
+    }
+    else
+    {
+        <h1>Outstanding results</h1>
+
+        <div class="row g-5 mb-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Test</th>
+                        <th>Ordered for</th>  
+                        <th>Sent To</th>
+                        <th>@Html.DisplayNameFor(model => model.DATE_REQUESTED)</th>
+                        <th>@Html.DisplayNameFor(model => model.DATE_RECEIVED)</th>
+                        <th>Result</th>
+                        <th>@Html.DisplayNameFor(model => model.ResultGivenDate)</th>
+                        <th>Complete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID>Select</a></td>
+                            <td>@item.TEST</td>
+                            <td>@item.FIRSTNAME @item.LASTNAME</td>
+                            <td>@item.LOCATION</td>
+                            <td>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
+                            @if (@item.DATE_RECEIVED.HasValue)
+                            {
+                                <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
+                            <td>@item.RESULT</td>
+                            
+                            @if(@item.ResultGivenDate.HasValue)
+                            {
+                                <td>@item.ResultGivenDate.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>                        
+                            }
+                            <td>@item.COMPLETE</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div id="metadata" hidden="true">
+        <span id="theurl">@Context.Request.Path</span>
+        <span id="thehost">@Context.Request.Host</span>
+        <span id="count">@Model.Count()</span>
+    </div>
+
 </div>
-
-
 
 <script type="text/javascript">
 
@@ -81,18 +82,20 @@ else
     document.getElementById("btnAddNew").addEventListener("click", OpenTestForm);
     window.addEventListener("load", LoadPage);
 
-    function LoadPage() {        
-
+    function LoadPage() 
+    {
         document.getElementById("metadata").hidden = true;
     }
 
-    function GoBack() {
+    function GoBack() 
+    {
         window.history.back();
         //window.close();
     }
 
 
-    function OpenTestForm() {
+    function OpenTestForm() 
+    {
         //this incredibly round-about method is necessary because apparently it is impossible to simply pass the URL parameter into the button!
         var surl = "https://" + document.getElementById("thehost").innerHTML + document.getElementById("theurl").innerHTML;
         //surl = surl.replace("Index", "AddNew");

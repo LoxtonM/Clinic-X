@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using ClinicX.Data;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
-using ClinicX.Models;
-using Microsoft.Data.SqlClient;
 using System.Data;
 using ClinicX.Meta;
 
@@ -18,6 +16,7 @@ namespace ClinicX.Controllers
         private readonly ICPVM ivm;
         private readonly VMData vm;
         private readonly CRUD crud;
+        private readonly LetterController lc;
 
 
         public TriageController(ClinicalContext context, DocumentContext docContext, IConfiguration config)
@@ -28,6 +27,7 @@ namespace ClinicX.Controllers
             ivm = new ICPVM();
             vm = new VMData(_context);
             crud = new CRUD(_config);
+            lc = new LetterController(_docContext);
         }
 
         [Authorize]
@@ -86,7 +86,6 @@ namespace ClinicX.Controllers
                 string sApptIntent = "";
                 string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;
 
-
                 if (sComment == null)
                 {
                     sComment = "";
@@ -96,10 +95,7 @@ namespace ClinicX.Controllers
                 {
                     sApptIntent = "CLICS";
                 }
-
-                
-
-
+  
                 if (sStaffType == "Consultant")
                 {
                     if (sFacility != null && sFacility != "") // && sClinician != null && sClinician != "")
@@ -142,18 +138,14 @@ namespace ClinicX.Controllers
 
                 if (iTP2 == 2) //CTB letter
                 {
-                    LetterController lc = new LetterController(_docContext);
+                    //LetterController lc = new LetterController(_docContext);
                     lc.DoPDF(184, iMPI, referral.refid, User.Identity.Name, sReferrer);
-                }
-
-                if (iTP2 == 3) //CLICS
-                {
-
-                }
+                }                
 
                 if (iTP2 == 7) //Reject letter
                 {
-
+                    //LetterController lc = new LetterController(_docContext);
+                    lc.DoPDF(208, iMPI, referral.refid, User.Identity.Name, sReferrer);
                 }
 
                 return RedirectToAction("Index");
