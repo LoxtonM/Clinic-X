@@ -396,7 +396,7 @@
         <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseDiaryTable" aria-expanded="false" aria-controls="collapseExample">Diary (click to expand/hide)</button>
     </div>
 
-    <div class="collapse" id="collapseDiaryTable">
+    <div class="collapse" id="collapseDiaryTable">       
         @if (Model.diary.Count > 0)
         {
             <h4>Diary</h4>
@@ -427,6 +427,10 @@
                     </tbody>
                 </table>    
             </div>
+        }
+        else
+        {
+            <h4>No diary entries.</h4>
         }
     </div>
 

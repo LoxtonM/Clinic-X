@@ -123,6 +123,20 @@ namespace ClinicX.Controllers
             }
         }
 
+        public async Task<IActionResult> Delete(int iDID)
+        {
+            try 
+            {
+                crud.CallStoredProcedure("Letter", "Delete", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Approve(int iDID)
         {

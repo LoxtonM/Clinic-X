@@ -21,7 +21,17 @@
                 <input type="button" class="btn btn-default btn-success" value="Unapprove" id="btnUnapprove" hidden="true" />
             </form>
         </div>    
-        <div class="col-md-2"></div>
+        <div class="col-md-2">
+            <form id="DictatedLetterDelete" asp-action="Delete">
+                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+                <input type="button" class="btn btn-default btn-success" value="Delete" id="btnReqDelete" />
+                <div class="row mb-1 g-1" id="ConfDelete" hidden="true">
+                    <h6>Are you sure? You won't be able to undo this.</h6>
+                    <input type="button" class="btn btn-default btn-success" value="Yes" id="btnDelete"  />
+                    <input type="button" class="btn btn-default btn-success" value="No" id="btnNoDelete"  />
+                </div>
+            </form>
+        </div>
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>Patient Details</a>
         </div>
@@ -271,6 +281,9 @@
     document.getElementById("btnSaveLetter").addEventListener("click", SaveLetter);
     document.getElementById("btnApprove").addEventListener("click", ApproveLetter);
     document.getElementById("btnUnapprove").addEventListener("click", UnapproveLetter);
+    document.getElementById("btnDelete").addEventListener("click", DeleteLetter);
+    document.getElementById("btnReqDelete").addEventListener("click", ShowDelete);
+    document.getElementById("btnNoDelete").addEventListener("click", CancelDelete);
     document.getElementById("ddlLetterTo").addEventListener("change", SetLetterTo);
     document.getElementById("ddlLetterFrom").addEventListener("change", SetLetterFrom);
     document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
@@ -359,6 +372,24 @@
         document.getElementById("txtLetterTo").disabled = false;
         document.getElementById("txtLetterFrom").disabled = false;
         document.getElementById("txtLetterContentBold").disabled = false;     
+    }
+
+    function ShowDelete()
+    {
+        //window.alert("bleh");
+        document.getElementById("ConfDelete").hidden = false;
+        document.getElementById("btnReqDelete").hidden = true;
+    }
+
+    function DeleteLetter()
+    {       
+        document.getElementById("DictatedLetterDelete").submit();
+    }
+
+    function CancelDelete()
+    {
+        document.getElementById("ConfDelete").hidden = true;
+        document.getElementById("btnReqDelete").hidden = false;
     }
 
     function SetLetterTo() 

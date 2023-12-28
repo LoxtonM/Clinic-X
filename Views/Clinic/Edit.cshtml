@@ -108,11 +108,10 @@
                         <label for="ddlLetterRequired" id="lblLetterRequired">Letter Required:</label>
                     </div>
                     <div class="col-md-8">
-                        <select asp-for=@Model.activityItem.LetterReq id="ddlLetterRequired" name="sLetterRequired">
-                            <option value="" selected></option>
+                        <select asp-for=@Model.activityItem.LetterReq id="ddlLetterRequired" name="sLetterRequired">                            
                             <option value="Yes - Within 10 Days">Yes - Within 10 Days</option>
                             <option value="Yes - Later">Yes - Later</option>
-                            <option value="No">No</option>
+                            <option selected value="No">No</option>
                         </select>
                     </div>
                     <div class="col-md-2"></div>
@@ -133,10 +132,9 @@
                         <label for="ddlCloseRef" id="lblCloseRef">Close Referral:</label>
                     </div>
                     <div class="col-md-4">
-                        <select id="ddlCloseRef" name="isComplete">
-                            <option value="" selected></option>
+                        <select id="ddlCloseRef" name="isComplete">                            
                             <option value="True">Yes</option>
-                            <option value="False">No</option>
+                            <option selected value="False">No</option>
                         </select>
                     </div>
                 </div>
@@ -229,8 +227,8 @@
                 document.getElementById("txtArrivalTime").hidden = true;
                 document.getElementById("lblNoPatientsSeen").hidden = true;
                 document.getElementById("txtNoPatientsSeen").hidden = true;
-                document.getElementById("lblLetterRequired").hidden = true;
-                document.getElementById("ddlLetterRequired").hidden = true;
+                document.getElementById("lblLetterRequired").hidden = false;
+                document.getElementById("ddlLetterRequired").hidden = false;
             }
             else
             {

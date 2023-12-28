@@ -112,7 +112,7 @@ namespace ClinicX.Controllers
 
                 if (sLetterRequired == null)
                 {
-                    sLetterRequired = "";
+                    sLetterRequired = "No";
                 }
 
                 if (sEthnicity == null)
