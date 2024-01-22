@@ -103,6 +103,7 @@ namespace ClinicX.Models
         public bool? isClockStop { get; set; }
         public string? LetterRequired { get; set; }
         public string LoginDetails { get; set; }
+        public string? Notes { get; set; }
     }
 
     [Table("ViewPatientReferralDetails", Schema ="dbo")] //Referral data

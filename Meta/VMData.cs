@@ -550,5 +550,13 @@ namespace ClinicX.Meta
             return secteams.Distinct().ToList();
         }
 
+        public List<Caseload> GetCaseload(string sStaffCode) //Get caseload for clinician
+        {
+            var caseload = from c in _context.Caseload
+                           where c.StaffCode == sStaffCode
+                           select c;
+
+            return caseload.ToList();
+        }
     }
 }

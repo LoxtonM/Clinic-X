@@ -72,6 +72,15 @@
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.Clinic)
             </dd>
+            @if (Model.Notes != null)
+            {
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Notes):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Notes)
+                </dd>
+            }
             @if (Model.BOOKED_DATE <= DateTime.Now)
             {
                 @if (@Html.ValueFor(model => model.Attendance) != null && @Html.ValueFor(model => model.Attendance) != "")
