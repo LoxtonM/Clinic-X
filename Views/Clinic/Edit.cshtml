@@ -75,7 +75,8 @@
                     <label for="ddlSeenBy" id="lblSeenBy">Seen by:</label>
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.activityItem.SEEN_BY id="ddlSeenBy" name="sSeenBy">
+                    @*<select asp-for=@Model.activityItem.SEEN_BY id="ddlSeenBy" name="sSeenBy">*@
+                    <select asp-for=@Model.activityItem.STAFF_CODE_1 id="ddlSeenBy" name="sSeenBy">
                         <option value="" selected>select...</option>
                         @foreach (var c in Model.staffMembers)
                         {
@@ -90,7 +91,8 @@
                         <label for="txtArrivalTime" id="lblArrivalTime">Arrival Time:</label>
                     </div>
                     <div class="col-md-6">
-                        <input asp-for=@Model.activityItem.ARRIVAL_TIME id="txtArrivalTime" type="time" name="dArrivalTime" />
+                        @*<input asp-for=@Model.activityItem.ARRIVAL_TIME id="txtArrivalTime" type="time" name="dArrivalTime" />*@
+                        <input asp-for=@Model.activityItem.BOOKED_TIME id="txtArrivalTime" type="time" name="dArrivalTime" />
                     </div>
                     <div class="col-md-4"></div>
                 </div>

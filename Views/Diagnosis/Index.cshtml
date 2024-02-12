@@ -62,9 +62,9 @@
 
 <script type="text/javascript">
 
-    document.getElementById("btnBack").addEventListener("click", GoBack);
+    //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnAddNew").addEventListener("click", AddNew);
-    window.addEventListener("load", LoadPage);
+    //window.addEventListener("load", LoadPage);
 
     function LoadPage() {
 
@@ -78,7 +78,7 @@
 
 
     function AddNew() 
-    {
+    {       
         //this incredibly round-about method is necessary because apparently it is impossible to simply pass the URL parameter into the button!
         var surl = "https://" + document.getElementById("thehost").innerHTML + document.getElementById("theurl").innerHTML;
         //surl = surl.replace("Index", "AddNew");
