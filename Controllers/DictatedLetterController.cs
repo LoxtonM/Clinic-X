@@ -64,10 +64,12 @@ namespace ClinicX.Controllers
                 int? iMPI = lvm.dictatedLetters.MPI;
                 int? iRefID = lvm.dictatedLetters.RefID;
                 lvm.patientDetails = vm.GetPatientDetails(iMPI.GetValueOrDefault());
-                lvm.referralDetails = vm.GetReferralDetails(iRefID.GetValueOrDefault());
+                lvm.activityDetails = vm.GetActivityDetails(iRefID.GetValueOrDefault());
                 string sGPCode = lvm.patientDetails.GP_Facility_Code;
-                string sRefFacCode = lvm.referralDetails.ReferringFacilityCode;
+                string sRefFacCode = lvm.activityDetails.REF_FAC;
+                string sRefPhysCode = lvm.activityDetails.REF_PHYS;
                 lvm.referrerFacility = vm.GetFacilityDetails(sRefFacCode);
+                lvm.referrer = vm.GetClinicianDetails(sRefPhysCode);
                 lvm.GPFacility = vm.GetFacilityDetails(sGPCode);
                 lvm.facilities = vm.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
                 lvm.clinicians = vm.GetClinicianList().Where(f => f.Is_Gp == 0 && f.NAME != null && f.FACILITY != null).ToList();

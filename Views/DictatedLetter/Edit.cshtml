@@ -61,7 +61,7 @@
                             <option value="" selected>Select...</option>
                             <option value="Patient">Patient</option>
                             <option value="Relative">Relative</option>
-                            @if (Model.referralDetails.ReferrerCode != Model.patientDetails.GP_Code)
+                            @if (Model.activityDetails.REF_FAC != Model.patientDetails.GP_Code)
                             {
                                 <option value="Referrer">Referrer</option>                            
                             }
@@ -254,7 +254,7 @@
                                 <option value="" selected>Select...</option>
                                 <option value="Patient">Patient</option>
                                 <option value="Relative">Relative</option>
-                                @if (Model.referralDetails.ReferrerCode != Model.patientDetails.GP_Code)
+                                @if (Model.activityDetails.REF_FAC != Model.patientDetails.GP_Code)
                                 {
                                     <option value="Referrer">Referrer</option>
                                 }
@@ -420,7 +420,7 @@
         }
         if (sLetterTo == "Referrer")
         {
-            sName = "@Model.referralDetails.ReferringClinician";
+            sName = "@Model.referrer.TITLE" + " " + "@Model.referrer.FIRST_NAME" + " " + "@Model.referrer.NAME";
             sAddress = "@Model.referrerFacility.NAME" + "\n" +
                         "@Model.referrerFacility.ADDRESS" + "\n" +
                         "@Model.referrerFacility.CITY" + "\n" +

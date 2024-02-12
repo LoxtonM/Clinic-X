@@ -152,6 +152,8 @@ namespace ClinicX.Models
         [Display(Name = "Clinic Venue")]
         public string? FACILITY { get; set; }
         public string? PATHWAY { get; set; }
+        public string? REF_PHYS { get; set; }
+        public string? REF_FAC { get; set; }
     }
 
     [Table("PatientDiary", Schema = "dbo")]
