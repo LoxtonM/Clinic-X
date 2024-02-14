@@ -539,6 +539,7 @@ namespace ClinicX.Models
     public class Caseload
     {
         public int MPI { get; set; }
+        public int RecordPrimaryKey { get; set; }
         public string StaffCode { get; set; }
         public string Type  { get; set; }
         public DateTime? BookedDate { get; set; }

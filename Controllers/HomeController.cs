@@ -31,7 +31,7 @@ namespace ClinicX.Controllers
                 //              where cl.StaffCode == user.STAFF_CODE
                 //              orderby cl.BookedDate
                 //              select cl;
-                cvm.caseLoad = vm.GetCaseload(user.STAFF_CODE);
+                cvm.caseLoad = vm.GetCaseload(user.STAFF_CODE).OrderBy(c => c.BookedDate).ToList();
                 cvm.countClinics = cvm.caseLoad.Where(c => c.Type.Contains("App")).Count();
                 cvm.countTriages = cvm.caseLoad.Where(c => c.Type.Contains("Triage")).Count();
                 cvm.countCancerICPs = cvm.caseLoad.Where(c => c.Type.Contains("Cancer")).Count();

@@ -11,40 +11,36 @@
         }
         else
         {
-        @*<h2 class="text-center">Welcome, @Html.DisplayFor(model => model.NAME)!</h2>*@
-        @*<h2 class="text-center">Welcome, @Html.DisplayFor(model => model.FirstOrDefault().Clinician)!</h2>*@
-        <h2 class="text-center">Welcome, @Html.DisplayFor(model => model.name)!</h2>
-        <br />
+            <h2 class="text-center">Welcome, @Html.DisplayFor(model => model.name)!</h2>
+            <br />
 
-        <p style="text-align:center"><img src="~/images/clinic-x-logo-2.png" width="500" height="200" /></p>
-        <br />
+            <p style="text-align:center"><img src="~/images/clinic-x-logo-2.png" width="500" height="200" /></p>
+            <br />
 
-        <h3 class="text-center">The new system for clinicians to manage their workload.</h3>
-        <br />
-        <br />
-        <br />
-        <div class="row mb-5 g-5">
-            
-            <div class="col-md-2">
-                <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Clinic" asp-action="Index">Clinics - @Html.ValueFor(model => model.countClinics)</a>
-            </div>        
-            <div class="col-md-2">
-                <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Triages - @Html.ValueFor(model => model.countTriages)</a>
+            <h3 class="text-center">The new system for clinicians to manage their workload.</h3>
+            <br />
+            <br />
+            <br />
+            <div class="row mb-5 g-5">            
+                <div class="col-md-2">
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Clinic" asp-action="Index">Clinics - @Html.ValueFor(model => model.countClinics)</a>
+                </div>        
+                <div class="col-md-2">
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Triages - @Html.ValueFor(model => model.countTriages)</a>
+                </div>
+                <div class="col-md-2">
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index"><span style="font-size:medium">Cancer ICPs - @Html.ValueFor(model => model.countCancerICPs)</span></a>
+                </div>
+                <div class="col-md-2">
+                   <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Test" asp-action="AllOutstandingTests">Tests - @Html.ValueFor(model => model.countTests)</a>
+                </div>        
+                <div class="col-md-2">
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Review">Reviews - @Html.ValueFor(model => model.countReviews)</a>
+                </div>        
+                <div class="col-md-2">
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="DictatedLetter">Letters - @Html.ValueFor(model => model.countLetters)</a>
+                </div>            
             </div>
-            <div class="col-md-2">
-                <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index"><span style="font-size:medium">Cancer ICPs - @Html.ValueFor(model => model.countCancerICPs)</span></a>
-            </div>
-            <div class="col-md-2">
-                <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Test" asp-action="AllOutstandingTests">Tests - @Html.ValueFor(model => model.countTests)</a>
-            </div>        
-            <div class="col-md-2">
-                <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Review">Reviews - @Html.ValueFor(model => model.countReviews)</a>
-            </div>        
-            <div class="col-md-2">
-                <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="DictatedLetter">Letters - @Html.ValueFor(model => model.countLetters)</a>
-            </div>       
-            
-        </div>
         }
     </div>
 
@@ -59,7 +55,7 @@
                 <tr>
                     <td>CGU No</td>
                     <td>Type</td>
-                    <td>Date</td>
+                    <td>Due Date</td>
                     <td>Time</td>
                     <td>Patient</td>
                     <td>State</td>
@@ -68,62 +64,96 @@
             <tbody>
                 @foreach (var item in Model.caseLoad)
                 {
-                    @if(item.BookedDate < DateTime.Today)
-                    {
-                    <tr style="color:red">
-                        <td><a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@item.MPI>@item.CGU_No</a></td>
-                        <td>@item.Type</td>
-                        <td>@if(item.BookedDate == null || item.BookedDate.Value.ToString("dd/MM/yyyy") == "01/01/1900")
-                            {
-                                <span>N/A</span>
-                            }
-                            else
-                            {
-                                @item.BookedDate.Value.ToString("dd/MM/yyyy")                            
-                            }
-                        </td>
-                        <td>@if(item.BookedTime == null || item.BookedTime.Value.ToString() == "01/01/1900 00:00:00")
-                            {
-                                <span>N/A</span>
-                            }                            
-                            else
-                            {
-                                @item.BookedTime.Value.ToString("HH:mm")                            
-                            }
-                       </td>
-                        <td>@item.Name</td>
-                        <td>@item.State</td>
-                    </tr>
-                    }
-                    else
-                    {
                     <tr>
                         <td><a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@item.MPI>@item.CGU_No</a></td>
-                        <td>@item.Type</td>
                         <td>
-                            @if(item.BookedDate == null)
+                            @if (item.Type.Contains("App"))
+                            {
+                                <a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else if (item.Type == "Review")
+                            {
+                                <a asp-controller="Review" asp-action="Edit" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else if (item.Type == "Letter")
+                            {
+                                <a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else if (item.Type == "Triage")
+                            {
+                                <a asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else if (item.Type.Contains("Cancer"))
+                            {
+                                <a asp-controller="Triage" asp-action="CancerReview" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else
+                            {
+                                <span></span>
+                            }
+                            </td>
+                        <td>
+                            @if (item.BookedDate == null || item.BookedDate.Value.ToString() == "01/01/1900 00:00:00")
                             {
                                 <span>N/A</span>
                             }
                             else
                             {
-                                @item.BookedDate.Value.ToString("dd/MM/yyyy")                            
+                                @if (item.BookedDate < DateTime.Today)
+                                {
+                                    <span style="color:red">@item.BookedDate.Value.ToString("dd/MM/yyyy")</span>
+                                }
+                                else
+                                {
+                                    @item.BookedDate.Value.ToString("dd/MM/yyyy")
+                                }
                             }
                         </td>
                         <td>
                             @if(item.BookedTime == null || item.BookedTime.Value.ToString() == "01/01/1900 00:00:00")
                             {
-                                <span>N/A</span>
-                            }                            
-                            else
+                                @if (item.BookedDate < DateTime.Today && item.BookedDate.Value.ToString() != "01/01/1900 00:00:00")
+                                {
+                                    <span style="color:red">N/A</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            }
+                                    else
                             {
-                                @item.BookedTime.Value.ToString("HH:mm")                            
+                                @if (item.BookedDate < DateTime.Today && item.BookedDate.Value.ToString() != "01/01/1900 00:00:00")
+                                {
+                                    <span style="color:red">@item.BookedTime.Value.ToString("HH:mm")</span>
+                                }
+                                else
+                                {
+                                    @item.BookedTime.Value.ToString("HH:mm")                            
+                                }
                             }
                         </td>
-                        <td>@item.Name</td>
-                        <td>@item.State</td>
-                    </tr>
-                    }
+                        <td>
+                            @if (item.BookedDate < DateTime.Today && item.BookedDate.Value.ToString() != "01/01/1900 00:00:00")
+                            {
+                                <span style="color:red">@item.Name</span>
+                            }
+                            else
+                            {
+                                @item.Name
+                            }
+                        </td>
+                        <td>
+                            @if (item.BookedDate < DateTime.Today && item.BookedDate.Value.ToString() != "01/01/1900 00:00:00")
+                            {
+                                <span style="color:red">@item.State</span>
+                            }
+                            else
+                            {
+                                @item.State
+                            }
+                        </td>
+                    </tr>                    
                 }
             </tbody>
         </table>
