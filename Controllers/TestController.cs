@@ -12,7 +12,7 @@ namespace ClinicX.Controllers
 {
     public class TestController : Controller
     {
-        private readonly ClinicalContext _context;
+        private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly TestDiseaseVM tvm;
         private readonly VMData vm;
@@ -20,10 +20,10 @@ namespace ClinicX.Controllers
 
         public TestController(ClinicalContext context, IConfiguration config)
         {
-            _context = context;
+            _clinContext = context;
             _config = config;
             tvm = new TestDiseaseVM();
-            vm = new VMData(_context);
+            vm = new VMData(_clinContext);
             crud = new CRUD(_config);
         }
 
@@ -32,11 +32,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var tests = from t in _context.Test
-                            where t.MPI.Equals(id)
-                            select t;
+                var tests = vm.GetTestListByPatient(id.GetValueOrDefault());
 
-                return View(await tests.ToListAsync());
+                return View(tests);
             }
             catch (Exception ex)
             {
@@ -49,14 +47,12 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var user = await _context.StaffMembers.FirstOrDefaultAsync(s => s.EMPLOYEE_NUMBER == User.Identity.Name);
-                string sStaffCode = user.STAFF_CODE;
+                //var user = await _clinContext.StaffMembers.FirstOrDefaultAsync(s => s.EMPLOYEE_NUMBER == User.Identity.Name);
+                //string sStaffCode = user.STAFF_CODE;
 
-                var tests = from t in _context.Test
-                            where t.ORDEREDBY.Equals(sStaffCode) & t.COMPLETE == "No"
-                            select t;
+                var tests = vm.GetTestListByUser(User.Identity.Name);
 
-                return View(await tests.ToListAsync());
+                return View(tests);
             }
             catch (Exception ex)
             {
@@ -70,7 +66,7 @@ namespace ClinicX.Controllers
             try
             {
                 
-                tvm.testList = vm.GetTests();
+                tvm.testList = vm.GetTestList();
                 tvm.patient = vm.GetPatientDetails(id);
                 return View(tvm);
             }
@@ -100,7 +96,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var test = await _context.Test.FirstOrDefaultAsync(t => t.TestID == id);
+                var test = vm.GetTestDetails(id);
                 if (test == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
@@ -157,9 +153,9 @@ namespace ClinicX.Controllers
                     sComments = "";
                 }
 
-                var patient = await _context.Test.FirstOrDefaultAsync(t => t.TestID == iTestID);
-                int iMPI = patient.MPI;
-                                
+                //var patient = await _clinContext.Test.FirstOrDefaultAsync(t => t.TestID == iTestID);
+                int iMPI = vm.GetTestDetails(iTestID).MPI;
+                                                
                 crud.CallStoredProcedure("Test", "Update", iTestID, iComplete, 0, sResult, "", "", sComments, User.Identity.Name, dReceived, dGiven);
 
                 return RedirectToAction("Index", new { id = iMPI });

@@ -40,6 +40,8 @@ namespace ClinicX.Models
         public string? GP_Facility { get; set; }
         public string? GP_Facility_Code { get; set; }
         public string? PtAKA { get; set; }
+        public string? PtLetterAddressee { get; set; }
+        public string? SALUTATION { get; set; }
         public string? Ethnic { get; set; }
         public string? EthnicCode { get; set; }
         public string? DCTM_Folder_ID { get; set; }
@@ -312,6 +314,9 @@ namespace ClinicX.Models
         public string STAFF_CODE { get; set; }
         public string EMPLOYEE_NUMBER { get; set; }
         public string NAME { get; set; }
+        public string? StaffTitle { get; set; }
+        public string? StaffForename { get; set; }
+        public string? StaffSurname { get; set; }
         public string CLINIC_SCHEDULER_GROUPS { get; set; }
         public string? BILL_ID { get; set; }
         public string POSITION { get; set; }
@@ -477,7 +482,7 @@ namespace ClinicX.Models
     {
         [Key]
         public int DoTID { get; set; }
-        public int? MPI { get; set; }
+        public int MPI { get; set; }
         public int? RefID { get; set; }
         public string? LetterTo { get; set; }
         public string? LetterRe { get; set; }

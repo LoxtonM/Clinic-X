@@ -63,8 +63,11 @@
     <div class="row g-5 mb-5">
         <form id="frmFutureClinics">
             <div class="row g-5 mb-3">
+                <h2>Upcoming clinics</h2>
+            </div>
+            <div class="row g-5 mb-3">
                 <div class="col-2">
-                    <label class="form-label" for="ddlFutureClinics">Upcoming Clinics:</label>
+                    @*<label class="form-label" for="ddlFutureClinics">Upcoming Clinics:</label>*@
                 </div>
                 <div class="col-8">
                     <select class="form-select" name="ddlFutureClinics" id="ddlFutureClinics">
@@ -84,12 +87,34 @@
             </div>
         </form>
     </div>
-
     <div class="row g-5 mb-5">
         <form id="frmPastClinics">
             <div class="row g-5 mb-3">
+                <h2>Past clinics</h2>
+            </div>
+            <div class="row g-5 mb-3">
+                <div class="col-md-2" style="text-align:right">
+                    <label>From date:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="date" name="dFilterDate" /> 
+                </div>
+                <div class="col-md-2">
+                    <label>Only Show Outstanding:</label>
+                </div>
+                <div class="col-md-2">
+                    <label>Only Show Outstanding:</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" id="txtIsOutstanding" name="isShowOutstanding" hidden="true" />
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success">Select</button>
+                </div>
+            </div>
+            <div class="row g-5 mb-3">                
                 <div class="col-2">
-                    <label class="form-label" for="ddlPastClinics">Past Clinics:</label>
+                   @*<label class="form-label" for="ddlPastClinics">Past Clinics:</label>*@
                 </div>
                 <div class="col-8">
                     <select class="form-select" name="ddlPastClinics" id="ddlPastClinics">

@@ -5,9 +5,15 @@
 }
 
 <div class="container">
-    <div class="mb-5">
+    <div class="row mb-5">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.MPI)>Back to Test List</a>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AllOutstandingTests">Back to Test Index</a>
+        </div>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.MPI)>Full Test List for @Html.ValueFor(Model => Model.CGU_No)</a>
+        </div>
+        
     </div>
 
     <h1>Record Test for @Html.ValueFor(Model => Model.FIRSTNAME) @Html.ValueFor(Model => Model.LASTNAME) </h1>

@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Drawing.Imaging;
 
 namespace ClinicX.Models
 {
-    [Table("STAFF", Schema = "dbo")]
+    /*[Table("STAFF", Schema = "dbo")]
     public class StaffMember
     {
         [Key]
@@ -17,7 +16,7 @@ namespace ClinicX.Models
         //public byte[]? SIGNATURE { get; set; }
         public string? StaffForename { get; set; }
         public string? StaffSurname { get; set; }
-    }
+    }*/
 
     [Table("ListDocumentsContent", Schema = "wmfacs_user")]
     public class DocumentsContent
@@ -41,7 +40,7 @@ namespace ClinicX.Models
         public string? OurEmailAddress { get; set; }
     }
 
-    [Table("MasterPatientTable", Schema = "dbo")]
+    /*[Table("MasterPatientTable", Schema = "dbo")]
     public class Patient
     {
         [Key]
@@ -61,9 +60,9 @@ namespace ClinicX.Models
         public string POSTCODE { get; set; }
         public string? PtLetterAddressee { get; set; }
         public string? SALUTATION { get; set; }
-    }
+    }*/
 
-    [Table("MasterClinicianTable", Schema = "dbo")]
+    /*[Table("MasterClinicianTable", Schema = "dbo")]
     public class Referrer
     {
         [Key]
@@ -85,7 +84,7 @@ namespace ClinicX.Models
         public string? STATE { get; set; }
         public string? ZIP { get; set; }
         //public bool NONACTIVE { get; set; } 
-    }
+    }*/
 
     [Table("Constants", Schema = "dbo")]
     public class Constants
@@ -95,4 +94,45 @@ namespace ClinicX.Models
         public string ConstantValue { get; set; }
         public string? ConstantValue2 { get; set; }
     }
+
+    /*[Table("DictatedLetters", Schema = "dbo")] //Dictated le'ahs
+    public class DictatedLetter
+    {
+        [Key]
+        public int DoTID { get; set; }
+        public int MPI { get; set; }
+        public int? RefID { get; set; }
+        public string? LetterTo { get; set; }
+        public string? LetterRe { get; set; }
+        public string? LetterFrom { get; set; }
+        public string? LetterFromCode { get; set; }
+        public string? LetterContent { get; set; }
+        public string? LetterContentBold { get; set; }
+        public string? Status { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DateDictated { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? SecTeam { get; set; }
+        public string? Consultant { get; set; }
+        public string? GeneticCounsellor { get; set; }
+    }
+
+    [Table("DictatedLettersPatients", Schema = "dbo")] //Patients added to DOT
+    public class DictatedLetterPatient
+    {
+        [Key]
+        public int DOTPID { get; set; }
+        public int DOTID { get; set; }
+        public int MPI { get; set; }
+        public int RefID { get; set; }
+    }
+
+    [Table("DictatedLettersCopies", Schema = "dbo")] //CC copies added to DOTs
+    public class DictatedLetterCopy
+    {
+        [Key]
+        public int CCID { get; set; }
+        public int DotID { get; set; }
+        public string CC { get; set; }
+    }*/
 }

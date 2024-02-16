@@ -5,21 +5,26 @@ using ClinicX.Meta;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ClinicX.Controllers;
 
 public class LetterController : Controller
 {
-    private readonly DocumentContext _context;
+    private readonly ClinicalContext _clinContext;
+    private readonly DocumentContext _docContext;
     private readonly LetterVM lvm;
-    private readonly VMData vm;
+    private readonly VMData vmDoc;
+    private readonly VMData vmClin;
 
-    public LetterController(DocumentContext context)
+    public LetterController(ClinicalContext clinContext, DocumentContext docContext)
     {
-        _context = context;
+        _clinContext = clinContext;
+        _docContext = docContext;
         lvm = new LetterVM();
-        vm = new VMData(_context);
+        vmClin = new VMData(_clinContext);
+        vmDoc = new VMData(_docContext);
     }
 
     public async Task<IActionResult> Letter(int id, int impi, string suser, string sref)
@@ -27,10 +32,10 @@ public class LetterController : Controller
         try
         {
             
-            lvm.staffMember = vm.GetStaffMember(suser);
-            lvm.patient = vm.GetPatient(impi);
-            lvm.documentsContent = vm.GetDocument(id);
-            lvm.referrer = vm.GetReferrer(sref);
+            lvm.staffMember = vmClin.GetStaffMemberDetails(suser);
+            lvm.patient = vmClin.GetPatientDetails(impi);
+            lvm.documentsContent = vmDoc.GetDocumentDetails(id);
+            lvm.referrer = vmClin.GetClinicianDetails(sref);
 
             return View(lvm);
         }
@@ -40,16 +45,115 @@ public class LetterController : Controller
         }
     }
 
-    
+    public void PreviewDOTPDF(int iDID,string sUser, string sLetterTo)
+    {
+        try
+        {
+            lvm.staffMember = vmClin.GetStaffMemberDetails(sUser);
+            lvm.dictatedLetter = vmClin.GetDictatedLetterDetails(iDID);                        
+            string sOurAddress = _docContext.DocumentsContent.FirstOrDefault(d => d.OurAddress != null).OurAddress;            
+            //creates a new PDF document
+            PdfDocument document = new PdfDocument();
+            document.Info.Title = "My PDF";
+            PdfPage page = document.AddPage();
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+            var tf = new XTextFormatter(gfx);
+            //set the fonts used for the letters
+            XFont font = new XFont("Arial", 12, XFontStyle.Regular);
+            XFont fontBold = new XFont("Arial", 12, XFontStyle.Bold);
+            XFont fontItalic = new XFont("Arial", 12, XFontStyle.Bold);
+            //Load the image for the letter head
+            XImage image = XImage.FromFile(@"wwwroot\Letterhead.jpg");
+            gfx.DrawImage(image, 350, 20, image.PixelWidth / 2, image.PixelHeight / 2);
+            //Create the stuff that's common to all letters
+            tf.Alignment = XParagraphAlignment.Right;
+            //Our address and contact details
+            tf.DrawString(sOurAddress, font, XBrushes.Black, new XRect(-20, 150, page.Width, 200));
+            
+            //Note: Xrect parameters are: (Xpos, Ypos, Width, Depth) - use to position blocks of text
+            //Depth of 10 seems sufficient for one line of text; 30 is sufficient for two lines. 7 lines needs 100.
+
+            //patient's address
+            tf.Alignment = XParagraphAlignment.Left;
+            lvm.patient = vmClin.GetPatientDetails(lvm.dictatedLetter.MPI);
+            tf.DrawString(lvm.patient.PtLetterAddressee, font, XBrushes.Black, new XRect(50, 235, 500, 10));
+
+            string strAddress = "";
+
+            if (sLetterTo == "PT")
+            {                
+                strAddress = lvm.patient.ADDRESS1 + Environment.NewLine;
+                if (lvm.patient.ADDRESS2 != null) //this is sometimes null
+                {
+                    strAddress = strAddress + lvm.patient.ADDRESS2 + Environment.NewLine;
+                }
+                strAddress = strAddress + lvm.patient.ADDRESS3 + Environment.NewLine;
+                strAddress = strAddress + lvm.patient.ADDRESS4 + Environment.NewLine;
+                strAddress = strAddress + lvm.patient.POSTCODE;
+            }
+            if (sLetterTo == "RD")
+            {
+                //placeholder
+            }
+            if (sLetterTo == "GP")
+            {
+                //placeholder
+            }
+
+            tf.DrawString(strAddress, font, XBrushes.Black, new XRect(50, 250, 490, 100));
+
+            //Date letter created
+            tf.DrawString(DateTime.Today.ToString("dd MMMM yyyy"), font, XBrushes.Black, new XRect(50, 350, 500, 10)); //today's date
+
+            tf.DrawString("Dear " + lvm.patient.SALUTATION, font, XBrushes.Black, new XRect(50, 375, 500, 10)); //salutation
+
+            //Content containers for all of the paragraphs, as well as other data required
+            string strSummary = lvm.dictatedLetter.LetterContentBold;
+            string strContent = lvm.dictatedLetter.LetterContent;
+            string strQuoteRef = "";
+            string strSignoff = "Bye bye,";
+            string strSigFilename = "";
+            string strDocCode = "DOT";
+            //string strReferrer = lvm.referrer.TITLE + " " + lvm.referrer.FIRST_NAME + " " + lvm.referrer.NAME;
+            string strCC = "";
+            string strCC2 = "";
+            int iPrintCount = 1;
+            int iTotalLength = 500; //used for spacing - so the paragraphs can dynamically resize
+
+            tf.DrawString(strSummary, fontBold, XBrushes.Black, new XRect(50, iTotalLength, 500, strSummary.Length));
+            iTotalLength = iTotalLength + strSummary.Length+20;
+            tf.DrawString(strContent, font, XBrushes.Black, new XRect(50, iTotalLength, 500, strContent.Length));
+            iTotalLength = iTotalLength + strContent.Length+20;
+            
+            strSignoff = lvm.staffMember.NAME + Environment.NewLine + lvm.staffMember.POSITION;
+            strSigFilename = lvm.staffMember.StaffForename + lvm.staffMember.StaffSurname + ".jpg";
+            iTotalLength = iTotalLength + 20;
+            XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + strSigFilename);
+            int iLen = imageSig.PixelWidth;
+            int iHig = imageSig.PixelHeight;
+            gfx.DrawImage(imageSig, 50, iTotalLength, iLen, iHig);
+            iTotalLength = iTotalLength + iHig + 20;
+            tf.DrawString(strSignoff, font, XBrushes.Black, new XRect(50, iTotalLength, 500, 20));
+
+            document.Save("c:\\projects\\VS Test\\ClinicX\\wwwroot\\preview.pdf");
+
+
+        }
+
+        catch (Exception ex)
+        {
+            RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+        }
+    }
 
     public void DoPDF(int id, int impi, int irefid, string suser, string sref, string? sAdditionalText = "")
     {
         try
         {            
-            lvm.staffMember = vm.GetStaffMember(suser);
-            lvm.patient = vm.GetPatient(impi);
-            lvm.documentsContent = vm.GetDocument(id);
-            lvm.referrer = vm.GetReferrer(sref);
+            lvm.staffMember = vmClin.GetStaffMemberDetails(suser);
+            lvm.patient = vmClin.GetPatientDetails(impi);
+            lvm.documentsContent = vmDoc.GetDocumentDetails(id);
+            lvm.referrer = vmClin.GetClinicianDetails(sref);
 
 
             //creates a new PDF document
@@ -299,7 +403,7 @@ public class LetterController : Controller
             if (strCC != "")
             {
                 iPrintCount = iPrintCount += 1;
-                strCC = strCC + vm.GetCC(lvm.referrer);
+                strCC = strCC + vmClin.GetCCDetails(lvm.referrer);
                 XGraphics gfxcc = XGraphics.FromPdfPage(pageCC);
                 var tfcc = new XTextFormatter(gfxcc);
                 tfcc.DrawString("cc:", font, XBrushes.Black, new XRect(50, 50, 500, 100));
@@ -309,7 +413,7 @@ public class LetterController : Controller
             if (strCC2 != "")
             {
                 iPrintCount = iPrintCount += 1;
-                strCC = strCC + vm.GetCC(lvm.referrer);
+                strCC = strCC + vmClin.GetCCDetails(lvm.referrer);
                 XGraphics gfxcc = XGraphics.FromPdfPage(pageCC);
                 var tfcc = new XTextFormatter(gfxcc);
                 tfcc.DrawString(strCC, font, XBrushes.Black, new XRect(75, 150, 500, 100));
@@ -323,7 +427,7 @@ public class LetterController : Controller
             string strDateTime = DateTime.Now.ToString("yyyyMMddHHmmss");
             string strDiaryID = "00000"; //need to create diary entry first
 
-            var par = _context.Constants.FirstOrDefault(p => p.ConstantCode == "FilePathEDMS");
+            var par = _docContext.Constants.FirstOrDefault(p => p.ConstantCode == "FilePathEDMS");
             string strFilePath = par.ConstantValue;
 
 

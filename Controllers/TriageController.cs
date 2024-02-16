@@ -10,7 +10,7 @@ namespace ClinicX.Controllers
 {
     public class TriageController : Controller
     {
-        private readonly ClinicalContext _context;
+        private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
         private readonly IConfiguration _config;
         private readonly ICPVM ivm;
@@ -19,15 +19,15 @@ namespace ClinicX.Controllers
         private readonly LetterController lc;
 
 
-        public TriageController(ClinicalContext context, DocumentContext docContext, IConfiguration config)
+        public TriageController(ClinicalContext clinContext, DocumentContext docContext, IConfiguration config)
         {
-            _context = context;
+            _clinContext = clinContext;
             _docContext = docContext;
             _config = config;
             ivm = new ICPVM();
-            vm = new VMData(_context);
+            vm = new VMData(_clinContext);
             crud = new CRUD(_config);
-            lc = new LetterController(_docContext);
+            lc = new LetterController(_clinContext, _docContext);
         }
 
         [Authorize]
@@ -51,7 +51,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var triages = await _context.Triages.FirstOrDefaultAsync(t => t.ICPID == id);
+                var triages = await _clinContext.Triages.FirstOrDefaultAsync(t => t.ICPID == id);
 
                 if (triages == null)
                 {
@@ -59,7 +59,7 @@ namespace ClinicX.Controllers
                 }
                 
                 ivm.triage = vm.GetTriageDetails(id);
-                ivm.clinicalFacilityList = vm.GetClinicalFacilities();
+                ivm.clinicalFacilityList = vm.GetClinicalFacilitiesList();
                 ivm.icpGeneral = vm.GetGeneralICPDetails(id);
                 ivm.icpCancer = vm.GetCancerICPDetails(id);
                 ivm.cancerActionsList = vm.GetICPCancerActionsList();
@@ -78,9 +78,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var icp = await _context.Triages.FirstOrDefaultAsync(i => i.ICPID == iIcpID);
-                var referral = await _context.Referrals.FirstOrDefaultAsync(r => r.refid == icp.RefID);
-                var staffmember = await _context.StaffMembers.FirstOrDefaultAsync(s => s.EMPLOYEE_NUMBER == User.Identity.Name);
+                var icp = await _clinContext.Triages.FirstOrDefaultAsync(i => i.ICPID == iIcpID);
+                var referral = await _clinContext.Referrals.FirstOrDefaultAsync(r => r.refid == icp.RefID);
+                var staffmember = await _clinContext.StaffMembers.FirstOrDefaultAsync(s => s.EMPLOYEE_NUMBER == User.Identity.Name);
                 int iMPI = icp.MPI;
                 string sReferrer = referral.ReferrerCode;
                 string sApptIntent = "";
@@ -161,10 +161,10 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var icp = await _context.Triages.FirstOrDefaultAsync(i => i.ICPID == iIcpID);
+                var icp = await _clinContext.Triages.FirstOrDefaultAsync(i => i.ICPID == iIcpID);
                 int iMPI = icp.MPI;
                 int iRefID = icp.RefID;
-                var referral = await _context.Referrals.FirstOrDefaultAsync(r => r.refid == icp.RefID);
+                var referral = await _clinContext.Referrals.FirstOrDefaultAsync(r => r.refid == icp.RefID);
                 string sReferrer = referral.ReferrerCode;
 
                 CRUD crud = new CRUD(_config);
@@ -172,7 +172,7 @@ namespace ClinicX.Controllers
 
                 if (iAction == 5)
                 {
-                    LetterController lc = new LetterController(_docContext);
+                    LetterController lc = new LetterController(_clinContext, _docContext);
                     lc.DoPDF(156, iMPI, iRefID, User.Identity.Name, sReferrer);
                 }
 
@@ -194,8 +194,8 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
                 
-                ivm.clinicalFacilityList = vm.GetClinicalFacilities();
-                ivm.staffMembers = vm.GetClinicians();
+                ivm.clinicalFacilityList = vm.GetClinicalFacilitiesList();
+                ivm.staffMembers = vm.GetCliniciansList();
                 ivm.icpCancer = vm.GetCancerICPDetails(id);
                 ivm.riskList = vm.GetRiskList(id);
                 ivm.surveillanceList = vm.GetSurveillanceList(id);
@@ -225,7 +225,7 @@ namespace ClinicX.Controllers
                 }
                 
                 ivm.riskDetails = vm.GetRiskDetails(id);
-                var icp = _context.ICPCancer.FirstOrDefault(i => i.ICPID == ivm.riskDetails.ICPID);
+                var icp = _clinContext.ICPCancer.FirstOrDefault(i => i.ICPID == ivm.riskDetails.ICPID);
                 ivm.surveillanceList = vm.GetSurveillanceList(icp.ICP_Cancer_ID).Where(s => s.RiskID == id).ToList();
 
                 return View(ivm);

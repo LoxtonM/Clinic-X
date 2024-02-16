@@ -10,7 +10,7 @@ namespace ClinicX.Controllers
 {
     public class DiagnosisController : Controller
     {
-        private readonly ClinicalContext _context;
+        private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly TestDiseaseVM dvm;
         private readonly VMData vm;
@@ -18,10 +18,10 @@ namespace ClinicX.Controllers
 
         public DiagnosisController(ClinicalContext context, IConfiguration config)
         {
-            _context = context;
+            _clinContext = context;
             _config = config;
             dvm = new TestDiseaseVM();
-            vm = new VMData(_context);
+            vm = new VMData(_clinContext);
             crud = new CRUD(_config);
         }
 
@@ -31,11 +31,13 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var diag = from d in _context.Diagnosis
+                /*var diag = from d in _clinContext.Diagnosis
                            where d.MPI.Equals(id)
-                           select d;
+                           select d;*/
 
-                return View(await diag.ToListAsync());
+                var diag = vm.GetDiseaseListByPatient(id);
+
+                return View(diag);
             }
             catch (Exception ex)
             {
@@ -48,7 +50,7 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                dvm.diseaseList = vm.GetDisease();
+                dvm.diseaseList = vm.GetDiseaseList();
                 dvm.patient = vm.GetPatientDetails(id);
                 dvm.statusList = vm.GetStatusList();
                 return View(dvm);
@@ -113,7 +115,7 @@ namespace ClinicX.Controllers
                     sComments = "";
                 }
 
-                var patient = await _context.Diagnosis.FirstOrDefaultAsync(d => d.ID == iDiagID);
+                var patient = await _clinContext.Diagnosis.FirstOrDefaultAsync(d => d.ID == iDiagID);
                 int iMPI = patient.MPI;
                                 
                 crud.CallStoredProcedure("Diagnosis", "Update", iDiagID, 0, 0, sStatus, "", "", sComments, User.Identity.Name);

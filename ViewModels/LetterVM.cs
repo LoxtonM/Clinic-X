@@ -7,11 +7,11 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class LetterVM
     {
-        public Patient patient { get; set; }
+        public Patients patient { get; set; }
         public DocumentsContent documentsContent { get; set; }
-        public StaffMember staffMember { get; set; }
-        public Referrer referrer { get; set; }
-        public Facility facility { get; set; }
-
+        public StaffMemberList staffMember { get; set; }
+        public ExternalClinician referrer { get; set; }
+        public ExternalFacility facility { get; set; }
+        public DictatedLetters dictatedLetter { get; set; }
     }
 }

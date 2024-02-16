@@ -45,11 +45,24 @@
     <h2>Re: @Html.ValueFor(model => model.dictatedLetters.LetterRe)</h2>
 
     <div class="container mb-5">
+        <form id="Preview" asp-action="PreviewDOT">
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-success" id="btnPreview">Preview</button>
+                </div>
+            </div>
+            <div hidden="true">
+                <input asp-for="dictatedLetters.DoTID" name="iDID" />                
+            </div>
+        </form>
+
         <form id="DictatedLetter" asp-action="Edit">
             <div id="metadata" hidden="true">
                 <input asp-for="dictatedLetters.DoTID" name="iDID" />
                 <input id="txtisAddressChanged" name="isAddresseeChanged" />
             </div>
+
+            
 
             <div class="row mb-5 g-5">
                 <div class="col-md-1" style="text-align:right">
@@ -243,7 +256,7 @@
                 </form>
             </div>
             <form id="frmAddCCToDOT" asp-action="AddCCToDOT">
-                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true"/>
                 <div class="row mb-5 g-5">            
                     <div class="col-md-2">
                         <input type="button" id="btnAddCC" class="btn btn-default btn-success" value="Add CC" />
@@ -261,15 +274,24 @@
                                 <option value="GP">GP</option>
                                 <option value="Other">Other</option>
                             </select>                    
-                            <select id="ddlCC" name="sCC" hidden="true">            
+                            <select id="ddlCC" hidden="true">            
                                 @foreach (var item in Model.clinicians)
                                 {
                                     <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.SPECIALITY</option>
                                 }
                             </select>
                         </div>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <textarea rows="8" cols="40" id="txtCC"></textarea>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" id="txtCCCode" name="sCC" hidden="true"/>
+                            </div>
+                        </div>
                     </div>            
                 </div>
+                
             </form>
         </div>
     </div>
@@ -290,6 +312,7 @@
     document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
     document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);    
     document.getElementById("btnAddCC").addEventListener("click", AddCC);
+    document.getElementById("btnPreview").addEventListener("click", DoPreview);
     window.addEventListener("load", LoadLetter);
     window.addEventListener("load", LoadEDMSLink);
 
@@ -448,7 +471,15 @@
 
     function ShowCCClinician() 
     {
-        document.getElementById("ddlCC").hidden = false;
+        if (document.getElementById("ddlCCType").value != "Other")
+        {
+            SetCCAddress(document.getElementById("ddlCCType").value);
+        }
+        else
+        {
+            document.getElementById("ddlCC").hidden = false;
+        }
+        
     }
 
     function SetLetterToClinician() 
@@ -525,6 +556,56 @@
         document.getElementById("txtisAddressChanged").value = "true";
     }
 
+    function SetCCAddress(ccCode) 
+    { 
+        var sName = "Nobody";
+        var sFacility = "Nothing";
+        var sAddress = "Nowhere";
+
+        if (ccCode == "Referrer") 
+        {
+            sName = "@Model.referrer.TITLE" + " " + "@Model.referrer.FIRST_NAME" + " " + "@Model.referrer.NAME";
+            sAddress = "@Model.referrerFacility.NAME" + "\n" +
+                "@Model.referrerFacility.ADDRESS" + "\n" +
+                "@Model.referrerFacility.CITY" + "\n" +
+                "@Model.referrerFacility.STATE" + "\n" +
+                "@Model.referrerFacility.ZIP";
+
+            document.getElementById("txtCCCode").value = "@Model.referrer.MasterClinicianCode";
+        }
+        else if (ccCode == "Patient")
+        {
+            sName = "@Model.patientDetails.Title" + " " + "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
+            sAddress = "@Model.patientDetails.ADDRESS1" + "\n" +
+                "@Model.patientDetails.ADDRESS2" + "\n" +
+                "@Model.patientDetails.ADDRESS3" + "\n" +
+                "@Model.patientDetails.ADDRESS4" + "\n" +
+                "@Model.patientDetails.POSTCODE";
+
+            document.getElementById("txtCCCode").value = "Patient";
+        }
+        else if (ccCode == "GP")
+        {
+            sName = "@Model.patientDetails.GP"
+            sAddress = "@Model.GPFacility.NAME" + "\n" +
+                "@Model.GPFacility.ADDRESS" + "\n" +
+                "@Model.GPFacility.CITY" + "\n" +
+                "@Model.GPFacility.STATE" + "\n" +
+                "@Model.GPFacility.ZIP";
+
+            document.getElementById("txtCCCode").value = "@Model.patientDetails.GP_Code";
+        }
+
+        else 
+        { 
+            sName = "Someone";
+            //sFacility = "Bleh";
+            sAddress = "Some place";
+        }
+
+        document.getElementById("txtCC").value = sName + "\n" + sAddress.replace("&#x27;", "'").replace("&#xD;&#xA;", " ");
+    }
+
     function AddToDOT(id) 
     {        
         document.getElementById("txtPID").value = id;        
@@ -592,6 +673,11 @@
         return 1;
     }
 
+    function DoPreview()
+    {
+        //window.alert("Boink");
+        document.getElementById("Preview").submit();
+    }
 
 
 </script>

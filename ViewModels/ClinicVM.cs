@@ -12,6 +12,7 @@ namespace ClinicX.ViewModels
         public List<OutcomeList> outcomes { get; set; }
         public List<NoteTypeList> noteTypeList { get; set; }
         public ClinicalNotes clinicalNotes { get; set; }
+        public List<ClinicalNotes> clinicalNotesList { get; set; }
         public List<Ethnicity> ethnicities { get; set; }
         public Patients patients { get; set; }        
     }

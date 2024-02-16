@@ -10,7 +10,7 @@ namespace ClinicX.Controllers
 {
     public class ClinicController : Controller
     {
-        private readonly ClinicalContext _context;
+        private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly ClinicVM cvm;
         private readonly VMData vm;
@@ -18,15 +18,16 @@ namespace ClinicX.Controllers
 
         public ClinicController(ClinicalContext context, IConfiguration config)
         {
-            _context = context;
+            _clinContext = context;
             _config = config;
             cvm = new ClinicVM();
-            vm = new VMData(_context);
+            vm = new VMData(_clinContext);
             crud = new CRUD(_config);
         }
 
+        [HttpGet]
         [Authorize]
-        public async Task <IActionResult> Index()
+        public async Task <IActionResult> Index(DateTime? dFilterDate)
         {
             try
             {
@@ -34,17 +35,18 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
+                
 
-                var users = await _context.StaffMembers.FirstOrDefaultAsync(u => u.EMPLOYEE_NUMBER == User.Identity.Name);
+                if (dFilterDate == null)
+                {
+                    dFilterDate = DateTime.Parse(DateTime.Now.AddDays(-30).ToString());
+                }
 
-                string strStaffCode = users.STAFF_CODE;
+                var clinics = vm.GetClinicList(User.Identity.Name);
+                clinics = clinics.Where(c => c.BOOKED_DATE >= dFilterDate).ToList();
+                clinics = clinics.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
 
-                var clinics = from c in _context.Clinics
-                              where c.AppType.Contains("App") && c.STAFF_CODE_1 == strStaffCode && c.Attendance != "Declined"
-                              orderby c.BOOKED_DATE descending
-                              select c;
-
-                return View(await clinics.ToListAsync());
+                return View(clinics);
             }
             catch (Exception ex)
             {
@@ -56,8 +58,9 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> ApptDetails(int id)
         {
             try
-            {
-                var appts = await _context.Clinics.FirstOrDefaultAsync(a => a.RefID == id);
+            {             
+                var appts = vm.GetClinicDetails(id);
+
                 if (appts == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
@@ -76,10 +79,10 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                cvm.staffMembers = vm.GetClinicians();
+                cvm.staffMembers = vm.GetCliniciansList();
                 cvm.activityItems = vm.GetClinicDetailsList(id);
                 cvm.activityItem = vm.GetActivityDetails(id);
-                cvm.outcomes = vm.GetOutcomes();
+                cvm.outcomes = vm.GetOutcomesList();
                 cvm.ethnicities = vm.GetEthnicitiesList();
                 int iMPI = cvm.activityItem.MPI;
                 cvm.patients = vm.GetPatientDetails(iMPI);
@@ -137,11 +140,6 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
             }
-        }       
-
-        //private bool clinicExists(int id)
-        //{
-        //    return _context.ActivityItems.Any(c => c.RefID == id);
-        //}
+        }        
     }
 }

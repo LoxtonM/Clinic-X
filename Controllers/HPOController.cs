@@ -7,7 +7,7 @@ namespace ClinicX.Controllers
 {
     public class HPOController : Controller
     {
-        private readonly ClinicalContext _context;
+        private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly HPOVM hpo;
         private readonly VMData vm;
@@ -16,10 +16,10 @@ namespace ClinicX.Controllers
 
         public HPOController(ClinicalContext context, IConfiguration config)
         {
-            _context = context;
+            _clinContext = context;
             _config = config;
             hpo = new HPOVM();
-            vm = new VMData(_context);
+            vm = new VMData(_clinContext);
             crud = new CRUD(_config);
             misc = new MiscData(_config);
         }
@@ -30,9 +30,9 @@ namespace ClinicX.Controllers
             try
             {                
                 hpo.clinicalNote = vm.GetClinicalNoteDetails(id);
-                hpo.hpoTermDetails = vm.GetExistingHPOTerms(id);
-                hpo.hpoTerms = vm.GetHPOTerms();
-                hpo.hpoExtractVM = vm.GetExtractedTerms(id, _config);
+                hpo.hpoTermDetails = vm.GetExistingHPOTermsList(id);
+                hpo.hpoTerms = vm.GetHPOTermsList();
+                hpo.hpoExtractVM = vm.GetExtractedTermsList(id, _config);
 
                 return View(hpo);
             }

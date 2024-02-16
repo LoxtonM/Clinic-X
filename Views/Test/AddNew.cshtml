@@ -7,7 +7,9 @@
 <div class="container">
     <div class ="row g-5 mb-5">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Test List</a>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Test List</a>
+        </div>
     </div>
 
     <h1>Add new test for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME)</h1>

@@ -6,7 +6,7 @@
 <div class="container">
     <div class="row mb-5 g-5">
         <div class="col-md-2">
-            <button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>
+            <button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back to Patient</button>
             @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
         </div>
         <div class="col-md-1">
@@ -93,7 +93,9 @@
     </div>
 
     <div class="row mb-5 g-5">
-        <a type="button" class="btn btn-default btn-success" asp-action="Edit" asp-route-id="@Model.relsid">Edit</a>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-action="Edit" asp-route-id="@Model.relsid">Edit</a>
+        </div>
     </div>
 </div>
 

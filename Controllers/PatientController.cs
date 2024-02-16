@@ -8,15 +8,15 @@ namespace ClinicX.Controllers
 {
     public class PatientController : Controller
     {
-        private readonly ClinicalContext _context;
+        private readonly ClinicalContext _clinContext;
         private readonly PatientVM pvm;
         private readonly VMData vm;
 
         public PatientController(ClinicalContext context)
         {
-            _context = context;
+            _clinContext = context;
             pvm = new PatientVM();
-            vm = new VMData(_context);
+            vm = new VMData(_clinContext);
         }
 
         [Authorize]
@@ -29,11 +29,11 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-                pvm.relatives = vm.GetRelativesDetails(id);
-                pvm.hpoTermDetails = vm.GetHPOTerms(id);
-                pvm.referrals = vm.GetReferrals(id);
+                pvm.relatives = vm.GetRelativesList(id);
+                pvm.hpoTermDetails = vm.GetHPOTermsAddedList(id);
+                pvm.referrals = vm.GetReferralsList(id);
                 pvm.patientPathway = vm.GetPathwayDetails(id);
-                pvm.alerts = vm.GetAlerts(id);
+                pvm.alerts = vm.GetAlertsList(id);
                 pvm.diary = vm.GetDiaryList(id);
 
                 return View(pvm);

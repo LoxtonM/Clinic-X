@@ -11,7 +11,7 @@ namespace ClinicX.Controllers
 {
     public class ReviewController : Controller
     {
-        private readonly ClinicalContext _context;
+        private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly CRUD crud;
         private readonly ReviewVM rvm;
@@ -19,10 +19,10 @@ namespace ClinicX.Controllers
 
         public ReviewController(ClinicalContext context, IConfiguration config)
         {
-            _context = context;
+            _clinContext = context;
             _config = config;
             rvm = new ReviewVM();
-            vm = new VMData(_context);
+            vm = new VMData(_clinContext);
             crud = new CRUD(_config);
         }
 
@@ -36,16 +36,9 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                var user = await _context.StaffMembers.FirstOrDefaultAsync(u => u.EMPLOYEE_NUMBER == User.Identity.Name);
+                var reviews = vm.GetReviewsList(User.Identity.Name);
 
-                string strStaffCode = user.STAFF_CODE;
-
-                var reviews = from r in _context.Reviews
-                              where r.Review_Recipient == strStaffCode && r.Review_Status == "Pending"
-                              orderby r.Planned_Date
-                              select r;
-
-                return View(await reviews.ToListAsync());
+                return View(reviews);
             }
             catch (Exception ex)
             {
@@ -60,7 +53,7 @@ namespace ClinicX.Controllers
             try
             {
                 rvm.referrals = vm.GetActivityDetails(id);
-                rvm.staffMembers = vm.GetClinicians();
+                rvm.staffMembers = vm.GetCliniciansList();
                 int impi = rvm.referrals.MPI;
                 rvm.patient = vm.GetPatientDetails(impi);
                
@@ -112,7 +105,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var review = await _context.Reviews.FirstOrDefaultAsync(r => r.ReviewID == id);
+                var review = vm.GetReviewDetails(id);
+                
+                
                 if (review == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
@@ -131,7 +126,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var review = await _context.Reviews.FirstOrDefaultAsync(r => r.ReviewID == id);
+                var review = vm.GetReviewDetails(id);
 
                 DateTime dDate = new DateTime();
 

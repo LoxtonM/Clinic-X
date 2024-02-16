@@ -8,15 +8,17 @@ namespace ClinicX.Controllers
 {
     public class RelativeController : Controller
     {
-        private readonly ClinicalContext _context;
+        private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly CRUD crud;
+        private readonly VMData vm;
 
         public RelativeController(ClinicalContext context, IConfiguration config)
         {
-            _context = context;
+            _clinContext = context;
             _config = config;
             crud = new CRUD(_config);
+            vm = new VMData(_clinContext);
         }
 
         [Authorize]
@@ -38,7 +40,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var rel = await _context.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
+                //var rel = await _clinContext.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
+                var rel = vm.GetRelativeDetails(id);
+                
                 return View(rel);
             }
             catch (Exception ex)
@@ -52,7 +56,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var rel = await _context.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
+                //var rel = await _clinContext.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
+                var rel = vm.GetRelativeDetails(id);
                 return View(rel);
             }
             catch (Exception ex)
@@ -68,7 +73,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var rel = await _context.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
+                //var rel = await _clinContext.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
+                var rel = vm.GetRelativeDetails(id);
 
 
                 DateTime dDOB = new DateTime();
@@ -157,7 +163,7 @@ namespace ClinicX.Controllers
                 crud.CallStoredProcedure("Relative", "Create", WMFACSID, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
                     User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
 
-                var patient = _context.Patients.FirstOrDefault(p => p.WMFACSID == WMFACSID);
+                var patient = _clinContext.Patients.FirstOrDefault(p => p.WMFACSID == WMFACSID);
 
                 return RedirectToAction("PatientDetails", "Patient", new { id = patient.MPI });
             }

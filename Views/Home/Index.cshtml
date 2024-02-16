@@ -87,6 +87,10 @@
                             {
                                 <a asp-controller="Triage" asp-action="CancerReview" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
                             }
+                            else if (item.Type.Contains("Test"))
+                            {
+                                <a asp-controller="Test" asp-action="Edit" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
                             else
                             {
                                 <span></span>

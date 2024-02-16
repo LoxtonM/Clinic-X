@@ -10,7 +10,7 @@ namespace ClinicX.Controllers
 {
     public class ClinicalNoteController : Controller
     {
-        private readonly ClinicalContext _context;
+        private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly VMData vm;
         private readonly CRUD crud;
@@ -19,9 +19,9 @@ namespace ClinicX.Controllers
 
         public ClinicalNoteController(ClinicalContext context, IConfiguration config)
         {
-            _context = context;
+            _clinContext = context;
             _config = config;
-            vm = new VMData(_context);
+            vm = new VMData(_clinContext);
             crud = new CRUD(_config);
             cvm = new ClinicVM();
             misc = new MiscData(_config);
@@ -32,14 +32,17 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var notes = from c in _context.ClinicalNotes
+                /*var notes = from c in _clinContext.ClinicalNotes
                             where c.MPI.Equals(id)
                             orderby c.CreatedDate, c.CreatedTime descending
-                            select c;
+                            select c;*/
+
+                var notes = vm.GetClinicalNoteList(id);
+                                
 
                 int count = notes.Count();
 
-                return View(await notes.ToListAsync());
+                return View(notes);
             }
             catch(Exception ex)
             {
@@ -53,7 +56,7 @@ namespace ClinicX.Controllers
             try
             {                
                 cvm.activityItem = vm.GetActivityDetails(id);
-                cvm.noteTypeList = vm.GetNoteTypes();
+                cvm.noteTypeList = vm.GetNoteTypesList();
 
                 return View(cvm);
             }
@@ -89,8 +92,10 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var notes = await _context.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
-                return View(notes);
+                //var notes = await _clinContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
+                var note = vm.GetClinicalNoteDetails(id);
+                
+                return View(note);
             }
             catch (Exception ex)
             {
@@ -122,13 +127,10 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> ChooseAppt(int id)
         {
             try
-            {
-                var appts = from c in _context.Clinics
-                            where c.MPI.Equals(id)
-                            orderby c.BOOKED_DATE descending
-                            select c;                
+            {   
+                var appts = vm.GetClinicByPatientsList(id);
 
-                return View(await appts.ToListAsync());
+                return View(appts);
             }
             catch (Exception ex)
             {
@@ -142,7 +144,7 @@ namespace ClinicX.Controllers
             {
                 crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
 
-                var note = await _context.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
+                var note = await _clinContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
 
                 return RedirectToAction("Index", new { id = note.MPI });
             }
@@ -150,29 +152,7 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
             }
-        }
-
-        //public int GetClinicalNoteID(int iRefID)
-        //{
-        //    try
-        //    {
-        //        int iNoteID;
-        //        SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
-        //        conn.Open();
-        //        SqlCommand cmd2 = new SqlCommand("select top 1 clinicalnoteid from clinicalnotes " +
-        //                "where refid = " + iRefID.ToString() + " order by createddate desc, createdtime desc", conn);
-
-        //        iNoteID = (int)(cmd2.ExecuteScalar());
-
-        //        conn.Close();
-        //        return iNoteID;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
-        //        return 0;
-        //    }
-        // }
+        }        
 
     }
 }

@@ -4,24 +4,31 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
+using System.Security.Cryptography;
 
 namespace ClinicX.Controllers
 {
     public class DictatedLetterController : Controller
     {
-        private readonly ClinicalContext _context;
+        private readonly ClinicalContext _clinContext;
+        private readonly DocumentContext _docContext;
         private readonly IConfiguration _config;
         private readonly DictatedLetterVM lvm;
         private readonly VMData vm;
         private readonly CRUD crud;
+        private readonly LetterController lc;
 
-        public DictatedLetterController(IConfiguration config, ClinicalContext context)
+
+        public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext)
         {
-            _context = context;
+            _clinContext = clinContext;
+            _docContext = docContext;
             _config = config;
             lvm = new DictatedLetterVM();
-            vm = new VMData(_context);
-            crud = new CRUD(_config);            
+            vm = new VMData(_clinContext);
+            crud = new CRUD(_config);
+            lc = new LetterController(_clinContext, _docContext);
+            _docContext = docContext;
         }
 
         [Authorize]
@@ -34,16 +41,11 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
-                var users = await _context.StaffMembers.FirstOrDefaultAsync(u => u.EMPLOYEE_NUMBER == User.Identity.Name);
+                var user = vm.GetCurrentStaffUser(User.Identity.Name);
+                
+                var letters = vm.GetDictatedLettersList(user.STAFF_CODE);
 
-                string strStaffCode = users.STAFF_CODE;
-
-                var letters = from l in _context.DictatedLetters
-                              where l.LetterFromCode == strStaffCode && l.MPI != null && l.RefID != null && l.Status != "Printed"
-                              orderby l.DateDictated descending
-                              select l;                
-
-                return View(await letters.ToListAsync());
+                return View(letters);
             }
             catch (Exception ex)
             {
@@ -57,10 +59,10 @@ namespace ClinicX.Controllers
             try
             {                
                 lvm.dictatedLetters = vm.GetDictatedLetterDetails(id);
-                lvm.dictatedLettersPatients = vm.GetDictatedLettersPatients(id);
-                lvm.dictatedLettersCopies = vm.GetDictatedLettersCopies(id);
-                lvm.patients = vm.GetPatients(id);
-                lvm.staffMemberList = vm.GetClinicians();
+                lvm.dictatedLettersPatients = vm.GetDictatedLettersPatientsList(id);
+                lvm.dictatedLettersCopies = vm.GetDictatedLettersCopiesList(id);
+                lvm.patients = vm.GetDictatedLetterPatientsList(id);
+                lvm.staffMemberList = vm.GetCliniciansList();
                 int? iMPI = lvm.dictatedLetters.MPI;
                 int? iRefID = lvm.dictatedLetters.RefID;
                 lvm.patientDetails = vm.GetPatientDetails(iMPI.GetValueOrDefault());
@@ -75,7 +77,7 @@ namespace ClinicX.Controllers
                 lvm.clinicians = vm.GetClinicianList().Where(f => f.Is_Gp == 0 && f.NAME != null && f.FACILITY != null).ToList();
                 lvm.consultants = vm.GetConsultantsList().ToList();
                 lvm.gcs = vm.GetGCList().ToList();
-                lvm.secteams = vm.GetSecTeams();
+                lvm.secteams = vm.GetSecTeamsList();
 
                 return View(lvm);
             }
@@ -114,7 +116,7 @@ namespace ClinicX.Controllers
             {
                 crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", "", "", User.Identity.Name);
 
-                var dot = await _context.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
+                var dot = await _clinContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
                 int iDID = dot.DoTID;
 
                 return RedirectToAction("Edit", new { id = iDID });
@@ -205,11 +207,29 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var letter = await _context.DictatedLettersCopies.FirstOrDefaultAsync(x => x.CCID == iID);
+                //var letter = await _clinContext.DictatedLettersCopies.FirstOrDefaultAsync(x => x.CCID == iID);
+                
+                var letter = vm.GetDictatedLetterCopyDetails(iID);
+                
                 int iDID = letter.DotID;
 
                 crud.CallStoredProcedure("Letter", "DeleteCC", iID, 0, 0, "", "", "", "", User.Identity.Name);
                 return RedirectToAction("Edit", new { id = iDID });
+                
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
+
+        public async Task<IActionResult> PreviewDOT(int iDID)
+        {
+            try
+            {                
+                lc.PreviewDOTPDF(iDID, User.Identity.Name, "PT");
+                //return RedirectToAction("Edit", new { id = iDID });
+                return File("~/preview.pdf", "Application/PDF");
             }
             catch (Exception ex)
             {
