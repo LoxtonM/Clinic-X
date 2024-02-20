@@ -698,10 +698,36 @@ namespace ClinicX.Models
     }
 
     [Table("ListRequestStatus", Schema = "dbo")]
-    public class  RequestStatus
+    public class RequestStatus
     {
         [Key]
         public string RelStatusCode { get; set;}
         public string RelStatus { get; set; }
     }
+
+    [Table("ListTumourSite", Schema = "dbo")]
+    public class  TumourSite
+    {
+        [Key]
+        public string SiteCode { get; set; }
+        public string Site { get; set; }
+    }
+
+    [Table("ListTumourLat", Schema = "dbo")]
+    public class TumourLat
+    {
+        [Key]
+        public string LatCode { get; set; }
+        public string Lat { get; set; }
+    }
+
+    [Table("ListTumourMorph", Schema = "dbo")]
+    public class TumourMorph
+    {
+        [Key]
+        public string MorphCode { get; set; }
+        public string? Morph { get; set; }
+    }
+
+
 }

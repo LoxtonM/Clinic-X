@@ -55,14 +55,14 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddNew(int id, string sDiagnosis, string? sAge, string? sHospital, string? sCRegCode, DateTime? dDateRequested,
-            string? sCons, string? sStatus, string? sConsent, DateTime? dDateReceived, string? sReqBy)
+            string? sCons, string? sStatus, string? sConsent, DateTime? dDateReceived)
         {
             try
             {
                 crud.CallStoredProcedure("RelativeDiagnosis", "Create", id, 0, 0, sDiagnosis, sAge, sHospital, sCRegCode, User.Identity.Name,
-                    dDateRequested, dDateReceived, false, false, 0, 0, 0, sStatus, sConsent, sReqBy);
+                    dDateRequested, DateTime.Parse("1900-01-01"), false, false, 0, 0, 0, sStatus, sConsent, sCons);
 
-                return View();
+                return RedirectToAction("Index", "RelativeDiagnosis", new { iRelID = id });
             }
             catch (Exception ex)
             {
@@ -76,10 +76,14 @@ namespace ClinicX.Controllers
             try
             {
                 rdvm.relativesDiagnosis = vm.GetRelativeDiagnosisDetails(id);
-                rdvm.cancerRegList = vm.GetCancerRegList();
-                rdvm.requestStatusList = vm.GetRequestStatusList();
-                rdvm.staffList = vm.GetStaffMemberList();
-                rdvm.clinicianList = vm.GetClinicalStaffList();
+                //rdvm.cancerRegList = vm.GetCancerRegList();
+                //rdvm.requestStatusList = vm.GetRequestStatusList();
+                //rdvm.staffList = vm.GetStaffMemberList();
+                //rdvm.clinicianList = vm.GetClinicalStaffList();
+                rdvm.tumourSiteList = vm.GetTumourSiteList();
+                rdvm.tumourLatList = vm.GetTumourLatList();
+                rdvm.tumourMorphList = vm.GetTumourMorphList();
+
 
                 return View(rdvm);
             }
@@ -90,15 +94,23 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, string sPlaceholder)
+        public async Task<IActionResult> Edit(int id, string? sConsent, DateTime? dDateReceived, string? sConfirmed,
+            DateTime? dConfDiagDate, string? sConfDiagAge, string? sSiteCode, string? sLatCode, string? sGrade, 
+            string? sDukes, string? sMorphCode, string? sHistologyNumber, string? sNotes)
         {
             try
             {
-                //rdvm.relativesDiagnosis = vm.GetRelativeDiagnosisDetails(id);
-                //rdvm.cancerRegList = vm.GetCancerRegList();
-                //rdvm.requestStatusList = vm.GetRequestStatusList();
-                //rdvm.staffList = vm.GetStaffMemberList();
-                //rdvm.clinicianList = vm.GetClinicalStaffList();
+                rdvm.relativesDiagnosis = vm.GetRelativeDiagnosisDetails(id);
+                rdvm.tumourSiteList = vm.GetTumourSiteList();
+                rdvm.tumourLatList = vm.GetTumourLatList();
+                rdvm.tumourMorphList = vm.GetTumourMorphList();
+
+                string sData = "ConfDiagAge:" + sConfDiagAge + "Grade:" + sGrade + "Dukes:" + sDukes + "HistologyNumber:" + sHistologyNumber;
+                //there are too many strings, so I need to concatenate them all to send them to the SP
+                //(it's either that or add another 4 optional string variables!!!)
+
+                crud.CallStoredProcedure("RelativeDiagnosis", "Edit", id, 0, 0, sConsent, sConfirmed, sData, sNotes, User.Identity.Name, dDateReceived, dConfDiagDate,
+                    false, false, 0, 0, 0, sSiteCode, sLatCode, sMorphCode);
 
                 //return View(rdvm);
                 return RedirectToAction("Index", "WIP");

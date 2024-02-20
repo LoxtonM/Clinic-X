@@ -13,6 +13,10 @@ namespace ClinicX.ViewModels
         public List<StaffMemberList> clinicianList { get; set; }
         public List<CancerReg> cancerRegList { get; set; }
         public List<RequestStatus> requestStatusList { get; set; }
+        public List<TumourSite> tumourSiteList { get;set; }
+        public List<TumourLat> tumourLatList { get; set; }
+        public List<TumourMorph> tumourMorphList { get; set; }
+
 
     }
 }

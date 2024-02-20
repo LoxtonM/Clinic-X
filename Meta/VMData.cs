@@ -710,5 +710,29 @@ namespace ClinicX.Meta
             int dfs = status.Count();
             return status.ToList();
         }
+
+        public List<TumourSite> GetTumourSiteList()
+        {
+            var item = from i in _clinContext.TumourSite
+                       select i;
+
+            return item.ToList();
+        }
+
+        public List<TumourLat> GetTumourLatList()
+        {
+            var item = from i in _clinContext.TumourLat
+                       select i;
+
+            return item.ToList();
+        }
+
+        public List<TumourMorph> GetTumourMorphList()
+        {
+            var item = from i in _clinContext.TumourMorph
+                       select i;
+
+            return item.ToList();
+        }
     }
 }
