@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -73,8 +74,40 @@ namespace ClinicX.Models
         public string? Status { get; set; }
         public string? SiteCode { get; set; }
         public string? Relation { get; set; }
-    }   
-    
+    }
+
+    [Table("RelativesDiagnosis")]
+    public class RelativesDiagnosis
+    {
+        [Key]
+        public int TumourID { get; set; }
+        public int RelsID { get; set; }
+        //public int WMFACSID { get; set; }
+        public string? Diagnosis {  get; set; }
+        public string? AgeDiag {  get; set; }
+        public string? Hospital { get; set; }
+        public string? CRegCode { get; set; }
+        [Column("Consent?")] //because some silly person named the column in the SQL table with a question mark!!
+        public string? Consent { get; set; }
+        public string? Confirmed { get; set; }
+        public string? ConfDiagDate { get; set; }
+        public Double? ConfDiagAge { get; set; }
+        public string? SiteCode { get; set; }
+        public string? LatCode { get; set; }
+        public string? MorphCode { get; set; }
+        public string? Status { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DateReq { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DateRec { get; set; }
+        public string? Cons {  get; set; }
+        public string? ReqBy { get; set; }
+        public string? HistologyNumber { get; set; }
+        public string? Grade {  get; set; }
+        public string? Dukes { get; set; }
+        public string? Notes {  get; set; }
+    }
+
     [Table("ViewPatientAppointmentDetails", Schema="dbo")] //Appointment data
     public class Clinics
     {
@@ -653,5 +686,22 @@ namespace ClinicX.Models
         public string? FACILITY { get; set; }
         public Int16 NON_ACTIVE { get; set; }
         public Int16 Is_Gp { get; set; }
+    }
+
+    [Table("ListCReg", Schema = "dbo")]
+    public class CancerReg
+    {
+        [Key]
+        public string CRegCode { get; set; }
+        public string Registry {  get; set; }
+        public bool Creg_InUse { get; set; }
+    }
+
+    [Table("ListRequestStatus", Schema = "dbo")]
+    public class  RequestStatus
+    {
+        [Key]
+        public string RelStatusCode { get; set;}
+        public string RelStatus { get; set; }
     }
 }

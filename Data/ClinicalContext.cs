@@ -15,7 +15,8 @@ namespace ClinicX.Data
 
         public DbSet<Patients> Patients { get; set; }
         public DbSet<Ethnicity> Ethnicity { get; set; }
-        public DbSet<Relatives> Relatives { get; set; }        
+        public DbSet<Relatives> Relatives { get; set; }    
+        public DbSet<RelativesDiagnosis> RelativesDiagnoses { get; set; }
         public DbSet<Clinics> Clinics { get; set; }
         public DbSet<Referrals> Referrals { get; set; }
         public DbSet<Triages> Triages { get; set; }
@@ -52,5 +53,7 @@ namespace ClinicX.Data
         public DbSet<Eligibility> Eligibility { get; set; }
         public DbSet<ExternalFacility> ExternalFacility { get; set; }
         public DbSet<ExternalClinician> ExternalClinician { get; set; }
+        public DbSet<CancerReg> CancerReg { get; set; }
+        public DbSet<RequestStatus> RequestStatus { get; set; }
     }
 }

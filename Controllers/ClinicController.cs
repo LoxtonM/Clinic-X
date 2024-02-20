@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ClinicX.Data;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using ClinicX.Meta;
+using ClinicX.Models;
 
 namespace ClinicX.Controllers
 {
@@ -25,9 +25,12 @@ namespace ClinicX.Controllers
             crud = new CRUD(_config);
         }
 
+        //public DateTime dShowFilterDate;
+        //public bool isShowOnlyOutstanding;
+
         [HttpGet]
         [Authorize]
-        public async Task <IActionResult> Index(DateTime? dFilterDate)
+        public async Task <IActionResult> Index(DateTime? dFilterDate, bool? isShowOutstanding)
         {
             try
             {
@@ -41,12 +44,26 @@ namespace ClinicX.Controllers
                 {
                     dFilterDate = DateTime.Parse(DateTime.Now.AddDays(-30).ToString());
                 }
+                
 
-                var clinics = vm.GetClinicList(User.Identity.Name);
-                clinics = clinics.Where(c => c.BOOKED_DATE >= dFilterDate).ToList();
-                clinics = clinics.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                //var clinics = vm.GetClinicList(User.Identity.Name);
+                cvm.clinicsList = vm.GetClinicList(User.Identity.Name);
 
-                return View(clinics);
+                if (isShowOutstanding.GetValueOrDefault())
+                {
+                    //clinics = clinics.Where(c => c.Attendance == "NOT RECORDED").ToList();
+                    cvm.clinicsList = cvm.clinicsList.Where(c => c.Attendance == "NOT RECORDED").ToList();
+                }
+
+                //clinics = clinics.Where(c => c.BOOKED_DATE >= dFilterDate).ToList();
+                cvm.clinicsList = cvm.clinicsList.Where(c => c.BOOKED_DATE >= dFilterDate).ToList();
+                //clinics = clinics.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                cvm.clinicsList = cvm.clinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+
+                cvm.dClinicFilterDate = dFilterDate.GetValueOrDefault();
+                cvm.isClinicOutstanding = isShowOutstanding.GetValueOrDefault();
+
+                return View(cvm);
             }
             catch (Exception ex)
             {
@@ -79,7 +96,7 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                cvm.staffMembers = vm.GetCliniciansList();
+                cvm.staffMembers = vm.GetClinicalStaffList();
                 cvm.activityItems = vm.GetClinicDetailsList(id);
                 cvm.activityItem = vm.GetActivityDetails(id);
                 cvm.outcomes = vm.GetOutcomesList();

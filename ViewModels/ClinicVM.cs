@@ -15,5 +15,8 @@ namespace ClinicX.ViewModels
         public List<ClinicalNotes> clinicalNotesList { get; set; }
         public List<Ethnicity> ethnicities { get; set; }
         public Patients patients { get; set; }        
+        public List<Clinics> clinicsList { get; set; }
+        public DateTime dClinicFilterDate { get; set; }
+        public bool isClinicOutstanding { get; set; }
     }
 }

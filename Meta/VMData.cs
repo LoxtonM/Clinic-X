@@ -36,6 +36,12 @@ namespace ClinicX.Meta
             return patient;
         } //Get patient details from MPI
 
+        public Patients GetPatientDetailsByWMFACSID(int id)
+        {
+            var patient = _clinContext.Patients?.FirstOrDefault(i => i.WMFACSID == id);
+            return patient;
+        } //Get patient details from WMFACSID
+
         public PatientPathway GetPathwayDetails(int id)
         {
             var pathway = _clinContext.PatientPathway.OrderBy(i => i.REFERRAL_DATE).FirstOrDefault(i => i.MPI == id);
@@ -103,6 +109,21 @@ namespace ClinicX.Meta
             var rel = _clinContext.Relatives.FirstOrDefault(r => r.relsid == relID);
 
             return rel;
+        }
+
+        public List<RelativesDiagnosis> GetRelativeDiagnosisList(int id)
+        {
+            var reldiag = from r in _clinContext.RelativesDiagnoses
+                           where r.RelsID == id
+                           select r;
+            
+            return reldiag.ToList();
+        }
+
+        public RelativesDiagnosis GetRelativeDiagnosisDetails(int id)
+        {
+            var item = _clinContext.RelativesDiagnoses.FirstOrDefault(rd => rd.TumourID == id);
+            return item;
         }
 
         public List<HPOTermDetails> GetHPOTermsAddedList(int id)
@@ -350,7 +371,7 @@ namespace ClinicX.Meta
             return facs.ToList();
         }
 
-        public List<StaffMemberList> GetCliniciansList() //Get list of all clinical staff members currently in post
+        public List<StaffMemberList> GetClinicalStaffList() //Get list of all clinical staff members currently in post
         {
             var clinicians = from s in _clinContext.StaffMembers
                         where s.InPost == true && (s.CLINIC_SCHEDULER_GROUPS == "GC" || s.CLINIC_SCHEDULER_GROUPS == "Consultant")
@@ -671,6 +692,23 @@ namespace ClinicX.Meta
                            select c;
 
             return caseload.ToList();
+        }
+
+        public List<CancerReg> GetCancerRegList()
+        {
+            var creg = from c in _clinContext.CancerReg
+                           where c.Creg_InUse == true
+                           select c;
+            int dfs = creg.Count();
+            return creg.ToList();
+        }
+
+        public List<RequestStatus> GetRequestStatusList()
+        {
+            var status = from s in _clinContext.RequestStatus                       
+                       select s;
+            int dfs = status.Count();
+            return status.ToList();
         }
     }
 }

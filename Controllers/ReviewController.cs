@@ -53,7 +53,7 @@ namespace ClinicX.Controllers
             try
             {
                 rvm.referrals = vm.GetActivityDetails(id);
-                rvm.staffMembers = vm.GetCliniciansList();
+                rvm.staffMembers = vm.GetClinicalStaffList();
                 int impi = rvm.referrals.MPI;
                 rvm.patient = vm.GetPatientDetails(impi);
                

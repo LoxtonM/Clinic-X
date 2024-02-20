@@ -25,7 +25,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> HPOTerm(int id)
+        public async Task<IActionResult> HPOTerm(int id, string? sSearchTerm)
         {
             try
             {                
@@ -33,6 +33,11 @@ namespace ClinicX.Controllers
                 hpo.hpoTermDetails = vm.GetExistingHPOTermsList(id);
                 hpo.hpoTerms = vm.GetHPOTermsList();
                 hpo.hpoExtractVM = vm.GetExtractedTermsList(id, _config);
+
+                if(sSearchTerm != null) 
+                { 
+                    hpo.hpoTerms = hpo.hpoTerms.Where(t => t.Term.Contains(sSearchTerm)).ToList();
+                }
 
                 return View(hpo);
             }

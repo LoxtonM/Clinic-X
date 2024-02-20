@@ -40,7 +40,6 @@ namespace ClinicX.Controllers
         {
             try
             {
-                //var rel = await _clinContext.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
                 var rel = vm.GetRelativeDetails(id);
                 
                 return View(rel);
@@ -56,7 +55,6 @@ namespace ClinicX.Controllers
         {
             try
             {
-                //var rel = await _clinContext.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
                 var rel = vm.GetRelativeDetails(id);
                 return View(rel);
             }
@@ -73,7 +71,6 @@ namespace ClinicX.Controllers
         {
             try
             {
-                //var rel = await _clinContext.Relatives.FirstOrDefaultAsync(r => r.relsid == id);
                 var rel = vm.GetRelativeDetails(id);
 
 
@@ -163,7 +160,7 @@ namespace ClinicX.Controllers
                 crud.CallStoredProcedure("Relative", "Create", WMFACSID, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
                     User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
 
-                var patient = _clinContext.Patients.FirstOrDefault(p => p.WMFACSID == WMFACSID);
+                var patient = vm.GetPatientDetailsByWMFACSID(WMFACSID);
 
                 return RedirectToAction("PatientDetails", "Patient", new { id = patient.MPI });
             }
@@ -172,6 +169,5 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
             }
         }
-
     }
 }

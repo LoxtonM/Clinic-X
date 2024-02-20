@@ -1,5 +1,5 @@
-﻿@model IEnumerable<ClinicX.Models.Clinics>
-
+﻿@*@model IEnumerable<ClinicX.Models.Clinics>*@
+@model ClinicX.ViewModels.ClinicVM
 @{
     ViewData["Title"] = "Clinic-X - Clinics";
 }
@@ -12,7 +12,7 @@
     <div class="row g-5 mb-5">
         @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().Clinician)!</h1>*@
 
-        @if (Model.Count(x => x.BOOKED_DATE.Value.ToString("dd/MM/yyyy") == System.DateTime.Now.ToString("dd/MM/yyyy")) == 0)
+        @if (Model.clinicsList.Count(x => x.BOOKED_DATE.Value.ToString("dd/MM/yyyy") == System.DateTime.Now.ToString("dd/MM/yyyy")) == 0)
         {
             <h2 class="text-center">You have no clinics scheduled today.</h2>
         }
@@ -28,13 +28,13 @@
                             <th>CGU No</th>
                             <th>Patient</th>
                             <th>Clinic</th>
-                            <th>@Html.DisplayNameFor(model => model.BOOKED_DATE)</th>
-                            <th>@Html.DisplayNameFor(model => model.BOOKED_TIME)</th>
+                            <th>Booked Date</th>
+                            <th>Booked Time</th>
                             <th>Outcome</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.clinicsList)
                         {
                             if (item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") == System.DateTime.Now.ToString("dd/MM/yyyy"))
                             {                
@@ -71,7 +71,7 @@
                 </div>
                 <div class="col-8">
                     <select class="form-select" name="ddlFutureClinics" id="ddlFutureClinics">
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.clinicsList)
                         {
                             if (item.BOOKED_DATE > System.DateTime.Now.AddDays(-1))
                             {
@@ -97,16 +97,16 @@
                     <label>From date:</label>
                 </div>
                 <div class="col-md-4">
-                    <input type="date" name="dFilterDate" /> 
+                    <input type="date" name="dFilterDate" asp-for=@Model.dClinicFilterDate /> 
                 </div>
                 <div class="col-md-2">
                     <label>Only Show Outstanding:</label>
                 </div>
-                <div class="col-md-2">
-                    <label>Only Show Outstanding:</label>
+                <div class="col-md-1">
+                    <input type="checkbox" id="chkIsShowOutstanding" class="check" asp-for=@Model.isClinicOutstanding) onchange="SetShowOutstandingChecked()" />
                 </div>
-                <div class="col-md-2">
-                    <input type="text" id="txtIsOutstanding" name="isShowOutstanding" hidden="true" />
+                <div class="col-md-1">
+                    <input type="text" id="txtIsShowOutstanding" name="isShowOutstanding" asp-for=@Model.isClinicOutstanding hidden="true" />
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-success">Select</button>
@@ -118,7 +118,7 @@
                 </div>
                 <div class="col-8">
                     <select class="form-select" name="ddlPastClinics" id="ddlPastClinics">
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.clinicsList)
                         {
                             if(item.BOOKED_DATE <= System.DateTime.Now.AddDays(-1))
                             {
@@ -176,5 +176,10 @@
             //window.open(_url);
         }
     }
+
+    function SetShowOutstandingChecked()
+    {
+        document.getElementById("txtIsShowOutstanding").value = document.getElementById("chkIsShowOutstanding").checked;
+        }
 
 </script>

@@ -10,18 +10,9 @@
             @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
         </div>
         <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index">Record Diagnoses</a>
+            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-iRelID=@Model.relsid>Record Diagnoses</a>
         </div>
-        <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index">Record Tests</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index">Clinical Notes</a>
-        </div>
-        <div class="col-md-6"></div>
-        <div class="col-md-1">
-            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
-        </div>
+        <div class="col-md-6"></div>       
     </div>
 
     <div class="row mb-5">

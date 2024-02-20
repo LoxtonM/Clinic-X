@@ -195,7 +195,7 @@ namespace ClinicX.Controllers
                 }
                 
                 ivm.clinicalFacilityList = vm.GetClinicalFacilitiesList();
-                ivm.staffMembers = vm.GetCliniciansList();
+                ivm.staffMembers = vm.GetClinicalStaffList();
                 ivm.icpCancer = vm.GetCancerICPDetails(id);
                 ivm.riskList = vm.GetRiskList(id);
                 ivm.surveillanceList = vm.GetSurveillanceList(id);

@@ -62,7 +62,7 @@ namespace ClinicX.Controllers
                 lvm.dictatedLettersPatients = vm.GetDictatedLettersPatientsList(id);
                 lvm.dictatedLettersCopies = vm.GetDictatedLettersCopiesList(id);
                 lvm.patients = vm.GetDictatedLetterPatientsList(id);
-                lvm.staffMemberList = vm.GetCliniciansList();
+                lvm.staffMemberList = vm.GetClinicalStaffList();
                 int? iMPI = lvm.dictatedLetters.MPI;
                 int? iRefID = lvm.dictatedLetters.RefID;
                 lvm.patientDetails = vm.GetPatientDetails(iMPI.GetValueOrDefault());
