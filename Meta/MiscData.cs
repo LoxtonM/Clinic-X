@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClinicX.Meta
 {
-    public class MiscData
+    public class MiscData //the MiscData class contains all data "get" methods where the data is a single variable rather than a data model.
+                    //As such, the data is retrieved by way of a SQL "select". As such, it does not require a data context parameter.
     {
         private readonly IConfiguration _config;
         private readonly SqlConnection conn;

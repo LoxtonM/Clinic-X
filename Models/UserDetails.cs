@@ -6,7 +6,7 @@ using System.ComponentModel;
 namespace ClinicX.Models
 {
     [Table("STAFF", Schema = "dbo")]
-    public class UserDetails
+    public class UserDetails //used for user login, has no function beyond this.
     {
         [Required]
         [DisplayName("User ID")]

@@ -29,7 +29,7 @@
                     @foreach (var item in Model)
                     {   
                         <tr>
-                            <td><a asp-controller="Diagnosis" asp-action="Edit" asp-route-id="@item.ID">Select</a></td>
+                            <td><a asp-controller="Diagnosis" asp-action="Edit" asp-route-id="@item.ID" class="btn btn-success">Select</a></td>
                             <td>@item.DISEASE_CODE</td>
                             <td>@item.DESCRIPTION</td>
                             <td>@item.STATUS</td>

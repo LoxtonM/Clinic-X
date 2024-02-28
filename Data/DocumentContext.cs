@@ -3,17 +3,12 @@ using ClinicX.Models;
 
 namespace ClinicX.Data
 {
-    public class DocumentContext : DbContext
+    public class DocumentContext : DbContext //The DocumentContext class is the data context for everything to do with letters.
+                                             //It contains no clinical data.
     { 
         public DocumentContext(DbContextOptions<DocumentContext> options) : base(options) { }
-        //public DbSet<StaffMember> StaffMember{ get; set; }
-        //public DbSet<Patient> Patient { get; set; }
         public DbSet<DocumentsContent> DocumentsContent { get; set; }
-        //public DbSet<Referrer> Referrer { get; set; }
-        //public DbSet<Facility> Facility { get; set; }
         public DbSet<Constants> Constants { get; set; }
-        //public DbSet<DictatedLetter> DictatedLetter { get; set; }
-        //public DbSet<DictatedLetterCopy> DictatedLetterCopy { get; set; }
-        //public DbSet<DictatedLetterPatient> DictatedLetterPatient { get; set; }
+        
     }
 }

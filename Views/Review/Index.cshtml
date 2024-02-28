@@ -28,7 +28,7 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td><a asp-action="Edit" asp-route-id=@item.ReviewID>Select</a></td>
+                        <td><a asp-action="Edit" asp-route-id=@item.ReviewID class="btn btn-success">Select</a></td>
                         <td>@item.CGU_No</td>
                         <td>@item.FIRSTNAME @item.LASTNAME</td>
                         <td>@item.Category</td>

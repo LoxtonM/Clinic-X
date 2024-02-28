@@ -40,7 +40,7 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td><a asp-controller="RelativeDiagnosis" asp-action="Edit" asp-route-id=@item.TumourID>Edit</a></td>
+                            <td><a asp-controller="RelativeDiagnosis" asp-action="Edit" asp-route-id=@item.TumourID class="btn btn-success">Edit</a></td>
                             <td>@item.Diagnosis</td>
                             <td>@item.AgeDiag</td>
                             <td>@item.Hospital</td>

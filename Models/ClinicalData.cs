@@ -139,6 +139,7 @@ namespace ClinicX.Models
         public string? LetterRequired { get; set; }
         public string LoginDetails { get; set; }
         public string? Notes { get; set; }
+        public string? IndicationNotes { get; set; }
     }
 
     [Table("ViewPatientReferralDetails", Schema ="dbo")] //Referral data
@@ -147,6 +148,7 @@ namespace ClinicX.Models
         [Key]
         public int refid { get; set; }
         public int MPI { get; set; }
+        public string CLINICNO { get; set; }
         public string? INDICATION { get; set; }
         public string? LeadClinician { get; set; }
         public string? GC { get; set; }
@@ -383,9 +385,9 @@ namespace ClinicX.Models
         public int TestID { get; set; }
         public int MPI { get; set; }
         public string CGU_No { get; set; }
-        public string Title { get; set; }
-        public string FIRSTNAME { get; set; }
-        public string LASTNAME { get; set; }
+        public string? Title { get; set; }
+        public string? FIRSTNAME { get; set; }
+        public string? LASTNAME { get; set; }
         public string? TEST { get; set; }
         public string? ORDEREDBY { get; set; }
         public string? LOCATION { get; set; }

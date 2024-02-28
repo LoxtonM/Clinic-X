@@ -124,6 +124,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [HttpGet]
         public async Task<IActionResult> ChooseAppt(int id)
         {
             try

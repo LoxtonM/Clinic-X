@@ -3,7 +3,7 @@ using ClinicX.Models;
 
 namespace ClinicX.Data
 {
-    public class ClinicalContext : DbContext
+    public class ClinicalContext : DbContext //The CLinicalContext class is the data context for all clinical related data.
     {
         public ClinicalContext (DbContextOptions<ClinicalContext> options) :base(options) { }
 

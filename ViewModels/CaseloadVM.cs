@@ -7,6 +7,7 @@ namespace ClinicX.ViewModels
     public class CaseloadVM
     {
         public List<Caseload> caseLoad { get; set; }
+        public List<StaffMemberList> clinicians { get; set; }
         public int countClinics { get; set; }
         public int countTriages { get; set; }
         public int countCancerICPs { get; set; }
@@ -14,5 +15,6 @@ namespace ClinicX.ViewModels
         public int countReviews { get; set; }
         public int countLetters { get; set; }
         public string name { get; set; }
+        public string staffCode { get; set; }
     }
 }

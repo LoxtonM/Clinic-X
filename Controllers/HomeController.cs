@@ -37,6 +37,7 @@ namespace ClinicX.Controllers
                 cvm.countLetters = cvm.caseLoad.Where(c => c.Type.Contains("Letter")).Count();
                 cvm.name = cvm.caseLoad.FirstOrDefault().Clinician;
                 
+
                 return View(cvm);
             }
             catch (Exception ex)

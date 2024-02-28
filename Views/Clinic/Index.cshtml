@@ -12,7 +12,8 @@
     <div class="row g-5 mb-5">
         @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().Clinician)!</h1>*@
 
-        @if (Model.clinicsList.Count(x => x.BOOKED_DATE.Value.ToString("dd/MM/yyyy") == System.DateTime.Now.ToString("dd/MM/yyyy")) == 0)
+        @*@if (Model.clinicsList.Count(x => x.BOOKED_DATE.Value.ToString("dd/MM/yyyy") == System.DateTime.Now.ToString("dd/MM/yyyy")) == 0)*@
+        @if (Model.currentClinicsList.Count() == 0)
         {
             <h2 class="text-center">You have no clinics scheduled today.</h2>
         }
@@ -28,26 +29,28 @@
                             <th>CGU No</th>
                             <th>Patient</th>
                             <th>Clinic</th>
-                            <th>Booked Date</th>
+                            @*<th>Booked Date</th>*@
                             <th>Booked Time</th>
+                            <th>Indication Notes</th>
                             <th>Outcome</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.clinicsList)
+                        @foreach (var item in Model.currentClinicsList)
                         {
                             if (item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") == System.DateTime.Now.ToString("dd/MM/yyyy"))
                             {                
                                 <tr>
-                                    <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID>Select</a></td>
+                                    <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID class="btn btn-success">Select</a></td>
                                     <td>@item.CGU_No</td>
                                     <td>@item.FIRSTNAME @item.LASTNAME</td>
                                     <td>@item.Clinic</td>
-                                    <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                    @*<td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>*@                                    
                                     <td>@item.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                                    <td>@item.IndicationNotes</td>
                                     <td>@item.Attendance</td>
                                 </tr>
-                            }            
+                            }                               
                         }
                     </tbody>
                 </table>
@@ -61,31 +64,66 @@
 
 
     <div class="row g-5 mb-5">
-        <form id="frmFutureClinics">
-            <div class="row g-5 mb-3">
-                <h2>Upcoming clinics</h2>
-            </div>
-            <div class="row g-5 mb-3">
-                <div class="col-2">
-                    @*<label class="form-label" for="ddlFutureClinics">Upcoming Clinics:</label>*@
+        @if (Model.futureClinicsList.Count() == 0)
+        {
+            @*<h2 class="text-center">You have no upcoming clinics.</h2>*@
+        }
+        else
+        {
+            @*<form id="frmFutureClinics">*@
+                <div class="row g-5 mb-3">
+                    <h2>Upcoming clinics</h2>
                 </div>
-                <div class="col-8">
-                    <select class="form-select" name="ddlFutureClinics" id="ddlFutureClinics">
-                        @foreach (var item in Model.clinicsList)
-                        {
-                            if (item.BOOKED_DATE > System.DateTime.Now.AddDays(-1))
+                <div class="row g-5 mb-3">
+                    <div class="col-2">
+                        @*<label class="form-label" for="ddlFutureClinics">Upcoming Clinics:</label>*@
+                    </div>
+                    <div class="col-8">
+                        @*<select class="form-select" name="ddlFutureClinics" id="ddlFutureClinics">
+                            @foreach (var item in Model.futureClinicsList)
                             {
-                                <option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic, @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm")</option>
+                                @if (item.BOOKED_DATE > System.DateTime.Now.AddDays(-1))
+                                {
+                                    <option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic, @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm")</option>
+                                }
                             }
-                        }
-                    </select>
-                </div>            
-                <div class="col-2">
-                    <input type="button" value="Select" id="btnSelectFutureClinic" class="btn btn-default btn-success" />
+                        </select>*@
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>CGU No</th>
+                                    <th>Patient</th>
+                                    <th>Clinic</th>
+                                    <th>Booked Date</th>
+                                    <th>Booked Time</th>
+                                    <th>Indication Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.futureClinicsList)
+                                {
+                                    <tr>
+                                        <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID class="btn btn-success">Select</a></td>
+                                        <td>@item.CGU_No</td>
+                                        <td>@item.FIRSTNAME @item.LASTNAME</td>
+                                        <td>@item.Clinic</td>
+                                        <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                                        <td>@item.IndicationNotes</td>
+                                    </tr>                                
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>            
+                    <div class="col-2">
+                        @*<input type="button" value="Select" id="btnSelectFutureClinic" class="btn btn-default btn-success" />*@
+                    </div>
+                    <div class="col-8"></div>
                 </div>
-                <div class="col-8"></div>
-            </div>
-        </form>
+            @*</form>*@
+        }
     </div>
     <div class="row g-5 mb-5">
         <form id="frmPastClinics">
@@ -109,7 +147,7 @@
                     <input type="text" id="txtIsShowOutstanding" name="isShowOutstanding" asp-for=@Model.isClinicOutstanding hidden="true" />
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-success">Select</button>
+                    <button type="submit" class="btn btn-success">Update</button>
                 </div>
             </div>
             <div class="row g-5 mb-3">                
@@ -118,12 +156,12 @@
                 </div>
                 <div class="col-8">
                     <select class="form-select" name="ddlPastClinics" id="ddlPastClinics">
-                        @foreach (var item in Model.clinicsList)
+                        @foreach (var item in Model.pastClinicsList)
                         {
-                            if(item.BOOKED_DATE <= System.DateTime.Now.AddDays(-1))
-                            {
+                            @*if(item.BOOKED_DATE <= System.DateTime.Now.AddDays(-1))
+                            {*@
                                 <option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic, @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm") - @item.Attendance</option>
-                            }
+                            @*}*@
                         }
                     </select>
                 </div>            
@@ -139,7 +177,7 @@
 <script type="text/javascript">
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnSelectPastClinic").addEventListener("click", OpenPastClinic);
-    document.getElementById("btnSelectFutureClinic").addEventListener("click", OpenFutureClinic);
+    //document.getElementById("btnSelectFutureClinic").addEventListener("click", OpenFutureClinic);
     
     function GoBack() 
     {

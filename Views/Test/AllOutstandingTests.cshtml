@@ -37,11 +37,18 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID>Select</a></td>
+                            <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID class="btn btn-success">Select</a></td>
                             <td>@item.TEST</td>
                             <td>@item.FIRSTNAME @item.LASTNAME</td>
                             <td>@item.LOCATION</td>
-                            <td>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
+                            @if (@item.DATE_REQUESTED.HasValue)
+                            {
+                                <td>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
                             @if (@item.DATE_RECEIVED.HasValue)
                             {
                                 <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>

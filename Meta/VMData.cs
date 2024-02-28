@@ -4,11 +4,12 @@ using ClinicX.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Security.Cryptography;
 
 namespace ClinicX.Meta
 {
-    public class VMData
+    public class VMData //This class contains all of the data "get" functions that retrieve data from a data model.
+                        //They each return either a list of a data model.
+        //Note there are two constructors, because there are two possible "datacontext" parameters that can be passed to it.
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext? _docContext;

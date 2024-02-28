@@ -16,36 +16,29 @@
     </div>
 
     <div class="row g-5 mb-5">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>               
-                    <th>Letter To</th>
-                    <th>Letter Re</th>
-                    <th>@Html.DisplayNameFor(model => model.DateDictated)</th>                
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.Count() == 0)
-                {
+        @if (Model.Count() == 0)
+        {
+            <h1>There are no letters outstanding</h1>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td>There are no letters outstanding.</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <th></th>               
+                        <th>Letter To</th>
+                        <th>Letter Re</th>
+                        <th>@Html.DisplayNameFor(model => model.DateDictated)</th>                
+                        <th>Status</th>
                     </tr>
-                }
-                else
-                {
+                </thead>
+                <tbody>                
                     @foreach (var item in Model)
                     {
                         @if (item.Status != "For Printing")
                         {
                             <tr>
-                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID>@item.DoTID</a></td>
+                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-success">@item.DoTID</a></td>
                                 <td>@item.LetterTo</td>
                                 <td>@item.LetterRe</td>
                                 @if (@item.DateDictated.HasValue)
@@ -60,9 +53,10 @@
                         </tr>                  
                         }
                     }
-                }
-            </tbody>
-        </table>
+                
+                </tbody>
+            </table>
+        }
     </div>
 
 
@@ -100,7 +94,7 @@
                         @if (item.Status == "For Printing")
                         {
                             <tr>
-                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID>@item.DoTID</a></td>
+                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-success">@item.DoTID</a></td>
                                 <td>@item.LetterTo</td>
                                 <td>@item.LetterRe</td>
                                 @if (@item.DateDictated.HasValue)

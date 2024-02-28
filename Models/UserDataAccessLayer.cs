@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ClinicX.Models
 {
-    public class UserDataAccessLayer : Controller
+    public class UserDataAccessLayer : Controller //used for user login, has no function beyond this.
     {
         public static IConfiguration Configuration { get; set; }
         private static string GetConnectionString()

@@ -25,8 +25,6 @@ namespace ClinicX.Controllers
             crud = new CRUD(_config);
         }
 
-        //public DateTime dShowFilterDate;
-        //public bool isShowOnlyOutstanding;
 
         [HttpGet]
         [Authorize]
@@ -37,30 +35,25 @@ namespace ClinicX.Controllers
                 if (User.Identity.Name is null)
                 {
                     return RedirectToAction("NotFound", "WIP");
-                }
-                
+                }                
 
-                if (dFilterDate == null)
+                if (dFilterDate == null) //set default date to 30 days before today
                 {
                     dFilterDate = DateTime.Parse(DateTime.Now.AddDays(-30).ToString());
                 }
-                
-
-                //var clinics = vm.GetClinicList(User.Identity.Name);
-                cvm.clinicsList = vm.GetClinicList(User.Identity.Name);
+                                
+                cvm.pastClinicsList = vm.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE < DateTime.Today).ToList();
+                cvm.currentClinicsList = vm.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE == DateTime.Today).ToList();
+                cvm.futureClinicsList = vm.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE > DateTime.Today).ToList();
 
                 if (isShowOutstanding.GetValueOrDefault())
                 {
-                    //clinics = clinics.Where(c => c.Attendance == "NOT RECORDED").ToList();
-                    cvm.clinicsList = cvm.clinicsList.Where(c => c.Attendance == "NOT RECORDED").ToList();
+                    cvm.pastClinicsList = cvm.pastClinicsList.Where(c => c.Attendance == "NOT RECORDED").ToList();
                 }
 
-                //clinics = clinics.Where(c => c.BOOKED_DATE >= dFilterDate).ToList();
-                cvm.clinicsList = cvm.clinicsList.Where(c => c.BOOKED_DATE >= dFilterDate).ToList();
-                //clinics = clinics.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
-                cvm.clinicsList = cvm.clinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
-
-                cvm.dClinicFilterDate = dFilterDate.GetValueOrDefault();
+                cvm.pastClinicsList = cvm.pastClinicsList.Where(c => c.BOOKED_DATE >= dFilterDate).ToList();
+                cvm.pastClinicsList = cvm.pastClinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                cvm.dClinicFilterDate = dFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
                 cvm.isClinicOutstanding = isShowOutstanding.GetValueOrDefault();
 
                 return View(cvm);
@@ -71,11 +64,17 @@ namespace ClinicX.Controllers
             }
         }
 
-        [Authorize]        
+        [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ApptDetails(int id)
         {
             try
-            {             
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
                 var appts = vm.GetClinicDetails(id);
 
                 if (appts == null)
@@ -92,10 +91,16 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             try
-            {                
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
                 cvm.staffMembers = vm.GetClinicalStaffList();
                 cvm.activityItems = vm.GetClinicDetailsList(id);
                 cvm.activityItem = vm.GetActivityDetails(id);
@@ -150,8 +155,7 @@ namespace ClinicX.Controllers
                 }
 
                 return RedirectToAction("ApptDetails", new { id = iRefID });
-                //}
-                //return View();
+                
             }
             catch (Exception ex)
             {

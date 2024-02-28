@@ -5,7 +5,9 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class CRUD
+    public class CRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
+                       //data modifications - creation, updates, and deletions. It does not retrieve any data, but uses a generic
+                       //list of integers, strings, dates, and booleans that are passed to it.
     {
         private readonly IConfiguration _config;
 
