@@ -257,6 +257,14 @@ namespace ClinicX.Models
         public string? Review_Recipient { get; set; }
         public string? RecipientLogin { get; set; }
     }
+    [Table("ICP", Schema = "dbo")]
+    public class ICP
+    {
+        [Key]
+        public int ICPID { get; set; }
+        public int REFID { get; set; }
+        public int MPI { get; set; }
+    }
 
     [Table("ICP_General", Schema = "dbo")] //General ICP
     public class ICPGeneral
@@ -731,5 +739,27 @@ namespace ClinicX.Models
         public string? Morph { get; set; }
     }
 
+    [Table("ListRisk")]
+    public class RiskCodes
+    {
+        [Key]
+        public string RiskCode { get; set; }
+        public string Risk { get; set; }
+        //public int? RiskOrder { get; set; }
+    }
 
+    [Table("ListSurvSite")]
+    public class SurvSiteCodes
+    {
+        [Key]
+        public string SurvSiteCode { get; set; }
+        public string SurvSite { get; set; }
+    }
+
+    [Keyless]
+    [Table("ListCalculationTools", Schema = "dbo")]
+    public class  CalculationTools
+    {
+        public string CalculationToolCode { get; set; }
+    }
 }

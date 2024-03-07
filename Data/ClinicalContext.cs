@@ -20,6 +20,7 @@ namespace ClinicX.Data
         public DbSet<Clinics> Clinics { get; set; }
         public DbSet<Referrals> Referrals { get; set; }
         public DbSet<Triages> Triages { get; set; }
+        public DbSet<ICP> ICP { get; set; }
         public DbSet<ICPGeneral> ICPGeneral { get; set; }
         public DbSet<ICPCancer> ICPCancer { get; set; }
         public DbSet<StaffMemberList> StaffMembers { get; set; }
@@ -58,6 +59,8 @@ namespace ClinicX.Data
         public DbSet<TumourSite> TumourSite { get; set; }
         public DbSet<TumourLat> TumourLat { get; set; }
         public DbSet<TumourMorph> TumourMorph { get; set; }
-
+        public DbSet<RiskCodes> RiskCodes { get; set; }
+        public DbSet<SurvSiteCodes> SurvSiteCodes { get; set ; }
+        public DbSet<CalculationTools> CalculationTools { get; set; }
     }
 }

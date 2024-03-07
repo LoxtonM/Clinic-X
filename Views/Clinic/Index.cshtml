@@ -71,14 +71,14 @@
         else
         {
             @*<form id="frmFutureClinics">*@
-                <div class="row g-5 mb-3">
+                <div class="row">
                     <h2>Upcoming clinics</h2>
                 </div>
-                <div class="row g-5 mb-3">
-                    <div class="col-2">
+                <div class="row">
+                    @*<div class="col-2">*@
                         @*<label class="form-label" for="ddlFutureClinics">Upcoming Clinics:</label>*@
-                    </div>
-                    <div class="col-8">
+                    @*</div>*@
+                    @*<div class="row">*@
                         @*<select class="form-select" name="ddlFutureClinics" id="ddlFutureClinics">
                             @foreach (var item in Model.futureClinicsList)
                             {
@@ -116,11 +116,12 @@
                             </tbody>
                         </table>
 
-                    </div>            
-                    <div class="col-2">
+                    @*</div>*@
+                    
+                    @*<div class="col-2">*@
                         @*<input type="button" value="Select" id="btnSelectFutureClinic" class="btn btn-default btn-success" />*@
-                    </div>
-                    <div class="col-8"></div>
+                    @*</div>*@
+                    @*<div class="col-8"></div>*@
                 </div>
             @*</form>*@
         }

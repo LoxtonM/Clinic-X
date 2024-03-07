@@ -31,6 +31,20 @@ namespace ClinicX.Meta
             return iNoteID;        
         }
 
+        public int GetRiskID(int iRefID)
+        {
+            int iRiskID;
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("select top 1 RiskID from PatientRisk " +
+                "where RefID = " + iRefID.ToString() + " order by RiskID desc", conn);
+
+            iRiskID = (int)(cmd.ExecuteScalar());
+
+            conn.Close();
+
+            return iRiskID;
+        }
+
         public int GetNoteIDFromHPOTerm(int iID)
         {            
             conn.Open();

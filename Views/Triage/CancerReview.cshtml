@@ -45,7 +45,7 @@
                     @foreach (var item in Model.riskList)
                     {
                         <tr>
-                            <td><a asp-action="RiskAndSurveillance" asp-route-id=@item.RiskID>Select</a></td>
+                            <td><a asp-controller="RiskAndSurveillance" asp-action="RiskDetails" asp-route-id=@item.RiskID>Select</a></td>
                             <td>@item.RiskCode</td>
                             <td>@item.SurvSiteCode</td>
                             <td>@item.Clinician</td>
@@ -80,7 +80,7 @@
         <div class="row mb-5 g-5">
             <div class="col-md-2">
                 @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-                <a type="button" class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index">Add New</a>
+                <a type="button" class="btn btn-default btn-success" asp-controller="RiskAndSurveillance" asp-action="AddNew" asp-route-id=@Model.icpCancer.ICPID>Add New</a>
             </div>
         </div>
 
@@ -124,6 +124,7 @@
             <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePreClinicStatus" aria-expanded="false" aria-controls="collapseExample">Pre-Clinic Status (click to expand/hide)</button>
         </div>
 
+        @*
         <div class="collapse" id="collapsePreClinicStatus">
             <div class="row mb-5 g-5">
                 <h2>Pre-Clinic Status</h2>
@@ -159,7 +160,7 @@
 
         <div class="row mb-5 g-5">
             <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseSeeInClinic" aria-expanded="false" aria-controls="collapseExample">See in Clinic (click to expand/hide)</button>
-        </div>
+        </div>*@
 
         <div class="collapse" id="collapseSeeInClinic">
             <div class="row mb-5 g-5">

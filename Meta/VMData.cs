@@ -305,6 +305,11 @@ namespace ClinicX.Meta
             return items.ToList();
         }
 
+        public ICP GetICPDetails(int iIcpID)
+        {
+            var icp = _clinContext.ICP.FirstOrDefault(i => i.ICPID == iIcpID);
+            return icp;
+        }
         public Triages GetTriageDetails(int? iIcpID) //Get details of ICP from the IcpID
         {
             var icp = _clinContext.Triages.FirstOrDefault(i => i.ICPID == iIcpID);
@@ -398,9 +403,15 @@ namespace ClinicX.Meta
             return icp;
         }
 
-        public ICPCancer GetCancerICPDetails(int? iIcpID) //Get details of a cancer ICP by the IcpID
+        public ICPCancer GetCancerICPDetails(int? iIcpID) //Get details of a cancer ICP by the Cancer ID
         {
             var icp = _clinContext.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == iIcpID);
+            return icp;
+        }
+
+        public ICPCancer GetCancerICPDetailsByICPID(int? iIcpID) //Get details of a cancer ICP by the IcpID
+        {
+            var icp = _clinContext.ICPCancer.FirstOrDefault(c => c.ICPID == iIcpID);
             return icp;
         }
 
@@ -415,12 +426,12 @@ namespace ClinicX.Meta
             return risks.ToList();
         }
 
-        public List<Surveillance> GetSurveillanceList(int? iIcpID) //Get list of all surveillance recommendations for an ICP (by IcpID)
+        public List<Surveillance> GetSurveillanceList(int? iMPI) //Get list of all surveillance recommendations for an ICP (by MPI)
         {
-            var icp = _clinContext.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == iIcpID);
+            //var icp = _clinContext.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == iIcpID);
 
             var surveillances = from r in _clinContext.Surveillance
-                               where r.MPI == icp.MPI
+                               where r.MPI == iMPI
                                select r;
 
             return surveillances.ToList();
@@ -438,12 +449,12 @@ namespace ClinicX.Meta
             return surv;
         }
 
-        public List<Eligibility> GetTestingEligibilityList(int? iIcpID) //Get list of testing aligibility codes by IcpID
+        public List<Eligibility> GetTestingEligibilityList(int? iMPI) //Get list of testing aligibility codes by IcpID
         {
-            var icp = _clinContext.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == iIcpID);
+            //var icp = _clinContext.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == iIcpID);
 
             var eligibilities = from e in _clinContext.Eligibility
-                              where e.MPI == icp.MPI
+                              where e.MPI == iMPI
                               select e;
 
             return eligibilities.ToList();
@@ -731,6 +742,32 @@ namespace ClinicX.Meta
         public List<TumourMorph> GetTumourMorphList()
         {
             var item = from i in _clinContext.TumourMorph
+                       select i;
+
+            return item.ToList();
+        }
+
+        public List<RiskCodes> GetRiskCodesList()
+        {
+            var item = from i in _clinContext.RiskCodes
+                       orderby i.RiskCode
+                       select i;
+
+            return item.ToList();
+        }
+
+        public List<SurvSiteCodes> GetSurvSiteCodesList()
+        {
+            var item = from i in _clinContext.SurvSiteCodes
+                       orderby i.SurvSiteCode
+                       select i;
+
+            return item.ToList();
+        }
+
+        public List<CalculationTools> GetCalculationToolsList() 
+        {
+            var item = from i in _clinContext.CalculationTools
                        select i;
 
             return item.ToList();

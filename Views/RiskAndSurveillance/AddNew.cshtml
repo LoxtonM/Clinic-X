@@ -1,0 +1,154 @@
+﻿@model ClinicX.ViewModels.RiskSurveillanceVM
+
+@{
+    ViewData["Title"] = "Clinic-X - New Risk Item";
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">        
+        <h1>New Risk Item for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>       
+    </div>
+
+    <form asp-action="AddNew">
+        <div class="row" hidden="true">
+            <input name="iRefID" asp-for=@Model.iRefID  />
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-2">
+                <label>Risk:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sRiskCode">
+                    <option value="">Select...</option>
+                    @foreach(var item in Model.riskCodes)
+                    {
+                        <option value=@item.RiskCode>@item.Risk</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Site:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sSiteCode">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.survSiteCodes)
+                    {
+                        <option value=@item.SurvSiteCode>@item.SurvSite</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Clinician:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sClinCode">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.staffMembersList)
+                    {
+                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-2">
+                <label>Date:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="dRiskDate" />
+            </div>
+            <div class="col-md-2">
+                <label>Lifetime %:</label>
+            </div>
+            <div class="col-md-2">
+                <input class="w-50" type="text" name="fLifetimePercent" />
+            </div>
+            <div class="col-md-2">
+                <label>Comments</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="sComments" />
+            </div>
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-1">
+                <label>25-29(%):</label>
+            </div>
+            <div class="col-md-1">
+                <input class="w-50" type="text" name="f2529" />
+            </div>
+            <div class="col-md-1">
+                <label>30-40(%):</label>
+            </div>
+            <div class="col-md-1">
+                <input class="w-50" type="text" name="f3040" />
+            </div>
+            <div class="col-md-1">
+                <label>40-50(%):</label>
+            </div>
+            <div class="col-md-1">
+                <input class="w-50" type="text" name="f4050" />
+            </div>
+            <div class="col-md-1">
+                <label>50-60(%):</label>
+            </div>
+            <div class="col-md-1">
+                <input class="w-50" type="text" name="f5060" />
+            </div>
+            <div class="col-md-1">
+                <label>Use Letter:</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkUseLetter" />
+            </div>
+            <div class="col-md-1">
+                <input type="text" id="txtUseLetter" name="isUseLetter" hidden=true />
+            </div>
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-4">
+                <label>Calculation Tool Used:</label>
+            </div>
+            <div class="col-md-4">
+                <select name="sTool">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.calculationTools)
+                    {
+                        <option value=@item.CalculationToolCode>@item.CalculationToolCode</option>
+                    }
+                </select>
+            </div>
+        </div>
+        
+        @*RiskCode (drop down ListRisk)
+            
+        SurvSiteCode (drop down ListSurvSite)
+        RiskClinCode (drop down)
+            LifetimeRiskPercentage
+            TenYearRisk_25-29
+            TenYearRisk_30-40
+            TenYearRisk_40-50
+            TenYearRisk_50-60
+            CalculationToolUsed (drop down ListCalculationTools)            
+            IncludeLetter (use letter tickbox)
+        RiskComments (free text)
+        *@
+
+
+        <button type="submit" class="btn btn-success">Save</button>
+    </form>
+
+</div>
+
+
+<script>
+    document.getElementById("chkUseLetter").addEventListener("change", SetUseLetter);
+
+    function SetUseLetter()
+    {
+        document.getElementById("txtUseLetter").value = document.getElementById("chkUseLetter").checked;
+    }
+
+
+</script>

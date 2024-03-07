@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using System.Data;
 using ClinicX.Meta;
+using ClinicX.Models;
 
 namespace ClinicX.Controllers
 {
@@ -34,8 +35,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Index()
         {
             try
-            {
-               
+            {               
                 ivm.triages = vm.GetTriageList(User.Identity.Name);
                 ivm.icpCancerList = vm.GetCancerICPList(User.Identity.Name);
                 return View(ivm);
@@ -51,9 +51,11 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var triages = await _clinContext.Triages.FirstOrDefaultAsync(t => t.ICPID == id);
+                //var triages = await _clinContext.Triages.FirstOrDefaultAsync(t => t.ICPID == id);
 
-                if (triages == null)
+                var triage = vm.GetTriageDetails(id);
+
+                if (triage == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
@@ -198,8 +200,8 @@ namespace ClinicX.Controllers
                 ivm.staffMembers = vm.GetClinicalStaffList();
                 ivm.icpCancer = vm.GetCancerICPDetails(id);
                 ivm.riskList = vm.GetRiskList(id);
-                ivm.surveillanceList = vm.GetSurveillanceList(id);
-                ivm.eligibilityList = vm.GetTestingEligibilityList(id);
+                ivm.surveillanceList = vm.GetSurveillanceList(ivm.icpCancer.MPI);
+                ivm.eligibilityList = vm.GetTestingEligibilityList(ivm.icpCancer.MPI);
                 return View(ivm);
             }
             catch (Exception ex)
