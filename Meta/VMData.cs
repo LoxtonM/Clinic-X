@@ -437,6 +437,17 @@ namespace ClinicX.Meta
             return surveillances.ToList();
         }
 
+        public List<Surveillance> GetSurveillanceListByRiskID(int? iRiskID) //Get list of all surveillance recommendations for a  risk item (by RiskID)
+        {
+            //var icp = _clinContext.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == iIcpID);
+
+            var surveillances = from r in _clinContext.Surveillance
+                                where r.RiskID == iRiskID
+                                select r;
+
+            return surveillances.ToList();
+        }
+
         public Risk GetRiskDetails(int? iRiskID) //Get details of risk item by RiskID
         {
             var risk = _clinContext.Risk.FirstOrDefault(c => c.RiskID == iRiskID);
@@ -759,7 +770,34 @@ namespace ClinicX.Meta
         public List<SurvSiteCodes> GetSurvSiteCodesList()
         {
             var item = from i in _clinContext.SurvSiteCodes
-                       orderby i.SurvSiteCode
+                       orderby i.SurvSite
+                       select i;
+
+            return item.ToList();
+        }
+
+        public List<SurvTypeCodes> GetSurvTypeCodesList()
+        {
+            var item = from i in _clinContext.SurvTypeCodes
+                       orderby i.SurvType
+                       select i;
+
+            return item.ToList();
+        }
+
+        public List<SurvFreqCodes> GetSurvFreqCodesList()
+        {
+            var item = from i in _clinContext.SurvFreqCodes
+                       orderby i.SurvFreq
+                       select i;
+
+            return item.ToList();
+        }
+
+        public List<DiscontinuedReasonCodes> GetDiscReasonCodesList()
+        {
+            var item = from i in _clinContext.DiscontinuedReasonCodes
+                       orderby i.SurvDiscReason
                        select i;
 
             return item.ToList();

@@ -29,26 +29,26 @@
                 </div>
             </div>
             <div class="row mb-5 g-5">
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>Category:</label>
                 </div>
                 <div class="col-md-2">
-                    <select name="sCategory">
+                    <select class="w-100" name="sCategory">
                         <option value="standard">Standard</option>
                         <option value="Non-standard">Non-standard</option>
                     </select>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>Planned Date:</label>
                 </div>
                 <div class="col-md-2">
-                    <input type="date" name="sDate" />
+                    <input class="w-100" type="date" name="sDate" />
                 </div>
                 <div class="col-md-2">
                     <label>Review Recipient: (leave blank if the review is for yourself)</label>
                 </div>
-                <div class ="col-md-4">
-                    <select name="sRecipient">
+                <div class ="col-md-2">
+                    <select class="w-100" name="sRecipient">
                         <option value=""></option>
                         @foreach (var item in Model.staffMembers)
                         {

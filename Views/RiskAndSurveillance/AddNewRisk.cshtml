@@ -5,11 +5,24 @@
 }
 
 <div class="container">
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            <button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>
+            @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
+        </div>
+        @*
+        <div class="col-md-6"></div>
+        <div class="col-md-1">
+            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
+        </div>
+        *@
+    </div>
+
     <div class="row mb-5 g-5">        
         <h1>New Risk Item for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>       
     </div>
 
-    <form asp-action="AddNew">
+    <form asp-action="AddNewRisk">
         <div class="row" hidden="true">
             <input name="iRefID" asp-for=@Model.iRefID  />
         </div>
@@ -18,7 +31,7 @@
                 <label>Risk:</label>
             </div>
             <div class="col-md-2">
-                <select name="sRiskCode">
+                <select class="w-100" name="sRiskCode">
                     <option value="">Select...</option>
                     @foreach(var item in Model.riskCodes)
                     {
@@ -30,7 +43,7 @@
                 <label>Site:</label>
             </div>
             <div class="col-md-2">
-                <select name="sSiteCode">
+                <select class="w-100" name="sSiteCode">
                     <option value="">Select...</option>
                     @foreach (var item in Model.survSiteCodes)
                     {
@@ -42,7 +55,7 @@
                 <label>Clinician:</label>
             </div>
             <div class="col-md-2">
-                <select name="sClinCode">
+                <select class="w-100" name="sClinCode">
                     <option value="">Select...</option>
                     @foreach (var item in Model.staffMembersList)
                     {
@@ -56,7 +69,7 @@
                 <label>Date:</label>
             </div>
             <div class="col-md-2">
-                <input type="date" name="dRiskDate" />
+                <input class="w-100" type="date" name="dRiskDate" />
             </div>
             <div class="col-md-2">
                 <label>Lifetime %:</label>
@@ -68,7 +81,7 @@
                 <label>Comments</label>
             </div>
             <div class="col-md-2">
-                <input type="text" name="sComments" />
+                <input class="w-100" type="text" name="sComments" />
             </div>
         </div>
         <div class="row mb-2 g-2">
@@ -111,7 +124,7 @@
                 <label>Calculation Tool Used:</label>
             </div>
             <div class="col-md-4">
-                <select name="sTool">
+                <select class="w-100" name="sTool">
                     <option value="">Select...</option>
                     @foreach (var item in Model.calculationTools)
                     {
@@ -120,35 +133,33 @@
                 </select>
             </div>
         </div>
-        
-        @*RiskCode (drop down ListRisk)
-            
-        SurvSiteCode (drop down ListSurvSite)
-        RiskClinCode (drop down)
-            LifetimeRiskPercentage
-            TenYearRisk_25-29
-            TenYearRisk_30-40
-            TenYearRisk_40-50
-            TenYearRisk_50-60
-            CalculationToolUsed (drop down ListCalculationTools)            
-            IncludeLetter (use letter tickbox)
-        RiskComments (free text)
-        *@
 
-
-        <button type="submit" class="btn btn-success">Save</button>
+        <div class="row mb-2 g-2">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>            
+        </div>
     </form>
 
 </div>
 
 
 <script>
+
     document.getElementById("chkUseLetter").addEventListener("change", SetUseLetter);
+    document.getElementById("btnBack").addEventListener("click", GoBack);
+
+    function GoBack() 
+    {
+        window.history.back();
+        //window.close();
+    }
 
     function SetUseLetter()
     {
         document.getElementById("txtUseLetter").value = document.getElementById("chkUseLetter").checked;
     }
+    
 
 
 </script>

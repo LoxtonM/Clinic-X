@@ -47,7 +47,7 @@
                     Ethnicity:
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.patients.EthnicCode id="ddlEthnicity" name="sEthnicity">
+                    <select asp-for=@Model.patients.EthnicCode id="ddlEthnicity" name="sEthnicity" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach(var e in Model.ethnicities)
                         {
@@ -63,7 +63,7 @@
                     Contact Outcome:
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.activityItem.COUNSELED id="ddlContactOutcome" name="sCounseled">
+                    <select asp-for=@Model.activityItem.COUNSELED id="ddlContactOutcome" name="sCounseled" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach(var o in Model.outcomes)
                         {
@@ -76,7 +76,7 @@
                 </div>
                 <div class="col-md-4">
                     @*<select asp-for=@Model.activityItem.SEEN_BY id="ddlSeenBy" name="sSeenBy">*@
-                    <select asp-for=@Model.activityItem.STAFF_CODE_1 id="ddlSeenBy" name="sSeenBy">
+                    <select asp-for=@Model.activityItem.STAFF_CODE_1 id="ddlSeenBy" name="sSeenBy" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach (var c in Model.staffMembers)
                         {
@@ -92,7 +92,7 @@
                     </div>
                     <div class="col-md-6">
                         @*<input asp-for=@Model.activityItem.ARRIVAL_TIME id="txtArrivalTime" type="time" name="dArrivalTime" />*@
-                        <input asp-for=@Model.activityItem.BOOKED_TIME id="txtArrivalTime" type="time" name="dArrivalTime" />
+                        <input asp-for=@Model.activityItem.BOOKED_TIME id="txtArrivalTime" type="time" name="dArrivalTime" class="w-100" />
                     </div>
                     <div class="col-md-4"></div>
                 </div>
@@ -101,7 +101,7 @@
                         <label for="txtNoPatientsSeen" id="lblNoPatientsSeen">No. Patients Seen:</label>
                     </div>
                     <div class="col-md-6">
-                        <input asp-for=@Model.activityItem.NOPATIENTS_SEEN id="txtNoPatientsSeen" name="iNoSeen" />
+                        <input asp-for=@Model.activityItem.NOPATIENTS_SEEN id="txtNoPatientsSeen" name="iNoSeen" class="w-100" />
                     </div>
                     <div class="col-md-4"></div>
                 </div>
@@ -110,7 +110,7 @@
                         <label for="ddlLetterRequired" id="lblLetterRequired">Letter Required:</label>
                     </div>
                     <div class="col-md-8">
-                        <select asp-for=@Model.activityItem.LetterReq id="ddlLetterRequired" name="sLetterRequired">                            
+                        <select asp-for=@Model.activityItem.LetterReq id="ddlLetterRequired" name="sLetterRequired" class="w-100">
                             <option value="Yes - Within 10 Days">Yes - Within 10 Days</option>
                             <option value="Yes - Later">Yes - Later</option>
                             <option selected value="No">No</option>
@@ -123,7 +123,7 @@
                         <label for="ddlClockStop" id="lblClockStop">Clock Stop:</label>
                     </div>
                     <div class="col-md-4">
-                        <select asp-for=@Model.activityItem.ClockStop id="ddlClockStop" name="isClockStop">
+                        <select asp-for=@Model.activityItem.ClockStop id="ddlClockStop" name="isClockStop" class="w-100">
                             <option value="" selected></option>
                             <option value="True">Yes</option>
                             <option value="False">No</option>
@@ -134,7 +134,7 @@
                         <label for="ddlCloseRef" id="lblCloseRef">Close Referral:</label>
                     </div>
                     <div class="col-md-4">
-                        <select id="ddlCloseRef" name="isComplete">                            
+                        <select id="ddlCloseRef" name="isComplete" class="w-100">
                             <option value="True">Yes</option>
                             <option selected value="False">No</option>
                         </select>

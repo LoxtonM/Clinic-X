@@ -81,7 +81,7 @@
                     <label>Consent Provided:</label>
                 </div>
                 <div class="col-md-2">
-                    <select id="ddlStatus" name="sConsent" asp-for=@Model.relativesDiagnosis.Consent>
+                    <select class="w-100" id="ddlStatus" name="sConsent" asp-for=@Model.relativesDiagnosis.Consent>
                         <option value="">select...</option>
                         <option value="Y">Yes</option>
                         <option value="N">No</option>
@@ -92,7 +92,7 @@
                     <label>Date Received:</label>
                 </div>
                 <div class="col-md-2">
-                    <input type="date" name="dDateReceived" asp-for=@Model.relativesDiagnosis.DateRec />
+                    <input class="w-100" type="date" name="dDateReceived" asp-for=@Model.relativesDiagnosis.DateRec />
                 </div>
                 <div class="col-md-2">
                     <label>Requested By:</label>
@@ -109,7 +109,7 @@
                     <label>Confirmed:</label>
                 </div>
                 <div class="col-md-2">
-                    <select id="ddlStatus" name="sConfirmed">                        
+                    <select class="w-100" id="ddlStatus" name="sConfirmed">
                         <option value="Y">Yes</option>
                         <option value="N">No</option>
                         <option value="X">Unknown</option>
@@ -119,13 +119,13 @@
                     <label>Date of Diagnosis:</label>
                 </div>
                 <div class="col-md-2">
-                    <input type="date" name="dConfDiagDate" />
+                    <input class="w-100" type="date" name="dConfDiagDate" />
                 </div>
                 <div class="col-md-2" style="text-align:right">
                     <label>Age at Diagnosis:</label>
                 </div>
                 <div class="col-md-1">
-                    <input type="text" class="w-50" name="sConfDiagAge" />
+                    <input class="w-100" type="text" class="w-50" name="sConfDiagAge" />
                 </div>
             </div>
             <div class="row g-5 mb-5">
@@ -133,7 +133,7 @@
                     <label>Site (topography)</label>
                 </div>
                 <div class="col-md-2">
-                    <select name="sSiteCode">
+                    <select class="w-100" name="sSiteCode">
                         <option value="">select...</option>
                         @foreach (var item in Model.tumourSiteList)
                         {
@@ -147,7 +147,7 @@
                     <label>Laterality (side):</label>
                 </div>
                 <div class="col-md-2">
-                    <select name="sLatCode">
+                    <select class="w-100" name="sLatCode">
                         <option value="">select...</option>
                         @foreach (var item in Model.tumourLatList)
                         {
@@ -159,7 +159,7 @@
                     <label>Grade/stage:</label>
                 </div>
                 <div class="col-md-3">
-                    <select name="sGrade">
+                    <select class="w-100" name="sGrade">
                         <option value="">select...</option>
                         <option value="1">Well differentiated</option>
                         <option value="2">Moderately differentiated...</option>
@@ -171,7 +171,7 @@
                     <label>Duke's:</label>
                 </div>
                 <div class="col-md-1">
-                    <select name="sDukes">
+                    <select class="w-100" name="sDukes">
                         <option value="">select...</option>
                         <option value="A">A</option>
                         <option value="B">B</option>
@@ -186,7 +186,7 @@
                     <label>Histology (morphology):</label>
                 </div>
                 <div class="col-md-2">
-                    <select name="sMorphCode">
+                    <select class="w-100" name="sMorphCode">
                         <option value="">select...</option>
                         @foreach(var item in Model.tumourMorphList)
                         {

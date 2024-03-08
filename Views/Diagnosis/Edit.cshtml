@@ -31,12 +31,12 @@
     <div class="container mb-5">
         <form id="DiagForm" asp-action="Edit">
             <div id="metadata" hidden="true">
-                <input asp-for=@Model.Diagnosis.ID type="text" id="txtDiagID" name="iDiagID" />
+                <input class="w-100" asp-for=@Model.Diagnosis.ID type="text" id="txtDiagID" name="iDiagID" />
             </div>
             <div class="row mb-5">            
                 <div class="col-md-2">Disease status:</div>
                 <div class="col-md-2">
-                    <select asp-for=@Model.Diagnosis.STATUS id="ddlStatus" name="sStatus">
+                    <select class="w-100" asp-for=@Model.Diagnosis.STATUS id="ddlStatus" name="sStatus">
                         <option value="" selected>select...</option>
                         @foreach (var d in Model.statusList)
                         {
@@ -45,7 +45,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">Comments:</div>
-                <div class="col-md-6"><input asp-for=@Model.Diagnosis.MAIN_SUB type="text" id="txtComments" name="sComments" /></div>
+                <div class="col-md-6"><input class="w-100" asp-for=@Model.Diagnosis.MAIN_SUB type="text" id="txtComments" name="sComments" /></div>
             </div>
             <div class="row mb-5">
                 <div class="col-md-2"></div>

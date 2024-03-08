@@ -80,7 +80,7 @@
     function AddNew() 
     {       
         //this incredibly round-about method is necessary because apparently it is impossible to simply pass the URL parameter into the button!
-        var surl = "https://" + document.getElementById("thehost").innerHTML + document.getElementById("theurl").innerHTML;
+        var surl = "http://" + document.getElementById("thehost").innerHTML + document.getElementById("theurl").innerHTML;
         //surl = surl.replace("Index", "AddNew");
         //window.alert(surl);
         const _url = window.location.toString();  

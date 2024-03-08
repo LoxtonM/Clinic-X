@@ -1,0 +1,174 @@
+﻿@model ClinicX.ViewModels.RiskSurveillanceVM
+
+@{
+    ViewData["Title"] = "Clinic-X - New Surveillance Recommendation";
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            <button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>
+            @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
+        </div>
+        @*
+        <div class="col-md-6"></div>
+        <div class="col-md-1">
+            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
+        </div>
+        *@
+    </div>
+
+    <div class="row mb-5 g-5">        
+        <h1>New Surveillance Recommendation for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>       
+    </div>
+
+    <form asp-action="AddNewSurveillance">
+        <div class="row" hidden="true">
+            <input name="iRiskID" asp-for=@Model.iRiskID  />
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-2">
+                <label>Site:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sSiteCode" class="w-100">
+                    <option value="">Select...</option>
+                    @foreach(var item in Model.survSiteCodes)
+                    {
+                        <option value=@item.SurvSiteCode>@item.SurvSite</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Screening Type:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sTypeCode" class="w-100">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.survTypeCodes)
+                    {
+                        <option value=@item.SurvTypeCode>@item.SurvType</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Recommended By:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sClinCode" class="w-100">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.staffMembersList)
+                    {
+                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-2">
+                <label>Recommended Date:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="date" class="w-100" name="dRecDate" />
+            </div>
+            <div class="col-md-1">
+                <label>Start Age</label>
+            </div>
+            <div class="col-md-1">
+                <input class="w-50" type="text" name="iStartAge" />
+            </div>
+            <div class="col-md-1">
+                <label>End Age</label>
+            </div>
+            <div class="col-md-1">
+                <input class="w-50" type="text" name="iEndAge" />
+            </div>
+            <div class="col-md-2">
+                <label>Frequency:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sFrequency" class="w-100">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.survFreqCodes)
+                    {
+                        <option value=@item.SurvFreqCode>@item.SurvFreq</option>
+                    }
+                </select>
+            </div>
+
+        </div>
+        <div class="row mb-2 g-2">            
+            <div class="col-md-1">
+                <label>Use Letter:</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" class="form-check-input" id="chkUseLetter" />
+            </div>
+            <div class="col-md-1">
+                <input type="text" id="txtUseLetter" name="isUseLetter" hidden=true />
+            </div>
+            <div class="col-md-1">
+                <label>Discontinued?:</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" class="form-check-input" id="chkYN" />
+            </div>
+            <div class="col-md-1">
+                <input type="text" id="txtYN" name="isYN" hidden=true />
+            </div>        
+            <div class="col-md-2">
+                <label>Discontinued reason:</label>
+            </div>
+            <div class="col-md-4">
+                <select class="w-100" name="sDiscReason" id="ddlDiscReason" disabled="true">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.discontinuedReasonCodes)
+                    {
+                        <option value=@item.SurvDiscReasonCode>@item.SurvDiscReason</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-2 g-2">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>            
+        </div>
+    </form>
+
+</div>
+
+
+<script>
+
+    document.getElementById("chkUseLetter").addEventListener("change", SetUseLetter);
+    document.getElementById("chkYN").addEventListener("change", SetYN);
+    document.getElementById("btnBack").addEventListener("click", GoBack);
+
+    function GoBack() 
+    {
+        window.history.back();
+        //window.close();
+    }
+
+    function SetUseLetter()
+    {
+        document.getElementById("txtUseLetter").value = document.getElementById("chkUseLetter").checked;
+    }
+    
+    function SetYN() 
+    {
+        
+        document.getElementById("txtYN").value = document.getElementById("chkYN").checked;        
+        if (document.getElementById("chkYN").checked == true) 
+        {
+            document.getElementById("ddlDiscReason").disabled = false;
+        }
+        else 
+        { 
+            document.getElementById("ddlDiscReason").disabled = true;
+        }
+    }
+
+</script>

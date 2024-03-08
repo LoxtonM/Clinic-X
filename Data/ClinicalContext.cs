@@ -61,6 +61,9 @@ namespace ClinicX.Data
         public DbSet<TumourMorph> TumourMorph { get; set; }
         public DbSet<RiskCodes> RiskCodes { get; set; }
         public DbSet<SurvSiteCodes> SurvSiteCodes { get; set ; }
+        public DbSet<SurvTypeCodes> SurvTypeCodes { get; set; }
+        public DbSet<SurvFreqCodes> SurvFreqCodes { get; set; }
+        public DbSet<DiscontinuedReasonCodes> DiscontinuedReasonCodes { get; set; }
         public DbSet<CalculationTools> CalculationTools { get; set; }
     }
 }

@@ -70,7 +70,7 @@
                 </div>
                 <div class="col-md-2">
                     <div class="row">
-                        <select id="ddlLetterTo">
+                        <select class="w-100" id="ddlLetterTo">
                             <option value="" selected>Select...</option>
                             <option value="Patient">Patient</option>
                             <option value="Relative">Relative</option>
@@ -83,7 +83,7 @@
                         </select>
                     </div>
                     <div class="row">
-                        <select id="ddlLetterToType" hidden="true">
+                        <select class="w-100" id="ddlLetterToType" hidden="true">
                             <option value="Screening Coordinator">Screening Coordinator</option>
                             <option value="Genetics Lab">Genetics Lab</option>
                             <option value="Histopathologist">Histopathologist</option>
@@ -91,7 +91,7 @@
                         </select>
                     </div>
                     <div class="row">
-                        <select id="ddlLetterToClinician" hidden="true">
+                        <select class="w-100" id="ddlLetterToClinician" hidden="true">
                             @foreach(var item in Model.clinicians)
                             {
                                 <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME</option>
@@ -106,7 +106,7 @@
                     From:
                 </div>
                 <div class="col-md-2">
-                    <select id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode>
+                    <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode>
                         <option value="">Select...</option>                    
                         @foreach(var item in Model.staffMemberList)
                         {
@@ -123,7 +123,7 @@
                     Letter Status:
                 </div>
                 <div class="col-md-4">
-                    <select id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="sStatus">
+                    <select class="w-100" id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="sStatus">
                         <option value="" selected></option>
                         <option value="Draft">Draft</option>
                         <option value="For Approval">For Approval</option>
@@ -145,7 +145,7 @@
             <div class="row mb-5">
                 <div class="col-md-1" style="text-align:right">Secreterial Team:</div>
                 <div class="col-md-2">
-                    <select id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="sSecTeam">
+                    <select class="w-100" id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="sSecTeam">
                         <option value="">Select...</option>
                         @foreach (var item in Model.secteams)
                         {
@@ -155,7 +155,7 @@
                 </div>
                 <div class="col-md-1" style="text-align:right">Consultant:</div>
                 <div class="col-md-2">
-                    <select id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="sConsultant">
+                    <select class="w-100" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="sConsultant">
                         @foreach(var item in Model.consultants)
                         {
                             <option value=@item>@item</option>
@@ -164,7 +164,7 @@
                 </div>
                 <div class="col-md-1" style="text-align:right">Genetic Counsellor:</div>
                 <div class="col-md-2">
-                    <select id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="sGC">
+                    <select class="w-100" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="sGC">
                         @foreach (var item in Model.gcs)
                         {
                             <option value=@item>@item</option>
@@ -173,7 +173,7 @@
                 </div>
                 <div class="col-md-1" style="text-align:right">Date Dictated:</div>
                 <div class="col-md-2">
-                    <input id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="sDateDictated" />
+                    <input class="w-100" id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="sDateDictated" />
                 </div>
             </div>
 
@@ -263,7 +263,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="row">
-                            <select id="ddlCCType">
+                            <select class="w-100" id="ddlCCType">
                                 <option value="" selected>Select...</option>
                                 <option value="Patient">Patient</option>
                                 <option value="Relative">Relative</option>

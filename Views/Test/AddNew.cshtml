@@ -21,19 +21,23 @@
             </div>
             <div class="row g-5 mb-5">
                 <div class="col-md-2">
-                    Test:
+                    <label>Test:</label>
                 </div>
                 <div class="col-md-4">
-                    <select id="ddlTest" name="sTest">
+                    <select id="ddlTest" name="sTest" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach (var t in Model.testList)
                         {
                             <option value="@t.TEST ">@t.TEST</option>
                         }
                     </select>
-                    <div class="col-md-2">Sent to:</div>
-                    <div class="col-md-4"><input id="txtSentTo" type="text" name="sSentTo" /></div>
                 </div>
+                <div class="col-md-2">
+                    <label>Sent to:</label>
+                </div>
+                <div class="col-md-4">
+                    <input class="w-100" id="txtSentTo" type="text" name="sSentTo" />
+                </div>                
             </div>
 
             @*<div class="row g-5 mb-5">

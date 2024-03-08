@@ -23,23 +23,23 @@
                 <h2>Diagnosis Details:</h2>
             </div>
             <div class="row g-5 mb-5">
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>Reported Diagnosis:</label>
                 </div>
-                <div class="col-md-3">
-                    <input type="text" name="sDiagnosis" />
+                <div class="col-md-2">
+                    <input class="w-100" type="text" name="sDiagnosis" />
                 </div>
                 <div class="col-md-1">
                     <label>Age:</label>
                 </div>
                 <div class="col-md-2">
-                    <input type="text" name="sAge" />
+                    <input class="w-100" type="text" name="sAge" />
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>Hospital(s):</label>
                 </div>
-                <div class="col-md-4">
-                    <input type="text" name="sHospital" />
+                <div class="col-md-3">
+                    <input class="w-100" type="text" name="sHospital" />
                 </div>
             </div>
 
@@ -47,11 +47,11 @@
                 <h2>Information Request:</h2>
             </div>
             <div class="row g-5 mb-5">
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>Source:</label>
                 </div>
                 <div class="col-md-2">
-                    <select id="ddlStatus" name="sCRegCode">
+                    <select class="w-100" id="ddlStatus" name="sCRegCode">
                         <option value="">select...</option>
                         @foreach (var c in Model.cancerRegList )
                         {
@@ -59,19 +59,19 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>
                         Date Requested:
                     </label>
                 </div>
                 <div class="col-md-2">
-                    <input type="date" name="dDateRequested" />
+                    <input class="w-100" type="date" name="dDateRequested" />
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>Consultant:</label>
                 </div>
                 <div class="col-md-2">
-                    <select id="ddlCons" name="sCons">
+                    <select class="w-100" id="ddlCons" name="sCons">
                         <option value="">select...</option>
                         @foreach (var s in Model.clinicianList)
                         {
@@ -84,8 +84,8 @@
                 <div class="col-md-4" style="text-align:right">
                     <label>Information Not Requested:</label>                
                 </div>
-                <div class="col-md-8">
-                    <select id="ddlStatus" name="sStatus">
+                <div class="col-md-4">
+                    <select class="w-100" id="ddlStatus" name="sStatus">
                         <option value="">select...</option>
                         @foreach (var s in Model.requestStatusList)
                         {
@@ -95,28 +95,28 @@
                 </div>
             </div>
             <div class="row g-5 mb-5">
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>Consent Provided:</label>
                 </div>
                 <div class="col-md-2">
-                    <select id="ddlStatus" name="sConsent">
+                    <select class="w-100" id="ddlStatus" name="sConsent">
                         <option value="">select...</option>
                         <option value="Y">Yes</option>
                         <option value="N">No</option>
                         <option value="N/A">Not Applicable</option>
                     </select>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>Date Received:</label>
                 </div>
                 <div class="col-md-2">
-                    @*<input type="date" name="dDateReceived" />*@
+                    <input class="w-100" type="date" name="dDateReceived" />
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>Requested By:</label>
                 </div>
                 <div class="col-md-2">
-                    <select id="ddlStatus" name="sReqBy">
+                    <select class="w-100" id="ddlStatus" name="sReqBy">
                         <option value="">select...</option>
                         @foreach (var s in Model.staffList)
                         {

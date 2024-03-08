@@ -49,20 +49,20 @@
     <div class="container mb-5">
         <form id="TestForm" asp-action="Edit">
             <div id="metadata" hidden="true">
-                <input asp-for=@Model.TestID type="text" id="txtTestID" name="iTestID" />
+                <input class="w-100" asp-for=@Model.TestID type="text" id="txtTestID" name="iTestID" />
             </div>
             <div class="row mb-5">
                 <div class="col-md-1">
                     Result:
                 </div>
                 <div class="col-md-5">
-                    <input asp-for=@Model.RESULT id="txtResult" type="text" name="sResult" />
+                    <input class="w-100" asp-for=@Model.RESULT id="txtResult" type="text" name="sResult" />
                 </div>
                 <div class="col-md-1">
                     Comments:
                 </div>
                 <div class="col-md-5">
-                    <input asp-for=@Model.COMMENTS id="txtComments" type="text" name="sComments" />
+                    <input class="w-100" asp-for=@Model.COMMENTS id="txtComments" type="text" name="sComments" />
                 </div>
             </div>
             <div class="row mb-5">
@@ -70,17 +70,17 @@
                     Date Received:
                 </div>
                 <div class="col-md-4">
-                    <input asp-for=@Model.DATE_RECEIVED id="txtDateRec" type="text" name="sReceived" />
+                    <input class="w-100" asp-for=@Model.DATE_RECEIVED id="txtDateRec" type="text" name="sReceived" />
                 </div>
                 <div class="col-md-1">
                     Date Given to Patient:
                 </div>
                 <div class="col-md-4">
-                    <input asp-for=@Model.ResultGivenDate id="txtDateGib" type="text" name="sGiven" />
+                    <input class="w-100" asp-for=@Model.ResultGivenDate id="txtDateGib" type="text" name="sGiven" />
                 </div>
                 <div class="col-md-1">Complete:</div>
                 <div class="col-md-1">
-                    <select asp-for=@Model.COMPLETE id="ddlComplete" name="iComplete">
+                    <select class="w-100" asp-for=@Model.COMPLETE id="ddlComplete" name="iComplete">
                         @*because obviously a yes/no field is an integer not a boolean!*@
                         <option value=-1>Yes</option>
                         <option value=0>No</option>

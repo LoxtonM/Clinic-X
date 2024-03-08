@@ -92,8 +92,8 @@
         <hr />
     </div>
 
-    <div>
-        <h4>Add other HPO codes:</h4>
+    <div class="row">
+        <h4>Add other HPO codes:</h4> <h6>(enter a search term to activate the menu)</h6>
         <form id="HPOSearch">
             <div class="row mb-2 g-2">
                 <div class="col-md-2" style="text-align:right">
@@ -109,26 +109,20 @@
         <form id="AddHPOTerm" asp-action="AddHPOTerm">        
             <div class="row">
                 <div class="col-md-2" style="text-align:right">
-                    HPO Terms:
+                    HPO Codes:
                 </div>
     
-                <div class="col-md-6">
-                    <select id="ddlHPO" name="iTermID">
-                    @foreach (var t in Model.hpoTerms)
-                    {
-                        <option value="@t.ID">@t.TermCode - @t.Term</option>
-                    }
+                <div class="col-md-8">
+                    <select class="w-100" id="ddlHPO" name="iTermID" disabled="true">
+                        @foreach (var t in Model.hpoTerms)
+                        {
+                            <option value="@t.ID">@t.TermCode - @t.Term</option>
+                        }
                     </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="button" value="Add HPO Code" id="btnAdd" class="btn btn-default btn-success" asp-controller="HPO" asp-action="AddHPOTerm" />
                 </div>    
-                <div class="col-md-4"></div>
-            </div>
-        @*there is, apparently, no way to stop the drop-down list from growing dynamically, so I have to put the button on another line.*@
-            <div class="row">
-                <div class="col-md-10"></div>
-            </div>
-            <div class="row">
-                <div class="col-md-2"></div>
-                <div class="col-md-2"><input type="button" value="Add HPO Term" id="btnAdd" class="btn btn-default btn-success" asp-controller="HPO" asp-action="AddHPOTerm" /></div>    
             </div>
     
             <div class="row mb-5 g-5">        
@@ -152,11 +146,15 @@
     window.addEventListener("load", LoadNote);
 
     function LoadNote() 
-    {        
-
+    {  
         if (document.getElementById("txtDCTMSts").value == 1) 
         {            
             document.getElementById("txtClinicalNote").disabled = true;           
+        }
+
+        if (document.getElementById("HPOSearch").value != "" && document.getElementById("HPOSearch").value != null) 
+        {
+            document.getElementById("ddlHPO").disabled = false;
         }
     }
 
@@ -192,7 +190,7 @@
     }
 
     function DoSearch() 
-    { 
+    {         
         //window.alert(document.getElementById("txtSearch").value);
         document.getElementById("HPOSearch").submit();
     }

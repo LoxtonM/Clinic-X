@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Intrinsics.X86;
 
 namespace ClinicX.Models
 {
@@ -739,7 +741,7 @@ namespace ClinicX.Models
         public string? Morph { get; set; }
     }
 
-    [Table("ListRisk")]
+    [Table("ListRisk", Schema = "dbo")]
     public class RiskCodes
     {
         [Key]
@@ -748,7 +750,7 @@ namespace ClinicX.Models
         //public int? RiskOrder { get; set; }
     }
 
-    [Table("ListSurvSite")]
+    [Table("ListSurvSite", Schema = "dbo")]
     public class SurvSiteCodes
     {
         [Key]
@@ -756,6 +758,30 @@ namespace ClinicX.Models
         public string SurvSite { get; set; }
     }
 
+    [Table("ListSurvType", Schema = "dbo")]
+    public class SurvTypeCodes
+    {
+        [Key]
+        public string SurvTypeCode { get; set; }
+        public string SurvType { get; set; }
+    }
+
+    [Table("ListSurvFreq", Schema = "dbo")]
+    public class  SurvFreqCodes
+    {
+        [Key]
+        public string SurvFreqCode { get; set; }
+        public string SurvFreq { get; set; }
+    }
+
+    [Table("ListSurvDiscReason", Schema = "dbo")]
+    public class DiscontinuedReasonCodes
+    {
+        [Key]
+        public string SurvDiscReasonCode { get; set; }
+        public string SurvDiscReason { get; set; }
+    }
+    
     [Keyless]
     [Table("ListCalculationTools", Schema = "dbo")]
     public class  CalculationTools

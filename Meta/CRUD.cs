@@ -19,7 +19,8 @@ namespace ClinicX.Meta
         public void CallStoredProcedure(string sType, string sOperation, int int1, int int2, int int3, 
             string string1, string string2, string string3, string text, string sLogin,
             DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
-            int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "")
+            int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
+            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0)
         {   
             if (dDate1 == null)
             {
@@ -55,6 +56,11 @@ namespace ClinicX.Meta
             cmd.Parameters.Add("@string4", SqlDbType.VarChar).Value = string4;
             cmd.Parameters.Add("@string5", SqlDbType.VarChar).Value = string5;
             cmd.Parameters.Add("@string6", SqlDbType.VarChar).Value = string6;
+            cmd.Parameters.Add("@float1", SqlDbType.Float).Value = f1;
+            cmd.Parameters.Add("@float2", SqlDbType.Float).Value = f2;
+            cmd.Parameters.Add("@float3", SqlDbType.Float).Value = f3;
+            cmd.Parameters.Add("@float4", SqlDbType.Float).Value = f4;
+            cmd.Parameters.Add("@float5", SqlDbType.Float).Value = f5;
 
             cmd.ExecuteNonQuery();
             conn.Close();           

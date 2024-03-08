@@ -20,7 +20,7 @@
                 Diagnosis:
             </div>
             <div class="col-md-4">
-                <select id="ddlDiag" name="sDiseaseCode">
+                <select id="ddlDiag" name="sDiseaseCode" class="w-100">
                     <option value="" selected>select...</option>
                     @foreach (var d in Model.diseaseList)
                     {
@@ -33,7 +33,7 @@
         <div class="row g-5 mb-5">   
             <div class="col-md-2">Disease status:</div>
             <div class="col-md-2">
-                <select id="ddlStatus" name="sStatus">
+                <select id="ddlStatus" name="sStatus" class="w-100">
                     <option value="" selected>select...</option>
                     @foreach (var d in Model.statusList)
                     {
@@ -46,7 +46,7 @@
         </div>
 
         <div id="metadata" hidden="true">
-            <input name="iMPI" value="@Html.DisplayFor(model => model.patient.MPI)" />
+            <input class="w-100" name="iMPI" value="@Html.DisplayFor(model => model.patient.MPI)" />
         </div>
     </form>
 
