@@ -405,6 +405,9 @@ namespace ClinicX.Models
         [Display(Name = "Requested Date")]
         [DataType(DataType.Date)]
         public DateTime? DATE_REQUESTED { get; set; }
+        [Display(Name = "Expected Date")]
+        [DataType(DataType.Date)]
+        public DateTime? DateExpected { get; set; }
         [Display(Name = "Received Date")]
         [DataType(DataType.Date)]
         public DateTime? DATE_RECEIVED { get; set; }
@@ -475,6 +478,7 @@ namespace ClinicX.Models
     {
         [Key]
         public string TEST { get; set; }
+        public int? T_O { get; set; }
     }
 
     [Table("DISEASE_STATUS", Schema = "dbo")] //List of all statuses for diagnoses

@@ -24,6 +24,7 @@
                         <th>Ordered by</th>  
                         <th>Sent To</th>
                         <th>@Html.DisplayNameFor(model => model.DATE_REQUESTED)</th>
+                        <th>@Html.DisplayNameFor(model => model.DateExpected)</th>
                         <th>@Html.DisplayNameFor(model => model.DATE_RECEIVED)</th>
                         <th>Result</th>
                         <th>@Html.DisplayNameFor(model => model.ResultGivenDate)</th>
@@ -45,6 +46,14 @@
                             {
                                 <td>N/A</td>
                             }
+                            @if (@item.DateExpected.HasValue)
+                            {
+                                <td>@item.DateExpected.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>Unknown</td>
+                            }
                             @if (@item.DATE_RECEIVED.HasValue)
                             {
                                 <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
@@ -52,8 +61,8 @@
                             else
                             {
                                 <td>N/A</td>
-                            }
-                            <td>@item.RESULT</td>                       
+                            }                            
+                            <td>@item.RESULT</td>                      
                         
                             @if(@item.ResultGivenDate.HasValue)
                             {
