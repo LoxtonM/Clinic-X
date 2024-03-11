@@ -58,6 +58,7 @@
                         <th>Name</th>
                         <th>Referral Date</th>
                         <th>Referral Action</th>
+                        <th>Additional Notes</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,6 +70,7 @@
                             <td>@item.FIRSTNAME @item.LASTNAME</td>
                             <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
                             <td>@item.ReferralAction</td>
+                            <td>@item.Comments</td>
                         </tr>
                     }
                 </tbody>

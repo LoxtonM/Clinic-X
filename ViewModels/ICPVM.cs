@@ -8,6 +8,8 @@ namespace ClinicX.ViewModels
     public class ICPVM
     {
         public List<StaffMemberList> staffMembers { get; set; }
+        public List<StaffMemberList> consultants { get; set; }
+        public List<StaffMemberList> GCs { get; set; }
         public List<Triages> triages { get; set; }
         public List<ICPCancer> icpCancerList { get; set; }
         public Triages triage { get; set; }
@@ -23,5 +25,6 @@ namespace ClinicX.ViewModels
         public Surveillance survDetails { get; set; }
         public Eligibility eligibility { get; set; }
         public List<Eligibility> eligibilityList { get; set; }
+        public List<Documents> documentList { get; set; }
     }
 }

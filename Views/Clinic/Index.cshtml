@@ -153,16 +153,12 @@
             </div>
             <div class="row g-5 mb-3">                
                 <div class="col-2">
-                   @*<label class="form-label" for="ddlPastClinics">Past Clinics:</label>*@
                 </div>
                 <div class="col-8">
-                    <select class="form-select" name="ddlPastClinics" id="ddlPastClinics">
+                    <select class="form-select w-100" name="ddlPastClinics" id="ddlPastClinics">
                         @foreach (var item in Model.pastClinicsList)
                         {
-                            @*if(item.BOOKED_DATE <= System.DateTime.Now.AddDays(-1))
-                            {*@
-                                <option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic, @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm") - @item.Attendance</option>
-                            @*}*@
+                            <option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic (@item.FACILITY), @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm") - @item.Attendance</option>
                         }
                     </select>
                 </div>            

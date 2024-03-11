@@ -50,6 +50,10 @@
             {
                 <dd class="col-sm-10">
                     @Html.DisplayFor(model => model.DateExpected)
+                    @if(Model.DateExpected <= DateTime.Today)
+                    {
+                        <span> - This result is due, consider chasing</span>
+                    }
                 </dd>
             }
             else

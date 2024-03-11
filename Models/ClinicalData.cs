@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Intrinsics.X86;
@@ -128,6 +129,7 @@ namespace ClinicX.Models
         public string? Attendance { get; set; }
         public string Clinician { get; set; }
         public string Clinic { get; set; }
+        public string FACILITY { get; set; }
         public string FIRSTNAME { get; set; }
         public string LASTNAME { get; set; }
         public string CGU_No { get; set; }
@@ -233,6 +235,8 @@ namespace ClinicX.Models
         public int? TreatPath { get; set; }
         public int? TreatPath2 { get; set; }
         public bool? ConsWLForSPR { get; set; }
+        public string ConsultantName { get; set; }
+        public string GCName { get; set; }
     }
 
     [Table("ViewPatientReviews", Schema = "dbo")] //Requested reviews
@@ -307,6 +311,7 @@ namespace ClinicX.Models
         public string? WaitingListVenue { get; set; }
         public string? WaitingListComments { get; set; }
         public string? ReferralAction { get; set; }
+        public string? Comments { get; set; }
     }
 
     [Table("CLIN_FACILITIES", Schema = "dbo")] //Facilities where we hold clinics

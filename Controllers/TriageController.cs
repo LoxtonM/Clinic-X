@@ -16,6 +16,7 @@ namespace ClinicX.Controllers
         private readonly IConfiguration _config;
         private readonly ICPVM ivm;
         private readonly VMData vm;
+        private readonly VMData vmDoc;
         private readonly CRUD crud;
         private readonly LetterController lc;
 
@@ -27,6 +28,7 @@ namespace ClinicX.Controllers
             _config = config;
             ivm = new ICPVM();
             vm = new VMData(_clinContext);
+            vmDoc = new VMData(_docContext);
             crud = new CRUD(_config);
             lc = new LetterController(_clinContext, _docContext);
         }
@@ -202,6 +204,7 @@ namespace ClinicX.Controllers
                 ivm.riskList = vm.GetRiskList(id);
                 ivm.surveillanceList = vm.GetSurveillanceList(ivm.icpCancer.MPI);
                 ivm.eligibilityList = vm.GetTestingEligibilityList(ivm.icpCancer.MPI);
+                ivm.documentList = vmDoc.GetDocumentsList().Where(d => (d.DocCode.StartsWith("O") && d.DocGroup == "Outcome") || d.DocCode.Contains("PrC")).ToList();
                 return View(ivm);
             }
             catch (Exception ex)
@@ -211,8 +214,30 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CancerReview(int id, string sComments)
+        public async Task<IActionResult> CancerReview(int id, string sFinalReview, string? sClinician = "", 
+            string? sClinic = "", string? sComments = "", string? sAddNotes = "", bool? isNotForCrossBooking = false,
+            string? sLetter = "")
         {
+            bool isFinalReview = false;
+            string sFinalReviewBy = "";
+            DateTime dFinalReviewDate = DateTime.Parse("1900-01-01");
+
+            if(sLetter != "")
+            {
+                int iLetter = vmDoc.GetDocumentDetailsByDocCode(sLetter).DocContentID;
+                int iMPI = vm.GetICPDetails(vm.GetCancerICPDetails(id).ICPID).MPI;
+                int iRefID = vm.GetICPDetails(vm.GetCancerICPDetails(id).ICPID).REFID;
+                lc.DoPDF(iLetter, iMPI, iRefID, User.Identity.Name, vm.GetReferralDetails(iRefID).ReferringClinician);
+            }
+
+            if(sFinalReview == "Yes")
+            {
+                isFinalReview = true;
+                sFinalReviewBy = vm.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                dFinalReviewDate = DateTime.Today;
+            }
+
+            //do the CRUD
             return RedirectToAction("NotFound", "WIP");
         }
 
@@ -227,8 +252,8 @@ namespace ClinicX.Controllers
                 }
                 
                 ivm.riskDetails = vm.GetRiskDetails(id);
-                var icp = _clinContext.ICPCancer.FirstOrDefault(i => i.ICPID == ivm.riskDetails.ICPID);
-                ivm.surveillanceList = vm.GetSurveillanceList(icp.ICP_Cancer_ID).Where(s => s.RiskID == id).ToList();
+                int iMPI = vm.GetReferralDetails(ivm.riskDetails.RefID).MPI;               
+                ivm.surveillanceList = vm.GetSurveillanceList(iMPI).Where(s => s.RiskID == id).ToList();
 
                 return View(ivm);
             }
@@ -236,6 +261,57 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
             }
-        }        
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangeGeneralTriage(int id)
+        {
+            try
+            {
+                ivm.icpGeneral = vm.GetGeneralICPDetails(id);
+                ivm.consultants = vm.GetClinicalStaffList().Where(s => s.CLINIC_SCHEDULER_GROUPS == "Consultant").ToList();
+                ivm.GCs = vm.GetClinicalStaffList().Where(s => s.CLINIC_SCHEDULER_GROUPS == "GC").ToList();
+                return View(ivm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeGeneralTriage(int icpId, string sNewConsultant, string sNewGC)
+        {
+            try
+            {
+                if(sNewConsultant == null) 
+                {
+                    sNewConsultant = "";
+                }
+                crud.CallStoredProcedure("ICP General", "Change", icpId, 0, 0, sNewConsultant, sNewGC, "", "", User.Identity.Name);
+
+                return RedirectToAction("ICPDetails", "Triage", new { id = icpId });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReturnToConsultant(int icpId)
+        {
+            try
+            {
+                //return RedirectToAction("NotFound", "WIP");
+                crud.CallStoredProcedure("ICP General", "Return", icpId, 0, 0, "", "", "", "", User.Identity.Name);
+
+                return RedirectToAction("ICPDetails", "Triage", new { id = icpId });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+            }
+        }
     }
 }

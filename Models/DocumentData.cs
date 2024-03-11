@@ -18,6 +18,16 @@ namespace ClinicX.Models
         public string? StaffSurname { get; set; }
     }*/
 
+    [Table("ListDocumentsNEW", Schema = "wmfacs_user")]
+    public class Documents
+    {
+        [Key]
+        public string DocCode { get; set; }
+        public string? DocName { get; set; }
+        public string? DocGroup { get; set; }
+        public bool TemplateInUseNow { get; set; }
+    }
+
     [Table("ListDocumentsContent", Schema = "wmfacs_user")]
     public class DocumentsContent
     {

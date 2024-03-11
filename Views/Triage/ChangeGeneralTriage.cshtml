@@ -1,0 +1,84 @@
+﻿@model ClinicX.ViewModels.ICPVM
+@{
+    ViewData["Title"] = "Clinic-X - ICP Change Triaging Clinician(s)";
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <h1>Change Triaging Clinicians</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <form asp-action="ChangeGeneralTriage">
+            <div class="row" hidden="true">
+                <input name="icpId" asp-for=@Model.icpGeneral.ICPID />
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label>Consultant:</label>
+                </div>
+                <div class="col-md-4">
+                    <select id="ddlCons" asp-for=@Model.triage.ConsultantCode name="sNewConsultant">
+                        @foreach(var item in Model.consultants)
+                        {
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
+                        }
+                    </select>
+                </div>            
+                <div class="col-md-2">
+                    <label>GC:</label>
+                </div>
+                <div class="col-md-4">
+                    <select asp-for=@Model.triage.GCCode name="sNewGC">
+                        @foreach (var item in Model.GCs)
+                        {
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>            
+
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <button class="btn btn-success">Confirm</button>
+                </div>
+            </div>
+        </form>
+
+        <form asp-action="ReturnToConsultant">
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success">Return Case to Consultant</button>
+                </div>
+                <div class="col-md-2">
+                    <input asp-for=@Model.icpGeneral.ICPID name="icpId" hidden="true" />
+                </div>
+            </div>
+        </form>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="button" class="btn btn-success" onclick="GoBack">Back</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener("load", LoadICPDet);
+
+    function LoadICPDet() 
+    { 
+        if(@Model.icpGeneral.TreatPath != null)
+        {
+            document.getElementById("ddlCons").disabled = true;
+        }
+    }
+
+    function GoBack() 
+    {
+        window.history.back();
+        //window.close();
+    }
+
+</script>

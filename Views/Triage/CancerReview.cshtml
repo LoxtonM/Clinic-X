@@ -120,11 +120,11 @@
             <input asp-for=@Model.icpCancer.ICP_Cancer_ID name="id" />
         </div>
 
-        <div class="row mb-5 g-5">
+        @*<div class="row mb-5 g-5">
             <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePreClinicStatus" aria-expanded="false" aria-controls="collapseExample">Pre-Clinic Status (click to expand/hide)</button>
         </div>
 
-        @*
+        
         <div class="collapse" id="collapsePreClinicStatus">
             <div class="row mb-5 g-5">
                 <h2>Pre-Clinic Status</h2>
@@ -156,11 +156,11 @@
                     <input type="checkbox" class="form-check-input" asp-for=@Model.icpCancer.PathRepRev />
                 </div>
             </div>
-        </div>
+        </div>*@
 
         <div class="row mb-5 g-5">
             <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseSeeInClinic" aria-expanded="false" aria-controls="collapseExample">See in Clinic (click to expand/hide)</button>
-        </div>*@
+        </div>
 
         <div class="collapse" id="collapseSeeInClinic">
             <div class="row mb-5 g-5">
@@ -172,7 +172,7 @@
                     <label style="text-align:right">Clinician:</label>
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.icpCancer.WaitingListClinician>
+                    <select asp-for=@Model.icpCancer.WaitingListClinician name="sClinician">
                         <option value="">Select...</option>
                         @foreach (var item in Model.staffMembers)
                         {
@@ -184,7 +184,7 @@
                     <label style="text-align:right">Clinic:</label>
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.icpCancer.WaitingListVenue>
+                    <select asp-for=@Model.icpCancer.WaitingListVenue name="sClinic">
                         <option value="">Select...</option>
                         @foreach (var item in Model.clinicalFacilityList)            
                         {
@@ -199,7 +199,18 @@
                     <label style="text-align:right">Comments:</label>
                 </div>
                 <div class="col-md-10">
-                    <textarea id="txtComments" asp-for=@Model.icpCancer.WaitingListComments rows="5" cols="25" name="sComments"></textarea>
+                    <textarea name="sComments" id="txtComments" asp-for=@Model.icpCancer.WaitingListComments rows="5" cols="25" name="sComments"></textarea>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label>Not for cross booking:</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="chkNotForCrossBooking" type="checkbox" class="form-check" />
+                </div>
+                <div class="col-md-2">
+                    <input id="txtNotForCrossBooking" name="isNotForCrossBooking" hidden="true" />
                 </div>
             </div>
         </div>
@@ -210,7 +221,42 @@
 
         <div class="collapse" id="collapsePreClinicLetter">
             <div class="row mb-5 g-5">
-                <h2>Pre-Clinic Patient Letter (here be dragons)</h2>
+                <h2>Pre-Clinic Patient Letter</h2>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label>Select letter:</label>
+                </div>
+                <div class="col-md-8">
+                    <select name="sLetter">
+                        <option value="">None</option>
+                        @foreach (var item in Model.documentList)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                Additional Notes:
+            </div>
+            <div class="col-md-4">
+                <textarea name="sAddNotes" asp-for=@Model.icpCancer.Comments></textarea>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                Final Review Complete:
+            </div>
+            <div class="col-md-4">
+                <select name="sFinalReview">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes - complete and remove from list</option>
+                </select>
             </div>
         </div>
 
@@ -224,7 +270,13 @@
 
 <script>
     document.getElementById("btnSave").addEventListener("click", DoSubmit)
+    document.getElementById("chkNotForCrossBooking").addEventListener("change", SetNotForCrossBooking)
 
+    function SetNotForCrossBooking()
+    {
+        document.getElementById("txtNotForCrossBooking").value = document.getElementById("chkNotForCrossBooking").checked;
+    }
+    
     function DoSubmit()
     {
         if (CheckFormValid() == 1) 
