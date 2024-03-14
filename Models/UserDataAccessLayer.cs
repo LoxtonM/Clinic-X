@@ -12,7 +12,8 @@ namespace ClinicX.Models
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("secrets.json");
 
             Configuration = builder.Build();
             string connectionString = Configuration["ConnectionStrings:ConString"];

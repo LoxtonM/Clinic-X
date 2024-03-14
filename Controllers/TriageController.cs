@@ -216,18 +216,27 @@ namespace ClinicX.Controllers
         [HttpPost]
         public async Task<IActionResult> CancerReview(int id, string sFinalReview, string? sClinician = "", 
             string? sClinic = "", string? sComments = "", string? sAddNotes = "", bool? isNotForCrossBooking = false,
-            string? sLetter = "")
+            int? iLetter = 0)
         {
             bool isFinalReview = false;
             string sFinalReviewBy = "";
+            ivm.cancerReviewActionsLists = vm.GetICPCancerReviewActionsList();
             DateTime dFinalReviewDate = DateTime.Parse("1900-01-01");
+            int iMPI = vm.GetICPDetails(vm.GetCancerICPDetails(id).ICPID).MPI;
+            int iRefID = vm.GetICPDetails(vm.GetCancerICPDetails(id).ICPID).REFID;
 
-            if(sLetter != "")
+            if (iLetter != 0)
             {
-                int iLetter = vmDoc.GetDocumentDetailsByDocCode(sLetter).DocContentID;
-                int iMPI = vm.GetICPDetails(vm.GetCancerICPDetails(id).ICPID).MPI;
-                int iRefID = vm.GetICPDetails(vm.GetCancerICPDetails(id).ICPID).REFID;
-                lc.DoPDF(iLetter, iMPI, iRefID, User.Identity.Name, vm.GetReferralDetails(iRefID).ReferringClinician);
+                ivm.cancerAction = vm.GetICPCancerAction(iLetter.GetValueOrDefault());
+                int iLetterID = vmDoc.GetDocumentDetailsByDocCode(ivm.cancerAction.DocCode).DocContentID;
+                
+                lc.DoPDF(iLetterID, iMPI, iRefID, User.Identity.Name, vm.GetReferralDetails(iRefID).ReferringClinician);
+            }
+
+            if(sClinician != "")
+            {                
+                crud.CallStoredProcedure("Waiting List", "Create", iMPI, 0, 0, sClinic, "Cancer", sClinician, sComments,
+                    User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
             }
 
             if(sFinalReview == "Yes")
@@ -302,8 +311,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> ReturnToConsultant(int icpId)
         {
             try
-            {
-                //return RedirectToAction("NotFound", "WIP");
+            {                
                 crud.CallStoredProcedure("ICP General", "Return", icpId, 0, 0, "", "", "", "", User.Identity.Name);
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = icpId });

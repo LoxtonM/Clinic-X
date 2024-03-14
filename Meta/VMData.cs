@@ -368,6 +368,22 @@ namespace ClinicX.Meta
             return actions.ToList();
         }
 
+        public List<ICPCancerReviewActionsList> GetICPCancerReviewActionsList() //Get list of all "treatpath2" items for General ICPs
+        {
+            var actions = from a in _clinContext.ICPCancerReviewActionsList
+                          where a.InUse == true
+                          orderby a.ID
+                          select a;
+
+            return actions.ToList();
+        }
+
+        public ICPCancerReviewActionsList GetICPCancerAction(int id)
+        {
+            var action = _clinContext.ICPCancerReviewActionsList.FirstOrDefault(a => a.ID == id);
+
+            return action;
+        }
         public List<ClinicalFacilityList> GetClinicalFacilitiesList() //Get list of all clinic facilities where we hold clinics
         {
             var facs = from f in _clinContext.ClinicalFacilities

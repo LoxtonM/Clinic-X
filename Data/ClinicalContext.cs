@@ -49,6 +49,7 @@ namespace ClinicX.Data
         public DbSet<ICPActionsList> ICPCancerActionsList { get; set; }
         public DbSet<ICPGeneralActionsList> ICPGeneralActionsList { get; set; }
         public DbSet<ICPGeneralActionsList2> ICPGeneralActionsList2 { get; set; }
+        public DbSet <ICPCancerReviewActionsList> ICPCancerReviewActionsList { get; set; }
         public DbSet<Risk> Risk { get; set; }
         public DbSet<Surveillance> Surveillance { get; set; }
         public DbSet<Eligibility> Eligibility { get; set; }
@@ -65,5 +66,6 @@ namespace ClinicX.Data
         public DbSet<SurvFreqCodes> SurvFreqCodes { get; set; }
         public DbSet<DiscontinuedReasonCodes> DiscontinuedReasonCodes { get; set; }
         public DbSet<CalculationTools> CalculationTools { get; set; }
+
     }
 }

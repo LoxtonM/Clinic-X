@@ -531,6 +531,17 @@ namespace ClinicX.Models
         public bool NoClinic { get; set; }
     }
 
+    [Table("ListICPCancerReviewActions", Schema = "dbo")]
+    public class ICPCancerReviewActionsList
+    {
+        [Key]
+        public int ID { get; set; }
+        public string Action { get; set; }
+        public string? description { get; set; }
+        public string? DocCode { get; set; }
+        public bool InUse { get; set; }
+    }
+
     [Table("DictatedLetters", Schema = "dbo")] //Dictated le'ahs
     public class DictatedLetters
     {

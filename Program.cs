@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
-var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false).Build();
+var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false)
+    .AddJsonFile("secrets.json", optional: false)
+    .Build();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ClinicalContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));

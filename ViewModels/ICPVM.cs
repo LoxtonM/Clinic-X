@@ -19,6 +19,8 @@ namespace ClinicX.ViewModels
         public List<ICPActionsList> cancerActionsList { get; set; }
         public List<ICPGeneralActionsList> generalActionsList { get; set; }
         public List<ICPGeneralActionsList2> generalActionsList2 { get; set; }
+        public List<ICPCancerReviewActionsList> cancerReviewActionsLists { get; set; }
+        public ICPCancerReviewActionsList cancerAction {  get; set; }
         public List<Risk> riskList { get; set; }
         public Risk riskDetails { get; set; }
         public List<Surveillance> surveillanceList { get; set; }
