@@ -19,7 +19,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Login/UserLogin";
     });
 builder.Services.AddMvc();
-
+builder.Configuration.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("secrets.json");
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
