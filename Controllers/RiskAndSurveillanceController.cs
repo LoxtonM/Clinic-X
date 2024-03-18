@@ -67,9 +67,12 @@ namespace ClinicX.Controllers
         {
             try
             {
-                crud.CallStoredProcedure("Risk", "Create", iRefID, 0, 0, sRiskCode, sSiteCode, sClinCode, sComments,
+                int iSuccess = crud.CallStoredProcedure("Risk", "Create", iRefID, 0, 0, sRiskCode, sSiteCode, sClinCode, sComments,
                     User.Identity.Name, dRiskDate, null, isUseLetter, false, 0, 0, 0, sTool, "", "", fLifetimePercent,
                     f2529, f3040, f4050, f5060);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+
                 int iRiskID = misc.GetRiskID(iRefID);
                 int icpID = vm.GetRiskDetails(iRiskID).ICPID;
                 int iID = vm.GetCancerICPDetailsByICPID(icpID).ICP_Cancer_ID;
@@ -114,11 +117,12 @@ namespace ClinicX.Controllers
                 {
                     sDiscReason = ""; //because it can't simply evaluate the optional parameter as an empty string for some reason!!!
                 }
-                crud.CallStoredProcedure("Surveillance", "Create", iRiskID, iStartAge, iEndAge, sSiteCode, sTypeCode, sClinCode, "",
+                
+                int iSuccess = crud.CallStoredProcedure("Surveillance", "Create", iRiskID, iStartAge, iEndAge, sSiteCode, sTypeCode, sClinCode, "",
                     User.Identity.Name, dRecDate, null, isUseLetter, isYN, 0, 0, 0, sFrequency, sDiscReason);
-                
-                
-                
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+
                 return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = iRiskID });
             }
             catch (Exception ex)

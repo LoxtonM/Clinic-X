@@ -81,7 +81,9 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                crud.CallStoredProcedure("Test", "Create", iMPI, 0, 0, sTest, sSentTo, "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Test", "Create", iMPI, 0, 0, sTest, sSentTo, "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index", new { id = iMPI });
             }
@@ -156,7 +158,9 @@ namespace ClinicX.Controllers
                 //var patient = await _clinContext.Test.FirstOrDefaultAsync(t => t.TestID == iTestID);
                 int iMPI = vm.GetTestDetails(iTestID).MPI;
                                                 
-                crud.CallStoredProcedure("Test", "Update", iTestID, iComplete, 0, sResult, "", "", sComments, User.Identity.Name, dReceived, dGiven);
+                int iSuccess = crud.CallStoredProcedure("Test", "Update", iTestID, iComplete, 0, sResult, "", "", sComments, User.Identity.Name, dReceived, dGiven);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index", new { id = iMPI });
             }

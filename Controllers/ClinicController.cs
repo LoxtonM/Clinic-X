@@ -145,13 +145,17 @@ namespace ClinicX.Controllers
                     sEthnicity = "";
                 }
                 
-                crud.CallStoredProcedure("Appointment", "Update", iRefID, iNoSeen, 0, sCounseled, sSeenBy,
+                int iSuccess = crud.CallStoredProcedure("Appointment", "Update", iRefID, iNoSeen, 0, sCounseled, sSeenBy,
                     sLetterRequired, sEthnicity, User.Identity.Name, dArrivalTime, null, isClockStop, isComplete);
 
-                if(sLetterRequired != "No")
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+
+                if (sLetterRequired != "No")
                 {
-                    crud.CallStoredProcedure("Letter", "Create", 0, iRefID, 0, "", "",
+                    int iSuccess2 = crud.CallStoredProcedure("Letter", "Create", 0, iRefID, 0, "", "",
                     "", "", User.Identity.Name);
+
+                    if (iSuccess2 == 0) { return RedirectToAction("Index", "WIP"); }
                 }
 
                 return RedirectToAction("ApptDetails", new { id = iRefID });

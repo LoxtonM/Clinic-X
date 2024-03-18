@@ -87,8 +87,10 @@ namespace ClinicX.Controllers
                 }
 
 
-                crud.CallStoredProcedure("Review", "Create", iMPI, iRefID, 0, sPathway, sCategory, sRecipient, sComments, User.Identity.Name,
+                int iSuccess = crud.CallStoredProcedure("Review", "Create", iMPI, iRefID, 0, sPathway, sCategory, sRecipient, sComments, User.Identity.Name,
                      dDate);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index", "Review");
             }
@@ -139,9 +141,10 @@ namespace ClinicX.Controllers
                     dDate = DateTime.Parse("1/1/1900");
                 }
                                
-                crud.CallStoredProcedure("Review", "Edit", id, 0, 0, sStatus, sComments, "", "", User.Identity.Name,
+                int iSuccess = crud.CallStoredProcedure("Review", "Edit", id, 0, 0, sStatus, sComments, "", "", User.Identity.Name,
                     dDate);
 
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index", "Review");
             }

@@ -98,10 +98,15 @@ namespace ClinicX.Controllers
                 //two updates required - one to update the addressee (if addressee has changed)
                 if (isAddresseeChanged)
                 {
-                    crud.CallStoredProcedure("Letter", "UpdateAddresses", iDID, 0, 0, "", "", sLetterFrom, sLetterTo, User.Identity.Name);
+                    int iSuccess2 = crud.CallStoredProcedure("Letter", "UpdateAddresses", iDID, 0, 0, "", "", sLetterFrom, sLetterTo, User.Identity.Name);
+
+                    if (iSuccess2 == 0) { return RedirectToAction("Index", "WIP"); }
                 }
 
-                crud.CallStoredProcedure("Letter", "Update", iDID, 0, 0, sStatus, "", sLetterContentBold, sLetterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, sSecTeam, sConsultant, sGC);
+                int iSuccess = crud.CallStoredProcedure("Letter", "Update", iDID, 0, 0, sStatus, "", sLetterContentBold, sLetterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, sSecTeam, sConsultant, sGC);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+
                 return RedirectToAction("Edit", new { id = iDID });
             }
             catch (Exception ex)
@@ -114,7 +119,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 var dot = await _clinContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
                 int iDID = dot.DoTID;
@@ -131,7 +138,9 @@ namespace ClinicX.Controllers
         {
             try 
             {
-                crud.CallStoredProcedure("Letter", "Delete", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Letter", "Delete", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index");
             }
@@ -146,7 +155,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                crud.CallStoredProcedure("Letter", "Approve", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Letter", "Approve", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Edit", new { id = iDID });
 
@@ -162,7 +173,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                crud.CallStoredProcedure("Letter", "Unapprove", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Letter", "Unapprove", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Edit", new { id = iDID });
 
@@ -178,7 +191,9 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                crud.CallStoredProcedure("Letter", "AddFamilyMember", iDID, iPID, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Letter", "AddFamilyMember", iDID, iPID, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Edit", new { id = iDID });
             }
@@ -193,7 +208,10 @@ namespace ClinicX.Controllers
         {
             try
             {
-                crud.CallStoredProcedure("Letter", "AddCC", iDID, 0, 0, sCC, "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Letter", "AddCC", iDID, 0, 0, sCC, "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+
                 return RedirectToAction("Edit", new { id = iDID });
             }
             catch (Exception ex)
@@ -213,7 +231,10 @@ namespace ClinicX.Controllers
                 
                 int iDID = letter.DotID;
 
-                crud.CallStoredProcedure("Letter", "DeleteCC", iID, 0, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Letter", "DeleteCC", iID, 0, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+
                 return RedirectToAction("Edit", new { id = iDID });
                 
             }

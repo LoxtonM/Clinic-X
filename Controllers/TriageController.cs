@@ -104,40 +104,48 @@ namespace ClinicX.Controllers
                 {
                     if (sFacility != null && sFacility != "") // && sClinician != null && sClinician != "")
                     {
-                        crud.CallStoredProcedure("ICP General", "Triage", iIcpID, iTP.GetValueOrDefault(), 0,
+                        int iSuccess = crud.CallStoredProcedure("ICP General", "Triage", iIcpID, iTP.GetValueOrDefault(), 0,
                         sFacility, sApptIntent, "", sComment, User.Identity.Name, null, null, isSPR, isChild, iDuration);
 
+                        if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
                         //crud.CallStoredProcedure("Waiting List", "Create", iMPI, 0, 0, sFacility, "General", "", sComment, User.Identity.Name);
 
                         //lc.DoPDF(184, iMPI, referral.refid, User.Identity.Name, sReferrer);
                     }
                     else
                     {
-                        crud.CallStoredProcedure("ICP General", "Triage", iIcpID, iTP.GetValueOrDefault(), 0,
+                        int iSuccess = crud.CallStoredProcedure("ICP General", "Triage", iIcpID, iTP.GetValueOrDefault(), 0,
                         "", sApptIntent, "", sComment, User.Identity.Name);
+
+                        if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
                     }
                 }
                 else
                 {
                     if (sFacility != null && sFacility != "") // && sClinician != null && sClinician != "")
                     {
-                        crud.CallStoredProcedure("ICP General", "Triage", iIcpID, 0, iTP2.GetValueOrDefault(),
+                        int iSuccess = crud.CallStoredProcedure("ICP General", "Triage", iIcpID, 0, iTP2.GetValueOrDefault(),
                         sFacility, sApptIntent, "", sComment, User.Identity.Name, null, null, isSPR, isChild, iDuration);
 
+                        if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
                         //crud.CallStoredProcedure("Waiting List", "Create", iMPI, 0, 0, sFacility, "General", "", sComment, User.Identity.Name);
 
                         //lc.DoPDF(184, iMPI, referral.refid, User.Identity.Name, sReferrer);
                     }
                     else
                     {
-                        crud.CallStoredProcedure("ICP General", "Triage", iIcpID, 0, iTP2.GetValueOrDefault(),
+                        int iSuccess = crud.CallStoredProcedure("ICP General", "Triage", iIcpID, 0, iTP2.GetValueOrDefault(),
                         "", sApptIntent, "", sComment, User.Identity.Name);
+
+                        if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
                     }
                 }
 
                 if (sFacility != null && sFacility != "")
                 {
-                    crud.CallStoredProcedure("Waiting List", "Create", iMPI, 0, 0, sFacility, "General", "", sComment, User.Identity.Name);
+                    int iSuccess = crud.CallStoredProcedure("Waiting List", "Create", iMPI, 0, 0, sFacility, "General", "", sComment, User.Identity.Name);
+
+                    if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
                 }
 
                 if (iTP2 == 2) //CTB letter
@@ -172,7 +180,9 @@ namespace ClinicX.Controllers
                 string sReferrer = referral.ReferrerCode;
 
                 CRUD crud = new CRUD(_config);
-                crud.CallStoredProcedure("ICP Cancer", "Triage", iIcpID, iAction, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("ICP Cancer", "Triage", iIcpID, iAction, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 if (iAction == 5)
                 {
@@ -229,15 +239,22 @@ namespace ClinicX.Controllers
             if (iLetter != null && iLetter != 0)
             {
                 ivm.cancerAction = vm.GetICPCancerAction(iLetter.GetValueOrDefault());
-                int iLetterID = vmDoc.GetDocumentDetailsByDocCode(ivm.cancerAction.DocCode).DocContentID;
+                string sDocCode = ivm.cancerAction.DocCode;
+                string sDiaryText = "";
+                int iLetterID = vmDoc.GetDocumentDetailsByDocCode(sDocCode).DocContentID;
                 
                 lc.DoPDF(iLetterID, iMPI, iRefID, User.Identity.Name, vm.GetReferralDetails(iRefID).ReferringClinician);
+                int iSuccess = crud.CallStoredProcedure("Diary", "Create", iRefID, iMPI, 0, "L", sDocCode, "", sDiaryText, User.Identity.Name, null, null, false, false);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
             }
 
             if(sClinician != null && sClinician != "")
             {                
-                crud.CallStoredProcedure("Waiting List", "Create", iMPI, 0, 0, sClinic, "Cancer", sClinician, sComments,
+                int iSuccess = crud.CallStoredProcedure("Waiting List", "Create", iMPI, 0, 0, sClinic, "Cancer", sClinician, sComments,
                     User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
             }
 
             if(sFinalReview == "Yes")
@@ -298,7 +315,9 @@ namespace ClinicX.Controllers
                 {
                     sNewConsultant = "";
                 }
-                crud.CallStoredProcedure("ICP General", "Change", icpId, 0, 0, sNewConsultant, sNewGC, "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("ICP General", "Change", icpId, 0, 0, sNewConsultant, sNewGC, "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = icpId });
             }
@@ -313,7 +332,9 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                crud.CallStoredProcedure("ICP General", "Return", icpId, 0, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("ICP General", "Return", icpId, 0, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = icpId });
             }

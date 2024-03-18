@@ -100,8 +100,10 @@ namespace ClinicX.Controllers
                     sForename2 = "";
                 }
 
-                crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
+                int iSuccess = crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
                         User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("RelativeDetails", "Relative", new { id = id });
             }
@@ -157,8 +159,10 @@ namespace ClinicX.Controllers
                     sForename2 = "";
                 }
 
-                crud.CallStoredProcedure("Relative", "Create", WMFACSID, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
+                int iSuccess = crud.CallStoredProcedure("Relative", "Create", WMFACSID, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
                     User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 var patient = vm.GetPatientDetailsByWMFACSID(WMFACSID);
 

@@ -437,6 +437,7 @@ public class LetterController : Controller
             strLetterFilename = strLetterFilename.Replace("ScannerOPEX2", "Letters");
 
             document.Save(strLetterFilename + ".pdf");
+            
         }
         catch (Exception ex)
         {

@@ -71,7 +71,9 @@ namespace ClinicX.Controllers
                     sComments = "";
                 }
                 
-                crud.CallStoredProcedure("Diagnosis", "Create", iMPI, 0, 0, sDiseaseCode, sStatus, "", sComments, User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Diagnosis", "Create", iMPI, 0, 0, sDiseaseCode, sStatus, "", sComments, User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index", new { id = iMPI });
             }
@@ -118,7 +120,9 @@ namespace ClinicX.Controllers
                 var patient = await _clinContext.Diagnosis.FirstOrDefaultAsync(d => d.ID == iDiagID);
                 int iMPI = patient.MPI;
                                 
-                crud.CallStoredProcedure("Diagnosis", "Update", iDiagID, 0, 0, sStatus, "", "", sComments, User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Diagnosis", "Update", iDiagID, 0, 0, sStatus, "", "", sComments, User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index", new { id = iMPI });
             }

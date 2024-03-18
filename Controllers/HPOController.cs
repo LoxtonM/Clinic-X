@@ -52,7 +52,9 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                crud.CallStoredProcedure("Clinical Note", "Add HPO Term", iNoteID, iTermID, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Clinical Note", "Add HPO Term", iNoteID, iTermID, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("HPOTerm", new { id = iNoteID });
             }
@@ -67,7 +69,9 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                crud.CallStoredProcedure("Clinical Note", "Add HPO Term", iNoteID, iTermID, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Clinical Note", "Add HPO Term", iNoteID, iTermID, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("HPOTerm", new { id = iNoteID });
             }
@@ -85,7 +89,9 @@ namespace ClinicX.Controllers
                 //int iNoteID = 0;
                 int iNoteID = misc.GetNoteIDFromHPOTerm(iID);
 
-                crud.CallStoredProcedure("Clinical Note", "Delete HPO Term", iID, 0, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Clinical Note", "Delete HPO Term", iID, 0, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("HPOTerm", new { id = iNoteID });
             }

@@ -16,7 +16,7 @@ namespace ClinicX.Meta
             _config = config;
         }       
 
-        public void CallStoredProcedure(string sType, string sOperation, int int1, int int2, int int3, 
+        public int CallStoredProcedure(string sType, string sOperation, int int1, int int2, int int3, 
             string string1, string string2, string string3, string text, string sLogin,
             DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
@@ -61,9 +61,13 @@ namespace ClinicX.Meta
             cmd.Parameters.Add("@float3", SqlDbType.Float).Value = f3;
             cmd.Parameters.Add("@float4", SqlDbType.Float).Value = f4;
             cmd.Parameters.Add("@float5", SqlDbType.Float).Value = f5;
-
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
             cmd.ExecuteNonQuery();
-            conn.Close();           
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();      
+            
+            return iReturnValue;
         }
 
         

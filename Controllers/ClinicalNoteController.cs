@@ -74,8 +74,10 @@ namespace ClinicX.Controllers
             {                                
                 int iNoteID;
 
-                crud.CallStoredProcedure("Clinical Note", "Create", iMPI, iRefID, 0, sNoteType, "", "",
+                int iSuccess = crud.CallStoredProcedure("Clinical Note", "Create", iMPI, iRefID, 0, sNoteType, "", "",
                     sClinicalNote, User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 iNoteID = misc.GetClinicalNoteID(iRefID);
 
@@ -114,7 +116,10 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                crud.CallStoredProcedure("Clinical Note", "Update", iNoteID, 0, 0, "", "", "", sClinicalNote, User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Clinical Note", "Update", iNoteID, 0, 0, 
+                    "", "", "", sClinicalNote, User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Edit", new { id = iNoteID });
             }
@@ -143,7 +148,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
+                int iSuccess = crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 var note = await _clinContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
 

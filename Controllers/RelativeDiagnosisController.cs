@@ -59,8 +59,10 @@ namespace ClinicX.Controllers
         {
             try
             {
-                crud.CallStoredProcedure("RelativeDiagnosis", "Create", id, 0, 0, sDiagnosis, sAge, sHospital, sCRegCode, User.Identity.Name,
+                int iSuccess = crud.CallStoredProcedure("RelativeDiagnosis", "Create", id, 0, 0, sDiagnosis, sAge, sHospital, sCRegCode, User.Identity.Name,
                     dDateRequested, DateTime.Parse("1900-01-01"), false, false, 0, 0, 0, sStatus, sConsent, sCons);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index", "RelativeDiagnosis", new { iRelID = id });
             }
@@ -83,7 +85,6 @@ namespace ClinicX.Controllers
                 rdvm.tumourSiteList = vm.GetTumourSiteList();
                 rdvm.tumourLatList = vm.GetTumourLatList();
                 rdvm.tumourMorphList = vm.GetTumourMorphList();
-
 
                 return View(rdvm);
             }
@@ -109,8 +110,10 @@ namespace ClinicX.Controllers
                 //there are too many strings, so I need to concatenate them all to send them to the SP
                 //(it's either that or add another 4 optional string variables!!!)
 
-                crud.CallStoredProcedure("RelativeDiagnosis", "Edit", id, 0, 0, sConsent, sConfirmed, sData, sNotes, User.Identity.Name, dDateReceived, dConfDiagDate,
+                int iSuccess = crud.CallStoredProcedure("RelativeDiagnosis", "Edit", id, 0, 0, sConsent, sConfirmed, sData, sNotes, User.Identity.Name, dDateReceived, dConfDiagDate,
                     false, false, 0, 0, 0, sSiteCode, sLatCode, sMorphCode);
+
+                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
 
                 //return View(rdvm);
                 return RedirectToAction("Index", "WIP");
