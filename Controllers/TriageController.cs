@@ -205,6 +205,7 @@ namespace ClinicX.Controllers
                 ivm.surveillanceList = vm.GetSurveillanceList(ivm.icpCancer.MPI);
                 ivm.eligibilityList = vm.GetTestingEligibilityList(ivm.icpCancer.MPI);
                 ivm.documentList = vmDoc.GetDocumentsList().Where(d => (d.DocCode.StartsWith("O") && d.DocGroup == "Outcome") || d.DocCode.Contains("PrC")).ToList();
+                ivm.cancerReviewActionsLists = vm.GetICPCancerReviewActionsList();
                 return View(ivm);
             }
             catch (Exception ex)
@@ -225,7 +226,7 @@ namespace ClinicX.Controllers
             int iMPI = vm.GetICPDetails(vm.GetCancerICPDetails(id).ICPID).MPI;
             int iRefID = vm.GetICPDetails(vm.GetCancerICPDetails(id).ICPID).REFID;
 
-            if (iLetter != 0)
+            if (iLetter != null && iLetter != 0)
             {
                 ivm.cancerAction = vm.GetICPCancerAction(iLetter.GetValueOrDefault());
                 int iLetterID = vmDoc.GetDocumentDetailsByDocCode(ivm.cancerAction.DocCode).DocContentID;
@@ -233,7 +234,7 @@ namespace ClinicX.Controllers
                 lc.DoPDF(iLetterID, iMPI, iRefID, User.Identity.Name, vm.GetReferralDetails(iRefID).ReferringClinician);
             }
 
-            if(sClinician != "")
+            if(sClinician != null && sClinician != "")
             {                
                 crud.CallStoredProcedure("Waiting List", "Create", iMPI, 0, 0, sClinic, "Cancer", sClinician, sComments,
                     User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
