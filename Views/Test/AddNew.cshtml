@@ -17,14 +17,14 @@
     <div class="container">
         <form id="AddTestForm" asp-action="AddNew">
             <div id="metadata" hidden="true">
-                <input id="txtMPI" name="iMPI" />
+                <input id="txtMPI" name="mpi" />
             </div>
             <div class="row g-5 mb-5">
                 <div class="col-md-2">
                     <label>Test:</label>
                 </div>
                 <div class="col-md-4">
-                    <select id="ddlTest" name="sTest" class="w-100">
+                    <select id="ddlTest" name="test" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach (var t in Model.testList)
                         {
@@ -36,7 +36,7 @@
                     <label>Sent to:</label>
                 </div>
                 <div class="col-md-4">
-                    <input class="w-100" id="txtSentTo" type="text" name="sSentTo" />
+                    <input class="w-100" id="txtSentTo" type="text" name="sentTo" />
                 </div>                
             </div>
 

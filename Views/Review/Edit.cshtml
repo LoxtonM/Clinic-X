@@ -65,13 +65,13 @@
                     <label>Date Completed: (leave blank to use today's date)</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" id="txtDateComplete" asp-for=@Model.Completed_Date name="sDate" />
+                    <input class="w-100" id="txtDateComplete" asp-for=@Model.Completed_Date name="revDate" />
                 </div>
                 <div class="col-md-2">
                     <label>Status:</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlComplete" asp-for=@Model.Review_Status name="sStatus">
+                    <select class="w-100" id="ddlComplete" asp-for=@Model.Review_Status name="status">
                         <option value="Pending">Pending</option>
                         <option value="Complete">Complete</option>
                     </select>
@@ -85,7 +85,7 @@
                     <label>Comments:</label>
                 </div>
                 <div class="col-md-10">
-                    <textarea rows="8" cols="40" asp-for=@Model.Comments name="sComments" id="txtComments"></textarea>
+                    <textarea rows="8" cols="40" asp-for=@Model.Comments name="comments" id="txtComments"></textarea>
                 </div>
             </div>
             <div class="row mb-5 g-5">

@@ -9,14 +9,14 @@ namespace ClinicX.Controllers
     public class PatientController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly PatientVM pvm;
-        private readonly VMData vm;
+        private readonly PatientVM _pvm;
+        private readonly VMData _vm;
 
         public PatientController(ClinicalContext context)
         {
             _clinContext = context;
-            pvm = new PatientVM();
-            vm = new VMData(_clinContext);
+            _pvm = new PatientVM();
+            _vm = new VMData(_clinContext);
         }
 
         [Authorize]
@@ -24,23 +24,23 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                pvm.patient = vm.GetPatientDetails(id);
-                if (pvm.patient == null)
+                _pvm.patient = _vm.GetPatientDetails(id);
+                if (_pvm.patient == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-                pvm.relatives = vm.GetRelativesList(id);
-                pvm.hpoTermDetails = vm.GetHPOTermsAddedList(id);
-                pvm.referrals = vm.GetReferralsList(id);
-                pvm.patientPathway = vm.GetPathwayDetails(id);
-                pvm.alerts = vm.GetAlertsList(id);
-                pvm.diary = vm.GetDiaryList(id);
+                _pvm.relatives = _vm.GetRelativesList(id);
+                _pvm.hpoTermDetails = _vm.GetHPOTermsAddedList(id);
+                _pvm.referrals = _vm.GetReferralsList(id);
+                _pvm.patientPathway = _vm.GetPathwayDetails(id);
+                _pvm.alerts = _vm.GetAlertsList(id);
+                _pvm.diary = _vm.GetDiaryList(id);
 
-                return View(pvm);
+                return View(_pvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }        
     }

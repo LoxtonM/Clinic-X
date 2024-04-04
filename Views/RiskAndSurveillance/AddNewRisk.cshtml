@@ -24,14 +24,14 @@
 
     <form asp-action="AddNewRisk">
         <div class="row" hidden="true">
-            <input name="iRefID" asp-for=@Model.iRefID  />
+            <input name="refID" asp-for=@Model.refID  />
         </div>
         <div class="row mb-2 g-2">
             <div class="col-md-2">
                 <label>Risk:</label>
             </div>
             <div class="col-md-2">
-                <select class="w-100" name="sRiskCode">
+                <select class="w-100" name="riskCode">
                     <option value="">Select...</option>
                     @foreach(var item in Model.riskCodes)
                     {
@@ -43,7 +43,7 @@
                 <label>Site:</label>
             </div>
             <div class="col-md-2">
-                <select class="w-100" name="sSiteCode">
+                <select class="w-100" name="siteCode">
                     <option value="">Select...</option>
                     @foreach (var item in Model.survSiteCodes)
                     {
@@ -55,7 +55,7 @@
                 <label>Clinician:</label>
             </div>
             <div class="col-md-2">
-                <select class="w-100" name="sClinCode">
+                <select class="w-100" name="clinCode">
                     <option value="">Select...</option>
                     @foreach (var item in Model.staffMembersList)
                     {
@@ -69,19 +69,19 @@
                 <label>Date:</label>
             </div>
             <div class="col-md-2">
-                <input class="w-100" type="date" name="dRiskDate" />
+                <input class="w-100" type="date" name="riskDate" />
             </div>
             <div class="col-md-2">
                 <label>Lifetime %:</label>
             </div>
             <div class="col-md-2">
-                <input class="w-50" type="text" name="fLifetimePercent" />
+                <input class="w-50" type="text" name="lifetimePercent" />
             </div>
             <div class="col-md-2">
                 <label>Comments</label>
             </div>
             <div class="col-md-2">
-                <input class="w-100" type="text" name="sComments" />
+                <input class="w-100" type="text" name="comments" />
             </div>
         </div>
         <div class="row mb-2 g-2">
@@ -124,7 +124,7 @@
                 <label>Calculation Tool Used:</label>
             </div>
             <div class="col-md-4">
-                <select class="w-100" name="sTool">
+                <select class="w-100" name="tool">
                     <option value="">Select...</option>
                     @foreach (var item in Model.calculationTools)
                     {

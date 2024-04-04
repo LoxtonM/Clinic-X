@@ -9,33 +9,33 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly RiskSurveillanceVM rsvm;
-        private readonly VMData vm;
-        private readonly MiscData misc;
-        private readonly CRUD crud;
+        private readonly RiskSurveillanceVM _rsvm;
+        private readonly VMData _vm;
+        private readonly MiscData _misc;
+        private readonly CRUD _crud;
 
         public RiskAndSurveillanceController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
-            rsvm = new RiskSurveillanceVM();
-            vm = new VMData(_clinContext);
-            misc = new MiscData(_config);
-            crud = new CRUD(_config);
+            _rsvm = new RiskSurveillanceVM();
+            _vm = new VMData(_clinContext);
+            _misc = new MiscData(_config);
+            _crud = new CRUD(_config);
         }
 
         public IActionResult RiskDetails(int id)
         {
             try
             {
-                rsvm.riskDetails = vm.GetRiskDetails(id);
-                rsvm.surveillanceList = vm.GetSurveillanceListByRiskID(rsvm.riskDetails.RiskID);
-                rsvm.eligibilityList = vm.GetTestingEligibilityList(rsvm.riskDetails.MPI);
-                return View(rsvm);
+                _rsvm.riskDetails = _vm.GetRiskDetails(id);
+                _rsvm.surveillanceList = _vm.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
+                _rsvm.eligibilityList = _vm.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
+                return View(_rsvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -44,43 +44,43 @@ namespace ClinicX.Controllers
         {
             try
             {
-                rsvm.icpCancer = vm.GetCancerICPDetailsByICPID(id);
-                rsvm.patient = vm.GetPatientDetails(rsvm.icpCancer.MPI);
-                rsvm.iRefID = vm.GetICPDetails(id).REFID;
-                rsvm.riskCodes = vm.GetRiskCodesList();
-                rsvm.survSiteCodes = vm.GetSurvSiteCodesList();
-                rsvm.staffMembersList = vm.GetClinicalStaffList();
-                rsvm.calculationTools = vm.GetCalculationToolsList();
-                return View(rsvm);
+                _rsvm.icpCancer = _vm.GetCancerICPDetailsByICPID(id);
+                _rsvm.patient = _vm.GetPatientDetails(_rsvm.icpCancer.MPI);
+                _rsvm.refID = _vm.GetICPDetails(id).REFID;
+                _rsvm.riskCodes = _vm.GetRiskCodesList();
+                _rsvm.survSiteCodes = _vm.GetSurvSiteCodesList();
+                _rsvm.staffMembersList = _vm.GetClinicalStaffList();
+                _rsvm.calculationTools = _vm.GetCalculationToolsList();
+                return View(_rsvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddNewRisk(int iRefID, string sRiskCode, string sSiteCode, string sClinCode, 
-            DateTime dRiskDate, float fLifetimePercent, string sComments, float f2529, float f3040, float f4050, 
-            float f5060, bool isUseLetter, string sTool)
+        public async Task<IActionResult> AddNewRisk(int refID, string riskCode, string siteCode, string clinCode, 
+            DateTime riskDate, float lifetimePercent, string comments, float f2529, float f3040, float f4050, 
+            float f5060, bool isUseLetter, string tool)
         {
             try
             {
-                int iSuccess = crud.CallStoredProcedure("Risk", "Create", iRefID, 0, 0, sRiskCode, sSiteCode, sClinCode, sComments,
-                    User.Identity.Name, dRiskDate, null, isUseLetter, false, 0, 0, 0, sTool, "", "", fLifetimePercent,
+                int success = _crud.CallStoredProcedure("Risk", "Create", refID, 0, 0, riskCode, siteCode, clinCode, comments,
+                    User.Identity.Name, riskDate, null, isUseLetter, false, 0, 0, 0, tool, "", "", lifetimePercent,
                     f2529, f3040, f4050, f5060);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                int iRiskID = misc.GetRiskID(iRefID);
-                int icpID = vm.GetRiskDetails(iRiskID).ICPID;
-                int iID = vm.GetCancerICPDetailsByICPID(icpID).ICP_Cancer_ID;
-                return RedirectToAction("CancerReview", "Triage", new { id = iID });
+                int riskID = _misc.GetRiskID(refID);
+                int icpID = _vm.GetRiskDetails(riskID).ICPID;
+                int icpCancerID = _vm.GetCancerICPDetailsByICPID(icpID).ICP_Cancer_ID;
+                return RedirectToAction("CancerReview", "Triage", new { id = icpCancerID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -89,45 +89,45 @@ namespace ClinicX.Controllers
         {
             try
             {
-                rsvm.iRiskID = id;
-                rsvm.riskDetails = vm.GetRiskDetails(id);
-                rsvm.patient = vm.GetPatientDetails(rsvm.riskDetails.MPI);
-                rsvm.survSiteCodes = vm.GetSurvSiteCodesList();
-                rsvm.survTypeCodes = vm.GetSurvTypeCodesList();
-                rsvm.survFreqCodes = vm.GetSurvFreqCodesList();
-                rsvm.discontinuedReasonCodes = vm.GetDiscReasonCodesList();
-                rsvm.staffMembersList = vm.GetClinicalStaffList();
+                _rsvm.riskID = id;
+                _rsvm.riskDetails = _vm.GetRiskDetails(id);
+                _rsvm.patient = _vm.GetPatientDetails(_rsvm.riskDetails.MPI);
+                _rsvm.survSiteCodes = _vm.GetSurvSiteCodesList();
+                _rsvm.survTypeCodes = _vm.GetSurvTypeCodesList();
+                _rsvm.survFreqCodes = _vm.GetSurvFreqCodesList();
+                _rsvm.discontinuedReasonCodes = _vm.GetDiscReasonCodesList();
+                _rsvm.staffMembersList = _vm.GetClinicalStaffList();
                 
-                return View(rsvm);
+                return View(_rsvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddNewSurveillance(int iRiskID, string sSiteCode, string sTypeCode, string sClinCode, 
-            DateTime dRecDate, int iStartAge, int iEndAge, string sFrequency, bool isUseLetter, bool isYN, string? sDiscReason)
+        public async Task<IActionResult> AddNewSurveillance(int riskID, string siteCode, string typeCode, string clinCode, 
+            DateTime recDate, int startAge, int endAge, string frequency, bool isUseLetter, bool isYN, string? discReason)
         {
             try
             {
-                if(sDiscReason == null)
+                if(discReason == null)
                 {
-                    sDiscReason = ""; //because it can't simply evaluate the optional parameter as an empty string for some reason!!!
+                    discReason = ""; //because it can't simply evaluate the optional parameter as an empty string for some reason!!!
                 }
                 
-                int iSuccess = crud.CallStoredProcedure("Surveillance", "Create", iRiskID, iStartAge, iEndAge, sSiteCode, sTypeCode, sClinCode, "",
-                    User.Identity.Name, dRecDate, null, isUseLetter, isYN, 0, 0, 0, sFrequency, sDiscReason);
+                int success = _crud.CallStoredProcedure("Surveillance", "Create", riskID, startAge, endAge, siteCode, typeCode, clinCode, "",
+                    User.Identity.Name, recDate, null, isUseLetter, isYN, 0, 0, 0, frequency, discReason);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = iRiskID });
+                return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = riskID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
     }

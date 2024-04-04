@@ -49,7 +49,7 @@
                     <th>CGU No</th>
                     <th>Type</th>
                     <th>Due Date</th>
-                    <th>Time</th>
+                    @*<th>Time</th>*@
                     <th>Patient</th>
                     <th>State</th>
                 </tr>
@@ -97,14 +97,14 @@
                         {
                             <td>N/A</td>
                         }
-                        @if (@item.BookedTime.HasValue)
+                        @*@if (@item.BookedTime.HasValue)
                         {
                             <td>@item.BookedTime.Value.ToString("HH:mm")</td>
                         }
                         else
                         {
                             <td>N/A</td>
-                        }                        
+                        } *@                       
                         <td>@item.Name</td>
                         <td>@item.State</td>
                     </tr>
@@ -112,6 +112,4 @@
             </tbody>
         </table>
     }
-
-
 </div>

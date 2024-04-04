@@ -20,7 +20,7 @@
                         Note:
                     </div>
                     <div class="col-sm-10">
-                        <textarea id="txtClinicalNote" rows="10" cols="150" name="sClinicalNote">@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNote)</textarea>
+                        <textarea id="txtClinicalNote" rows="10" cols="150" name="clinicalNote">@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNote)</textarea>
                     </div>
                 </div>
                 <div class="row">
@@ -30,7 +30,7 @@
                 </div>
                 <div id="metadata" hidden="true">        
                     RefID:<input id="metaRefID" value=@Html.DisplayFor(Model => Model.clinicalNote.RefID) />
-                    NoteID:<input id="metaNoteID" name="iNoteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) />
+                    NoteID:<input id="metaNoteID" name="noteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) />
                     DCTMSTS:<input id="txtDCTMSts" value=@Html.DisplayFor(Model => Model.clinicalNote.CN_DCTM_sts) />
                 </div>
             </div>
@@ -40,7 +40,7 @@
     <div class="row">
     <h4>Existing HPO codes:</h4>
         <form id="DeleteHPOTermFromNote" asp-action="DeleteHPOTermFromNote">
-        <input id="txtID" name="iID" hidden="true" />
+        <input id="txtID" name="id" hidden="true" />
     
         @foreach (var e in Model.hpoTermDetails)
         {
@@ -64,7 +64,7 @@
         <h4>Suggested HPO codes:</h4>
         <br /><br />
         <form id="AddHPOTermFromText" asp-action="AddHPOTermFromText">
-            <input id="txtNoteID1" name="iNoteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) hidden="true" /> <input id="txtTermID" name="iTermID" hidden="true" />
+            <input id="txtNoteID1" name="noteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) hidden="true" /> <input id="txtTermID" name="termID" hidden="true" />
             @if(Model.hpoExtractVM.Count > 0)
             {
                 <h5>The following HPO terms have been found from the text:</h5>
@@ -100,7 +100,7 @@
                     <label>Search:</label>
                 </div>
                 <div class="col-md-6">
-                    <input type="text" id="txtSearch" name="sSearchTerm" />
+                    <input type="text" id="txtSearch" name="searchTerm" asp-for=@Model.searchTerm />
                     <input name="id" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) hidden="true" />
                 </div>
             </div>
@@ -113,7 +113,7 @@
                 </div>
     
                 <div class="col-md-8">
-                    <select class="w-100" id="ddlHPO" name="iTermID" disabled="true">
+                    <select class="w-100" id="ddlHPO" name="termID" disabled="true">
                         @foreach (var t in Model.hpoTerms)
                         {
                             <option value="@t.ID">@t.TermCode - @t.Term</option>
@@ -126,7 +126,7 @@
             </div>
     
             <div class="row mb-5 g-5">        
-                <input id="txtNoteID2" name="iNoteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) hidden="true" />
+                <input id="txtNoteID2" name="noteID" value=@Html.DisplayFor(Model => Model.clinicalNote.ClinicalNoteID) hidden="true" />
             </div>
         </form>
     
@@ -152,10 +152,12 @@
             document.getElementById("txtClinicalNote").disabled = true;           
         }
 
-        if (document.getElementById("HPOSearch").value != "" && document.getElementById("HPOSearch").value != null) 
-        {
+        //window.alert(document.getElementById("txtSearch").value);
+
+        if (document.getElementById("txtSearch").value != "" && document.getElementById("txtSearch").value != null) {
             document.getElementById("ddlHPO").disabled = false;
         }
+        //document.getElementById("ddlHPO").disabled = false;
     }
 
     function ExtractTerms()

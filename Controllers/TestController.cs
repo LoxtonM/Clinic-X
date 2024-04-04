@@ -14,17 +14,17 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly TestDiseaseVM tvm;
-        private readonly VMData vm;
-        private readonly CRUD crud;
+        private readonly TestDiseaseVM _tvm;
+        private readonly VMData _vm;
+        private readonly CRUD _crud;
 
         public TestController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
-            tvm = new TestDiseaseVM();
-            vm = new VMData(_clinContext);
-            crud = new CRUD(_config);
+            _tvm = new TestDiseaseVM();
+            _vm = new VMData(_clinContext);
+            _crud = new CRUD(_config);
         }
 
         [Authorize]
@@ -32,13 +32,13 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var tests = vm.GetTestListByPatient(id.GetValueOrDefault());
+                var tests = _vm.GetTestListByPatient(id.GetValueOrDefault());
 
                 return View(tests);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -47,16 +47,13 @@ namespace ClinicX.Controllers
         {
             try
             {
-                //var user = await _clinContext.StaffMembers.FirstOrDefaultAsync(s => s.EMPLOYEE_NUMBER == User.Identity.Name);
-                //string sStaffCode = user.STAFF_CODE;
-
-                var tests = vm.GetTestListByUser(User.Identity.Name);
+                var tests = _vm.GetTestListByUser(User.Identity.Name);
 
                 return View(tests);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -66,30 +63,30 @@ namespace ClinicX.Controllers
             try
             {
                 
-                tvm.testList = vm.GetTestList();
-                tvm.patient = vm.GetPatientDetails(id);
-                return View(tvm);
+                _tvm.testList = _vm.GetTestList();
+                _tvm.patient = _vm.GetPatientDetails(id);
+                return View(_tvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int iMPI, string sTest, string sSentTo)
+        public async Task<IActionResult> AddNew(int mpi, string test, string sentTo)
         {
             try
             {                
-                int iSuccess = crud.CallStoredProcedure("Test", "Create", iMPI, 0, 0, sTest, sSentTo, "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Test", "Create", mpi, 0, 0, test, sentTo, "", "", User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Index", new { id = iMPI });
+                return RedirectToAction("Index", new { id = mpi });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -98,7 +95,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var test = vm.GetTestDetails(id);
+                var test = _vm.GetTestDetails(id);
                 if (test == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
@@ -108,65 +105,65 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int iTestID, string sResult, string sComments, string sReceived, string sGiven, Int16 iComplete)
+        public async Task<IActionResult> Edit(int testID, string result, string comments, string receivedDate, string givenDate, Int16 complete)
         {
             try
             {
-                if (iTestID == null)
+                if (testID == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                DateTime dReceived = new DateTime();
-                DateTime dGiven = new DateTime();
+                DateTime dateReceived = new DateTime();
+                DateTime dateGiven = new DateTime();
 
-                if (sReceived != null)
+                if (receivedDate != null)
                 {
-                    dReceived = DateTime.Parse(sReceived);
+                    dateReceived = DateTime.Parse(receivedDate);
                 }
                 else
                 {
-                    dReceived = DateTime.Parse("1/1/1900");
+                    dateReceived = DateTime.Parse("1/1/1900");
                 }
 
-                if (sGiven != null)
+                if (givenDate != null)
                 {
-                    dGiven = DateTime.Parse(sGiven);
+                    dateGiven = DateTime.Parse(givenDate);
                 }
                 else
                 {
-                    dGiven = DateTime.Parse("1/1/1900");
+                    dateGiven = DateTime.Parse("1/1/1900");
                     //because we can't have a null date, so we have to convert it to an obviously wrong fixed number and then back again.
                 }
 
                 //apparently we simply can't send a null parameter to the SQL, so we have to convert it to an empty string and then back again!
-                if (sResult == null)
+                if (result == null)
                 {
-                    sResult = "";
+                    result = "";
                 }
 
-                if (sComments == null)
+                if (comments == null)
                 {
-                    sComments = "";
+                    comments = "";
                 }
 
-                //var patient = await _clinContext.Test.FirstOrDefaultAsync(t => t.TestID == iTestID);
-                int iMPI = vm.GetTestDetails(iTestID).MPI;
+                //var patient = await _clinContext.Test.FirstOrDefaultAsync(t => t.TestID == testID);
+                int mpi = _vm.GetTestDetails(testID).MPI;
                                                 
-                int iSuccess = crud.CallStoredProcedure("Test", "Update", iTestID, iComplete, 0, sResult, "", "", sComments, User.Identity.Name, dReceived, dGiven);
+                int success = _crud.CallStoredProcedure("Test", "Update", testID, complete, 0, result, "", "", comments, User.Identity.Name, dateReceived, dateGiven);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Index", new { id = iMPI });
+                return RedirectToAction("Index", new { id = mpi });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
         

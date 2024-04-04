@@ -47,7 +47,7 @@
                     Ethnicity:
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.patients.EthnicCode id="ddlEthnicity" name="sEthnicity" class="w-100">
+                    <select asp-for=@Model.patients.EthnicCode id="ddlEthnicity" name="ethnicity" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach(var e in Model.ethnicities)
                         {
@@ -63,7 +63,7 @@
                     Contact Outcome:
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.activityItem.COUNSELED id="ddlContactOutcome" name="sCounseled" class="w-100">
+                    <select asp-for=@Model.activityItem.COUNSELED id="ddlContactOutcome" name="counseled" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach(var o in Model.outcomes)
                         {
@@ -74,9 +74,8 @@
                 <div class="col-md-2">
                     <label for="ddlSeenBy" id="lblSeenBy">Seen by:</label>
                 </div>
-                <div class="col-md-4">
-                    @*<select asp-for=@Model.activityItem.SEEN_BY id="ddlSeenBy" name="sSeenBy">*@
-                    <select asp-for=@Model.activityItem.STAFF_CODE_1 id="ddlSeenBy" name="sSeenBy" class="w-100">
+                <div class="col-md-4">                    
+                    <select asp-for=@Model.activityItem.STAFF_CODE_1 id="ddlSeenBy" name="seenBy" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach (var c in Model.staffMembers)
                         {
@@ -90,9 +89,8 @@
                     <div class="col-md-2">
                         <label for="txtArrivalTime" id="lblArrivalTime">Arrival Time:</label>
                     </div>
-                    <div class="col-md-6">
-                        @*<input asp-for=@Model.activityItem.ARRIVAL_TIME id="txtArrivalTime" type="time" name="dArrivalTime" />*@
-                        <input asp-for=@Model.activityItem.BOOKED_TIME id="txtArrivalTime" type="time" name="dArrivalTime" class="w-100" />
+                    <div class="col-md-6">                        
+                        <input asp-for=@Model.activityItem.BOOKED_TIME id="txtArrivalTime" type="time" name="arrivalTime" class="w-100" />
                     </div>
                     <div class="col-md-4"></div>
                 </div>
@@ -101,7 +99,7 @@
                         <label for="txtNoPatientsSeen" id="lblNoPatientsSeen">No. Patients Seen:</label>
                     </div>
                     <div class="col-md-6">
-                        <input asp-for=@Model.activityItem.NOPATIENTS_SEEN id="txtNoPatientsSeen" name="iNoSeen" class="w-100" />
+                        <input asp-for=@Model.activityItem.NOPATIENTS_SEEN id="txtNoPatientsSeen" name="noSeen" class="w-100" />
                     </div>
                     <div class="col-md-4"></div>
                 </div>
@@ -110,7 +108,7 @@
                         <label for="ddlLetterRequired" id="lblLetterRequired">Letter Required:</label>
                     </div>
                     <div class="col-md-8">
-                        <select asp-for=@Model.activityItem.LetterReq id="ddlLetterRequired" name="sLetterRequired" class="w-100">
+                        <select asp-for=@Model.activityItem.LetterReq id="ddlLetterRequired" name="letterRequired" class="w-100">
                             <option value="Yes - Within 10 Days">Yes - Within 10 Days</option>
                             <option value="Yes - Later">Yes - Later</option>
                             <option selected value="No">No</option>
@@ -128,7 +126,7 @@
                             <option value="True">Yes</option>
                             <option value="False">No</option>
                         </select>
-                        <input asp-for=@Model.activityItem.RefID id="txtRefID" name="iRefID" hidden="true" />
+                        <input asp-for=@Model.activityItem.RefID id="txtRefID" name="refID" hidden="true" />
                     </div>
                     <div class="col-md-2">
                         <label for="ddlCloseRef" id="lblCloseRef">Close Referral:</label>

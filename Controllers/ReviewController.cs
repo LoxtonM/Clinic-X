@@ -13,17 +13,17 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly CRUD crud;
-        private readonly ReviewVM rvm;
-        private readonly VMData vm;
+        private readonly CRUD _crud;
+        private readonly ReviewVM _rvm;
+        private readonly VMData _vm;
 
         public ReviewController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
-            rvm = new ReviewVM();
-            vm = new VMData(_clinContext);
-            crud = new CRUD(_config);
+            _rvm = new ReviewVM();
+            _vm = new VMData(_clinContext);
+            _crud = new CRUD(_config);
         }
 
         [Authorize]
@@ -36,13 +36,13 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                var reviews = vm.GetReviewsList(User.Identity.Name);
+                var reviews = _vm.GetReviewsList(User.Identity.Name);
 
                 return View(reviews);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -52,51 +52,51 @@ namespace ClinicX.Controllers
         {
             try
             {
-                rvm.referrals = vm.GetActivityDetails(id);
-                rvm.staffMembers = vm.GetClinicalStaffList();
-                int impi = rvm.referrals.MPI;
-                rvm.patient = vm.GetPatientDetails(impi);
+                _rvm.referrals = _vm.GetActivityDetails(id);
+                _rvm.staffMembers = _vm.GetClinicalStaffList();
+                int impi = _rvm.referrals.MPI;
+                _rvm.patient = _vm.GetPatientDetails(impi);
                
-                return View(rvm);
+                return View(_rvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create(int iMPI, int iRefID, string sPathway, string sCategory, string sDate, string sComments, string? sRecipient)
+        public async Task<IActionResult> Create(int mpi, int refID, string pathway, string category, string revDate, string comments, string? recipient)
         {
             try
             {
-                if (sRecipient == null)
+                if (recipient == null)
                 {
-                    sRecipient = "";
+                    recipient = "";
                 }
-                DateTime dDate = new DateTime();
+                DateTime reviewDate = new DateTime();
 
-                if (sDate != null)
+                if (revDate != null)
                 {
-                    dDate = DateTime.Parse(sDate);
+                    reviewDate = DateTime.Parse(revDate);
                 }
                 else
                 {
-                    dDate = DateTime.Parse("1/1/1900");
+                    reviewDate = DateTime.Parse("1/1/1900");
                 }
 
 
-                int iSuccess = crud.CallStoredProcedure("Review", "Create", iMPI, iRefID, 0, sPathway, sCategory, sRecipient, sComments, User.Identity.Name,
-                     dDate);
+                int success = _crud.CallStoredProcedure("Review", "Create", mpi, refID, 0, pathway, category, recipient, comments, User.Identity.Name,
+                     reviewDate);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index", "Review");
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -107,7 +107,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var review = vm.GetReviewDetails(id);
+                var review = _vm.GetReviewDetails(id);
                 
                 
                 if (review == null)
@@ -119,38 +119,38 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, string sStatus, string sComments, string sDate)
+        public async Task<IActionResult> Edit(int id, string status, string comments, string revDate)
         {
             try
             {
-                var review = vm.GetReviewDetails(id);
+                var review = _vm.GetReviewDetails(id);
 
-                DateTime dDate = new DateTime();
+                DateTime reviewDate = new DateTime();
 
-                if (sDate != null)
+                if (revDate != null)
                 {
-                    dDate = DateTime.Parse(sDate);
+                    reviewDate = DateTime.Parse(revDate);
                 }
                 else
                 {
-                    dDate = DateTime.Parse("1/1/1900");
+                    reviewDate = DateTime.Parse("1/1/1900");
                 }
                                
-                int iSuccess = crud.CallStoredProcedure("Review", "Edit", id, 0, 0, sStatus, sComments, "", "", User.Identity.Name,
-                    dDate);
+                int success = _crud.CallStoredProcedure("Review", "Edit", id, 0, 0, status, comments, "", "", User.Identity.Name,
+                    reviewDate);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index", "Review");
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
     }

@@ -13,17 +13,17 @@
         </div>    
         <div class="col-md-2">
             <form id="DictatedLetterApproval" asp-action="Approve">
-                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
                 <input type="button" class="btn btn-default btn-success" value="Approve" id="btnApprove" hidden="true" />
             </form>
             <form id="DictatedLetterUnapproval" asp-action="Unapprove">
-                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
                 <input type="button" class="btn btn-default btn-success" value="Unapprove" id="btnUnapprove" hidden="true" />
             </form>
         </div>    
         <div class="col-md-2">
             <form id="DictatedLetterDelete" asp-action="Delete">
-                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
                 <input type="button" class="btn btn-default btn-success" value="Delete" id="btnReqDelete" />
                 <div class="row mb-1 g-1" id="ConfDelete" hidden="true">
                     <h6>Are you sure? You won't be able to undo this.</h6>
@@ -52,13 +52,13 @@
                 </div>
             </div>
             <div hidden="true">
-                <input asp-for="dictatedLetters.DoTID" name="iDID" />                
+                <input asp-for="dictatedLetters.DoTID" name="dID" />                
             </div>
         </form>
 
         <form id="DictatedLetter" asp-action="Edit">
             <div id="metadata" hidden="true">
-                <input asp-for="dictatedLetters.DoTID" name="iDID" />
+                <input asp-for="dictatedLetters.DoTID" name="dID" />
                 <input id="txtisAddressChanged" name="isAddresseeChanged" />
             </div>
 
@@ -100,7 +100,7 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo" name="sLetterTo"></textarea>
+                    <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo" name="letterTo"></textarea>
                 </div>
                 <div class="col-md-1" style="text-align:right">
                     From:
@@ -115,7 +115,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <textarea id="txtLetterFrom" rows="8" cols="40" asp-for="dictatedLetters.LetterFrom" name="sLetterFrom"></textarea>
+                    <textarea id="txtLetterFrom" rows="8" cols="40" asp-for="dictatedLetters.LetterFrom" name="letterFrom"></textarea>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -123,7 +123,7 @@
                     Letter Status:
                 </div>
                 <div class="col-md-4">
-                    <select class="w-100" id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="sStatus">
+                    <select class="w-100" id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="status">
                         <option value="" selected></option>
                         <option value="Draft">Draft</option>
                         <option value="For Approval">For Approval</option>
@@ -137,7 +137,7 @@
             <div class="row mb-5 g-5">
                 <div class="col-md-2" style="text-align:right">Summary:</div>
                 <div class="col-md-10">
-                    <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold" name="sLetterContentBold"></textarea>
+                    <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold" name="letterContentBold"></textarea>
                 </div>
                 <div class="col-md-2"></div>
             </div>
@@ -145,7 +145,7 @@
             <div class="row mb-5">
                 <div class="col-md-1" style="text-align:right">Secreterial Team:</div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="sSecTeam">
+                    <select class="w-100" id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="secTeam">
                         <option value="">Select...</option>
                         @foreach (var item in Model.secteams)
                         {
@@ -155,7 +155,7 @@
                 </div>
                 <div class="col-md-1" style="text-align:right">Consultant:</div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="sConsultant">
+                    <select class="w-100" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="consultant">
                         @foreach(var item in Model.consultants)
                         {
                             <option value=@item>@item</option>
@@ -164,7 +164,7 @@
                 </div>
                 <div class="col-md-1" style="text-align:right">Genetic Counsellor:</div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="sGC">
+                    <select class="w-100" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="gc">
                         @foreach (var item in Model.gcs)
                         {
                             <option value=@item>@item</option>
@@ -173,14 +173,14 @@
                 </div>
                 <div class="col-md-1" style="text-align:right">Date Dictated:</div>
                 <div class="col-md-2">
-                    <input class="w-100" id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="sDateDictated" />
+                    <input class="w-100" id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="dateDictated" />
                 </div>
             </div>
 
             <div class="row mb-5">
                 <div class="col-md-2" style="text-align:right">Content:</div>
                 <div class="col-md-10">
-                    <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="sLetterContent" hidden="true"></textarea>
+                    <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="letterContent" hidden="true"></textarea>
                     <div style="border:solid" class="col-md-10" id="letterText" contenteditable="true">
                         @Html.Raw(@Model.dictatedLetters.LetterContent)
                     </div>
@@ -197,7 +197,7 @@
 
         <div class="collapse" id="collapsePatientsTable">
             <form id="frmAddPatientToDOT" asp-action="AddPatientToDOT">
-                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true" />
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
                 <input id="txtPID" name="iPID" hidden="true" />
                 <table class="table">
                     <thead>
@@ -233,7 +233,7 @@
             <h3>CCs currently added to letter:</h3>
             <div class="row mb-5 g-5">
                 <form id="frmDeleteCC" asp-action="DeleteCCFromDOT">                
-                    <input id="txtCCID" name="iID" hidden="true" />
+                    <input id="txtCCID" name="id" hidden="true" />
                     <table class="table">
                         <thead>
                             <tr>
@@ -256,7 +256,7 @@
                 </form>
             </div>
             <form id="frmAddCCToDOT" asp-action="AddCCToDOT">
-                <input asp-for="dictatedLetters.DoTID" name="iDID" hidden="true"/>
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true"/>
                 <div class="row mb-5 g-5">            
                     <div class="col-md-2">
                         <input type="button" id="btnAddCC" class="btn btn-default btn-success" value="Add CC" />
@@ -286,7 +286,7 @@
                                 <textarea rows="8" cols="40" id="txtCC"></textarea>
                             </div>
                             <div class="col-md-2">
-                                <input type="text" id="txtCCCode" name="sCC" hidden="true"/>
+                                <input type="text" id="txtCCCode" name="cc" hidden="true"/>
                             </div>
                         </div>
                     </div>            
@@ -617,7 +617,8 @@
         document.getElementById("frmAddCCToDOT").submit();
     }
 
-    function DeleteCC(id) {
+    function DeleteCC(id) 
+    {
         document.getElementById("txtCCID").value = id;
         document.getElementById("frmDeleteCC").submit();
     }

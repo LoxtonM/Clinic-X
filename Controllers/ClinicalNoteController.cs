@@ -12,33 +12,27 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly VMData vm;
-        private readonly CRUD crud;
-        private readonly ClinicVM cvm;
-        private readonly MiscData misc;
+        private readonly VMData _vm;
+        private readonly CRUD _crud;
+        private readonly ClinicVM _cvm;
+        private readonly MiscData _misc;
 
         public ClinicalNoteController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
-            vm = new VMData(_clinContext);
-            crud = new CRUD(_config);
-            cvm = new ClinicVM();
-            misc = new MiscData(_config);
+            _vm = new VMData(_clinContext);
+            _crud = new CRUD(_config);
+            _cvm = new ClinicVM();
+            _misc = new MiscData(_config);
         }       
         
         [Authorize]
         public async Task<IActionResult> Index(int id)
         {
             try
-            {
-                /*var notes = from c in _clinContext.ClinicalNotes
-                            where c.MPI.Equals(id)
-                            orderby c.CreatedDate, c.CreatedTime descending
-                            select c;*/
-
-                var notes = vm.GetClinicalNoteList(id);
-                                
+            {          
+                var notes = _vm.GetClinicalNoteList(id);                                
 
                 int count = notes.Count();
 
@@ -46,7 +40,7 @@ namespace ClinicX.Controllers
             }
             catch(Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -55,37 +49,37 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                cvm.activityItem = vm.GetActivityDetails(id);
-                cvm.noteTypeList = vm.GetNoteTypesList();
+                _cvm.activityItem = _vm.GetActivityDetails(id);
+                _cvm.noteTypeList = _vm.GetNoteTypesList();
 
-                return View(cvm);
+                return View(_cvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int iMPI, int iRefID, string sNoteType, string sClinicalNote)
+        public async Task<IActionResult> Create(int mpi, int refID, string noteType, string clinicalNote)
         {
             try
             {                                
-                int iNoteID;
+                int noteID;
 
-                int iSuccess = crud.CallStoredProcedure("Clinical Note", "Create", iMPI, iRefID, 0, sNoteType, "", "",
-                    sClinicalNote, User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 0, noteType, "", "",
+                    clinicalNote, User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                iNoteID = misc.GetClinicalNoteID(iRefID);
+                noteID = _misc.GetClinicalNoteID(refID);
 
-                return RedirectToAction("Edit", new { id = iNoteID });                
+                return RedirectToAction("Edit", new { id = noteID });                
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -93,39 +87,38 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             try
-            {
-                //var notes = await _clinContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
-                var note = vm.GetClinicalNoteDetails(id);
+            {                
+                var note = _vm.GetClinicalNoteDetails(id);
                 
                 return View(note);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]        
-        public async Task<IActionResult> Edit(int iNoteID, string sClinicalNote)
+        public async Task<IActionResult> Edit(int noteID, string clinicalNote)
         {
             try
             {
-                if (iNoteID == null)
+                if (noteID == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                int iSuccess = crud.CallStoredProcedure("Clinical Note", "Update", iNoteID, 0, 0, 
-                    "", "", "", sClinicalNote, User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Clinical Note", "Update", noteID, 0, 0, 
+                    "", "", "", clinicalNote, User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Edit", new { id = iNoteID });
+                return RedirectToAction("Edit", new { id = noteID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -134,13 +127,13 @@ namespace ClinicX.Controllers
         {
             try
             {   
-                var appts = vm.GetClinicByPatientsList(id);
+                var appts = _vm.GetClinicByPatientsList(id);
 
                 return View(appts);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -148,9 +141,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                int iSuccess = crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
                 var note = await _clinContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
 
@@ -158,7 +151,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }        
 

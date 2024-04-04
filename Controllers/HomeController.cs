@@ -12,13 +12,13 @@ namespace ClinicX.Controllers
     {        
         private readonly ClinicalContext _clinContext;
         private readonly CaseloadVM cvm;
-        private readonly VMData vm;
+        private readonly VMData _vm;
 
         public HomeController(ClinicalContext context)
         {
             _clinContext = context;
             cvm = new CaseloadVM();
-            vm = new VMData(_clinContext);
+            _vm = new VMData(_clinContext);
         }
 
         [Authorize]
@@ -26,9 +26,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var user = vm.GetCurrentStaffUser(User.Identity.Name);
+                var user = _vm.GetCurrentStaffUser(User.Identity.Name);
                 
-                cvm.caseLoad = vm.GetCaseloadList(user.STAFF_CODE).OrderBy(c => c.BookedDate).ToList();
+                cvm.caseLoad = _vm.GetCaseloadList(user.STAFF_CODE).OrderBy(c => c.BookedDate).ToList();
                 cvm.countClinics = cvm.caseLoad.Where(c => c.Type.Contains("App")).Count();
                 cvm.countTriages = cvm.caseLoad.Where(c => c.Type.Contains("Triage")).Count();
                 cvm.countCancerICPs = cvm.caseLoad.Where(c => c.Type.Contains("Cancer")).Count();
@@ -42,7 +42,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 

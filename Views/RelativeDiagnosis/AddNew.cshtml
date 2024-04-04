@@ -10,7 +10,7 @@
     <div class="row g-5 mb-5">
         <div class="col-md-2">
             @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Diagnosis List</a>*@
+            <a type="button" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-iRelID=@Model.relativeDetails.relsid>Back to Diagnosis List</a>
         </div>
     </div>
 
@@ -27,19 +27,19 @@
                     <label>Reported Diagnosis:</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="text" name="sDiagnosis" />
+                    <input class="w-100" type="text" name="diagnosis" />
                 </div>
                 <div class="col-md-1">
                     <label>Age:</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="text" name="sAge" />
+                    <input class="w-100" type="text" name="age" />
                 </div>
                 <div class="col-md-2">
                     <label>Hospital(s):</label>
                 </div>
                 <div class="col-md-3">
-                    <input class="w-100" type="text" name="sHospital" />
+                    <input class="w-100" type="text" name="hospital" />
                 </div>
             </div>
 
@@ -51,7 +51,7 @@
                     <label>Source:</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlStatus" name="sCRegCode">
+                    <select class="w-100" id="ddlStatus" name="cRegCode">
                         <option value="">select...</option>
                         @foreach (var c in Model.cancerRegList )
                         {
@@ -65,13 +65,13 @@
                     </label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="date" name="dDateRequested" />
+                    <input class="w-100" type="date" name="dateRequested" />
                 </div>
                 <div class="col-md-2">
                     <label>Consultant:</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlCons" name="sCons">
+                    <select class="w-100" id="ddlCons" name="consultant">
                         <option value="">select...</option>
                         @foreach (var s in Model.clinicianList)
                         {
@@ -85,7 +85,7 @@
                     <label>Information Not Requested:</label>                
                 </div>
                 <div class="col-md-4">
-                    <select class="w-100" id="ddlStatus" name="sStatus">
+                    <select class="w-100" id="ddlStatus" name="status">
                         <option value="">select...</option>
                         @foreach (var s in Model.requestStatusList)
                         {
@@ -99,7 +99,7 @@
                     <label>Consent Provided:</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlStatus" name="sConsent">
+                    <select class="w-100" id="ddlStatus" name="consent">
                         <option value="">select...</option>
                         <option value="Y">Yes</option>
                         <option value="N">No</option>
@@ -110,13 +110,13 @@
                     <label>Date Received:</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="date" name="dDateReceived" />
+                    <input class="w-100" type="date" name="dateReceived" />
                 </div>
                 <div class="col-md-2">
                     <label>Requested By:</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlStatus" name="sReqBy">
+                    <select class="w-100" id="ddlStatus" name="reqBy">
                         <option value="">select...</option>
                         @foreach (var s in Model.staffList)
                         {

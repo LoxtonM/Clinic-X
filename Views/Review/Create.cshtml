@@ -23,9 +23,9 @@
         <form id="ReviewForm" asp-action="Create">
             <div class="row mb-5 g-5">
                 <div id="meta" hidden="true">
-                    <input asp-for=@Model.patient.MPI name ="iMPI" />
-                    <input asp-for=@Model.referrals.RefID name="iRefID" />
-                    <input asp-for=@Model.referrals.PATHWAY name="sPathway" />
+                    <input asp-for=@Model.patient.MPI name ="mpi" />
+                    <input asp-for=@Model.referrals.RefID name="refID" />
+                    <input asp-for=@Model.referrals.PATHWAY name="pathway" />
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -33,7 +33,7 @@
                     <label>Category:</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" name="sCategory">
+                    <select class="w-100" name="category">
                         <option value="standard">Standard</option>
                         <option value="Non-standard">Non-standard</option>
                     </select>
@@ -42,13 +42,13 @@
                     <label>Planned Date:</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="date" name="sDate" />
+                    <input class="w-100" type="date" name="revDate" />
                 </div>
                 <div class="col-md-2">
                     <label>Review Recipient: (leave blank if the review is for yourself)</label>
                 </div>
                 <div class ="col-md-2">
-                    <select class="w-100" name="sRecipient">
+                    <select class="w-100" name="recipient">
                         <option value=""></option>
                         @foreach (var item in Model.staffMembers)
                         {
@@ -62,7 +62,7 @@
                     <label>Details:</label>
                 </div>
                 <div class="col-md-10">
-                    <textarea rows="8" cols="40" name="sComments" id="txtComments"></textarea>
+                    <textarea rows="8" cols="40" name="comments" id="txtComments"></textarea>
                 </div>
             </div>
             <div class="row mb-5 g-5">

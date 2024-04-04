@@ -6,12 +6,10 @@
 
 <div class="container">
     <div class="row mb-5 g-5">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Clinics Index</a>
         </div>
-        <div class="col-md-2">
-            @*<a id="btnCreateNote-existing" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Create" asp-route-id="@Html.ValueFor(model => model.FirstOrDefault().RefID)">Create New</a>*@
+        <div class="col-md-2">            
             <button type="button" id="btnCreateNote-none" class="btn btn-default btn-success">Create New</button>
         </div>
         <div class="col-md-8"></div>
@@ -65,20 +63,11 @@
 
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnCreateNote-none").addEventListener("click", OpenNoteForm);
-    //window.addEventListener("load", LoadPage);
 
     function GoBack() 
     {
         window.history.back();
         //window.close();
-    }
-
-    
-    function LoadPage()
-    {   
-        //document.getElementById("metadata").hidden = true;
-        //const _url = window.location.toString();
-        //window.alert(_url.substring(_url.indexOf("=")+1, _url.length));        
     }
 
     function OpenNoteForm() 

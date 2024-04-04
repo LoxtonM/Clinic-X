@@ -10,6 +10,7 @@ namespace ClinicX.ViewModels
         public ClinicalNotes clinicalNote { get; set; }
         public List<HPOTermDetails> hpoTermDetails { get; set; }
         public List<HPOTerms> hpoTerms { get; set; }
-        public List<HPOExtractVM> hpoExtractVM { get; set;}          
+        public List<HPOExtractVM> hpoExtractVM { get; set;}
+        public string searchTerm { get; set; }
     }
 }

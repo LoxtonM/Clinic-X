@@ -18,7 +18,7 @@
                     <label>Consultant:</label>
                 </div>
                 <div class="col-md-4">
-                    <select id="ddlCons" asp-for=@Model.triage.ConsultantCode name="sNewConsultant">
+                    <select id="ddlCons" asp-for=@Model.triage.ConsultantCode name="newConsultant">
                         @foreach(var item in Model.consultants)
                         {
                             <option value=@item.STAFF_CODE>@item.NAME</option>
@@ -29,7 +29,7 @@
                     <label>GC:</label>
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.triage.GCCode name="sNewGC">
+                    <select asp-for=@Model.triage.GCCode name="newGC">
                         @foreach (var item in Model.GCs)
                         {
                             <option value=@item.STAFF_CODE>@item.NAME</option>

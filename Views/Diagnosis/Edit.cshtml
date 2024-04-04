@@ -31,12 +31,12 @@
     <div class="container mb-5">
         <form id="DiagForm" asp-action="Edit">
             <div id="metadata" hidden="true">
-                <input class="w-100" asp-for=@Model.Diagnosis.ID type="text" id="txtDiagID" name="iDiagID" />
+                <input class="w-100" asp-for=@Model.Diagnosis.ID type="text" id="txtDiagID" name="diagID" />
             </div>
             <div class="row mb-5">            
                 <div class="col-md-2">Disease status:</div>
                 <div class="col-md-2">
-                    <select class="w-100" asp-for=@Model.Diagnosis.STATUS id="ddlStatus" name="sStatus">
+                    <select class="w-100" asp-for=@Model.Diagnosis.STATUS id="ddlStatus" name="status">
                         <option value="" selected>select...</option>
                         @foreach (var d in Model.statusList)
                         {
@@ -45,7 +45,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">Comments:</div>
-                <div class="col-md-6"><input class="w-100" asp-for=@Model.Diagnosis.MAIN_SUB type="text" id="txtComments" name="sComments" /></div>
+                <div class="col-md-6"><input class="w-100" asp-for=@Model.Diagnosis.MAIN_SUB type="text" id="txtComments" name="comments" /></div>
             </div>
             <div class="row mb-5">
                 <div class="col-md-2"></div>
@@ -59,8 +59,7 @@
 </div>
 
 <script>
-
-    window.addEventListener("load", LoadDiagData);
+        
     document.getElementById("btnSaveDiag").addEventListener("click", SaveDiag);
     document.getElementById("btnBack").addEventListener("click", GoBack);
 
@@ -69,13 +68,6 @@
     {
         window.history.back();
         //window.close();
-    }
-
-    function LoadDiagData() 
-    {                        
-        document.getElementById("ddlStatus").value = "@(Model.Diagnosis.STATUS)";
-        document.getElementById("txtComments").value = "@(Model.Diagnosis.MAIN_SUB)";
-        document.getElementById("txtDiagID").value = "@(Model.Diagnosis.ID)";        
     }
 
     function SaveDiag() 

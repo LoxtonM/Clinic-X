@@ -10,7 +10,7 @@
     <div class="row g-5 mb-5">
         <div class="col-md-2">
             @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Diagnosis List</a>*@
+            <a type="button" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-iRelID=@Model.relativesDiagnosis.RelsID>Back to Diagnosis List</a>
         </div>
     </div>
 
@@ -21,7 +21,8 @@
         <form id="frmAddNew" asp-action="Edit">
             <div class="row g-5 mb-5">
                 <h2>Diagnosis Details:</h2>
-            </div>
+            </div>           
+"
             <div class="row g-5 mb-5">
                 <div class="col-md-2" style="text-align:right">
                     <label>Reported Diagnosis:</label>
@@ -81,7 +82,7 @@
                     <label>Consent Provided:</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlStatus" name="sConsent" asp-for=@Model.relativesDiagnosis.Consent>
+                    <select class="w-100" id="ddlStatus" name="consent" asp-for=@Model.relativesDiagnosis.Consent>
                         <option value="">select...</option>
                         <option value="Y">Yes</option>
                         <option value="N">No</option>
@@ -92,7 +93,7 @@
                     <label>Date Received:</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="date" name="dDateReceived" asp-for=@Model.relativesDiagnosis.DateRec />
+                    <input class="w-100" type="date" name="dateReceived" asp-for=@Model.relativesDiagnosis.DateRec />
                 </div>
                 <div class="col-md-2">
                     <label>Requested By:</label>
@@ -109,7 +110,7 @@
                     <label>Confirmed:</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlStatus" name="sConfirmed">
+                    <select class="w-100" id="ddlStatus" name="confirmed" asp-for=@Model.relativesDiagnosis.Confirmed>
                         <option value="Y">Yes</option>
                         <option value="N">No</option>
                         <option value="X">Unknown</option>
@@ -119,13 +120,13 @@
                     <label>Date of Diagnosis:</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="date" name="dConfDiagDate" />
+                    <input class="w-100" type="date" name="confDiagDate" asp-for=@Model.relativesDiagnosis.ConfDiagDate />
                 </div>
                 <div class="col-md-2" style="text-align:right">
                     <label>Age at Diagnosis:</label>
                 </div>
                 <div class="col-md-1">
-                    <input class="w-100" type="text" class="w-50" name="sConfDiagAge" />
+                    <input class="w-100" type="text" class="w-50" name="confDiagAge" asp-for=@Model.relativesDiagnosis.ConfDiagAge />
                 </div>
             </div>
             <div class="row g-5 mb-5">
@@ -133,7 +134,7 @@
                     <label>Site (topography)</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" name="sSiteCode">
+                    <select class="w-100" name="siteCode" asp-for=@Model.relativesDiagnosis.SiteCode>
                         <option value="">select...</option>
                         @foreach (var item in Model.tumourSiteList)
                         {
@@ -147,7 +148,7 @@
                     <label>Laterality (side):</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" name="sLatCode">
+                    <select class="w-100" name="latCode" asp-for=@Model.relativesDiagnosis.LatCode>
                         <option value="">select...</option>
                         @foreach (var item in Model.tumourLatList)
                         {
@@ -159,7 +160,7 @@
                     <label>Grade/stage:</label>
                 </div>
                 <div class="col-md-3">
-                    <select class="w-100" name="sGrade">
+                    <select class="w-100" name="grade" asp-for=@Model.relativesDiagnosis.Grade>
                         <option value="">select...</option>
                         <option value="1">Well differentiated</option>
                         <option value="2">Moderately differentiated...</option>
@@ -171,7 +172,7 @@
                     <label>Duke's:</label>
                 </div>
                 <div class="col-md-1">
-                    <select class="w-100" name="sDukes">
+                    <select class="w-100" name="dukes" asp-for=@Model.relativesDiagnosis.Dukes>
                         <option value="">select...</option>
                         <option value="A">A</option>
                         <option value="B">B</option>
@@ -186,7 +187,7 @@
                     <label>Histology (morphology):</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" name="sMorphCode">
+                    <select class="w-100" name="morphCode" asp-for=@Model.relativesDiagnosis.MorphCode>
                         <option value="">select...</option>
                         @foreach(var item in Model.tumourMorphList)
                         {
@@ -200,7 +201,7 @@
                     <label>Histology number:</label>
                 </div>
                 <div class="col-md-2">
-                    <input type="text" name="sHistologyNumber" />
+                    <input type="text" name="histologyNumber" asp-for=@Model.relativesDiagnosis.HistologyNumber />
                 </div>
                 <div class="col-md-2" style="text-align:right">
                     <label>Comments:</label>
@@ -211,10 +212,8 @@
             </div>
 
 
-
-
             <div id="metadata" hidden="true">
-                <input name="iTumourID" asp-for=@Model.relativesDiagnosis.TumourID />
+                <input name="tumourID" asp-for=@Model.relativesDiagnosis.TumourID />
             </div>
         </form>
 

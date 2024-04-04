@@ -9,28 +9,28 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly VMData vm;
-        private readonly CRUD crud;
-        private readonly RelativeDiagnosisVM rdvm;
+        private readonly VMData _vm;
+        private readonly CRUD _crud;
+        private readonly RelativeDiagnosisVM _rdvm;
         public RelativeDiagnosisController(ClinicalContext context, IConfiguration config) 
         {
             _clinContext = context;
             _config = config;            
-            vm = new VMData(_clinContext);
-            crud = new CRUD(_config);
-            rdvm = new RelativeDiagnosisVM();
+            _vm = new VMData(_clinContext);
+            _crud = new CRUD(_config);
+            _rdvm = new RelativeDiagnosisVM();
         }
-        public IActionResult Index(int iRelID)
+        public IActionResult Index(int relID)
         {
             try
             {
-                var relDiag = vm.GetRelativeDiagnosisList(iRelID);
+                var relDiag = _vm.GetRelativeDiagnosisList(relID);
 
                 return View(relDiag);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }            
         }
 
@@ -39,36 +39,36 @@ namespace ClinicX.Controllers
         {
             try
             {
-                rdvm.relativeDetails = vm.GetRelativeDetails(id);
-                rdvm.cancerRegList = vm.GetCancerRegList();
-                rdvm.requestStatusList = vm.GetRequestStatusList();     
-                rdvm.staffList = vm.GetStaffMemberList();
-                rdvm.clinicianList = vm.GetClinicalStaffList();
+                _rdvm.relativeDetails = _vm.GetRelativeDetails(id);
+                _rdvm.cancerRegList = _vm.GetCancerRegList();
+                _rdvm.requestStatusList = _vm.GetRequestStatusList();     
+                _rdvm.staffList = _vm.GetStaffMemberList();
+                _rdvm.clinicianList = _vm.GetClinicalStaffList();
 
-                return View(rdvm);
+                return View(_rdvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int id, string sDiagnosis, string? sAge, string? sHospital, string? sCRegCode, DateTime? dDateRequested,
-            string? sCons, string? sStatus, string? sConsent, DateTime? dDateReceived)
+        public async Task<IActionResult> AddNew(int id, string diagnosis, string? age, string? hospital, string? cRegCode, DateTime? dateRequested,
+            string? consultant, string? status, string? consent, DateTime? dateReceived)
         {
             try
             {
-                int iSuccess = crud.CallStoredProcedure("RelativeDiagnosis", "Create", id, 0, 0, sDiagnosis, sAge, sHospital, sCRegCode, User.Identity.Name,
-                    dDateRequested, DateTime.Parse("1900-01-01"), false, false, 0, 0, 0, sStatus, sConsent, sCons);
+                int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Create", id, 0, 0, diagnosis, age, hospital, cRegCode, User.Identity.Name,
+                    dateRequested, DateTime.Parse("1900-01-01"), false, false, 0, 0, 0, status, consent, consultant);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Index", "RelativeDiagnosis", new { iRelID = id });
+                return RedirectToAction("Index", "RelativeDiagnosis", new { relID = id });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -77,50 +77,51 @@ namespace ClinicX.Controllers
         {
             try
             {
-                rdvm.relativesDiagnosis = vm.GetRelativeDiagnosisDetails(id);
-                //rdvm.cancerRegList = vm.GetCancerRegList();
-                //rdvm.requestStatusList = vm.GetRequestStatusList();
-                //rdvm.staffList = vm.GetStaffMemberList();
-                //rdvm.clinicianList = vm.GetClinicalStaffList();
-                rdvm.tumourSiteList = vm.GetTumourSiteList();
-                rdvm.tumourLatList = vm.GetTumourLatList();
-                rdvm.tumourMorphList = vm.GetTumourMorphList();
+                _rdvm.relativesDiagnosis = _vm.GetRelativeDiagnosisDetails(id);
+                //_rdvm.cancerRegList = _vm.GetCancerRegList();
+                //_rdvm.requestStatusList = _vm.GetRequestStatusList();
+                //_rdvm.staffList = _vm.GetStaffMemberList();
+                //_rdvm.clinicianList = _vm.GetClinicalStaffList();
+                _rdvm.tumourSiteList = _vm.GetTumourSiteList();
+                _rdvm.tumourLatList = _vm.GetTumourLatList();
+                _rdvm.tumourMorphList = _vm.GetTumourMorphList();
 
-                return View(rdvm);
+                return View(_rdvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, string? sConsent, DateTime? dDateReceived, string? sConfirmed,
-            DateTime? dConfDiagDate, string? sConfDiagAge, string? sSiteCode, string? sLatCode, string? sGrade, 
-            string? sDukes, string? sMorphCode, string? sHistologyNumber, string? sNotes)
+        public async Task<IActionResult> Edit(int tumourID, string? consent="", DateTime? dateReceived=null, string? confirmed="",
+            DateTime? confDiagDate=null, string? confDiagAge="", string? siteCode="", string? latCode="", string? grade="", 
+            string? dukes="", string? morphCode="", string? histologyNumber="", string? notes="")
         {
             try
             {
-                rdvm.relativesDiagnosis = vm.GetRelativeDiagnosisDetails(id);
-                rdvm.tumourSiteList = vm.GetTumourSiteList();
-                rdvm.tumourLatList = vm.GetTumourLatList();
-                rdvm.tumourMorphList = vm.GetTumourMorphList();
+                _rdvm.relativesDiagnosis = _vm.GetRelativeDiagnosisDetails(tumourID);
+                _rdvm.tumourSiteList = _vm.GetTumourSiteList();
+                _rdvm.tumourLatList = _vm.GetTumourLatList();
+                _rdvm.tumourMorphList = _vm.GetTumourMorphList();
 
-                string sData = "ConfDiagAge:" + sConfDiagAge + "Grade:" + sGrade + "Dukes:" + sDukes + "HistologyNumber:" + sHistologyNumber;
+                string data = "ConfDiagAge:" + confDiagAge + ",Grade:" + grade + ",Dukes:" + dukes + ",HistologyNumber:" + histologyNumber;
+               
                 //there are too many strings, so I need to concatenate them all to send them to the SP
                 //(it's either that or add another 4 optional string variables!!!)
 
-                int iSuccess = crud.CallStoredProcedure("RelativeDiagnosis", "Edit", id, 0, 0, sConsent, sConfirmed, sData, sNotes, User.Identity.Name, dDateReceived, dConfDiagDate,
-                    false, false, 0, 0, 0, sSiteCode, sLatCode, sMorphCode);
+                int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Edit", tumourID, 0, 0, consent, confirmed, data, notes, User.Identity.Name, dateReceived, confDiagDate,
+                    false, false, 0, 0, 0, siteCode, latCode, morphCode);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                //return View(rdvm);
-                return RedirectToAction("Index", "WIP");
+                //return View(_rdvm);
+                return RedirectToAction("Index", "RelativeDiagnosis", new { relID = tumourID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
     }

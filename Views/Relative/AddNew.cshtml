@@ -27,7 +27,7 @@
     <div class="row mb-5 g-5">
         <form id="frmAddNew" asp-action="AddNew">
             <div class="row" id="Metadata">
-                <input asp-for=@Model.WMFACSID name="WMFACSID" hidden="true"/>
+                <input asp-for=@Model.WMFACSID name="wmfacsid" hidden="true"/>
             </div>
             <dl class="row">        
                 <dt class="col-sm-1">
@@ -37,44 +37,44 @@
                     <label>Title:</label> 
                 </dd>
                 <dd class="col-sm-1">
-                    <input class="w-50" asp-for=@Model.RelTitle name="sTitle" />
+                    <input class="w-50" asp-for=@Model.RelTitle name="title" />
                 </dd>
                 <dd class="col-sm-1">
                     <label>First name(s):</label>
                 </dd>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.RelForename1 name="sForename1" />
+                    <input class="w-100" asp-for=@Model.RelForename1 name="forename1" />
                 </dd>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.RelForename2 name="sForename2" />
+                    <input class="w-100" asp-for=@Model.RelForename2 name="forename2" />
                 </dd>
                 <dd class="col-sm-2">
                     <label>Surname:</label>
                 </dd>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.RelSurname name="sSurname" />
+                    <input class="w-100" asp-for=@Model.RelSurname name="surname" />
                 </dd>
                 <dt class="col-sm-2">
                     Relation to Proband:
                 </dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.Relation name="sRelation" />
+                    <input class="w-100" asp-for=@Model.Relation name="relation" />
                 </dd>
                 <dt class="col-sm-2">
                     DOB:
                 </dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.DOB name="sDOB" />
+                    <input class="w-100" asp-for=@Model.DOB name="dob" />
                 </dd>               
                 <dt class="col-sm-2">DOD: (if deceased)</dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.DOD name="sDOD" />
+                    <input class="w-100" asp-for=@Model.DOD name="dod" />
                 </dd>        
                 <dt class="col-sm-2">
                     Sex:
                 </dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.Sex name="sSex" />
+                    <input class="w-100" asp-for=@Model.Sex name="sex" />
                 </dd>
                 <dt class="col-sm-2">
                     Affected:

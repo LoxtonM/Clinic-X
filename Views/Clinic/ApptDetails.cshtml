@@ -1,4 +1,4 @@
-﻿@model ClinicX.Models.Clinics
+﻿@model ClinicX.ViewModels.ClinicVM
 @{
     ViewData["Title"] = "Clinic-X - Appointment Details";
 }
@@ -10,25 +10,25 @@
             <a class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Clinics Index</a>
         </div>
         <div class="col-md-1">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.MPI)>Patient Details</a>
+            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.Clinic.MPI)>Patient Details</a>
         </div>    
         <div class="col-md-1">
-            <a id="btnRecordOutcome" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Edit" asp-route-id=@Html.ValueFor(model => model.RefID)>Record Outcome</a>        
+            <a id="btnRecordOutcome" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Edit" asp-route-id=@Html.ValueFor(model => model.Clinic.RefID)>Record Outcome</a>        
         </div>
         <div class="col-md-1">
-            <a id="btnDiagnoses"  class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.MPI)>Record Diagnoses</a>
+            <a id="btnDiagnoses"  class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.Clinic.MPI)>Record Diagnoses</a>
         </div>
         <div class="col-md-1">
-            <a id="btnTests" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.MPI)>Record Tests</a>        
+            <a id="btnTests" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.Clinic.MPI)>Record Tests</a>        
         </div>
         <div class="col-md-1">
-            <a id="btnClinicalNotes" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.MPI)>Clinical Notes</a>
+            <a id="btnClinicalNotes" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.Clinic.MPI)>Clinical Notes</a>
         </div>
         <div class="col-md-1">
-            <a id="btnDictatedLetter" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Create" asp-route-id=@Html.ValueFor(model => model.RefID)>Dictate Letter</a>
+            <a id="btnDictatedLetter" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Create" asp-route-id=@Html.ValueFor(model => model.Clinic.RefID)>Dictate Letter</a>
         </div>
         <div class="col-md-1">
-            <a id="btnReview" class="btn btn-default btn-success" asp-controller="Review" asp-action="Create" asp-route-id=@Html.ValueFor(model => model.RefID)>Schedule Review</a>
+            <a id="btnReview" class="btn btn-default btn-success" asp-controller="Review" asp-action="Create" asp-route-id=@Html.ValueFor(model => model.Clinic.RefID)>Schedule Review</a>
         </div>
     </div>
 
@@ -37,71 +37,136 @@
     <div>
         <dl class="row">
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.CGU_No):
+                @Html.DisplayNameFor(model => model.Clinic.CGU_No):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.CGU_No)
+                @Html.DisplayFor(model => model.Clinic.CGU_No)
             </dd>
             <dt class="col-sm-2">
                 Patient:
             </dt>
             <dd class="col-sm-10">            
-                <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.MPI)>@Html.DisplayFor(model => model.FIRSTNAME) @Html.DisplayFor(model => model.LASTNAME)</a>
+                <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.Clinic.MPI)>@Html.DisplayFor(model => model.Clinic.FIRSTNAME) @Html.DisplayFor(model => model.Clinic.LASTNAME)</a>
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.AppType):
+                @Html.DisplayNameFor(model => model.Clinic.AppType):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.AppType)
+                @Html.DisplayFor(model => model.Clinic.AppType)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.BOOKED_DATE):
+                @Html.DisplayNameFor(model => model.Clinic.BOOKED_DATE):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.BOOKED_DATE)
+                @Html.DisplayFor(model => model.Clinic.BOOKED_DATE)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.BOOKED_TIME):
+                @Html.DisplayNameFor(model => model.Clinic.BOOKED_TIME):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.BOOKED_TIME)
+                @Html.DisplayFor(model => model.Clinic.BOOKED_TIME)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Clinic):
+                @Html.DisplayNameFor(model => model.Clinic.Clinic):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Clinic)
+                @Html.DisplayFor(model => model.Clinic.Clinic)
             </dd>
-            @if (Model.Notes != null)
+            @if (Model.Clinic.Notes != null)
             {
                 <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.Notes):
+                    @Html.DisplayNameFor(model => model.Clinic.Notes):
                 </dt>
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.Notes)
+                    @Html.DisplayFor(model => model.Clinic.Notes)
                 </dd>
             }
-            @if (Model.BOOKED_DATE <= DateTime.Now)
+            @if (Model.Clinic.BOOKED_DATE <= DateTime.Now)
             {
-                @if (@Html.ValueFor(model => model.Attendance) != null && @Html.ValueFor(model => model.Attendance) != "")
+                @if (@Html.ValueFor(model => model.Clinic.Attendance) != null && @Html.ValueFor(model => model.Clinic.Attendance) != "")
                 {
                     <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.Attendance):
+                        @Html.DisplayNameFor(model => model.Clinic.Attendance):
                     </dt>
                     <dd class="col-sm-10">
-                        @if (@Html.ValueFor(model => model.Attendance) == "Attended")
+                        @if (@Html.ValueFor(model => model.Clinic.Attendance) == "Attended")
                         {
-                            <span>Seen by @Html.DisplayFor(model => model.SeenByClinician) on @Html.DisplayFor(model => model.BOOKED_DATE) at @Html.DisplayFor(model => model.ArrivalTime)</span>
+                            <span>Seen by @Html.DisplayFor(model => model.Clinic.SeenByClinician) on @Html.DisplayFor(model => model.Clinic.BOOKED_DATE) at @Html.DisplayFor(model => model.Clinic.ArrivalTime)</span>
                         }
                         else
                         {
-                            @Html.DisplayFor(model => model.Attendance)
+                            @Html.DisplayFor(model => model.Clinic.Attendance)
                         }                    
                     </dd>
                 }
             }
         </dl>
     </div>
+    <br /><br />
+    <h1>Linked Referral Details</h1>
+
+    <div class="row">
+        <dt class="col-sm-2">
+            Referral Type:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.RefType)
+        </dd>
+        <dt class="col-sm-2">
+            Referral Date:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.RefDate)
+        </dd>
+        <dt class="col-sm-2">
+            Pathway
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.PATHWAY)
+        </dd>
+        <dt class="col-sm-2">
+            Indication
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.INDICATION)
+        </dd>
+        <dt class="col-sm-2">
+            Referred To:
+        </dt>
+        <dd class="col-sm-10">
+            Lead Consultant: @Html.DisplayFor(model => model.linkedReferral.LeadClinician)
+        </dd>
+        <dt class="col-sm-2"></dt>
+        <dd class="col-sm-10">
+            Genetic Counsellor: @Html.DisplayFor(model => model.linkedReferral.GC)
+        </dd>
+        <dt class="col-sm-2"></dt>
+        <dd class="col-sm-10">
+            Admin Contact: @Html.DisplayFor(model => model.linkedReferral.AdminContact)
+        </dd>
+
+        <dt class="col-sm-2">
+            Referred By:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.ReferringClinician), @if(Model.linkedReferral.ReferringFacilityCode == "GP")
+            {
+                @Html.DisplayFor(model => model.linkedReferral.ReferringFacilityCode)
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.linkedReferral.ReferringFacility)
+            }
+        </dd>
+        <dt class="col-sm-2">
+            Indication Notes:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.REASON_FOR_REFERRAL)
+        </dd>
+
+    </div>
+
 </div>
 
 <script type="text/javascript">
@@ -119,8 +184,8 @@
         //window.alert("hello");
         //this is really fucking stupid - apparently the date from SQL is not a date,
         //so javascript makes it American unless I do all this bullshit!!!
-        //var clinicDate = new Date("@(Model.BOOKED_DATE)");        
-        var bs = "@(Model.BOOKED_DATE)".split("/");        
+        //var clinicDate = new Date("@(Model.Clinic.BOOKED_DATE)");        
+        var bs = "@(Model.Clinic.BOOKED_DATE)".split("/");        
         var clinicDate = new Date(bs[2].replace(" 00:00:00", "") + "-" + bs[1] + "-" + bs[0]);        
         var today = new Date();
         today.setHours(0, 0, 0, 0);

@@ -24,14 +24,14 @@
 
     <form asp-action="AddNewSurveillance">
         <div class="row" hidden="true">
-            <input name="iRiskID" asp-for=@Model.iRiskID  />
+            <input name="riskID" asp-for=@Model.riskID  />
         </div>
         <div class="row mb-2 g-2">
             <div class="col-md-2">
                 <label>Site:</label>
             </div>
             <div class="col-md-2">
-                <select name="sSiteCode" class="w-100">
+                <select name="siteCode" class="w-100">
                     <option value="">Select...</option>
                     @foreach(var item in Model.survSiteCodes)
                     {
@@ -43,7 +43,7 @@
                 <label>Screening Type:</label>
             </div>
             <div class="col-md-2">
-                <select name="sTypeCode" class="w-100">
+                <select name="typeCode" class="w-100">
                     <option value="">Select...</option>
                     @foreach (var item in Model.survTypeCodes)
                     {
@@ -55,7 +55,7 @@
                 <label>Recommended By:</label>
             </div>
             <div class="col-md-2">
-                <select name="sClinCode" class="w-100">
+                <select name="clinCode" class="w-100">
                     <option value="">Select...</option>
                     @foreach (var item in Model.staffMembersList)
                     {
@@ -69,25 +69,25 @@
                 <label>Recommended Date:</label>
             </div>
             <div class="col-md-2">
-                <input type="date" class="w-100" name="dRecDate" />
+                <input type="date" class="w-100" name="recDate" />
             </div>
             <div class="col-md-1">
                 <label>Start Age</label>
             </div>
             <div class="col-md-1">
-                <input class="w-50" type="text" name="iStartAge" />
+                <input class="w-50" type="text" name="startAge" />
             </div>
             <div class="col-md-1">
                 <label>End Age</label>
             </div>
             <div class="col-md-1">
-                <input class="w-50" type="text" name="iEndAge" />
+                <input class="w-50" type="text" name="endAge" />
             </div>
             <div class="col-md-2">
                 <label>Frequency:</label>
             </div>
             <div class="col-md-2">
-                <select name="sFrequency" class="w-100">
+                <select name="frequency" class="w-100">
                     <option value="">Select...</option>
                     @foreach (var item in Model.survFreqCodes)
                     {
@@ -120,7 +120,7 @@
                 <label>Discontinued reason:</label>
             </div>
             <div class="col-md-4">
-                <select class="w-100" name="sDiscReason" id="ddlDiscReason" disabled="true">
+                <select class="w-100" name="discReason" id="ddlDiscReason" disabled="true">
                     <option value="">Select...</option>
                     @foreach (var item in Model.discontinuedReasonCodes)
                     {

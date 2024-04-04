@@ -63,16 +63,17 @@
     
     <form id="formICPGeneral" asp-action="DoGeneralTriage">
         <div id="metadata-general" hidden="true">
-            <input value=@Html.DisplayFor(model => model.triage.ICPID) name="iIcpID" />
-            <input id="txtTP1" name="iTP" />
-            <input id="txtTP2" name="iTP2" />
+            <input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />
+            <input id="txtTP1" name="tp" />
+            <input id="txtTP2" name="tp2" />
         </div>
         <div class="row">
             <div class="col-md-2">
                 <label>Treatment Pathway:</label>
             </div>
             <div class="col-md-8">
-                <select id="ddlTreatPath1" name="iTP" asp-for=@Model.triage.TreatPath>                    
+                <select id="ddlTreatPath1" name="tp" asp-for=@Model.triage.TreatPath>                    
+                    <option value="">Select...</option>
                     @foreach(var item in Model.generalActionsList)
                     {
                         <option value=@item.ID>@item.Action</option>
@@ -84,7 +85,8 @@
         <div class="row">
             <div class="col-md-2"></div>
             <div class="col-md-8">
-                <select id="ddlTreatPath2-Clinic" name="iTP2" asp-for=@Model.triage.TreatPath2>
+                <select id="ddlTreatPath2-Clinic" name="tp2c" asp-for=@Model.triage.TreatPath2>
+                    <option value="">Select...</option>
                     @foreach(var item in Model.generalActionsList2)
                     {
                         if(item.Clinic == true)
@@ -99,7 +101,8 @@
         <div class="row">
             <div class="col-md-2"></div>
             <div class="col-md-8">
-                <select id="ddlTreatPath2-NoClinic">                    
+                <select id="ddlTreatPath2-NoClinic" name="tp2nc" asp-for=@Model.triage.TreatPath2>
+                    <option value="">Select...</option>
                     @foreach (var item in Model.generalActionsList2)
                     {
                         if (item.Clinic == false)
@@ -121,7 +124,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <select id="ddlFacility" name="sFacility">
+                    <select id="ddlFacility" name="facility">
                         <option value="" selected></option>
                         @foreach (var f in Model.clinicalFacilityList)
                         {
@@ -157,13 +160,13 @@
                     <label for="txtComment" id="lblComment">Comments:</label>
                 </div>
                 <div class="col-md-6">
-                    <textarea id="txtComment" name="sComment"></textarea>
+                    <textarea id="txtComment" name="comment"></textarea>
                 </div>
                 <div class="col-md-2">
                     <label for="txtComment" id="lblDuration">Duration:</label>
                 </div>
                 <div class="col-md-2">
-                    <input id="txtComment" name="iDuration" />
+                    <input id="txtComment" name="duration" />
                 </div>
 
             </div>
@@ -179,14 +182,14 @@
 
     <form id="formICPCancer" asp-action="DoCancerTriage">
         <div id="metadata-cancer" hidden="true">
-            <input value=@Html.DisplayFor(model => model.triage.ICPID) name="iIcpID" />
+            <input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />
         </div>
         <div class="row">            
             <div class="col-md-2">
                 <label>Action on Referral Letter</label>
             </div>
             <div class="col-md-10">
-                <select id="ddlCancerAction" name=iAction>                    
+                <select id="ddlCancerAction" name=action>                    
                     @foreach(var item in @Model.cancerActionsList)
                     {
                         <option value=@item.ID>@item.Action</option>
@@ -214,7 +217,7 @@
     document.getElementById("ddlTreatPath2-NoClinic").addEventListener("change", DoTreatPath2);
     document.getElementById("btnGeneralTriage").addEventListener("click", DoGeneralTriage);
     document.getElementById("btnCancerTriage").addEventListener("click", DoCancerTriage);
-    window.addEventListener("load", LoadClinic);
+    window.addEventListener("load", LoadICP);
 
     function GoBack() 
     {
@@ -258,67 +261,71 @@
 
     function DoTreatPath2()
     {        
-        let _tp = ""
+        let _tp1 = "";
+        let _tp2 = "";
+        _tp1 = document.getElementById("ddlTreatPath1");
         if (!document.getElementById("ddlTreatPath2-Clinic").hidden)
-        {
-            _tp = document.getElementById("ddlTreatPath2-Clinic");            
-            document.getElementById("WaitingListDetails").hidden = false;
-            if (_tp.value == "3") {
-                document.getElementById("lblIsSPR").hidden = true;
-                document.getElementById("ddlIsSPR").hidden = true;
-            }
-            else
+        {            
+            _tp2 = document.getElementById("ddlTreatPath2-Clinic");            
+             
+            if (_tp2.value == "" ||  _tp2.value == "1" || _tp2.value == "6" || _tp2.value == "7" || _tp2.value == "8") 
             {
-                document.getElementById("lblIsSPR").hidden = false;
-                document.getElementById("ddlIsSPR").hidden = false;            
+                document.getElementById("WaitingListDetails").hidden = true;
             }
+            else 
+            {
+                document.getElementById("WaitingListDetails").hidden = false;
+            }           
         }
 
-        if (!document.getElementById("ddlTreatPath2-NoClinic").hidden) {
-            _tp = document.getElementById("ddlTreatPath2-NoClinic");            
+        if (!document.getElementById("ddlTreatPath2-NoClinic").hidden) 
+        {
+            _tp2 = document.getElementById("ddlTreatPath2-NoClinic");            
             document.getElementById("WaitingListDetails").hidden = true;
         }
         
-        document.getElementById("txtTP2").value = _tp.value;
+        if (_tp1.value == "4" || _tp1.value == "5") 
+        {
+            document.getElementById("lblIsSPR").hidden = false;
+            document.getElementById("ddlIsSPR").hidden = false;
+        }
+        else 
+        {
+            document.getElementById("lblIsSPR").hidden = true;
+            document.getElementById("ddlIsSPR").hidden = true;
+        }
         
-        if (_tp.value == "1")
+        if (_tp2.value == "") 
         {
             document.getElementById("btnGeneralTriage").hidden = true;
-            document.getElementById("WaitingListDetails").hidden = true;
         }
-
-        else
+        else 
         {
-            document.getElementById("WaitingListDetails").hidden = false;
-            document.getElementById("btnGeneralTriage").hidden = false;            
-        }       
+            document.getElementById("btnGeneralTriage").hidden = false;
+        }
     }
 
 
-    function LoadClinic() {
-        
-        //window.alert("hello");
+    function LoadICP() 
+    {
         var _rp = "@(Model.triage.ReferralPathway)";
         var _gc = "@(Model.triage.GCTriaged)";
         var _cons = "@(Model.triage.ConsTriaged)";
         document.getElementById("formICPGeneral").hidden = true;
         document.getElementById("formICPCancer").hidden = true;
         
-        if (_rp.match("Gen*")) {
-            //window.alert("General Referral");
+        if (_rp.match("Gen*")) 
+        {        
             document.getElementById("formICPGeneral").hidden = false;
             document.getElementById("metadata-general").hidden = true;
             document.getElementById("WaitingListDetails").hidden = true;
             document.getElementById("ddlTreatPath2-Clinic").hidden = true;
             document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
-            document.getElementById("btnGeneralTriage").hidden = true;
-            
+            document.getElementById("btnGeneralTriage").hidden = true;            
 
-            if (_cons == "True") {
-                //window.alert("Cons triaged");
+            if (_cons == "True") 
+            {                
                 var _tp1 = document.getElementById("ddlTreatPath1");
-                _tp1.value = "@(Model.triage.TreatPath)";
-                document.getElementById("txtTP1").value = _tp1.value;
                 DoTreatPath1();
                 _tp1.disabled = true;
             }
@@ -327,27 +334,24 @@
                 var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
                 var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
 
-                if (!_tp2c.hidden) {
-                    _tp2c.value = "@(Model.triage.TreatPath2)";
-                    document.getElementById("txtTP2").value = _tp2c.value;
+                if (!_tp2c.hidden) 
+                {                    
                     _tp2c.disabled = true;                   
                     document.getElementById("WaitingListDetails").hidden = false;
                 }
 
-                if (!_tp2nc.hidden) {
-                    _tp2nc.value = "@(Model.triage.TreatPath2)";
-                    document.getElementById("txtTP2").value = _tp2nc.value;
+                if (!_tp2nc.hidden) 
+                {                    
                     document.getElementById("WaitingListDetails").hidden = true;
                     _tp2nc.disabled = true;
                 }
             }
 
             document.getElementById("ddlIsSPR").value = "@(Model.triage.ConsWLForSPR)";            
-            
         }
         
-        else {
-            //window.alert("Cancer Referral");
+        else 
+        {            
             document.getElementById("formICPCancer").hidden = false;
         }
     }
@@ -358,20 +362,9 @@
         var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
         var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
         var _facility = document.getElementById("ddlFacility");
-
-        if (!_tp2c.hidden) 
-        {            
-            _tp2c.disabled = true;
-            //window.alert(_tp2c.value);
-        }
-
-        if (!_tp2nc.hidden) 
-        {        
-            _tp2nc.disabled = true;
-            //window.alert(_tp2nc.value);
-        }
-        //window.alert(_facility.value);
-        if (CheckFormValid() == 1) {
+        
+        if (CheckFormValid() == 1) 
+        {
             //window.alert("Submitted!");
             document.getElementById("formICPGeneral").submit;
         }        
@@ -384,7 +377,8 @@
 
 
 
-    function CheckFormValid() { //validation to ensure all required data is entered
+    function CheckFormValid() 
+    { //validation to ensure all required data is entered
 
         if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "") {
             window.alert("Please choose a treatment pathway.");

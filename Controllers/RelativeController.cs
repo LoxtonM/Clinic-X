@@ -10,15 +10,15 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly CRUD crud;
-        private readonly VMData vm;
+        private readonly CRUD _crud;
+        private readonly VMData _vm;
 
         public RelativeController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
-            crud = new CRUD(_config);
-            vm = new VMData(_clinContext);
+            _crud = new CRUD(_config);
+            _vm = new VMData(_clinContext);
         }
 
         [Authorize]
@@ -30,7 +30,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -40,13 +40,13 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var rel = vm.GetRelativeDetails(id);
+                var rel = _vm.GetRelativeDetails(id);
                 
                 return View(rel);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -55,66 +55,72 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var rel = vm.GetRelativeDetails(id);
+                var rel = _vm.GetRelativeDetails(id);
                 return View(rel);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, string sTitle, string sForename1,
-            string sForename2, string sSurname, string sRelation, string sDOB, string sDOD,
-            int isAffected, string sSex)
+        public async Task<IActionResult> Edit(int id, string title, string forename1,
+            string forename2, string surname, string relation, string dob, string dod,
+            int isAffected, string sex)
         {
             try
             {
-                var rel = vm.GetRelativeDetails(id);
+                var rel = _vm.GetRelativeDetails(id);
 
+                //making sure all the nulls have values
 
-                DateTime dDOB = new DateTime();
-                DateTime dDOD = new DateTime();
+                DateTime birthDate = new DateTime();
+                DateTime deathDate = new DateTime();
 
-                if (sDOB != null)
+                if (dob != null)
                 {
-                    dDOB = DateTime.Parse(sDOB);
+                    birthDate = DateTime.Parse(dob);
                 }
                 else
                 {
-                    dDOB = DateTime.Parse("1/1/1900");
+                    birthDate = DateTime.Parse("1/1/1900");
                 }
 
-                if (sDOD != null)
+                if (dod != null)
                 {
-                    dDOD = DateTime.Parse(sDOD);
+                    deathDate = DateTime.Parse(dod);
                 }
                 else
                 {
-                    dDOD = DateTime.Parse("1/1/1900");
+                    deathDate = DateTime.Parse("1/1/1900");
                 }
 
-                if (sForename2 == null)
+                if (title == null)
                 {
-                    sForename2 = "";
+                    title = "";
                 }
 
-                int iSuccess = crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
-                        User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
+                if (forename2 == null)
+                {
+                    forename2 = "";
+                }
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                int success = _crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, title, forename1, forename2, surname,
+                        User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
+
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("RelativeDetails", "Relative", new { id = id });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddNew(int WMFACSID)
+        public async Task<IActionResult> AddNew(int wmfacsid)
         {
             try
             {
@@ -122,55 +128,55 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int WMFACSID, string sTitle, string sForename1, 
-            string sForename2, string sSurname, string sRelation, string sDOB, string sDOD, 
-            int isAffected, string sSex)
+        public async Task<IActionResult> AddNew(int wmfacsid, string title, string forename1, 
+            string forename2, string surname, string relation, string sDOB, string sDOD, 
+            int isAffected, string sex)
         {
             try
             {
-                DateTime dDOB = new DateTime();
-                DateTime dDOD = new DateTime();
+                DateTime birthDate = new DateTime();
+                DateTime deathDate = new DateTime();
 
                 if (sDOB != null)
                 {
-                    dDOB = DateTime.Parse(sDOB);
+                    birthDate = DateTime.Parse(sDOB);
                 }
                 else
                 {
-                    dDOB = DateTime.Parse("1/1/1900");
+                    birthDate = DateTime.Parse("1/1/1900");
                 }
 
                 if (sDOD != null)
                 {
-                    dDOD = DateTime.Parse(sDOD);
+                    deathDate = DateTime.Parse(sDOD);
                 }
                 else
                 {
-                    dDOD = DateTime.Parse("1/1/1900");
+                    deathDate = DateTime.Parse("1/1/1900");
                 }
 
-                if (sForename2 == null)
+                if (forename2 == null)
                 {
-                    sForename2 = "";
+                    forename2 = "";
                 }
 
-                int iSuccess = crud.CallStoredProcedure("Relative", "Create", WMFACSID, isAffected, 0, sTitle, sForename1, sForename2, sSurname,
-                    User.Identity.Name, dDOB, dDOD, false, false, 0, 0, 0, sRelation, sSex);
+                int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, isAffected, 0, title, forename1, forename2, surname,
+                    User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                var patient = vm.GetPatientDetailsByWMFACSID(WMFACSID);
+                var patient = _vm.GetPatientDetailsByWMFACSID(wmfacsid);
 
                 return RedirectToAction("PatientDetails", "Patient", new { id = patient.MPI });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
     }

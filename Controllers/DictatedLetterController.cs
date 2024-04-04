@@ -13,10 +13,10 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
         private readonly IConfiguration _config;
-        private readonly DictatedLetterVM lvm;
-        private readonly VMData vm;
-        private readonly CRUD crud;
-        private readonly LetterController lc;
+        private readonly DictatedLetterVM _lvm;
+        private readonly VMData _vm;
+        private readonly CRUD _crud;
+        private readonly LetterController _lc;
 
 
         public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext)
@@ -24,10 +24,10 @@ namespace ClinicX.Controllers
             _clinContext = clinContext;
             _docContext = docContext;
             _config = config;
-            lvm = new DictatedLetterVM();
-            vm = new VMData(_clinContext);
-            crud = new CRUD(_config);
-            lc = new LetterController(_clinContext, _docContext);
+            _lvm = new DictatedLetterVM();
+            _vm = new VMData(_clinContext);
+            _crud = new CRUD(_config);
+            _lc = new LetterController(_clinContext, _docContext);
             _docContext = docContext;
         }
 
@@ -41,15 +41,15 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
-                var user = vm.GetCurrentStaffUser(User.Identity.Name);
+                var user = _vm.GetCurrentStaffUser(User.Identity.Name);
                 
-                var letters = vm.GetDictatedLettersList(user.STAFF_CODE);
+                var letters = _vm.GetDictatedLettersList(user.STAFF_CODE);
 
                 return View(letters);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -58,60 +58,60 @@ namespace ClinicX.Controllers
         {            
             try
             {                
-                lvm.dictatedLetters = vm.GetDictatedLetterDetails(id);
-                lvm.dictatedLettersPatients = vm.GetDictatedLettersPatientsList(id);
-                lvm.dictatedLettersCopies = vm.GetDictatedLettersCopiesList(id);
-                lvm.patients = vm.GetDictatedLetterPatientsList(id);
-                lvm.staffMemberList = vm.GetClinicalStaffList();
-                int? iMPI = lvm.dictatedLetters.MPI;
-                int? iRefID = lvm.dictatedLetters.RefID;
-                lvm.patientDetails = vm.GetPatientDetails(iMPI.GetValueOrDefault());
-                lvm.activityDetails = vm.GetActivityDetails(iRefID.GetValueOrDefault());
-                string sGPCode = lvm.patientDetails.GP_Facility_Code;
-                string sRefFacCode = lvm.activityDetails.REF_FAC;
-                string sRefPhysCode = lvm.activityDetails.REF_PHYS;
-                lvm.referrerFacility = vm.GetFacilityDetails(sRefFacCode);
-                lvm.referrer = vm.GetClinicianDetails(sRefPhysCode);
-                lvm.GPFacility = vm.GetFacilityDetails(sGPCode);
-                lvm.facilities = vm.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
-                lvm.clinicians = vm.GetClinicianList().Where(f => f.Is_Gp == 0 && f.NAME != null && f.FACILITY != null).ToList();
-                lvm.consultants = vm.GetConsultantsList().ToList();
-                lvm.gcs = vm.GetGCList().ToList();
-                lvm.secteams = vm.GetSecTeamsList();
+                _lvm.dictatedLetters = _vm.GetDictatedLetterDetails(id);
+                _lvm.dictatedLettersPatients = _vm.GetDictatedLettersPatientsList(id);
+                _lvm.dictatedLettersCopies = _vm.GetDictatedLettersCopiesList(id);
+                _lvm.patients = _vm.GetDictatedLetterPatientsList(id);
+                _lvm.staffMemberList = _vm.GetClinicalStaffList();
+                int? iMPI = _lvm.dictatedLetters.MPI;
+                int? iRefID = _lvm.dictatedLetters.RefID;
+                _lvm.patientDetails = _vm.GetPatientDetails(iMPI.GetValueOrDefault());
+                _lvm.activityDetails = _vm.GetActivityDetails(iRefID.GetValueOrDefault());
+                string sGPCode = _lvm.patientDetails.GP_Facility_Code;
+                string sRefFacCode = _lvm.activityDetails.REF_FAC;
+                string sRefPhysCode = _lvm.activityDetails.REF_PHYS;
+                _lvm.referrerFacility = _vm.GetFacilityDetails(sRefFacCode);
+                _lvm.referrer = _vm.GetClinicianDetails(sRefPhysCode);
+                _lvm.GPFacility = _vm.GetFacilityDetails(sGPCode);
+                _lvm.facilities = _vm.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
+                _lvm.clinicians = _vm.GetClinicianList().Where(f => f.Is_Gp == 0 && f.NAME != null && f.FACILITY != null).ToList();
+                _lvm.consultants = _vm.GetConsultantsList().ToList();
+                _lvm.gcs = _vm.GetGCList().ToList();
+                _lvm.secteams = _vm.GetSecTeamsList();
 
-                return View(lvm);
+                return View(_lvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int iDID, string sStatus, string sLetterTo, string sLetterFrom, string sLetterContent, string sLetterContentBold, 
-            bool isAddresseeChanged, string sSecTeam, string sConsultant, string sGC, string sDateDictated)
+        public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFrom, string letterContent, string letterContentBold, 
+            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated)
         {
             try
             {
                 DateTime dDateDictated = new DateTime();
-                dDateDictated = DateTime.Parse(sDateDictated);
+                dDateDictated = DateTime.Parse(dateDictated);
                 //two updates required - one to update the addressee (if addressee has changed)
                 if (isAddresseeChanged)
                 {
-                    int iSuccess2 = crud.CallStoredProcedure("Letter", "UpdateAddresses", iDID, 0, 0, "", "", sLetterFrom, sLetterTo, User.Identity.Name);
+                    int success2 = _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, "", "", letterFrom, letterTo, User.Identity.Name);
 
-                    if (iSuccess2 == 0) { return RedirectToAction("Index", "WIP"); }
+                    if (success2 == 0) { return RedirectToAction("Index", "WIP"); }
                 }
 
-                int iSuccess = crud.CallStoredProcedure("Letter", "Update", iDID, 0, 0, sStatus, "", sLetterContentBold, sLetterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, sSecTeam, sConsultant, sGC);
+                int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, "", letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Edit", new { id = iDID });
+                return RedirectToAction("Edit", new { id = dID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
@@ -119,142 +119,142 @@ namespace ClinicX.Controllers
         {
             try
             {
-                int iSuccess = crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", "", "", User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
                 var dot = await _clinContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
-                int iDID = dot.DoTID;
+                int dID = dot.DoTID;
 
-                return RedirectToAction("Edit", new { id = iDID });
+                return RedirectToAction("Edit", new { id = dID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
-        public async Task<IActionResult> Delete(int iDID)
+        public async Task<IActionResult> Delete(int dID)
         {
             try 
             {
-                int iSuccess = crud.CallStoredProcedure("Letter", "Delete", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Letter", "Delete", dID, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Approve(int iDID)
+        public async Task<IActionResult> Approve(int dID)
         {
             try
             {
-                int iSuccess = crud.CallStoredProcedure("Letter", "Approve", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Letter", "Approve", dID, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Edit", new { id = iDID });
+                return RedirectToAction("Edit", new { id = dID });
 
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Unapprove(int iDID)
+        public async Task<IActionResult> Unapprove(int dID)
         {
             try
             {
-                int iSuccess = crud.CallStoredProcedure("Letter", "Unapprove", iDID, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Letter", "Unapprove", dID, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Edit", new { id = iDID });
+                return RedirectToAction("Edit", new { id = dID });
 
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPatientToDOT(int iPID, int iDID)
+        public async Task<IActionResult> AddPatientToDOT(int pID, int dID)
         {
             try
             {                
-                int iSuccess = crud.CallStoredProcedure("Letter", "AddFamilyMember", iDID, iPID, 0, "", "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, pID, 0, "", "", "", "", User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Edit", new { id = iDID });
+                return RedirectToAction("Edit", new { id = dID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCCToDOT(int iDID, string sCC)
+        public async Task<IActionResult> AddCCToDOT(int dID, string cc)
         {
             try
             {
-                int iSuccess = crud.CallStoredProcedure("Letter", "AddCC", iDID, 0, 0, sCC, "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, cc, "", "", "", User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Edit", new { id = iDID });
+                return RedirectToAction("Edit", new { id = dID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteCCFromDOT(int iID)
+        public async Task<IActionResult> DeleteCCFromDOT(int id)
         {
             try
             {
                 //var letter = await _clinContext.DictatedLettersCopies.FirstOrDefaultAsync(x => x.CCID == iID);
                 
-                var letter = vm.GetDictatedLetterCopyDetails(iID);
+                var letter = _vm.GetDictatedLetterCopyDetails(id);
                 
-                int iDID = letter.DotID;
+                int dID = letter.DotID;
 
-                int iSuccess = crud.CallStoredProcedure("Letter", "DeleteCC", iID, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Letter", "DeleteCC", id, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (iSuccess == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Edit", new { id = iDID });
+                return RedirectToAction("Edit", new { id = dID });
                 
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
 
-        public async Task<IActionResult> PreviewDOT(int iDID)
+        public async Task<IActionResult> PreviewDOT(int dID)
         {
             try
             {                
-                lc.PreviewDOTPDF(iDID, User.Identity.Name, "PT");
-                //return RedirectToAction("Edit", new { id = iDID });
+                _lc.PreviewDOTPDF(dID, User.Identity.Name, "PT");
+                //return RedirectToAction("Edit", new { id = dID });
                 return File("~/preview.pdf", "Application/PDF");
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { sError = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
     }

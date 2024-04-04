@@ -25,7 +25,7 @@
     <div class="container mb-5">
         <form id="ClinicalNote" asp-action="Edit">
             <div id="metadata" hidden="true">            
-                <input asp-for="ClinicalNoteID" name="iNoteID" />
+                <input asp-for="ClinicalNoteID" name="noteID" />
                 <input id="txtDCTMSts" asp-for="CN_DCTM_sts" />
             </div>
 
@@ -42,7 +42,7 @@
             <div class="row mb-5">
                 <div class="col-md-2">Details:</div>
                 <div class="col-md-8">
-                    <textarea id="txtClinicalNote" rows="20" cols="150" asp-for="ClinicalNote" name="sClinicalNote"></textarea>
+                    <textarea id="txtClinicalNote" rows="20" cols="150" asp-for="ClinicalNote" name="clinicalNote"></textarea>
                 </div>
                 <div class="col-md-2"></div>
             </div>

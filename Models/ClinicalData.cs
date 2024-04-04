@@ -144,6 +144,7 @@ namespace ClinicX.Models
         public string LoginDetails { get; set; }
         public string? Notes { get; set; }
         public string? IndicationNotes { get; set; }
+        public int ReferralRefID { get; set; }
     }
 
     [Table("ViewPatientReferralDetails", Schema ="dbo")] //Referral data
@@ -156,16 +157,19 @@ namespace ClinicX.Models
         public string? INDICATION { get; set; }
         public string? LeadClinician { get; set; }
         public string? GC { get; set; }
+        public string? AdminContact { get; set; }
         public string? ReferringClinician { get; set; }
         public string? ReferrerCode { get; set; }
         public string? ReferringFacility { get; set; }
         public string? ReferringFacilityCode { get; set; }
+        [DataType(DataType.Date)]
         public DateTime? RefDate { get; set; }
         public string? RefType { get; set; }
         public string? COMPLETE { get; set; }
         public DateTime? ClockStartDate { get; set; }
         public DateTime? ClockStopDate { get; set; }
         public string? PATHWAY { get; set; }
+        public string? REASON_FOR_REFERRAL { get; set; }
     }
 
     [Table("MasterActivityTable", Schema="dbo")] //Any activity

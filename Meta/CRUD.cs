@@ -22,14 +22,14 @@ namespace ClinicX.Meta
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
             float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0)
         {   
-            if (dDate1 == null)
-            {
-                dDate1 = DateTime.Parse("1900-01-01");
-            }
-            if (dDate2 == null)
-            {
-                dDate2 = DateTime.Parse("1900-01-01");
-            }
+            if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
+            if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
+            if (text == null) { text = ""; } //because it won't take the default value anymore for some reason!
+            if (string4 == null) { string4 = ""; }
+            if (string5 == null) { string5 = ""; }
+            if (string6 == null) { string6 = ""; }
+
+
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
@@ -61,7 +61,7 @@ namespace ClinicX.Meta
             cmd.Parameters.Add("@float3", SqlDbType.Float).Value = f3;
             cmd.Parameters.Add("@float4", SqlDbType.Float).Value = f4;
             cmd.Parameters.Add("@float5", SqlDbType.Float).Value = f5;
-            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); //return success or not
             returnValue.Direction = ParameterDirection.ReturnValue;
             cmd.ExecuteNonQuery();
             var iReturnValue = (int)returnValue.Value;
