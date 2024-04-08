@@ -43,7 +43,7 @@
         </table>
     </div>
 
-    @if (Model.icpCancerList.Count > 0)
+    @if (Model.icpCancerListOwn.Count > 0 || Model.icpCancerListOther.Count > 0)
     {
         <div class="row mb-5 g-5">
             <h2 class="text-center">Cancer ICPs For Review:</h2>
@@ -62,7 +62,39 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.icpCancerList)
+                    @foreach (var item in Model.icpCancerListOwn)
+                    {
+                        <tr>
+                            <td><a asp-action="CancerReview" asp-route-id=@item.ICP_Cancer_ID class="btn btn-success">Select</a></td>
+                            <td>@item.CGU_No</td>
+                            <td>@item.FIRSTNAME @item.LASTNAME</td>
+                            <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            <td>@item.ReferralAction</td>
+                            <td>@item.Comments</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <h3>Other ICPs to Review:</h3>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>File Number</th>
+                        <th>Name</th>
+                        <th>Referral Date</th>
+                        <th>Referral Action</th>
+                        <th>Additional Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.icpCancerListOther)
                     {
                         <tr>
                             <td><a asp-action="CancerReview" asp-route-id=@item.ICP_Cancer_ID class="btn btn-success">Select</a></td>

@@ -300,6 +300,7 @@ namespace ClinicX.Models
         public DateTime? REFERRAL_DATE { get; set; }
         //public int ICPID { get; set; }
         public int? ActOnRef { get; set; }
+        public int? ReviewedOption { get; set; }
         //public string ActRefInfo { get; set; }
         public string? ActOnRefBy { get; set; }
         //public int FHFNotRet { get; set; }
@@ -316,6 +317,8 @@ namespace ClinicX.Models
         public string? WaitingListComments { get; set; }
         public string? ReferralAction { get; set; }
         public string? Comments { get; set; }
+        public string? ToBeReviewedby { get; set; }
+
     }
 
     [Table("CLIN_FACILITIES", Schema = "dbo")] //Facilities where we hold clinics

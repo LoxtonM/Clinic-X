@@ -27,7 +27,7 @@
                     <label>Staff Member:</label>
                 </div>
                 <div class="col-md-4">
-                    <select name="sStaffCode" asp-for=@Model.staffCode>                        
+                    <select name="staffCode" asp-for=@Model.staffCode>                        
                         @foreach(var item in Model.clinicians)
                         {
                             <option value=@item.STAFF_CODE>@item.NAME</option>

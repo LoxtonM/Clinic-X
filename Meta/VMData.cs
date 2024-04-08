@@ -332,7 +332,7 @@ namespace ClinicX.Meta
             string sStaffCode = user.STAFF_CODE;
 
             var icps = from i in _clinContext.ICPCancer
-                      where i.ActOnRefBy != null && i.FinalReviewed == null && i.GC_CODE == sStaffCode
+                       where i.ActOnRefBy != null && i.FinalReviewed == null && (i.GC_CODE == sStaffCode || i.ToBeReviewedby == sUsername.ToUpper())
                       select i;
             
             return icps.ToList();
@@ -501,7 +501,7 @@ namespace ClinicX.Meta
             string sStaffCode = GetStaffMemberDetails(username).STAFF_CODE;
 
             var clinics = from c in _clinContext.Clinics
-                          where c.AppType.Contains("App") && c.STAFF_CODE_1 == sStaffCode && c.Attendance != "Declined"
+                          where c.AppType.Contains("App") && c.STAFF_CODE_1 == sStaffCode && c.Attendance != "Declined" && !c.Attendance.Contains("Canc")
                           select c;
 
             return clinics.ToList();

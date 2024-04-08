@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using System.Data;
 using ClinicX.Meta;
+using ClinicX.Models;
 
 namespace ClinicX.Controllers
 {
@@ -36,9 +37,13 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Index()
         {
             try
-            {               
+            {
+                _ivm.staffCode = _vm.GetCurrentStaffUser(User.Identity.Name).STAFF_CODE;
                 _ivm.triages = _vm.GetTriageList(User.Identity.Name);
-                _ivm.icpCancerList = _vm.GetCancerICPList(User.Identity.Name);
+                _ivm.icpCancerListOwn = _vm.GetCancerICPList(User.Identity.Name).Where(r => r.GC_CODE == _ivm.staffCode).ToList();
+                _ivm.icpCancerListOther = _vm.GetCancerICPList(User.Identity.Name).Where(r => r.ToBeReviewedby == User.Identity.Name.ToUpper()).ToList();
+                int bleep = _ivm.icpCancerListOwn.Count();                
+                int bloop = _ivm.icpCancerListOther.Count();
                 return View(_ivm);
             }
             catch (Exception ex)
@@ -54,20 +59,22 @@ namespace ClinicX.Controllers
             {
                 //var triages = await _clinContext.Triages.FirstOrDefaultAsync(t => t.ICPID == id);
 
-                var triage = _vm.GetTriageDetails(id);
+                _ivm.triage = _vm.GetTriageDetails(id);
 
-                if (triage == null)
+                if (_ivm.triage == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-                
-                _ivm.triage = _vm.GetTriageDetails(id);
+
+                //_ivm.triage = _vm.GetTriageDetails(id);
+                _ivm.referralDetails = _vm.GetReferralDetails(_ivm.triage.RefID);
                 _ivm.clinicalFacilityList = _vm.GetClinicalFacilitiesList();
                 _ivm.icpGeneral = _vm.GetGeneralICPDetails(id);
                 _ivm.icpCancer = _vm.GetCancerICPDetails(id);
                 _ivm.cancerActionsList = _vm.GetICPCancerActionsList();
                 _ivm.generalActionsList = _vm.GetICPGeneralActionsList();
                 _ivm.generalActionsList2 = _vm.GetICPGeneralActionsList2();
+                _ivm.loggedOnUserType = _vm.GetCurrentStaffUser(User.Identity.Name).CLINIC_SCHEDULER_GROUPS;
                 return View(_ivm);
             }
             catch (Exception ex)
@@ -234,47 +241,65 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CancerReview(int id, string finalReview, string? clinician = "", 
-            string? clinic = "", string? comments = "", string? sAddNotes = "", bool? isNotForCrossBooking = false,
-            int? letter = 0)
+        public async Task<IActionResult> CancerReview(int id, string finalReview, string? clinician = "", string? clinic = "", string? comments = "", 
+            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0)
         {
-            bool isfinalReview = false;
+            //bool isfinalReview = false;
+            _ivm.icpCancer = _vm.GetCancerICPDetails(id);
+            var icpDetails = _vm.GetICPDetails(_ivm.icpCancer.ICPID);
+            string reviewText = "";
+            string finalReviewText = "";
             string finalReviewBy = "";
             _ivm.cancerReviewActionsLists = _vm.GetICPCancerReviewActionsList();
-            DateTime dFinalReviewDate = DateTime.Parse("1900-01-01");
-            int mpi = _vm.GetICPDetails(_vm.GetCancerICPDetails(id).ICPID).MPI;
-            int refID = _vm.GetICPDetails(_vm.GetCancerICPDetails(id).ICPID).REFID;
+            //DateTime finalReviewDate = DateTime.Parse("1900-01-01");
+            int mpi = icpDetails.MPI;
+            int refID = icpDetails.REFID;
 
             if (letter != null && letter != 0)
-            {
+            {                
                 _ivm.cancerAction = _vm.GetICPCancerAction(letter.GetValueOrDefault());
-                string sDocCode = _ivm.cancerAction.DocCode;
-                string sDiaryText = "";
-                int letterID = _vmDoc.GetDocumentDetailsByDocCode(sDocCode).DocContentID;
+                string docCode = _ivm.cancerAction.DocCode;
+
+                if (letter != 1 && letter != 11)
+                {
+                    reviewText = docCode;
+                    
+                    if (reviewText != null)
+                    {
+                        reviewText = reviewText + " letter on " + DateTime.Now.ToString("dd/MM/yyyy") + " by " + _vm.GetCurrentStaffUser(User.Identity.Name).NAME;
+                    }
+                }
+                    string diaryText = "";
+                int letterID = _vmDoc.GetDocumentDetailsByDocCode(docCode).DocContentID;
                 
                 _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _vm.GetReferralDetails(refID).ReferringClinician);
-                int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", sDocCode, "", sDiaryText, User.Identity.Name, null, null, false, false);
+                int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (successDiary == 0) { return RedirectToAction("Index", "WIP"); }
             }
+            
 
             if(clinician != null && clinician != "")
             {                
-                int success = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, clinic, "Cancer", clinician, comments,
+                int successWL = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, clinic, "Cancer", clinician, comments,
                     User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (successWL == 0) { return RedirectToAction("Index", "WIP"); }
             }
 
             if(finalReview == "Yes")
             {
-                isfinalReview = true;
+                finalReviewText = reviewText;
                 finalReviewBy = _vm.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                dFinalReviewDate = DateTime.Today;
+                //finalReviewDate = DateTime.Today;
             }
 
-            //do the CRUD
-            return RedirectToAction("NotFound", "WIP");
+            int success = _crud.CallStoredProcedure("ICP Cancer", "ICP Review", id, letter.GetValueOrDefault(), 0, finalReviewBy, finalReviewText, "", addNotes,
+                    User.Identity.Name, null, null, false, false);
+
+            if (success == 0) { return RedirectToAction("Index", "WIP"); }
+
+            return RedirectToAction("Index");            
         }
 
         [HttpGet]
@@ -346,6 +371,24 @@ namespace ClinicX.Controllers
                 if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = icpId });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveIndicationNotes(int icpID, string indicationNotes)
+        {
+            try
+            {
+                int success = _crud.CallStoredProcedure("ICP General", "Indication Notes", icpID, 0, 0, "", "", "", indicationNotes, User.Identity.Name);
+                
+                if (success == 0) { return RedirectToAction("Index", "WIP"); }                
+                
+
+                return RedirectToAction("ICPDetails", "Triage", new { id = icpID });
             }
             catch (Exception ex)
             {

@@ -11,7 +11,8 @@ namespace ClinicX.ViewModels
         public List<StaffMemberList> consultants { get; set; }
         public List<StaffMemberList> GCs { get; set; }
         public List<Triages> triages { get; set; }
-        public List<ICPCancer> icpCancerList { get; set; }
+        public List<ICPCancer> icpCancerListOwn { get; set; }
+        public List<ICPCancer> icpCancerListOther { get; set; }
         public Triages triage { get; set; }
         public ICPGeneral? icpGeneral { get; set; }
         public ICPCancer? icpCancer { get; set; }
@@ -28,5 +29,8 @@ namespace ClinicX.ViewModels
         public Eligibility eligibility { get; set; }
         public List<Eligibility> eligibilityList { get; set; }
         public List<Documents> documentList { get; set; }
+        public Referrals referralDetails { get; set; }
+        public string staffCode { get; set; }
+        public string loggedOnUserType { get; set; }
     }
 }

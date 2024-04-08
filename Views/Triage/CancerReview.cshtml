@@ -172,7 +172,7 @@
                     <label style="text-align:right">Clinician:</label>
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.icpCancer.WaitingListClinician name="sClinician">
+                    <select id="ddlClinician" asp-for=@Model.icpCancer.WaitingListClinician name="clinician">
                         <option value="">Select...</option>
                         @foreach (var item in Model.staffMembers)
                         {
@@ -184,7 +184,7 @@
                     <label style="text-align:right">Clinic:</label>
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.icpCancer.WaitingListVenue name="sClinic">
+                    <select id="ddlClinic" asp-for=@Model.icpCancer.WaitingListVenue name="clinic">
                         <option value="">Select...</option>
                         @foreach (var item in Model.clinicalFacilityList)            
                         {
@@ -199,7 +199,7 @@
                     <label style="text-align:right">Comments:</label>
                 </div>
                 <div class="col-md-10">
-                    <textarea name="sComments" id="txtComments" asp-for=@Model.icpCancer.WaitingListComments rows="5" cols="25" name="sComments"></textarea>
+                    <textarea name="comments" id="txtComments" asp-for=@Model.icpCancer.WaitingListComments rows="5" cols="25"></textarea>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -228,7 +228,7 @@
                     <label>Select letter:</label>
                 </div>
                 <div class="col-md-8">
-                    <select name="iLetter">
+                    <select id="ddlLetter" name="letter" asp-for=@Model.icpCancer.ReviewedOption>
                         <option value="">None</option>
                         @foreach (var item in Model.cancerReviewActionsLists)
                         {
@@ -244,7 +244,7 @@
                 Additional Notes:
             </div>
             <div class="col-md-4">
-                <textarea name="sAddNotes" asp-for=@Model.icpCancer.Comments></textarea>
+                <textarea name="addNotes" asp-for=@Model.icpCancer.Comments></textarea>
             </div>
         </div>
 
@@ -253,7 +253,7 @@
                 Final Review Complete:
             </div>
             <div class="col-md-4">
-                <select name="sFinalReview">
+                <select name="finalReview">
                     <option value="No">No</option>
                     <option value="Yes">Yes - complete and remove from list</option>
                 </select>
@@ -271,10 +271,30 @@
 <script>
     document.getElementById("btnSave").addEventListener("click", DoSubmit)
     document.getElementById("chkNotForCrossBooking").addEventListener("change", SetNotForCrossBooking)
+    window.addEventListener("load", LoadForm);
 
     function SetNotForCrossBooking()
     {
         document.getElementById("txtNotForCrossBooking").value = document.getElementById("chkNotForCrossBooking").checked;
+    }
+
+    function LoadForm() 
+    {
+        var _reviewOption = document.getElementById("ddlLetter");       
+        var _clinic = document.getElementById("ddlClinic");
+
+        if (_reviewOption.value != 1) 
+        { 
+            _reviewOption.disabled = true;
+        }
+        
+        if (_clinic.value != "") 
+        {
+            _clinic.disabled = true;
+            document.getElementById("ddlClinician").disabled = true;
+            document.getElementById("txtComments").disabled = true;
+        }
+
     }
     
     function DoSubmit()

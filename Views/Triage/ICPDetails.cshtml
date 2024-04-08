@@ -58,12 +58,43 @@
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.triage.CGU_No)
             </dd>
-        </dl>    
-    </div>   
+            <dt class="col-sm-2">
+                Referred By:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.referralDetails.ReferringClinician) - @Html.DisplayFor(model => model.referralDetails.ReferringFacility)
+            </dd>
+            <dt class="col-sm-2">
+                Indication:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.referralDetails.INDICATION)
+            </dd>            
+        </dl>        
+        <form id="formIndicationNotes" asp-action="SaveIndicationNotes">
+            <div class="row">
+                <div class="col-md-2">
+                    <b>Indication Notes:</b>
+                </div>
+                <div class="col-md-4">
+                    @*@Html.DisplayFor(model => model.referralDetails.REASON_FOR_REFERRAL)*@
+                    <input name="icpID" asp-for=@Model.triage.ICPID hidden="true" />
+                    <input class="w-100" name="indicationNotes" asp-for=@Model.referralDetails.REASON_FOR_REFERRAL />
+                </div>
+                <div class="col-md-2">
+                    <button id="btnIndicationNotes" class="btn btn-default btn-success">Save Indication Notes</button>
+                </div>
+            </div>
+        </form>        
+    </div>
+    
+    
+
     
     <form id="formICPGeneral" asp-action="DoGeneralTriage">
         <div id="metadata-general" hidden="true">
-            <input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />
+            @*<input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />*@
+            <input name="icpID" asp-for=@Model.triage.ICPID />
             <input id="txtTP1" name="tp" />
             <input id="txtTP2" name="tp2" />
         </div>
@@ -230,7 +261,8 @@
         let _tp = document.getElementById("ddlTreatPath1")        
         //window.alert(_tp.value);
         document.getElementById("txtTP1").value = _tp.value;
-        switch(_tp.value){
+        switch(_tp.value)
+        {
             case "1":
                 //window.alert("None");
                 document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
@@ -243,9 +275,18 @@
             break;
             case "3":
                 //window.alert("GC Only")
-                document.getElementById("ddlTreatPath2-Clinic").hidden = false;
-                document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
-                document.getElementById("ddlIsSPR").hidden = true;
+                var _user = "@(Model.loggedOnUserType)"; //make sure WL stuff doesn't appear if consultant does "GC Only" triage
+                
+                if (_user == "Consultant") 
+                {
+                    document.getElementById("btnGeneralTriage").hidden = false;
+                }
+                else 
+                {
+                    document.getElementById("ddlTreatPath2-Clinic").hidden = false;
+                    document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
+                    document.getElementById("ddlIsSPR").hidden = true;
+                }
             break;
             case "4":
                 //window.alert("Consultant Only")
