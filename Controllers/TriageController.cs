@@ -269,7 +269,8 @@ namespace ClinicX.Controllers
                         reviewText = reviewText + " letter on " + DateTime.Now.ToString("dd/MM/yyyy") + " by " + _vm.GetCurrentStaffUser(User.Identity.Name).NAME;
                     }
                 }
-                    string diaryText = "";
+
+                string diaryText = "";
                 int letterID = _vmDoc.GetDocumentDetailsByDocCode(docCode).DocContentID;
                 
                 _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _vm.GetReferralDetails(refID).ReferringClinician);
@@ -386,7 +387,6 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("ICP General", "Indication Notes", icpID, 0, 0, "", "", "", indicationNotes, User.Identity.Name);
                 
                 if (success == 0) { return RedirectToAction("Index", "WIP"); }                
-                
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = icpID });
             }

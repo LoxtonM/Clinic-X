@@ -35,7 +35,14 @@ namespace ClinicX.Controllers
                 cvm.countTests = cvm.caseLoad.Where(c => c.Type.Contains("Test")).Count();
                 cvm.countReviews = cvm.caseLoad.Where(c => c.Type.Contains("Review")).Count();
                 cvm.countLetters = cvm.caseLoad.Where(c => c.Type.Contains("Letter")).Count();
-                cvm.name = cvm.caseLoad.FirstOrDefault().Clinician;
+                if (cvm.caseLoad.Count > 0)
+                {
+                    cvm.name = cvm.caseLoad.FirstOrDefault().Clinician;
+                }
+                else
+                {
+                    cvm.name = "";
+                }
                 
 
                 return View(cvm);

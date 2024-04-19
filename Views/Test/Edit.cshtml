@@ -46,11 +46,11 @@
             <dt class="col-sm-2">
                 Date Expected:
             </dt>
-            @if (Model.DateExpected != null)
+            @if (Model.ExpectedDate!= null)
             {
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.DateExpected)
-                    @if(Model.DateExpected <= DateTime.Today)
+                    @Html.DisplayFor(model => model.ExpectedDate)
+                    @if (Model.ExpectedDate <= DateTime.Today)
                     {
                         <span> - This result is due, consider chasing</span>
                     }

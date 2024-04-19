@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ClinicX.Models.DictatedLetters>
+﻿@model ClinicX.ViewModels.DictatedLetterVM
 
 @{
     ViewData["Title"] = "Clinic-X - Dictated Letters";
@@ -9,38 +9,39 @@
         <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
     </div>*@
 
-    <div class="row g-5 mb-5">
-        @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().LetterFrom)!</h1>*@
-
-        <h2 class="text-center">Letters to approve:</h2>
-    </div>
+   
 
     <div class="row g-5 mb-5">
-        @if (Model.Count() == 0)
+        @if (Model.dictatedLettersForApproval.Count() == 0)
         {
             <h1>There are no letters outstanding</h1>
         }
         else
         {
+            <div class="row g-5 mb-5">
+                @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().LetterFrom)!</h1>*@
+
+                <h2 class="text-center">Letters to approve:</h2>
+            </div>
+
             <table class="table">
                 <thead>
                     <tr>
-                        <th></th>               
-                        <th>Letter To</th>
-                        <th>Letter Re</th>
-                        <th>@Html.DisplayNameFor(model => model.DateDictated)</th>                
+                        <th>CGU No</th>               
+                        <th>Letter To</th>                        
+                        <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>                
                         <th>Status</th>
+                        <th>Comments</th>
                     </tr>
                 </thead>
                 <tbody>                
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.dictatedLettersForApproval)
                     {
                         @if (item.Status != "For Printing")
                         {
                             <tr>
-                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-success">@item.DoTID</a></td>
-                                <td>@item.LetterTo</td>
-                                <td>@item.LetterRe</td>
+                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-success">@item.CGU_No</a></td>
+                                <td>@item.LetterTo</td>                                
                                 @if (@item.DateDictated.HasValue)
                                 {
                                     <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
@@ -49,8 +50,9 @@
                                 {
                                     <td></td>
                                 }
-                            <td>@item.Status</td>
-                        </tr>                  
+                                <td>@item.Status</td>
+                                <td>@item.Comments</td>
+                            </tr>                  
                         }
                     }
                 
@@ -60,43 +62,36 @@
     </div>
 
 
-    <div class="row g-5 mb-5">
-        <h2 class="text-center">Letters awaiting printing:</h2>
-    </div>
+   
 
-    <div class="row g-5 mb-5">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Letter To</th>
-                    <th>Letter Re</th>
-                    <th>@Html.DisplayNameFor(model => model.DateDictated)</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.Count() == 0)
-                {
+    <div class="row g-5 mb-5">       
+        @if (Model.dictatedLettersForPrinting.Count() == 0)
+        {
+            <h1>There are no letters awaiting printing</h1>                   
+        }
+        else
+        {
+            <div class="row g-5 mb-5">
+                <h2 class="text-center">Letters awaiting printing:</h2>
+            </div>
+            <table class="table">
+                <thead>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td>There are no letters outstanding.</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <th>CGU No</th>
+                        <th>Letter To</th>
+                        <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>
+                        <th>Status</th>
+                        <th>Comments</th>
                     </tr>
-                }
-                else
-                {
-                    @foreach (var item in Model)
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.dictatedLettersForPrinting)
                     {
                         @if (item.Status == "For Printing")
                         {
                             <tr>
-                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-success">@item.DoTID</a></td>
-                                <td>@item.LetterTo</td>
-                                <td>@item.LetterRe</td>
+                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-success">@item.CGU_No</a></td>
+                                <td>@item.LetterTo</td>                                
                                 @if (@item.DateDictated.HasValue)
                                 {
                                     <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
@@ -106,11 +101,13 @@
                                     <td></td>
                                 }
                             <td>@item.Status</td>
+                            <td>@item.Comments</td>
                         </tr>
                         }
                     }
-                }
-            </tbody>
-        </table>
+                
+                </tbody>
+            </table>
+        }
     </div>
 </div>

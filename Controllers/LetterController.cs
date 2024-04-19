@@ -5,6 +5,8 @@ using ClinicX.Meta;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
+using System;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -45,7 +47,7 @@ public class LetterController : Controller
         }
     }
 
-    public void PreviewDOTPDF(int dID,string user, string letterTo)
+    public void PreviewDOTPDF(int dID,string user)
     {
         try
         {
@@ -61,7 +63,7 @@ public class LetterController : Controller
             //set the fonts used for the letters
             XFont font = new XFont("Arial", 12, XFontStyle.Regular);
             XFont fontBold = new XFont("Arial", 12, XFontStyle.Bold);
-            XFont fontItalic = new XFont("Arial", 12, XFontStyle.Bold);
+            XFont fontItalic = new XFont("Arial", 12, XFontStyle.Italic);
             //Load the image for the letter head
             XImage image = XImage.FromFile(@"wwwroot\Letterhead.jpg");
             gfx.DrawImage(image, 350, 20, image.PixelWidth / 2, image.PixelHeight / 2);
@@ -69,75 +71,90 @@ public class LetterController : Controller
             tf.Alignment = XParagraphAlignment.Right;
             //Our address and contact details
             tf.DrawString(ourAddress, font, XBrushes.Black, new XRect(-20, 150, page.Width, 200));
-            
+            //the email address just absolutely will not align right, for some stupid reason!!! So we have to force it.
+            tf.DrawString(_vmDoc.GetConstant("MainCGUEmail", 1), font, XBrushes.Black, new XRect(450, 250, page.Width, 200));
+
+            tf.Alignment = XParagraphAlignment.Left;
+            tf.DrawString($"Consultant: {_lvm.dictatedLetter.Consultant}", fontBold, XBrushes.Black, new XRect(20, 150, page.Width/2, 200));
+            tf.DrawString($"Genetic Counsellor: {_lvm.dictatedLetter.GeneticCounsellor}", fontBold, XBrushes.Black, new XRect(20, 165, page.Width/2, 200));
+
             //Note: Xrect parameters are: (Xpos, Ypos, Width, Depth) - use to position blocks of text
             //Depth of 10 seems sufficient for one line of text; 30 is sufficient for two lines. 7 lines needs 100.
 
-            //patient's address
-            tf.Alignment = XParagraphAlignment.Left;
+            string phoneNumbers = "Secretaries Direct Line:" + System.Environment.NewLine;
+
+            var secretariesList = _vmClin.GetStaffMemberList().Where(s => s.BILL_ID == _lvm.dictatedLetter.SecTeam);
+            foreach (var t in secretariesList)
+            {
+                phoneNumbers = phoneNumbers + $"{t.NAME} {t.TELEPHONE}" + System.Environment.NewLine;
+            }
+            
+            tf.DrawString(phoneNumbers, font, XBrushes.Black, new XRect(20, 200, page.Width/2, 200));
+
+            string datesInfo = $"Dictated Date: {_lvm.dictatedLetter.DateDictated.Value.ToString("dd/MM/yyyy")}" + System.Environment.NewLine +
+                               $"Date Typed: {_lvm.dictatedLetter.CreatedDate.Value.ToString("dd/MM/yyyy")}";
+                       
             _lvm.patient = _vmClin.GetPatientDetails(_lvm.dictatedLetter.MPI);
-            tf.DrawString(_lvm.patient.PtLetterAddressee, font, XBrushes.Black, new XRect(50, 235, 500, 10));
+            tf.DrawString($"Please quote our reference on all correspondence: {_lvm.patient.CGU_No}", fontItalic, XBrushes.Black, new XRect(20, 270, page.Width, 200));
 
-            string address = "";
+            tf.DrawString(datesInfo, font, XBrushes.Black, new XRect(20, 290, page.Width / 2, 200));
 
-            if (letterTo == "PT")
-            {                
-                address = _lvm.patient.ADDRESS1 + Environment.NewLine;
-                if (_lvm.patient.ADDRESS2 != null) //this is sometimes null
-                {
-                    address = address + _lvm.patient.ADDRESS2 + Environment.NewLine;
-                }
-                address = address + _lvm.patient.ADDRESS3 + Environment.NewLine;
-                address = address + _lvm.patient.ADDRESS4 + Environment.NewLine;
-                address = address + _lvm.patient.POSTCODE;
-            }
-            if (letterTo == "RD")
-            {
-                //placeholder
-            }
-            if (letterTo == "GP")
-            {
-                //placeholder
-            }
+            //recipient's address
+                       
+            string address = "";            
 
-            tf.DrawString(address, font, XBrushes.Black, new XRect(50, 250, 490, 100));
+            address = _lvm.dictatedLetter.LetterTo;
+
+            tf.DrawString(address, font, XBrushes.Black, new XRect(50, 350, 490, 100));
 
             //Date letter created
-            tf.DrawString(DateTime.Today.ToString("dd MMMM yyyy"), font, XBrushes.Black, new XRect(50, 350, 500, 10)); //today's date
+            //tf.DrawString(DateTime.Today.ToString("dd MMMM yyyy"), font, XBrushes.Black, new XRect(50, 450, 500, 10)); //today's date
 
-            tf.DrawString("Dear " + _lvm.patient.SALUTATION, font, XBrushes.Black, new XRect(50, 375, 500, 10)); //salutation
+            tf.DrawString($"Dear {_lvm.dictatedLetter.LetterToSalutation}", font, XBrushes.Black, new XRect(20, 450, 500, 10)) ; //salutation
 
             //Content containers for all of the paragraphs, as well as other data required
+            string letterRe = _lvm.dictatedLetter.LetterRe;
             string summary = _lvm.dictatedLetter.LetterContentBold;
             string content = _lvm.dictatedLetter.LetterContent;
             string quoteRef = "";
-            string signOff = "Bye bye,";
-            string sigFlename = "";
+            string signOff = "";
+            string sigFilename = "";
             string docCode = "DOT";
             //string referrerName = _lvm.referrer.TITLE + " " + _lvm.referrer.FIRST_NAME + " " + _lvm.referrer.NAME;
             string cc = "";
             string cc2 = "";
             int printCount = 1;
             int totalLength = 500; //used for spacing - so the paragraphs can dynamically resize
-
-            tf.DrawString(summary, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, summary.Length));
-            totalLength = totalLength + summary.Length+20;
-            tf.DrawString(content, font, XBrushes.Black, new XRect(50, totalLength, 500, content.Length));
+            
+            
+            if (_lvm.dictatedLetter.LetterRe != null)
+            {
+                tf.DrawString($"Re  {letterRe}", fontBold, XBrushes.Black, new XRect(20, totalLength, 500, letterRe.Length));
+            }
+            totalLength = totalLength + letterRe.Length / 4 + 20;
+            tf.DrawString(summary, fontBold, XBrushes.Black, new XRect(20, totalLength, 500, summary.Length));
+            totalLength = totalLength + summary.Length / 4 + 20;
+            tf.DrawString(content, font, XBrushes.Black, new XRect(20, totalLength, 500, content.Length));
             totalLength = totalLength + content.Length+20;
             
             signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-            sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
+            sigFilename = $"{_lvm.staffMember.StaffForename}{_lvm.staffMember.StaffSurname}.jpg";
             totalLength = totalLength + 20;
-            XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-            int len = imageSig.PixelWidth;
-            int hig = imageSig.PixelHeight;
-            gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-            totalLength = totalLength + hig + 20;
-            tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+            if (System.IO.File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
+            {
+                XImage imageSig = XImage.FromFile(@$"wwwroot\Signatures\{sigFilename}");
 
-            document.Save("c:\\projects\\VS Test\\ClinicX\\wwwroot\\preview.pdf");
+                int len = imageSig.PixelWidth;
+                int hig = imageSig.PixelHeight;
+                tf.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                totalLength = totalLength + hig + 20;
+            }
+            
+            tf.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength, 500, 20));
 
-
+            document.Save($"c:\\projects\\VS Test\\ClinicX\\wwwroot\\preview-{user}.pdf");
         }
 
         catch (Exception ex)

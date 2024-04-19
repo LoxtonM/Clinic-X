@@ -45,7 +45,10 @@ namespace ClinicX.Controllers
                 
                 var letters = _vm.GetDictatedLettersList(user.STAFF_CODE);
 
-                return View(letters);
+                _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
+                _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
+
+                return View(_lvm);
             }
             catch (Exception ex)
             {
@@ -89,7 +92,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFrom, string letterContent, string letterContentBold, 
-            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated)
+            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode)
         {
             try
             {
@@ -98,7 +101,7 @@ namespace ClinicX.Controllers
                 //two updates required - one to update the addressee (if addressee has changed)
                 if (isAddresseeChanged)
                 {
-                    int success2 = _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, "", "", letterFrom, letterTo, User.Identity.Name);
+                    int success2 = _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, "", letterToCode, letterFrom, letterTo, User.Identity.Name);
 
                     if (success2 == 0) { return RedirectToAction("Index", "WIP"); }
                 }
@@ -248,9 +251,9 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                _lc.PreviewDOTPDF(dID, User.Identity.Name, "PT");
+                _lc.PreviewDOTPDF(dID, User.Identity.Name);
                 //return RedirectToAction("Edit", new { id = dID });
-                return File("~/preview.pdf", "Application/PDF");
+                return File($"~/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
             catch (Exception ex)
             {

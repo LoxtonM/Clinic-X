@@ -21,13 +21,10 @@
                     <tr>
                         <th></th>
                         <th>Test</th>
-                        <th>Ordered by</th>  
-                        <th>Sent To</th>
+                        <th>Ordered by</th>                        
                         <th>@Html.DisplayNameFor(model => model.DATE_REQUESTED)</th>
-                        <th>@Html.DisplayNameFor(model => model.DateExpected)</th>
-                        <th>@Html.DisplayNameFor(model => model.DATE_RECEIVED)</th>
-                        <th>Result</th>
-                        <th>@Html.DisplayNameFor(model => model.ResultGivenDate)</th>
+                        <th>@Html.DisplayNameFor(model => model.ExpectedDate)</th>     
+                        <th>Comments</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,8 +33,7 @@
                         <tr>
                             <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID class="btn btn-success">Select</a></td>
                             <td>@item.TEST</td>
-                            <td>@item.NAME</td>
-                            <td>@item.LOCATION</td>
+                            <td>@item.NAME</td>                           
                             @if (@item.DATE_RECEIVED.HasValue)
                             {
                                 <td>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
@@ -46,32 +42,15 @@
                             {
                                 <td>N/A</td>
                             }
-                            @if (@item.DateExpected.HasValue)
+                            @if (@item.ExpectedDate.HasValue)
                             {
-                                <td>@item.DateExpected.Value.ToString("dd/MM/yyyy")</td>
+                                <td>@item.ExpectedDate.Value.ToString("dd/MM/yyyy")</td>
                             }
                             else
                             {
                                 <td>Unknown</td>
                             }
-                            @if (@item.DATE_RECEIVED.HasValue)
-                            {
-                                <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
-                            }
-                            else
-                            {
-                                <td>N/A</td>
-                            }                            
-                            <td>@item.RESULT</td>                      
-                        
-                            @if(@item.ResultGivenDate.HasValue)
-                            {
-                                <td>@item.ResultGivenDate.Value.ToString("dd/MM/yyyy")</td>
-                            }
-                            else
-                            {
-                                <td>N/A</td>                        
-                            }                    
+                            <td>@item.COMMENTS</td>              
                         </tr>
                     }
                 </tbody>

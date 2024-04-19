@@ -17,13 +17,13 @@
     <div class="container">
         <form id="AddTestForm" asp-action="AddNew">
             <div id="metadata" hidden="true">
-                <input id="txtMPI" name="mpi" />
+                <input id="txtMPI" name="mpi" asp-for=@Model.patient.MPI />
             </div>
             <div class="row g-5 mb-5">
                 <div class="col-md-2">
-                    <label>Test:</label>
+                    <label class="w-100">Test:</label>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <select id="ddlTest" name="test" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach (var t in Model.testList)
@@ -33,11 +33,17 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label>Sent to:</label>
+                    <label class="w-100">Sent to:</label>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <input class="w-100" id="txtSentTo" type="text" name="sentTo" />
-                </div>                
+                </div>
+                <div class="col-md-2">
+                    <label class="w-100">Expected/Follow Up: (leave blank to use standard TAT)</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" id="txtExpected" type="date" name="expectedDate" />
+                </div>
             </div>
 
             @*<div class="row g-5 mb-5">
@@ -58,8 +64,8 @@
 
 <script type="text/javascript">
 
-    window.addEventListener("load", LoadData)
-    document.getElementById("btnBack").addEventListener("click", GoBack);
+    //window.addEventListener("load", LoadData)
+    //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnSave").addEventListener("click", AddTest);
 
 
@@ -71,12 +77,15 @@
     
     function LoadData()
     {
-        document.getElementById("txtMPI").value = "@(Model.patient.MPI)";
-        //document.getElementById("metadata").hidden = true;
+        //var _expdat = document.getElementById("txtExpected");
+        //if (_expdat.value == null)         
+        //{ 
+        //    //somehow get standard date
+       // }
     }
 
     function AddTest()
-    {
+    {       
         if (CheckFormValid() == 1) 
         {
             document.getElementById("AddTestForm").submit();

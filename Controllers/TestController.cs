@@ -32,7 +32,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var tests = _vm.GetTestListByPatient(id.GetValueOrDefault());
+                var tests = _vm.GetTestListByPatient(id.GetValueOrDefault()).OrderBy(t => t.ExpectedDate);
 
                 return View(tests);
             }
@@ -74,11 +74,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int mpi, string test, string sentTo)
+        public async Task<IActionResult> AddNew(int mpi, string test, string sentTo, DateTime expectedDate)
         {
             try
             {                
-                int success = _crud.CallStoredProcedure("Test", "Create", mpi, 0, 0, test, sentTo, "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Test", "Create", mpi, 0, 0, test, sentTo, "", "", User.Identity.Name, expectedDate);
 
                 if (success == 0) { return RedirectToAction("Index", "WIP"); }
 

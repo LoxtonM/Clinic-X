@@ -376,6 +376,7 @@ namespace ClinicX.Models
         public string? StaffSurname { get; set; }
         public string CLINIC_SCHEDULER_GROUPS { get; set; }
         public string? BILL_ID { get; set; }
+        public string? TELEPHONE { get; set; }
         public string POSITION { get; set; }
         public bool InPost { get; set; }
     }
@@ -417,9 +418,10 @@ namespace ClinicX.Models
         [Display(Name = "Requested Date")]
         [DataType(DataType.Date)]
         public DateTime? DATE_REQUESTED { get; set; }
+        public DateTime? StandardTAT { get; set; }
         [Display(Name = "Expected Date")]
         [DataType(DataType.Date)]
-        public DateTime? DateExpected { get; set; }
+        public DateTime? ExpectedDate { get; set; }
         [Display(Name = "Received Date")]
         [DataType(DataType.Date)]
         public DateTime? DATE_RECEIVED { get; set; }
@@ -490,7 +492,7 @@ namespace ClinicX.Models
     {
         [Key]
         public string TEST { get; set; }
-        public int? T_O { get; set; }
+        public Int16? T_O { get; set; }
     }
 
     [Table("DISEASE_STATUS", Schema = "dbo")] //List of all statuses for diagnoses
@@ -549,14 +551,16 @@ namespace ClinicX.Models
         public bool InUse { get; set; }
     }
 
-    [Table("DictatedLetters", Schema = "dbo")] //Dictated le'ahs
+    [Table("ViewPatientDictatedLetterDetails", Schema = "dbo")] //Dictated le'ahs
     public class DictatedLetters
     {
         [Key]
         public int DoTID { get; set; }
         public int MPI { get; set; }
+        public string CGU_No { get; set; }
         public int? RefID { get; set; }
         public string? LetterTo { get; set; }
+        public string? LetterToSalutation { get; set; }
         public string? LetterRe { get; set; }
         public string? LetterFrom { get; set; }
         public string? LetterFromCode { get; set; }
@@ -569,6 +573,7 @@ namespace ClinicX.Models
         public string? SecTeam { get; set; }
         public string? Consultant { get; set; }
         public string? GeneticCounsellor { get; set; }
+        public string? Comments { get; set; }
     }
 
     [Table("DictatedLettersPatients", Schema = "dbo")] //Patients added to DOT
