@@ -16,7 +16,10 @@ namespace ClinicX.ViewModels
         public List<TumourSite> tumourSiteList { get;set; }
         public List<TumourLat> tumourLatList { get; set; }
         public List<TumourMorph> tumourMorphList { get; set; }
-
+        public List<Relation> relationList { get; set; }
+        public List<Gender> genderList { get; set; }
+        public int MPI { get; set; }
+        public int WMFACSID { get; set; }
 
     }
 }

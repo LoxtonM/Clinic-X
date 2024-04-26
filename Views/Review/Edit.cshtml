@@ -1,4 +1,4 @@
-﻿@model ClinicX.Models.Reviews
+﻿@model ClinicX.ViewModels.ReviewVM
 @{
     ViewData["Title"] = "Clinic-X - Review Details";
 }
@@ -10,51 +10,51 @@
             <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Index">Back to Reviews Index</a>
         </div>
         <div class="col-md-1">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.MPI)>Patient Details</a>
+            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Patient Details</a>
         </div>
         <div class="col-md-9"></div>
     </div>
 
     <div class="row mb-5 g-5">
-        <h1>Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.MPI)>@Html.DisplayFor(model => model.FIRSTNAME) @Html.DisplayFor(model => model.LASTNAME)</a></h1>
+        <h1>Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME</a></h1>
     </div>
 
     <div>
         <dl class="row">
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.CGU_No):
+                @Html.DisplayNameFor(model => model.patient.CGU_No):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.CGU_No)
+                @Html.DisplayFor(model => model.review.CGU_No)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Planned_Date):
+                @Html.DisplayNameFor(model => model.review.Planned_Date):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Planned_Date)
+                @Html.DisplayFor(model => model.review.Planned_Date)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Category):
+                @Html.DisplayNameFor(model => model.review.Category):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Category)
+                @Html.DisplayFor(model => model.review.Category)
             </dd>
-            @if (Model.Owner != Model.Recipient)
+            @if (Model.review.Owner != Model.review.Recipient)
             {
                 <dt class="col-sm-2">
                     Owner/Requester:
                 </dt>
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.Owner)
+                    @Html.DisplayFor(model => model.review.Owner)
                 </dd>
             }
-            @if (@Html.ValueFor(model => model.RecipientLogin).ToString().ToUpper() != @Html.ViewContext.HttpContext.User.Identity.Name.ToString().ToUpper())
+            @if (@Html.ValueFor(model => model.review.RecipientLogin).ToString().ToUpper() != @Html.ViewContext.HttpContext.User.Identity.Name.ToString().ToUpper())
             {
                 <dt class="col-sm-2">
                     Recipient:
                 </dt>
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.Recipient)
+                    @Html.DisplayFor(model => model.review.Recipient)
                 </dd>
             }
         </dl>
@@ -65,19 +65,19 @@
                     <label>Date Completed: (leave blank to use today's date)</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" id="txtDateComplete" asp-for=@Model.Completed_Date name="revDate" />
+                    <input class="w-100" id="txtDateComplete" asp-for=@Model.review.Completed_Date name="revDate" />
                 </div>
                 <div class="col-md-2">
                     <label>Status:</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlComplete" asp-for=@Model.Review_Status name="status">
+                    <select class="w-100" id="ddlComplete" asp-for=@Model.review.Review_Status name="status">
                         <option value="Pending">Pending</option>
                         <option value="Complete">Complete</option>
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <input class="w-100" asp-for=@Model.ReviewID name="id" hidden="true" />
+                    <input class="w-100" asp-for=@Model.review.ReviewID name="id" hidden="true" />
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -85,7 +85,7 @@
                     <label>Comments:</label>
                 </div>
                 <div class="col-md-10">
-                    <textarea rows="8" cols="40" asp-for=@Model.Comments name="comments" id="txtComments"></textarea>
+                    <textarea rows="8" cols="40" asp-for=@Model.review.Comments name="comments" id="txtComments"></textarea>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -116,12 +116,12 @@
     {        
         if (document.getElementById("ddlComplete").value == "Complete") 
         {
-            
-            if (document.getElementById("txtDateComplete").value == "") {
                 
-                var today = new Date();
-                //window.alert(today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + ("0" + today.getDate()).slice(-2));
-                document.getElementById("txtDateComplete").value = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + ("0" + today.getDate()).slice(-2);
+            if (document.getElementById("txtDateComplete").value == "") 
+            {                
+                var today = new Date();                                
+                //document.getElementById("txtDateComplete").value = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + ("0" + today.getDate()).slice(-2);
+                document.getElementById("txtDateComplete").value = today.getFullYear() + "-" + (("0" + (today.getMonth()+1))).slice(-2) + "-" + ("0" + today.getDate()).slice(-2);
                 
             }
             //window.alert(document.getElementById("txtDateComplete").value);
@@ -131,7 +131,8 @@
     function CheckFormValid() 
     {
         //gotta protect against those SQL injections!
-        if (document.getElementById("txtComments").value.match(/};.*/)) {
+        if (document.getElementById("txtComments").value.match(/};.*/)) 
+        {
             window.alert("Oi! Stop trying to inject SQL code into my form!");
             return 0;
         }

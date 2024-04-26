@@ -11,12 +11,14 @@ namespace ClinicX.Controllers
     public class HomeController : Controller
     {        
         private readonly ClinicalContext _clinContext;
+        private readonly IConfiguration _config;
         private readonly CaseloadVM cvm;
         private readonly VMData _vm;
 
-        public HomeController(ClinicalContext context)
+        public HomeController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
+            _config = config;
             cvm = new CaseloadVM();
             _vm = new VMData(_clinContext);
         }
@@ -43,7 +45,8 @@ namespace ClinicX.Controllers
                 {
                     cvm.name = "";
                 }
-                
+
+                cvm.isLive = bool.Parse(_config.GetValue("IsLive", ""));
 
                 return View(cvm);
             }

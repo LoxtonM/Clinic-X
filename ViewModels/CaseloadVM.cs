@@ -16,5 +16,6 @@ namespace ClinicX.ViewModels
         public int countLetters { get; set; }
         public string name { get; set; }
         public string staffCode { get; set; }
+        public bool isLive { get; set; }
     }
 }

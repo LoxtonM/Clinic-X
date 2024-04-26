@@ -1,4 +1,4 @@
-@model IEnumerable<ClinicX.Models.Test>
+@model ClinicX.ViewModels.TestDiseaseVM
 
 @{
     ViewData["Title"] = "Clinic-X - All Outstanding Tests";
@@ -10,7 +10,7 @@
     </div>
 
 
-    @if  (Model.Count() == 0)
+    @if  (Model.tests.Count() == 0)
     {    
         <h1 style="text-align:center">There are no tests outstanding.</h1>    
     }
@@ -25,13 +25,13 @@
                         <th></th>
                         <th>Test</th>
                         <th>Ordered for</th>                         
-                        <th>@Html.DisplayNameFor(model => model.DATE_REQUESTED)</th>
-                        <th>@Html.DisplayNameFor(model => model.ExpectedDate)</th>
+                        <th>@Html.DisplayNameFor(model => model.test.DATE_REQUESTED)</th>
+                        <th>@Html.DisplayNameFor(model => model.test.ExpectedDate)</th>
                         <th>Comments</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.tests)
                     {
                         <tr>
                             <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID class="btn btn-success">Select</a></td>
@@ -64,16 +64,16 @@
     <div id="metadata" hidden="true">
         <span id="theurl">@Context.Request.Path</span>
         <span id="thehost">@Context.Request.Host</span>
-        <span id="count">@Model.Count()</span>
+        <span id="count">@Model.tests.Count()</span>
     </div>
 
 </div>
 
 <script type="text/javascript">
 
-    document.getElementById("btnBack").addEventListener("click", GoBack);
-    document.getElementById("btnAddNew").addEventListener("click", OpenTestForm);
-    window.addEventListener("load", LoadPage);
+    //document.getElementById("btnBack").addEventListener("click", GoBack);
+    //document.getElementById("btnAddNew").addEventListener("click", OpenTestForm);
+    //window.addEventListener("load", LoadPage);
 
     function LoadPage() 
     {

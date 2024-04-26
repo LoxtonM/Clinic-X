@@ -28,13 +28,14 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index(int id)
         {
             try
             {
-                var tests = _vm.GetTestListByPatient(id.GetValueOrDefault()).OrderBy(t => t.ExpectedDate);
+                _tvm.patient = _vm.GetPatientDetails(id);
+                _tvm.tests = _vm.GetTestListByPatient(id).OrderBy(t => t.ExpectedDate).ToList();
 
-                return View(tests);
+                return View(_tvm);
             }
             catch (Exception ex)
             {
@@ -47,9 +48,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var tests = _vm.GetTestListByUser(User.Identity.Name);
+                _tvm.tests = _vm.GetTestListByUser(User.Identity.Name).OrderBy(t => t.ExpectedDate).ToList();
 
-                return View(tests);
+                return View(_tvm);
             }
             catch (Exception ex)
             {
@@ -95,13 +96,14 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var test = _vm.GetTestDetails(id);
-                if (test == null)
+                _tvm.test = _vm.GetTestDetails(id);
+                _tvm.patient = _vm.GetPatientDetails(_tvm.test.MPI);
+                if (_tvm.test == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                return View(test);
+                return View(_tvm);
             }
             catch (Exception ex)
             {

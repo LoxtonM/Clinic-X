@@ -77,6 +77,7 @@ namespace ClinicX.Models
         public string? Status { get; set; }
         public string? SiteCode { get; set; }
         public string? Relation { get; set; }
+        public int? RelCode { get; set; }
     }
 
     [Table("RelativesDiagnosis")]
@@ -819,5 +820,23 @@ namespace ClinicX.Models
     public class  CalculationTools
     {
         public string CalculationToolCode { get; set; }
+    }
+
+    [Table("ListRelation", Schema = "dbo")]
+    public class Relation
+    {
+        [Key]
+        public int RelCode { get; set; }
+        public string relation { get; set; }
+        public int ReportOrder { get; set; }
+
+    }
+
+    [Table("ListSex", Schema = "dbo")]
+    public class Gender
+    {
+        [Key]
+        public string SexCode { get; set; }
+        public string Sex { get; set; }
     }
 }

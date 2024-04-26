@@ -10,7 +10,7 @@
             <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Triage Index</a>
         </div>
         <div class="col-md-1">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.triage.MPI)>Patient Details</a>        
+            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.triage.MPI>Patient Details</a>
         </div>    
     </div>
 
@@ -421,7 +421,8 @@
     function CheckFormValid() 
     { //validation to ensure all required data is entered
 
-        if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "") {
+        if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "") 
+        {
             window.alert("Please choose a treatment pathway.");
             return 0;
         }

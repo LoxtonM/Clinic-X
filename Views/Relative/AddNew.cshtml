@@ -1,19 +1,15 @@
-﻿@model ClinicX.Models.Relatives
+﻿@model ClinicX.ViewModels.RelativeDiagnosisVM
 @{
     ViewData["Title"] = "Clinic-X - Relative Details";
 }
 
 <div class="container">
     <div class="row mb-5 g-5">
-        <div class="col-md-2">
-            <button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
+        <div class="col-md-2">            
+            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to Patient</a>
         </div>    
     
-        <div class="col-md-6"></div>
-        <div class="col-md-1">
-            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
-        </div>
+        <div class="col-md-6"></div>        
     </div>
 
     <div class="row mb-5">
@@ -37,50 +33,64 @@
                     <label>Title:</label> 
                 </dd>
                 <dd class="col-sm-1">
-                    <input class="w-50" asp-for=@Model.RelTitle name="title" />
+                    <input class="w-50" asp-for=@Model.relativeDetails.RelTitle name="title" />
                 </dd>
                 <dd class="col-sm-1">
                     <label>First name(s):</label>
                 </dd>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.RelForename1 name="forename1" />
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelForename1 name="forename1" />
                 </dd>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.RelForename2 name="forename2" />
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelForename2 name="forename2" />
                 </dd>
                 <dd class="col-sm-2">
                     <label>Surname:</label>
                 </dd>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.RelSurname name="surname" />
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelSurname name="surname" />
                 </dd>
                 <dt class="col-sm-2">
                     Relation to Proband:
                 </dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.Relation name="relation" />
+                    @*<input class="w-100" asp-for=@Model.relativeDetails.Relation name="relation" />*@
+                    <select class="w-100" asp-for=@Model.relativeDetails.Relation name="relation">
+                        <option value="">Select...</option>
+                        @foreach(var r in Model.relationList)
+                        {
+                            <option value=@r.RelCode>@r.relation</option>
+                        }
+                    </select>
                 </dd>
                 <dt class="col-sm-2">
                     DOB:
                 </dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.DOB name="dob" />
+                    <input class="w-100" asp-for=@Model.relativeDetails.DOB name="dob" />
                 </dd>               
                 <dt class="col-sm-2">DOD: (if deceased)</dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.DOD name="dod" />
+                    <input class="w-100" asp-for=@Model.relativeDetails.DOD name="dod" />
                 </dd>        
                 <dt class="col-sm-2">
                     Sex:
                 </dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.Sex name="sex" />
+                    @*<input class="w-100" asp-for=@Model.relativeDetails.Sex name="sex" />*@
+                    <select class="w-100" asp-for=@Model.relativeDetails.Sex name="sex">
+                        <option value="">Select...</option>
+                        @foreach (var r in Model.genderList)
+                        {
+                            <option value=@r.SexCode>@r.Sex</option>
+                        }
+                    </select>
                 </dd>
                 <dt class="col-sm-2">
                     Affected:
                 </dt>
                 <dd class="col-sm-2">
-                    <select class="w-100" asp-for=@Model.RelAffected name="isAffected">
+                    <select class="w-100" asp-for=@Model.relativeDetails.RelAffected name="isAffected">
                         <option value=0>No</option>
                         <option value=1>Yes</option>
                         <option value=2>Don't know</option>
@@ -101,13 +111,7 @@
 <script type="text/javascript">
 
     document.getElementById("btnSave").addEventListener("click", AddRelative);
-    document.getElementById("btnBack").addEventListener("click", GoBack);
-
-    function GoBack() 
-    {
-        window.history.back();
-        //window.close();
-    }
+        
 
     function AddRelative() 
     {

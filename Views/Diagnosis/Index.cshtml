@@ -1,18 +1,17 @@
-﻿@model IEnumerable<ClinicX.Models.Diagnosis>
+﻿@model ClinicX.ViewModels.TestDiseaseVM
 
 @{
     ViewData["Title"] = "Clinic-X - Diagnoses";
 }
 
 <div class="container">
-    <div>
-        @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
-        @*<a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Back to Patient</a>*@
+    <div>        
+        <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to Patient</a>
     </div>
 
-    @if (Model.Count() > 0)
+    @if (Model.diagnosisList.Count() > 0)
     {
-        <h1 class="text-center">Diagnoses for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>@Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME)</a></h1>
+        <h1 class="text-center">Diagnoses for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME</a></h1>
 
         <div class="row g-5 mb-5">
             <table class="table">
@@ -26,7 +25,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.diagnosisList)
                     {   
                         <tr>
                             <td><a asp-controller="Diagnosis" asp-action="Edit" asp-route-id="@item.ID" class="btn btn-success">Select</a></td>
@@ -48,45 +47,8 @@
 
     <div class="row g-5 mb-5">
         <div col-md-2></div>
-        @*<div col-md-2><a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AddNew" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Add New</a></div>*@
-        <div col-md-2><button id="btnAddNew" class="btn btn-default btn-success">Add New</button> </div>
+        <div col-md-2><a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AddNew" asp-route-id=@Model.patient.MPI)>Add New</a></div>
+        @*<div col-md-2><button id="btnAddNew" class="btn btn-default btn-success">Add New</button> </div>*@
         <div col-md-8></div>
-    </div>
-
-    <div id="metadata" hidden="true">
-        <span id="theurl">@Context.Request.Path</span>
-        <span id="thehost">@Context.Request.Host</span>
-        <span id="count">@Model.Count()</span>    
-    </div>
+    </div>    
 </div>
-
-<script type="text/javascript">
-
-    //document.getElementById("btnBack").addEventListener("click", GoBack);
-    document.getElementById("btnAddNew").addEventListener("click", AddNew);
-    //window.addEventListener("load", LoadPage);
-
-    function LoadPage() {
-
-        //document.getElementById("metadata").hidden = true;
-    }
-
-    function GoBack() {
-        window.history.back();
-        //window.close();
-    }
-
-
-    function AddNew() 
-    {       
-        //this incredibly round-about method is necessary because apparently it is impossible to simply pass the URL parameter into the button!
-        var surl = "http://" + document.getElementById("thehost").innerHTML + document.getElementById("theurl").innerHTML;
-        //surl = surl.replace("Index", "AddNew");
-        //window.alert(surl);
-        const _url = window.location.toString();  
-        const smpi = _url.substring(_url.indexOf("=")+1, _url.length);  
-        surl = surl + "/AddNew?id=" + smpi;
-        window.location.href = (surl);
-    }
-
-</script>

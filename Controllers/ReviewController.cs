@@ -36,9 +36,9 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                var reviews = _vm.GetReviewsList(User.Identity.Name);
+                _rvm.reviewList = _vm.GetReviewsList(User.Identity.Name);
 
-                return View(reviews);
+                return View(_rvm);
             }
             catch (Exception ex)
             {
@@ -54,8 +54,7 @@ namespace ClinicX.Controllers
             {
                 _rvm.referrals = _vm.GetActivityDetails(id);
                 _rvm.staffMembers = _vm.GetClinicalStaffList();
-                int impi = _rvm.referrals.MPI;
-                _rvm.patient = _vm.GetPatientDetails(impi);
+                _rvm.patient = _vm.GetPatientDetails(_rvm.referrals.MPI);
                
                 return View(_rvm);
             }
@@ -107,15 +106,15 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var review = _vm.GetReviewDetails(id);
-                
-                
-                if (review == null)
+                _rvm.review = _vm.GetReviewDetails(id);
+                _rvm.patient = _vm.GetPatientDetails(_rvm.review.MPI);
+
+                if (_rvm.review == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                return View(review);
+                return View(_rvm);
             }
             catch (Exception ex)
             {
@@ -128,7 +127,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var review = _vm.GetReviewDetails(id);
+                _rvm.review = _vm.GetReviewDetails(id);
 
                 DateTime reviewDate = new DateTime();
 

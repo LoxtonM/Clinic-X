@@ -842,6 +842,22 @@ namespace ClinicX.Meta
             return item.ToList();
         }
 
+        public List<Relation> GetRelationsList()
+        {
+            var item = from i in _clinContext.Relations
+                       select i;
+
+            return item.ToList();
+        }
+
+        public List<Gender> GetGenderList()
+        {
+            var item = from i in _clinContext.Genders
+                       select i;
+
+            return item.ToList();
+        }
+
         public string GetConstant(string constantCode, int constantValue)
         {
             var item = _docContext.Constants.FirstOrDefault(c => c.ConstantCode == constantCode);

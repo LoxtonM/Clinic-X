@@ -1,13 +1,12 @@
-﻿@model ClinicX.ViewModels.ClinicVM
+﻿@model ClinicX.ViewModels.ClinicalNoteVM
 @{
     ViewData["Title"] = "Clinic-X - Create Clinical Note";
 }
 
 <div class="container">
-    <div class="row mb-5 g-5">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+    <div class="row mb-5 g-5">       
         <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.activityItem.MPI)>Back to Index</a>
+            <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.activityItem.MPI>Back to Index</a>
         </div>
         <div class="col-md-2">
             <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveNote" />
@@ -21,9 +20,9 @@
     <div class="container mb-5">
     
         <form id="ClinicalNote" asp-action="Create">
-            <div id="metadata">
-                <input name="refID" value="@Html.DisplayFor(model => model.activityItem.RefID)" />
-                <input name="mpi" value="@Html.DisplayFor(model => model.activityItem.MPI)" />
+            <div id="metadata" hidden="true">
+                <input name="refID" value=@Model.activityItem.RefID />
+                <input name="mpi" value=@Model.activityItem.MPI />
             </div>
 
             <div class="row mb-5">
@@ -35,7 +34,7 @@
                         <option value="" selected></option>
                         @foreach (var n in Model.noteTypeList)
                         {
-                            <option value="@n.NoteType ">@n.NoteType</option>
+                            <option value=@n.NoteType>@n.NoteType</option>
                         }
                     </select>                
                 </div>
@@ -44,8 +43,7 @@
 
             <div class="row mb-5">
                 <div class="col-md-2">Details:</div>
-                <div class="col-md-8">
-                    @*<textarea id="txtClinicalNote" rows="20" cols="150" asp-for="clinicalNotes.ClinicalNote"></textarea>*@
+                <div class="col-md-8">                    
                     <textarea id="txtClinicalNote" rows="20" cols="150" name="clinicalNote"></textarea>
                 </div>
                 <div class="col-md-2"></div>
@@ -56,14 +54,7 @@
 
 
 <script type="text/javascript">
-    //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnSaveNote").addEventListener("click", SaveNote);
-    window.addEventListener("load", LoadNote);
-
-    function GoBack() 
-    {
-        window.history.back();        
-    }
 
     function SaveNote() 
     {        
@@ -71,12 +62,7 @@
         {
             document.getElementById("ClinicalNote").submit();
         }
-    }
-    
-    function LoadNote() 
-    {
-        document.getElementById("metadata").hidden = true;
-    }
+    }     
 
     function CheckFormValid() 
     { //validation to ensure all required data is entered

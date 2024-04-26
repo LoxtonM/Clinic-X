@@ -7,8 +7,7 @@
 <div class="container">
     <div class ="row g-5 mb-5">
         <div class="col-md-2">
-            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Diagnosis List</a>
+            <a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Diagnosis List</a>
         </div>
     </div>
 
@@ -61,13 +60,8 @@
 <script type="text/javascript">
 
     document.getElementById("btnSave").addEventListener("click", AddTest);
-    document.getElementById("btnBack").addEventListener("click", GoBack);
-
-    function GoBack() 
-    {
-        window.history.back();
-        //window.close();
-    }
+   
+   
 
     function AddTest() 
     {

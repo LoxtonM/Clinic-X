@@ -1,4 +1,4 @@
-﻿@model ClinicX.Models.Test
+﻿@model ClinicX.ViewModels.TestDiseaseVM
 
 @{
     ViewData["Title"] = "Clinic-X - Test Details";
@@ -11,46 +11,46 @@
             <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AllOutstandingTests">Back to Test Index</a>
         </div>
         <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.MPI)>Full Test List for @Html.ValueFor(Model => Model.CGU_No)</a>
+            <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.patient.MPI>Full Test List for @Model.patient.CGU_No</a>
         </div>
         
     </div>
 
-    <h1>Record Test for @Html.ValueFor(Model => Model.FIRSTNAME) @Html.ValueFor(Model => Model.LASTNAME) </h1>
+    <h1>Record Test for @Model.patient.FIRSTNAME @Model.patient.LASTNAME </h1>
     <div>
         <dl class="row mb-5">
             <dt class="col-sm-2">
                 Test:
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.TEST)
+                @Html.DisplayFor(model => model.test.TEST)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.DATE_REQUESTED):
+                @Html.DisplayNameFor(model => model.test.DATE_REQUESTED):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.DATE_REQUESTED)
+                @Html.DisplayFor(model => model.test.DATE_REQUESTED)
             </dd>
             <dt class="col-sm-2">
                 Requested by:
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.NAME)
+                @Html.DisplayFor(model => model.test.NAME)
             </dd>
             <dt class="col-sm-2">
                 Sent to Lab:
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.LOCATION)
+                @Html.DisplayFor(model => model.test.LOCATION)
             </dd>
             <dt class="col-sm-2">
                 Date Expected:
             </dt>
-            @if (Model.ExpectedDate!= null)
+            @if (Model.test.ExpectedDate != null)
             {
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.ExpectedDate)
-                    @if (Model.ExpectedDate <= DateTime.Today)
+                    @Html.DisplayFor(model => model.test.ExpectedDate)
+                    @if (Model.test.ExpectedDate <= DateTime.Today)
                     {
                         <span> - This result is due, consider chasing</span>
                     }
@@ -68,20 +68,20 @@
     <div class="container mb-5">
         <form id="TestForm" asp-action="Edit">
             <div id="metadata" hidden="true">
-                <input class="w-100" asp-for=@Model.TestID type="text" id="txtTestID" name="testID" />
+                <input class="w-100" asp-for=@Model.test.TestID type="text" id="txtTestID" name="testID" />
             </div>
             <div class="row mb-5">
                 <div class="col-md-1">
                     Result:
                 </div>
                 <div class="col-md-5">
-                    <input class="w-100" asp-for=@Model.RESULT id="txtResult" type="text" name="result" />
+                    <input class="w-100" asp-for=@Model.test.RESULT id="txtResult" type="text" name="result" />
                 </div>
                 <div class="col-md-1">
                     Comments:
                 </div>
                 <div class="col-md-5">
-                    <input class="w-100" asp-for=@Model.COMMENTS id="txtComments" type="text" name="comments" />
+                    <input class="w-100" asp-for=@Model.test.COMMENTS id="txtComments" type="text" name="comments" />
                 </div>
             </div>
             <div class="row mb-5">
@@ -89,17 +89,17 @@
                     Date Received:
                 </div>
                 <div class="col-md-4">                     
-                    <input class="w-100" asp-for=@Model.DATE_RECEIVED id="txtDateRec" type="date" name="receivedDate" />                    
+                    <input class="w-100" asp-for=@Model.test.DATE_RECEIVED id="txtDateRec" type="date" name="receivedDate" />
                 </div>
                 <div class="col-md-1">
                     Date Given to Patient:
                 </div>
                 <div class="col-md-4">                    
-                    <input class="w-100" asp-for=@Model.ResultGivenDate id="txtDateGib" type="date" name="givenDate" />                   
+                    <input class="w-100" asp-for=@Model.test.ResultGivenDate id="txtDateGib" type="date" name="givenDate" />                   
                 </div>
                 <div class="col-md-1">Complete:</div>
                 <div class="col-md-1">
-                    <select class="w-100" asp-for=@Model.COMPLETE id="ddlComplete" name="complete">
+                    <select class="w-100" asp-for=@Model.test.COMPLETE id="ddlComplete" name="complete">
                         @*because obviously a yes/no field is an integer not a boolean!*@                        
                         <option value=0>No</option>
                         <option value=-1>Yes</option>
@@ -132,7 +132,7 @@
 
    function LoadTestData()   
    {
-        var _complete = "@(Model.COMPLETE)";        
+        var _complete = "@(Model.test.COMPLETE)";
 
         if (_complete == -1) 
         {

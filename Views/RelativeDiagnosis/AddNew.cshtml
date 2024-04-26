@@ -10,7 +10,7 @@
     <div class="row g-5 mb-5">
         <div class="col-md-2">
             @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-iRelID=@Model.relativeDetails.relsid>Back to Diagnosis List</a>
+            <a type="button" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativeDetails.relsid>Back to Diagnosis List</a>
         </div>
     </div>
 
@@ -143,7 +143,7 @@
 
 
             <div id="metadata" hidden="true">
-                <input name="iRelID" value="@Html.DisplayFor(model => model.relativeDetails.relsid)" />
+                <input name="relID" value="@Html.DisplayFor(model => model.relativeDetails.relsid)" />
             </div>
         </form>
 

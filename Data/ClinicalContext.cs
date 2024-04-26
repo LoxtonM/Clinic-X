@@ -66,6 +66,8 @@ namespace ClinicX.Data
         public DbSet<SurvFreqCodes> SurvFreqCodes { get; set; }
         public DbSet<DiscontinuedReasonCodes> DiscontinuedReasonCodes { get; set; }
         public DbSet<CalculationTools> CalculationTools { get; set; }
+        public DbSet<Relation> Relations { get; set; }
+        public DbSet<Gender> Genders { get; set; }
 
     }
 }

@@ -4,14 +4,19 @@
 }
 
 <div class="container">
-    <div class="row mb-5 g-5">    
+    <div class="row mb-5 g-5"> 
+        @if(!Model.isLive)
+        {
+            <h1 class="text-center" style="color:red">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
+        }
+
         @if(Model.caseLoad.Count() == 0)
         {        
             <h2 class="text-center">You have no current caseload.</h2>
         }
         else
         {
-            <h2 class="text-center">Welcome, @Html.DisplayFor(model => model.name)!</h2>
+            <h2 class="text-center">Welcome, @Model.name!</h2>
             <br />
 
             <p style="text-align:center"><img src="~/images/clinic-x-logo-2.png" width="500" height="200" /></p>
@@ -23,22 +28,22 @@
             <br />
             <div class="row mb-5 g-5">            
                 <div class="col-md-2">
-                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Clinic" asp-action="Index">Clinics - @Html.ValueFor(model => model.countClinics)</a>
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Clinic" asp-action="Index">Clinics - @Model.countClinics</a>
                 </div>        
                 <div class="col-md-2">
-                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Triages - @Html.ValueFor(model => model.countTriages)</a>
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Triages - @Model.countTriages</a>
                 </div>
                 <div class="col-md-2">
-                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index"><span style="font-size:medium">Cancer ICPs - @Html.ValueFor(model => model.countCancerICPs)</span></a>
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index"><span style="font-size:medium">Cancer ICPs - @Model.countCancerICPs</span></a>
                 </div>
                 <div class="col-md-2">
-                   <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Test" asp-action="AllOutstandingTests">Tests - @Html.ValueFor(model => model.countTests)</a>
+                   <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Test" asp-action="AllOutstandingTests">Tests - @Model.countTests</a>
                 </div>        
                 <div class="col-md-2">
-                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Review">Reviews - @Html.ValueFor(model => model.countReviews)</a>
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Review">Reviews - @Model.countReviews</a>
                 </div>        
                 <div class="col-md-2">
-                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="DictatedLetter">Letters - @Html.ValueFor(model => model.countLetters)</a>
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="DictatedLetter">Letters - @Model.countLetters</a>
                 </div>            
             </div>
         }

@@ -1,4 +1,4 @@
-﻿@model ClinicX.Models.Relatives
+﻿@model ClinicX.ViewModels.RelativeDiagnosisVM
 @{
     ViewData["Title"] = "Clinic-X - Relative Details";
 }
@@ -6,21 +6,17 @@
     <div class="row mb-5 g-5">
         <div class="col-md-2">
             @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>
+            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to Patient</a>
         </div>
         <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index">Record Diagnoses</a>
-        </div>
-        @*<div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index">Record Tests</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index">Clinical Notes</a>
-        </div>*@
+            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="RelativesDiagnosis" asp-action="Index" asp-route-relID =" @Model.relativeDetails.relsid">Record Diagnoses</a>
+        </div>       
         <div class="col-md-8"></div>
+        @*
         <div class="col-md-1">
             <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
         </div>
+        *@
     </div>
 
     <div class="row mb-5">
@@ -28,29 +24,29 @@
     </div>
 
     <div class="row mb-5 g-5">
-        <h1>Relative Details for @Html.DisplayFor(model => model.RelForename1) @Html.DisplayFor(model => model.RelSurname)</h1>
+        <h1>Relative Details for @Model.relativeDetails.RelForename1 @Model.relativeDetails.RelSurname</h1>
     </div>
 
     <div class="row mb-5 g-5">
         <form id="frmEdit" asp-action="Edit">
             <div class="row" id="MetaData">
-                <input asp-for=@Model.relsid name="id" hidden="true" />
+                <input asp-for=@Model.relativeDetails.relsid name="id" hidden="true" />
             </div>
             <dl class="row">        
                 <dt class="col-sm-2">
                     Full Name:
                 </dt>
                 <dd class="col-sm-1">
-                    <input class="w-50" asp-for=@Model.RelTitle name="title" /> 
+                    <input class="w-50" asp-for=@Model.relativeDetails.RelTitle name="title" />
                 </dd>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.RelForename1 name="forename1" /> 
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelForename1 name="forename1" />
                 </dd>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.RelForename2 name="forename2" /> 
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelForename2 name="forename2" />
                 </dd>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.RelSurname name="surname" />
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelSurname name="surname" />
                 </dd>
             </dl>
             <dl class="row">
@@ -58,7 +54,14 @@
                     Relation to Proband:
                 </dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.Relation name="relation" />
+                    @*<input class="w-100" asp-for=@Model.relativeDetails.Relation name="relation" />*@
+                    <select class="w-100" asp-for=@Model.relativeDetails.RelCode name="relation">
+                        <option value="">Select...</option>
+                        @foreach (var r in Model.relationList)
+                        {
+                            <option value=@r.RelCode>@r.relation</option>
+                        }
+                    </select>
                 </dd>
             </dl>
             <dl class="row">                
@@ -66,11 +69,11 @@
                     DOB:
                 </dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.DOB name="dob" />
+                    <input class="w-100" asp-for=@Model.relativeDetails.DOB name="dob" />
                 </dd>               
                 <dt class="col-sm-2">DOD (if deceased)</dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.DOD name="dod" />
+                    <input class="w-100" asp-for=@Model.relativeDetails.DOD name="dod" />
                 </dd>
             </dl>
             <dl class="row">
@@ -78,13 +81,20 @@
                     Sex:
                 </dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.Sex name="sex" />
+                    @*<input class="w-100" asp-for=@Model.relativeDetails.Sex name="sex" />*@
+                    <select class="w-100" asp-for=@Model.relativeDetails.Sex name="sex">
+                        <option value="">Select...</option>
+                        @foreach (var r in Model.genderList)
+                        {
+                            <option value=@r.SexCode>@r.Sex</option>
+                        }
+                    </select>
                 </dd>
                 <dt class="col-sm-2">
                     Affected
                 </dt>
                 <dd class="col-sm-2">
-                    <select class="w-100" asp-for=@Model.RelAffected name="isAffected">
+                    <select class="w-100" asp-for=@Model.relativeDetails.RelAffected name="isAffected">
                         <option value=0>No</option>
                         <option value=1>Yes</option>
                         <option value=2>Don't know</option>
@@ -109,19 +119,23 @@
     document.getElementById("btnSave").addEventListener("click", EditRelative);
     document.getElementById("btnBack").addEventListener("click", GoBack);
 
-    function GoBack() {
+    function GoBack() 
+    {
         window.history.back();
         //window.close();
     }
 
-    function EditRelative() {
+    function EditRelative() 
+    {
 
-        if (CheckFormValid() == 1) {
+        if (CheckFormValid() == 1) 
+        {
             document.getElementById("frmEdit").submit();
         }
     }
 
-    function CheckFormValid() { //validation to ensure all required data is entered
+    function CheckFormValid() 
+    { //validation to ensure all required data is entered
 
 
         //if (document.getElementById("txtComments").value.match(/};.*/)) {

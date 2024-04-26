@@ -14,7 +14,8 @@ namespace ClinicX.Controllers
         private readonly IConfiguration _config;
         private readonly VMData _vm;
         private readonly CRUD _crud;
-        private readonly ClinicVM _cvm;
+        //private readonly ClinicVM _cvm;
+        private readonly ClinicalNoteVM _cvm;
         private readonly MiscData _misc;
 
         public ClinicalNoteController(ClinicalContext context, IConfiguration config)
@@ -23,7 +24,7 @@ namespace ClinicX.Controllers
             _config = config;
             _vm = new VMData(_clinContext);
             _crud = new CRUD(_config);
-            _cvm = new ClinicVM();
+            _cvm = new ClinicalNoteVM();
             _misc = new MiscData(_config);
         }       
         
@@ -31,12 +32,12 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Index(int id)
         {
             try
-            {          
-                var notes = _vm.GetClinicalNoteList(id);                                
+            {                                        
+                _cvm.clinicalNotesList = _vm.GetClinicalNoteList(id);
+                _cvm.patient = _vm.GetPatientDetails(id);
+                _cvm.noteCount = _cvm.clinicalNotesList.Count();                
 
-                int count = notes.Count();
-
-                return View(notes);
+                return View(_cvm);
             }
             catch(Exception ex)
             {
@@ -88,9 +89,10 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                var note = _vm.GetClinicalNoteDetails(id);
-                
-                return View(note);
+                _cvm.clinicalNote = _vm.GetClinicalNoteDetails(id);
+                _cvm.patient = _vm.GetPatientDetails(_cvm.clinicalNote.MPI.GetValueOrDefault());
+
+                return View(_cvm);
             }
             catch (Exception ex)
             {
@@ -126,10 +128,12 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> ChooseAppt(int id)
         {
             try
-            {   
-                var appts = _vm.GetClinicByPatientsList(id);
+            {
+                //var appts = _vm.GetClinicByPatientsList(id);
+                _cvm.patient = _vm.GetPatientDetails(id);
+                _cvm.Clinics = _vm.GetClinicByPatientsList(id);
 
-                return View(appts);
+                return View(_cvm);
             }
             catch (Exception ex)
             {

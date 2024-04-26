@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ClinicX.Models.Test>
+﻿@model ClinicX.ViewModels.TestDiseaseVM
 
 @{
     ViewData["Title"] = "Clinic-X - Tests";
@@ -11,9 +11,9 @@
     </div>
 
 
-    @if (Model.Count() >= 1)
+    @if (Model.tests.Count() >= 1)
     {
-        <h1 class="text-center">Tests for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>@Html.DisplayFor(model => model.FirstOrDefault().FIRSTNAME) @Html.DisplayFor(model => model.FirstOrDefault().LASTNAME) @Html.DisplayFor(model => model.FirstOrDefault().CGU_No)</a></h1>
+        <h1 class="text-center">Tests for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.patient.CGU_No</a></h1>
 
         <div class="row g-5 mb-5">
             <table class="table">
@@ -22,13 +22,13 @@
                         <th></th>
                         <th>Test</th>
                         <th>Ordered by</th>                        
-                        <th>@Html.DisplayNameFor(model => model.DATE_REQUESTED)</th>
-                        <th>@Html.DisplayNameFor(model => model.ExpectedDate)</th>     
+                        <th>@Html.DisplayNameFor(model => model.test.DATE_REQUESTED)</th>
+                        <th>@Html.DisplayNameFor(model => model.test.ExpectedDate)</th>     
                         <th>Comments</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.tests)
                     {
                         <tr>
                             <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID class="btn btn-success">Select</a></td>
@@ -63,14 +63,16 @@
     }
 
     <div class="row g-5 mb-5">        
-        @*<div col-md-2><a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AddNew" asp-route-id=@Html.ValueFor(model => model.FirstOrDefault().MPI)>Add New</a></div>*@
-        <div col-md-2><button id="btnAddNew" class="btn btn-default btn-success">Add New</button> </div>        
+        <div col-md-2>
+            <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AddNew" asp-route-id=@Model.patient.MPI>Add New</a>
+        </div>
+        @*<div col-md-2><button id="btnAddNew" class="btn btn-default btn-success">Add New</button> </div>        *@
     </div>
 
     <div id="metadata" hidden="true">
         <span id="theurl">@Context.Request.Path</span>
         <span id="thehost">@Context.Request.Host</span>
-        <span id="count">@Model.Count()</span>
+        <span id="count">@Model.tests.Count()</span>
     </div>
 
 </div>

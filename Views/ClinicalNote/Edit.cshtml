@@ -1,4 +1,4 @@
-﻿@model ClinicX.Models.ClinicalNotes
+﻿@model ClinicX.ViewModels.ClinicalNoteVM
 @{
     ViewData["Title"] = "Clinic-X - Edit Clinical Note";
 }
@@ -7,26 +7,26 @@
     <div class=" row mb-5 g-5">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
         <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.MPI)>Back to Clinical Notes Index</a>
+            <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Clinical Notes Index</a>
         </div>
         <div class="col-md-2">
             <input type="submit" class="btn btn-default btn-success" value="Save" id="btnSaveNote" />
         </div>
         <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" id="btnHPO" asp-controller="HPO" asp-action="HPOTerm" asp-route-id=@Html.ValueFor(model => model.ClinicalNoteID)>Extract HPO Codes</a>
+            <a type="button" class="btn btn-default btn-success" id="btnHPO" asp-controller="HPO" asp-action="HPOTerm" asp-route-id=@Model.clinicalNote.ClinicalNoteID>Extract HPO Codes</a>
         </div>
         <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" id="btnFinalise" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Html.ValueFor(model => model.ClinicalNoteID)>Finalise</a>
+            <a type="button" class="btn btn-default btn-success" id="btnFinalise" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Model.clinicalNote.ClinicalNoteID>Finalise</a>
         </div>
     </div>
 
-    <h1>Edit Clinical Note</h1>
+    <h1>Edit clinical note for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
 
     <div class="container mb-5">
         <form id="ClinicalNote" asp-action="Edit">
             <div id="metadata" hidden="true">            
-                <input asp-for="ClinicalNoteID" name="noteID" />
-                <input id="txtDCTMSts" asp-for="CN_DCTM_sts" />
+                <input asp-for=@Model.clinicalNote.ClinicalNoteID name="noteID" />
+                <input id="txtDCTMSts" asp-for=@Model.clinicalNote.CN_DCTM_sts />
             </div>
 
             <div class="row mb-5">
@@ -34,7 +34,7 @@
                     Note Type:
                 </div>
                 <div class="col-md-4">                
-                    <input id="txtNoteType" asp-for="NoteType" readonly="readonly" />
+                    <input id="txtNoteType" asp-for=@Model.clinicalNote.NoteType readonly="readonly" />
                 </div>
                 <div class="col-md-6"></div>
             </div>
@@ -42,7 +42,7 @@
             <div class="row mb-5">
                 <div class="col-md-2">Details:</div>
                 <div class="col-md-8">
-                    <textarea id="txtClinicalNote" rows="20" cols="150" asp-for="ClinicalNote" name="clinicalNote"></textarea>
+                    <textarea id="txtClinicalNote" rows="20" cols="150" asp-for=@Model.clinicalNote.ClinicalNote name="clinicalNote"></textarea>
                 </div>
                 <div class="col-md-2"></div>
             </div>

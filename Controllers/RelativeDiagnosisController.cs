@@ -24,9 +24,10 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var relDiag = _vm.GetRelativeDiagnosisList(relID);
-
-                return View(relDiag);
+                //var relDiag = _vm.GetRelativeDiagnosisList(relID);
+                _rdvm.relativeDetails = _vm.GetRelativeDetails(relID);
+                _rdvm.relativesDiagnosisList = _vm.GetRelativeDiagnosisList(relID);                
+                return View(_rdvm);
             }
             catch (Exception ex)
             {

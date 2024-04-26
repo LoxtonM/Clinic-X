@@ -10,13 +10,13 @@
             <a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home Page</a>
         </div>
         <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>Record Diagnoses</a>
+            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>Record Diagnoses</a>
         </div>
         <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>Record Tests</a>
+            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.patient.MPI>Record Tests</a>
         </div>
         <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>Clinical Notes</a>
+            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Clinical Notes</a>
         </div>
         <div class="col-md-6"></div>
         <div class="col-md-1">
@@ -210,7 +210,7 @@
 
 
     <div class="collapse show" id="collapsePatientDetails">
-        <h1>Patient Details for @Html.DisplayFor(model => model.patient.FIRSTNAME) @Html.DisplayFor(model => model.patient.LASTNAME)</h1>
+        <h1>Patient Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
 
         <dl class="row">
             @*Row 1 - CGU number, GP facility*@
@@ -510,7 +510,7 @@
         }
         else
         {
-            <h4>No HPO terms have been added.</h4>
+            <h4>No HPO codes have been added. You can add HPO codes from a clinical note.</h4>
         }    
     </div>
 
@@ -564,7 +564,7 @@
 
         <div class="row mb-5 g-5">
             <div class="col-md-2">
-                <a type="button" asp-controller="Relative" asp-action="AddNew" asp-route-WMFACSID=@Html.ValueFor(model => model.patient.WMFACSID) id="btnAddNew" class="btn btn-default btn-success">Add New Relative</a>
+                <a type="button" asp-controller="Relative" asp-action="AddNew" asp-route-WMFACSID=@Model.patient.WMFACSID id="btnAddNew" class="btn btn-default btn-success">Add New Relative</a>
             </div>
         </div>
     </div>

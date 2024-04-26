@@ -12,7 +12,7 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly TestDiseaseVM dvm;
+        private readonly TestDiseaseVM _dvm;
         private readonly VMData _vm;
         private readonly CRUD _crud;
 
@@ -20,7 +20,7 @@ namespace ClinicX.Controllers
         {
             _clinContext = context;
             _config = config;
-            dvm = new TestDiseaseVM();
+            _dvm = new TestDiseaseVM();
             _vm = new VMData(_clinContext);
             _crud = new CRUD(_config);
         }
@@ -30,10 +30,11 @@ namespace ClinicX.Controllers
         public async Task <IActionResult> Index(int id)
         {
             try
-            {           
-                var diag = _vm.GetDiseaseListByPatient(id);
+            {
+                _dvm.diagnosisList = _vm.GetDiseaseListByPatient(id);
+                _dvm.patient = _vm.GetPatientDetails(id);
 
-                return View(diag);
+                return View(_dvm);
             }
             catch (Exception ex)
             {
@@ -46,10 +47,10 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                dvm.diseaseList = _vm.GetDiseaseList();
-                dvm.patient = _vm.GetPatientDetails(id);
-                dvm.statusList = _vm.GetStatusList();
-                return View(dvm);
+                _dvm.diseaseList = _vm.GetDiseaseList();
+                _dvm.patient = _vm.GetPatientDetails(id);
+                _dvm.statusList = _vm.GetStatusList();
+                return View(_dvm);
             }
             catch (Exception ex)
             {
@@ -84,12 +85,11 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                dvm.Diagnosis = _vm.GetDiagnosisDetails(id);
-                int iMPI = dvm.Diagnosis.MPI;
-                dvm.patient = _vm.GetPatientDetails(iMPI);
-                dvm.statusList = _vm.GetStatusList();
+                _dvm.diagnosis = _vm.GetDiagnosisDetails(id);               
+                _dvm.patient = _vm.GetPatientDetails(_dvm.diagnosis.MPI);
+                _dvm.statusList = _vm.GetStatusList();
 
-                return View(dvm);
+                return View(_dvm);
             }
             catch (Exception ex)
             {
