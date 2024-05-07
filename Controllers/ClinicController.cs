@@ -12,7 +12,11 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly ClinicVM _cvm;
-        private readonly VMData _vm;
+        private readonly PatientData _patientData;
+        private readonly ReferralData _referralData;
+        private readonly ActivityData _activityData;
+        private readonly StaffUserData _staffUser;
+        private readonly ClinicData _clinicData;
         private readonly CRUD _crud;
 
         public ClinicController(ClinicalContext context, IConfiguration config)
@@ -20,7 +24,11 @@ namespace ClinicX.Controllers
             _clinContext = context;
             _config = config;
             _cvm = new ClinicVM();
-            _vm = new VMData(_clinContext);
+            _patientData = new PatientData(_clinContext);
+            _referralData = new ReferralData(_clinContext);
+            _activityData = new ActivityData(_clinContext);
+            _staffUser = new StaffUserData(_clinContext);
+            _clinicData = new ClinicData(_clinContext);
             _crud = new CRUD(_config);
         }
 
@@ -41,9 +49,9 @@ namespace ClinicX.Controllers
                     filterDate = DateTime.Parse(DateTime.Now.AddDays(-90).ToString());
                 }
                                 
-                _cvm.pastClinicsList = _vm.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE < DateTime.Today).ToList();
-                _cvm.currentClinicsList = _vm.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE == DateTime.Today).ToList();
-                _cvm.futureClinicsList = _vm.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE > DateTime.Today).ToList();
+                _cvm.pastClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE < DateTime.Today).ToList();
+                _cvm.currentClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE == DateTime.Today).ToList();
+                _cvm.futureClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE > DateTime.Today).ToList();
 
                 if (isShowOutstanding.GetValueOrDefault())
                 {
@@ -73,10 +81,9 @@ namespace ClinicX.Controllers
                 {
                     return NotFound();
                 }
-
-                //var appts = _vm.GetClinicDetails(id);
-                _cvm.Clinic = _vm.GetClinicDetails(id);
-                _cvm.linkedReferral = _vm.GetReferralDetails(_cvm.Clinic.ReferralRefID);
+                                
+                _cvm.Clinic = _clinicData.GetClinicDetails(id);
+                _cvm.linkedReferral = _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
 
                 if (_cvm.Clinic == null)
                 {
@@ -102,13 +109,13 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
-                _cvm.staffMembers = _vm.GetClinicalStaffList();
-                _cvm.activityItems = _vm.GetClinicDetailsList(id);
-                _cvm.activityItem = _vm.GetActivityDetails(id);
-                _cvm.outcomes = _vm.GetOutcomesList();
-                _cvm.ethnicities = _vm.GetEthnicitiesList();
-                int iMPI = _cvm.activityItem.MPI;
-                _cvm.patients = _vm.GetPatientDetails(iMPI);
+                _cvm.staffMembers = _staffUser.GetClinicalStaffList();
+                _cvm.activityItems = _activityData.GetClinicDetailsList(id);
+                _cvm.activityItem = _activityData.GetActivityDetails(id);
+                _cvm.outcomes = _clinicData.GetOutcomesList();
+                _cvm.ethnicities = _clinicData.GetEthnicitiesList();
+                int mpi = _cvm.activityItem.MPI;
+                _cvm.patients = _patientData.GetPatientDetails(mpi);
 
                 return View(_cvm);
             }

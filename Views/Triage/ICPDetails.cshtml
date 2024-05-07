@@ -18,10 +18,16 @@
 
     <div class="container">
         <dl class="row">
-            <dt class="col-sm-10"></dt>
+            <dt class="col-sm-8"></dt>
             <dt class="col-sm-2">
                 <a type="button" class="btn btn-success" asp-action="ChangeGeneralTriage" asp-route-id=@Model.triage.ICPID>Change Triaging Clinician(s)</a>
-            </dt>            
+            </dt>
+            <dt class="col-sm-2">
+                @if(!Model.isICPTriageStarted)
+                {                    
+                    <a type="button" class="btn btn-success" asp-action="ChangeTriagePathway" asp-route-id=@Model.triage.ICPID>Change Triage Pathway</a>
+                }
+            </dt>
             <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.triage.Name):
             </dt>
@@ -305,6 +311,7 @@
         let _tp1 = "";
         let _tp2 = "";
         _tp1 = document.getElementById("ddlTreatPath1");
+        var _user = "@(Model.loggedOnUserType)";
         if (!document.getElementById("ddlTreatPath2-Clinic").hidden)
         {            
             _tp2 = document.getElementById("ddlTreatPath2-Clinic");            
@@ -354,7 +361,7 @@
         var _cons = "@(Model.triage.ConsTriaged)";
         document.getElementById("formICPGeneral").hidden = true;
         document.getElementById("formICPCancer").hidden = true;
-        
+       
         if (_rp.match("Gen*")) 
         {        
             document.getElementById("formICPGeneral").hidden = false;
@@ -371,10 +378,11 @@
                 _tp1.disabled = true;
             }
 
-            if (_gc == "True") {
+            if (_gc == "True") 
+            {
                 var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
                 var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
-
+                
                 if (!_tp2c.hidden) 
                 {                    
                     _tp2c.disabled = true;                   

@@ -274,13 +274,45 @@
                                 }
                                 <option value="GP">GP</option>
                                 <option value="Other">Other</option>
-                            </select>                    
-                            <select id="ddlCC" hidden="true">            
+                            </select>
+                            <select class="w-100" id="ddlCCType2" hidden="true">
+                                <option value="" selected>Select...</option>
+                                <option value="Histo">Histopathologists</option>                               
+                                <option value="Cardio">Cardiologists</option>
+                                <option value="Gynae">Gynacologists</option>
+                                <option value="Genetics">Geneticists</option>
+                            </select>
+                            <select class="w-100" id="ddlCCCardio" hidden="true" onchange="SetCCAddress('Cardio')">
+                                @foreach(var item in Model.cardio)
+                                {
+                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
+                                }
+                            </select>
+                            <select class="w-100" id="ddlCCGenetics" hidden="true">
+                                @foreach (var item in Model.genetics)
+                                {
+                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
+                                }
+                            </select>
+                            <select class="w-100" id="ddlCCGynae" hidden="true">
+                                @foreach (var item in Model.gynae)
+                                {
+                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
+                                }
+                            </select>
+                            <select class="w-100" id="ddlCCHisto" hidden="true">
+                                @foreach (var item in Model.histo)
+                                {
+                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
+                                }
+                            </select>
+
+                            @*<select id="ddlCC" hidden="true">            
                                 @foreach (var item in Model.clinicians)
                                 {
                                     <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.SPECIALITY</option>
                                 }
-                            </select>
+                            </select>*@
                         </div>
                         <div class="row">
                             <div class="col-md-10">
@@ -311,7 +343,8 @@
     document.getElementById("ddlLetterFrom").addEventListener("change", SetLetterFrom);
     document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
     document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
-    document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);    
+    document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);
+    document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
     document.getElementById("btnAddCC").addEventListener("click", AddCC);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     window.addEventListener("load", LoadLetter);
@@ -321,8 +354,6 @@
     {
         document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
     }
-
-    
 
     function LoadLetter() 
     { 
@@ -483,9 +514,36 @@
         }
         else
         {
-            document.getElementById("ddlCC").hidden = false;
+            document.getElementById("ddlCCType2").hidden = false;
+        }        
+    }
+
+    function ShowCCTypes() 
+    {
+        document.getElementById("ddlCCCardio").hidden = true;
+        document.getElementById("ddlCCGenetics").hidden = true;
+        document.getElementById("ddlCCGynae").hidden = true;
+        document.getElementById("ddlCCHisto").hidden = true;
+
+        if (document.getElementById("ddlCCType2").value == "Cardio") 
+        {            
+            document.getElementById("ddlCCCardio").hidden = false;
         }
-        
+
+        if (document.getElementById("ddlCCType2").value == "Genetics") 
+        {
+            document.getElementById("ddlCCGenetics").hidden = false;
+        }
+
+        if (document.getElementById("ddlCCType2").value == "Gynae") 
+        {
+            document.getElementById("ddlCCGynae").hidden = false;
+        }
+
+        if (document.getElementById("ddlCCType2").value == "Histo") 
+        {
+            document.getElementById("ddlCCHisto").hidden = false;
+        }
     }
 
     function SetLetterToClinician() 
@@ -534,8 +592,8 @@
 
     function SetLetterFrom() 
     {
-        const sStaffCode = document.getElementById("ddlLetterFrom").value;
-        var sStaffCodeArray = [];
+        const staffCode = document.getElementById("ddlLetterFrom").value;
+        var staffCodeArray = [];
         var sStaffNameArray = [];
         var sStaffPositionArray = [];
         var sStaffName = "";
@@ -544,14 +602,14 @@
         // so we have to use this dumb method!
         @foreach (var item in Model.staffMemberList)
         {
-            @:sStaffCodeArray.push("@item.STAFF_CODE");
+            @:staffCodeArray.push("@item.STAFF_CODE");
             @:sStaffNameArray.push("@item.NAME");
             @:sStaffPositionArray.push("@item.POSITION");
         }
 
-        for(i in sStaffCodeArray)
+        for(i in staffCodeArray)
         {
-             if(sStaffCodeArray[i] == sStaffCode)
+             if(staffCodeArray[i] == staffCode)
              {
                  sStaffName = sStaffNameArray[i];
                  sStaffPosition = sStaffPositionArray[i];
@@ -562,14 +620,13 @@
         document.getElementById("txtisAddressChanged").value = "true";
     }
 
-    function SetCCAddress(ccCode) 
+    function SetCCAddress(ccCode)
     { 
         var sName = "Nobody";
         var sFacility = "Nothing";
         var sAddress = "Nowhere";
-
-        if (ccCode == "Referrer") 
-        {
+        
+        if (ccCode == "Referrer") {
             sName = "@Model.referrer.TITLE" + " " + "@Model.referrer.FIRST_NAME" + " " + "@Model.referrer.NAME";
             sAddress = "@Model.referrerFacility.NAME" + "\n" +
                 "@Model.referrerFacility.ADDRESS" + "\n" +
@@ -579,8 +636,7 @@
 
             document.getElementById("txtCCCode").value = "@Model.referrer.MasterClinicianCode";
         }
-        else if (ccCode == "Patient")
-        {
+        else if (ccCode == "Patient") {
             sName = "@Model.patientDetails.Title" + " " + "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
             sAddress = "@Model.patientDetails.ADDRESS1" + "\n" +
                 "@Model.patientDetails.ADDRESS2" + "\n" +
@@ -590,8 +646,7 @@
 
             document.getElementById("txtCCCode").value = "Patient";
         }
-        else if (ccCode == "GP")
-        {
+        else if (ccCode == "GP") {
             sName = "@Model.patientDetails.GP"
             sAddress = "@Model.GPFacility.NAME" + "\n" +
                 "@Model.GPFacility.ADDRESS" + "\n" +
@@ -601,13 +656,81 @@
 
             document.getElementById("txtCCCode").value = "@Model.patientDetails.GP_Code";
         }
-
         else 
         { 
-            sName = "Someone";
-            //sFacility = "Bleh";
-            sAddress = "Some place";
-        }
+            var clinicianArray = [];
+            var titleArray = [];
+            var firstnameArray = [];
+            var lastnameArray = [];
+            var facilityArray = [];
+            var facilityCode;
+
+            
+
+            if (ccCode == "Cardio") 
+            {
+                const _ccCode = document.getElementById("ddlCCCardio").value
+                //can't do easy way, obviously, so have to hard way                
+                //this is the ONLY way to get another clinician's details into this variable!!!
+
+                @if (Model.cardio != null) 
+                {
+                    @foreach (var item in Model.cardio)
+                    {
+                        @:clinicianArray.push("@item.MasterClinicianCode");
+                        @:titleArray.push("@item.TITLE");
+                        @:firstnameArray.push("@item.FIRST_NAME");
+                        @:lastnameArray.push("@item.NAME");
+                        @:facilityArray.push("@item.FACILITY");
+                    }
+                }
+                              
+                
+                for (var k = 0; k < clinicianArray.length; k++) 
+                {
+                    var nameToTest = clinicianArray[k];
+                    if (nameToTest == _ccCode) 
+                    {
+                        sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
+                        facilityCode = facilityArray[k];
+                        document.getElementById("txtCCCode").value = _ccCode;
+                    }
+                }
+
+                //and now we have to do the address... which is going to be even more fun!!!
+
+                var facilityCodeArray = [];
+                var facilityNameArray = [];
+                var facilityAddressArray = [];
+                var facilityCityArray = [];
+                var facilityStateArray = [];
+                var facilityPostcodeArray = [];
+
+                @foreach (var item in Model.facilities)
+                {
+                    @:facilityCodeArray.push("@item.MasterFacilityCode");
+                    @:facilityNameArray.push("@item.NAME");
+                    @:facilityAddressArray.push("@item.ADDRESS");
+                    @:facilityCityArray.push("@item.CITY");
+                    @:facilityStateArray.push("@item.STATE");
+                    @:facilityPostcodeArray.push("@item.ZIP");
+                }
+
+                for (var j = 0; j < facilityCodeArray.length; j++) 
+                {
+                    var nameToTest = facilityCodeArray[j];
+                    if (nameToTest == facilityCode) 
+                    {
+                        sAddress = facilityNameArray[j] + "\n" +
+                            facilityAddressArray[j] + "\n" +
+                            facilityCityArray[j] + "\n" +
+                            facilityStateArray[j] + "\n" +
+                            facilityPostcodeArray[j];
+                        
+                    }
+                }
+            }
+        }        
 
         document.getElementById("txtCC").value = sName + "\n" + sAddress.replace("&#x27;", "'").replace("&#xD;&#xA;", " ");
     }

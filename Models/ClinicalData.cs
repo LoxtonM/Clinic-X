@@ -550,6 +550,7 @@ namespace ClinicX.Models
         public string? description { get; set; }
         public string? DocCode { get; set; }
         public bool InUse { get; set; }
+        public int ListOrder { get; set; }
     }
 
     [Table("ViewPatientDictatedLetterDetails", Schema = "dbo")] //Dictated le'ahs
@@ -728,6 +729,7 @@ namespace ClinicX.Models
         public string? FIRST_NAME { get; set; }
         public string? NAME { get; set; }
         public string? SPECIALITY { get; set; }
+        public string? POSITION { get; set; }
         public string? FACILITY { get; set; }
         public Int16 NON_ACTIVE { get; set; }
         public Int16 Is_Gp { get; set; }
@@ -838,5 +840,12 @@ namespace ClinicX.Models
         [Key]
         public string SexCode { get; set; }
         public string Sex { get; set; }
+    }
+
+    [Table("PATHWAY", Schema = "dbo")]
+    public class Pathway
+    {
+        [Key]
+        public string CGU_Pathway { get; set; }
     }
 }

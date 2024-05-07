@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 using ClinicX.Data;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -12,17 +11,22 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly VMData _vm;
-        private readonly CRUD _crud;
-        //private readonly ClinicVM _cvm;
+        private readonly PatientData _patientData;
+        private readonly ActivityData _activityData;
+        private readonly ClinicalNoteData _clinicalNoteData;
         private readonly ClinicalNoteVM _cvm;
+        private readonly ClinicData _clinicData;
         private readonly MiscData _misc;
+        private readonly CRUD _crud;
 
         public ClinicalNoteController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
-            _config = config;
-            _vm = new VMData(_clinContext);
+            _config = config;            
+            _patientData = new PatientData(_clinContext);
+            _activityData = new ActivityData(_clinContext);
+            _clinicalNoteData = new ClinicalNoteData(_clinContext);
+            _clinicData = new ClinicData(_clinContext);
             _crud = new CRUD(_config);
             _cvm = new ClinicalNoteVM();
             _misc = new MiscData(_config);
@@ -33,8 +37,8 @@ namespace ClinicX.Controllers
         {
             try
             {                                        
-                _cvm.clinicalNotesList = _vm.GetClinicalNoteList(id);
-                _cvm.patient = _vm.GetPatientDetails(id);
+                _cvm.clinicalNotesList = _clinicalNoteData.GetClinicalNoteList(id);
+                _cvm.patient = _patientData.GetPatientDetails(id);
                 _cvm.noteCount = _cvm.clinicalNotesList.Count();                
 
                 return View(_cvm);
@@ -50,8 +54,8 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                _cvm.activityItem = _vm.GetActivityDetails(id);
-                _cvm.noteTypeList = _vm.GetNoteTypesList();
+                _cvm.activityItem = _activityData.GetActivityDetails(id);
+                _cvm.noteTypeList = _clinicalNoteData.GetNoteTypesList();
 
                 return View(_cvm);
             }
@@ -89,8 +93,8 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                _cvm.clinicalNote = _vm.GetClinicalNoteDetails(id);
-                _cvm.patient = _vm.GetPatientDetails(_cvm.clinicalNote.MPI.GetValueOrDefault());
+                _cvm.clinicalNote = _clinicalNoteData.GetClinicalNoteDetails(id);
+                _cvm.patient = _patientData.GetPatientDetails(_cvm.clinicalNote.MPI.GetValueOrDefault());
 
                 return View(_cvm);
             }
@@ -129,9 +133,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                //var appts = _vm.GetClinicByPatientsList(id);
-                _cvm.patient = _vm.GetPatientDetails(id);
-                _cvm.Clinics = _vm.GetClinicByPatientsList(id);
+                _cvm.patient = _patientData.GetPatientDetails(id);
+                _cvm.Clinics = _clinicData.GetClinicByPatientsList(id);
 
                 return View(_cvm);
             }

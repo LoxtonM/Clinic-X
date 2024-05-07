@@ -30,7 +30,9 @@ namespace ClinicX.ViewModels
         public List<Eligibility> eligibilityList { get; set; }
         public List<Documents> documentList { get; set; }
         public Referrals referralDetails { get; set; }
+        public List<Pathway> pathways { get; set; }
         public string staffCode { get; set; }
         public string loggedOnUserType { get; set; }
+        public bool isICPTriageStarted { get; set; }
     }
 }

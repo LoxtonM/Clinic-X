@@ -12,7 +12,8 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly CRUD _crud;
-        private readonly VMData _vm;
+        private readonly PatientData _patientData;
+        private readonly RelativeData _relativeData;
         private readonly RelativeDiagnosisVM _rdvm;
 
         public RelativeController(ClinicalContext context, IConfiguration config)
@@ -20,7 +21,8 @@ namespace ClinicX.Controllers
             _clinContext = context;
             _config = config;
             _crud = new CRUD(_config);
-            _vm = new VMData(_clinContext);
+            _patientData = new PatientData(_clinContext);
+            _relativeData = new RelativeData(_clinContext);
             _rdvm = new RelativeDiagnosisVM();
         }
 
@@ -43,8 +45,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _rdvm.relativeDetails = _vm.GetRelativeDetails(id);
-                _rdvm.MPI = _vm.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
+                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
+                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
                 
                 return View(_rdvm);
             }
@@ -59,9 +61,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _rdvm.relativeDetails = _vm.GetRelativeDetails(id);
-                _rdvm.relationList = _vm.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
-                _rdvm.genderList = _vm.GetGenderList();
+                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
+                _rdvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
+                _rdvm.genderList = _relativeData.GetGenderList();
 
                 return View(_rdvm);
             }
@@ -78,7 +80,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _rdvm.relativeDetails = _vm.GetRelativeDetails(id);
+                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
 
                 //making sure all the nulls have values
 
@@ -132,9 +134,9 @@ namespace ClinicX.Controllers
             try
             {
                 _rdvm.WMFACSID = wmfacsid;
-                _rdvm.MPI = _vm.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
-                _rdvm.relationList = _vm.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
-                _rdvm.genderList = _vm.GetGenderList();
+                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
+                _rdvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
+                _rdvm.genderList = _relativeData.GetGenderList();
                 return View(_rdvm);
             }
             catch (Exception ex)
@@ -150,7 +152,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _rdvm.MPI = _vm.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
+                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
                 DateTime birthDate = new DateTime();
                 DateTime deathDate = new DateTime();
 
@@ -182,7 +184,7 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                var patient = _vm.GetPatientDetailsByWMFACSID(wmfacsid);
+                var patient = _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
 
                 return RedirectToAction("PatientDetails", "Patient", new { id = _rdvm.MPI });
             }

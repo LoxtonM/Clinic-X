@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
-using System.Security.Cryptography;
+using ClinicX.Models;
 
 namespace ClinicX.Controllers
 {
@@ -14,7 +14,12 @@ namespace ClinicX.Controllers
         private readonly DocumentContext _docContext;
         private readonly IConfiguration _config;
         private readonly DictatedLetterVM _lvm;
-        private readonly VMData _vm;
+        private readonly PatientData _patientData;
+        private readonly StaffUserData _staffUser;
+        private readonly ActivityData _activityData;
+        private readonly DictatedLetterData _dictatedLetterData;
+        private readonly ExternalClinicianData _externalClinicianData;
+        private readonly ExternalFacilityData _externalFacilityData;
         private readonly CRUD _crud;
         private readonly LetterController _lc;
 
@@ -25,10 +30,14 @@ namespace ClinicX.Controllers
             _docContext = docContext;
             _config = config;
             _lvm = new DictatedLetterVM();
-            _vm = new VMData(_clinContext);
+            _staffUser = new StaffUserData(_clinContext);
+            _patientData = new PatientData(_clinContext);
+            _activityData = new ActivityData(_clinContext);
+            _dictatedLetterData = new DictatedLetterData(_clinContext);
+            _externalClinicianData = new ExternalClinicianData(_clinContext);
+            _externalFacilityData = new ExternalFacilityData(_clinContext);
             _crud = new CRUD(_config);
             _lc = new LetterController(_clinContext, _docContext);
-            _docContext = docContext;
         }
 
         [Authorize]
@@ -41,9 +50,9 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
-                var user = _vm.GetCurrentStaffUser(User.Identity.Name);
+                var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 
-                var letters = _vm.GetDictatedLettersList(user.STAFF_CODE);
+                var letters = _dictatedLetterData.GetDictatedLettersList(user.STAFF_CODE);
 
                 _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
                 _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
@@ -61,26 +70,31 @@ namespace ClinicX.Controllers
         {            
             try
             {                
-                _lvm.dictatedLetters = _vm.GetDictatedLetterDetails(id);
-                _lvm.dictatedLettersPatients = _vm.GetDictatedLettersPatientsList(id);
-                _lvm.dictatedLettersCopies = _vm.GetDictatedLettersCopiesList(id);
-                _lvm.patients = _vm.GetDictatedLetterPatientsList(id);
-                _lvm.staffMemberList = _vm.GetClinicalStaffList();
-                int? iMPI = _lvm.dictatedLetters.MPI;
-                int? iRefID = _lvm.dictatedLetters.RefID;
-                _lvm.patientDetails = _vm.GetPatientDetails(iMPI.GetValueOrDefault());
-                _lvm.activityDetails = _vm.GetActivityDetails(iRefID.GetValueOrDefault());
+                _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(id);
+                _lvm.dictatedLettersPatients = _dictatedLetterData.GetDictatedLettersPatientsList(id);
+                _lvm.dictatedLettersCopies = _dictatedLetterData.GetDictatedLettersCopiesList(id);
+                _lvm.patients = _dictatedLetterData.GetDictatedLetterPatientsList(id);
+                _lvm.staffMemberList = _staffUser.GetClinicalStaffList();
+                int? mpi = _lvm.dictatedLetters.MPI;
+                int? refID = _lvm.dictatedLetters.RefID;
+                _lvm.patientDetails = _patientData.GetPatientDetails(mpi.GetValueOrDefault());
+                _lvm.activityDetails = _activityData.GetActivityDetails(refID.GetValueOrDefault());
                 string sGPCode = _lvm.patientDetails.GP_Facility_Code;
                 string sRefFacCode = _lvm.activityDetails.REF_FAC;
                 string sRefPhysCode = _lvm.activityDetails.REF_PHYS;
-                _lvm.referrerFacility = _vm.GetFacilityDetails(sRefFacCode);
-                _lvm.referrer = _vm.GetClinicianDetails(sRefPhysCode);
-                _lvm.GPFacility = _vm.GetFacilityDetails(sGPCode);
-                _lvm.facilities = _vm.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
-                _lvm.clinicians = _vm.GetClinicianList().Where(f => f.Is_Gp == 0 && f.NAME != null && f.FACILITY != null).ToList();
-                _lvm.consultants = _vm.GetConsultantsList().ToList();
-                _lvm.gcs = _vm.GetGCList().ToList();
-                _lvm.secteams = _vm.GetSecTeamsList();
+                _lvm.referrerFacility = _externalFacilityData.GetFacilityDetails(sRefFacCode);
+                _lvm.referrer = _externalClinicianData.GetClinicianDetails(sRefPhysCode);
+                _lvm.GPFacility = _externalFacilityData.GetFacilityDetails(sGPCode);
+                _lvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
+                _lvm.clinicians = _externalClinicianData.GetClinicianList().Where(c => c.Is_Gp == 0 && c.NAME != null && c.FACILITY != null).ToList();
+                List<ExternalClinician> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();
+                _lvm.cardio = extClins.Where(c => c.POSITION.Contains("Cardio")).ToList();
+                _lvm.genetics = extClins.Where(c => c.POSITION.Contains("Genetic")).ToList();
+                _lvm.gynae = extClins.Where(c => c.POSITION.Contains("Gyna")).ToList();
+                _lvm.histo = extClins.Where(c => c.POSITION.Contains("Histo")).ToList();
+                _lvm.consultants = _staffUser.GetConsultantsList().ToList();
+                _lvm.gcs = _staffUser.GetGCList().ToList();
+                _lvm.secteams = _staffUser.GetSecTeamsList();
 
                 return View(_lvm);
             }
@@ -227,10 +241,8 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> DeleteCCFromDOT(int id)
         {
             try
-            {
-                //var letter = await _clinContext.DictatedLettersCopies.FirstOrDefaultAsync(x => x.CCID == iID);
-                
-                var letter = _vm.GetDictatedLetterCopyDetails(id);
+            {   
+                var letter = _dictatedLetterData.GetDictatedLetterCopyDetails(id);
                 
                 int dID = letter.DotID;
 

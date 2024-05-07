@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClinicX.Data;
 using ClinicX.ViewModels;
-using System.Data;
 using ClinicX.Meta;
 
 namespace ClinicX.Controllers
@@ -12,16 +11,18 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly TestDiseaseVM _dvm;
-        private readonly VMData _vm;
+        private readonly TestDiseaseVM _dvm;        
+        private readonly PatientData _patientData;
+        private readonly DiseaseData _diseaseData;
         private readonly CRUD _crud;
 
         public DiagnosisController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
-            _dvm = new TestDiseaseVM();
-            _vm = new VMData(_clinContext);
+            _dvm = new TestDiseaseVM();            
+            _patientData = new PatientData(_clinContext);
+            _diseaseData = new DiseaseData(_clinContext);
             _crud = new CRUD(_config);
         }
 
@@ -31,8 +32,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _dvm.diagnosisList = _vm.GetDiseaseListByPatient(id);
-                _dvm.patient = _vm.GetPatientDetails(id);
+                _dvm.diagnosisList = _diseaseData.GetDiseaseListByPatient(id);
+                _dvm.patient = _patientData.GetPatientDetails(id);
 
                 return View(_dvm);
             }
@@ -47,9 +48,9 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                _dvm.diseaseList = _vm.GetDiseaseList();
-                _dvm.patient = _vm.GetPatientDetails(id);
-                _dvm.statusList = _vm.GetStatusList();
+                _dvm.diseaseList = _diseaseData.GetDiseaseList();
+                _dvm.patient = _patientData.GetPatientDetails(id);
+                _dvm.statusList = _diseaseData.GetStatusList();
                 return View(_dvm);
             }
             catch (Exception ex)
@@ -85,9 +86,9 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                _dvm.diagnosis = _vm.GetDiagnosisDetails(id);               
-                _dvm.patient = _vm.GetPatientDetails(_dvm.diagnosis.MPI);
-                _dvm.statusList = _vm.GetStatusList();
+                _dvm.diagnosis = _diseaseData.GetDiagnosisDetails(id);               
+                _dvm.patient = _patientData.GetPatientDetails(_dvm.diagnosis.MPI);
+                _dvm.statusList = _diseaseData.GetStatusList();
 
                 return View(_dvm);
             }
@@ -114,19 +115,19 @@ namespace ClinicX.Controllers
                 }
 
                 var patient = await _clinContext.Diagnosis.FirstOrDefaultAsync(d => d.ID == diagID);
-                int iMPI = patient.MPI;
+                int mpi = patient.MPI;
                                 
                 int success = _crud.CallStoredProcedure("Diagnosis", "Update", diagID, 0, 0, status, "", "", comments, User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("Index", "WIP"); }
 
-                return RedirectToAction("Index", new { id = iMPI });
+                return RedirectToAction("Index", new { id = mpi });
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
-        }        
+        }
     }
 }
 

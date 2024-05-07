@@ -10,13 +10,25 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly PatientVM _pvm;
-        private readonly VMData _vm;
+        private readonly PatientData _patientData;
+        private readonly RelativeData _relativeData;
+        private readonly PathwayData _pathwayData;
+        private readonly AlertData _alertData;
+        private readonly ReferralData _referralData;
+        private readonly DiaryData _diaryData;
+        private readonly HPOCodeData _hpoData;
 
         public PatientController(ClinicalContext context)
         {
             _clinContext = context;
             _pvm = new PatientVM();
-            _vm = new VMData(_clinContext);
+            _patientData = new PatientData(_clinContext);
+            _relativeData = new RelativeData(_clinContext);
+            _pathwayData = new PathwayData(_clinContext);
+            _alertData = new AlertData(_clinContext);
+            _referralData = new ReferralData(_clinContext);
+            _diaryData = new DiaryData(_clinContext);
+            _hpoData = new HPOCodeData(_clinContext);
         }
 
         [Authorize]
@@ -24,17 +36,17 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                _pvm.patient = _vm.GetPatientDetails(id);
+                _pvm.patient = _patientData.GetPatientDetails(id);
                 if (_pvm.patient == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-                _pvm.relatives = _vm.GetRelativesList(id);
-                _pvm.hpoTermDetails = _vm.GetHPOTermsAddedList(id);
-                _pvm.referrals = _vm.GetReferralsList(id);
-                _pvm.patientPathway = _vm.GetPathwayDetails(id);
-                _pvm.alerts = _vm.GetAlertsList(id);
-                _pvm.diary = _vm.GetDiaryList(id);
+                _pvm.relatives = _relativeData.GetRelativesList(id);
+                _pvm.hpoTermDetails = _hpoData.GetHPOTermsAddedList(id);
+                _pvm.referrals = _referralData.GetReferralsList(id);
+                _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
+                _pvm.alerts = _alertData.GetAlertsList(id);
+                _pvm.diary = _diaryData.GetDiaryList(id);
 
                 return View(_pvm);
             }

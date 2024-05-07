@@ -10,7 +10,8 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly HPOVM _hpo;
-        private readonly VMData _vm;
+        private readonly HPOCodeData _hpoData;
+        private readonly ClinicalNoteData _clinicaNoteData;
         private readonly CRUD _crud;
         private readonly MiscData _misc;
 
@@ -19,7 +20,8 @@ namespace ClinicX.Controllers
             _clinContext = context;
             _config = config;
             _hpo = new HPOVM();
-            _vm = new VMData(_clinContext);
+            _hpoData = new HPOCodeData(_clinContext);
+            _clinicaNoteData = new ClinicalNoteData(_clinContext);
             _crud = new CRUD(_config);
             _misc = new MiscData(_config);
         }
@@ -29,10 +31,10 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                _hpo.clinicalNote = _vm.GetClinicalNoteDetails(id);
-                _hpo.hpoTermDetails = _vm.GetExistingHPOTermsList(id);
-                _hpo.hpoTerms = _vm.GetHPOTermsList();
-                _hpo.hpoExtractVM = _vm.GetExtractedTermsList(id, _config);
+                _hpo.clinicalNote = _clinicaNoteData.GetClinicalNoteDetails(id);
+                _hpo.hpoTermDetails = _hpoData.GetExistingHPOTermsList(id);
+                _hpo.hpoTerms = _hpoData.GetHPOTermsList();
+                _hpo.hpoExtractVM = _hpoData.GetExtractedTermsList(id, _config);
 
                 if(searchTerm != null) 
                 { 
@@ -87,7 +89,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                //int iNoteID = 0;
+                //int noteID = 0;
                 int noteID = _misc.GetNoteIDFromHPOTerm(id);
 
                 int success = _crud.CallStoredProcedure("Clinical Note", "Delete HPO Term", id, 0, 0, "", "", "", "", User.Identity.Name);

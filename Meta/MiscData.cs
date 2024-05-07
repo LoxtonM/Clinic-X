@@ -18,49 +18,49 @@ namespace ClinicX.Meta
             conn = new SqlConnection(_config.GetConnectionString("ConString"));
         }
 
-        public int GetClinicalNoteID(int iRefID)
+        public int GetClinicalNoteID(int refID)
         {
-            int iNoteID;            
+            int noteID;            
             conn.Open();
             SqlCommand cmd = new SqlCommand("select top 1 clinicalnoteid from clinicalnotes " +
-                "where refid = " + iRefID.ToString() + " order by createddate desc, createdtime desc", conn);
+                "where refid = " + refID.ToString() + " order by createddate desc, createdtime desc", conn);
 
-            iNoteID = (int)(cmd.ExecuteScalar());
+            noteID = (int)(cmd.ExecuteScalar());
 
             conn.Close();
-            return iNoteID;        
+            return noteID;        
         }
 
-        public int GetRiskID(int iRefID)
+        public int GetRiskID(int refID)
         {
-            int iRiskID;
+            int riskID;
             conn.Open();
             SqlCommand cmd = new SqlCommand("select top 1 RiskID from PatientRisk " +
-                "where RefID = " + iRefID.ToString() + " order by RiskID desc", conn);
+                "where RefID = " + refID.ToString() + " order by RiskID desc", conn);
 
-            iRiskID = (int)(cmd.ExecuteScalar());
+            riskID = (int)(cmd.ExecuteScalar());
 
             conn.Close();
 
-            return iRiskID;
+            return riskID;
         }
 
-        public int GetNoteIDFromHPOTerm(int iID)
+        public int GetNoteIDFromHPOTerm(int id)
         {            
             conn.Open();
 
-            SqlCommand cmd = new SqlCommand("select ClinicalNoteID from ClinicalNotesHPOTerm where ID=" + iID, conn);
+            SqlCommand cmd = new SqlCommand("select ClinicalNoteID from ClinicalNotesHPOTerm where ID=" + id, conn);
             
-            int iNoteID = 0;
+            int noteID = 0;
             SqlDataReader reader = cmd.ExecuteReader();
             
             while (reader.Read())
             {
-                iNoteID = reader.GetInt32(0);
+                noteID = reader.GetInt32(0);
             }
             
             conn.Close();
-            return iNoteID;            
+            return noteID;            
         }
     }
 }

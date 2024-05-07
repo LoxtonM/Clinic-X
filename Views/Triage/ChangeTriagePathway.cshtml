@@ -1,0 +1,32 @@
+﻿@model ClinicX.ViewModels.ICPVM
+@{
+    ViewData["Title"] = "Clinic-X - Change Triage Pathway";
+}
+
+<container>
+    <h1>Change triage pathway for Referral @Model.triage.RefID</h1>
+    <form asp-action="ChangeTriagePathway">
+        <div class="row">
+            <div class="col-md-2">
+                <input type="text" name="id" asp-for=@Model.triage.ICPID hidden="true" />
+            </div>
+        </div>
+        <br /><br />
+        <div class="row">
+            <div class="col-md-4">
+                <select class="w-100" name="newPathway" asp-for=@Model.triage.ReferralPathway>
+                    @foreach (var p in Model.pathways)
+                    {
+                        <option value=@p.CGU_Pathway>@p.CGU_Pathway</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-success">Update Pathway</button>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+
+    </form>
+</container>

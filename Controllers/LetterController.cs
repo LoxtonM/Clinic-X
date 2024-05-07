@@ -5,9 +5,7 @@ using ClinicX.Meta;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
-using System;
-using System.IO;
-using Microsoft.EntityFrameworkCore;
+
 
 
 namespace ClinicX.Controllers;
@@ -17,16 +15,24 @@ public class LetterController : Controller
     private readonly ClinicalContext _clinContext;
     private readonly DocumentContext _docContext;
     private readonly LetterVM _lvm;
-    private readonly VMData _vmDoc;
-    private readonly VMData _vmClin;
+    private readonly PatientData _patientData;
+    private readonly DictatedLetterData _dictatedLetterData;
+    private readonly StaffUserData _staffUser;
+    private readonly DocumentsData _documentsData;
+    private readonly ExternalClinicianData _externalClinicianData;
+    private readonly ConstantsData _constantsData;
 
     public LetterController(ClinicalContext clinContext, DocumentContext docContext)
     {
         _clinContext = clinContext;
         _docContext = docContext;
-        _lvm = new LetterVM();
-        _vmClin = new VMData(_clinContext);
-        _vmDoc = new VMData(_docContext);
+        _lvm = new LetterVM();        
+        _patientData = new PatientData(_clinContext);
+        _staffUser = new StaffUserData(_clinContext);
+        _dictatedLetterData = new DictatedLetterData(_clinContext);
+        _documentsData = new DocumentsData(_docContext);
+        _externalClinicianData = new ExternalClinicianData(_clinContext);
+        _constantsData = new ConstantsData(_docContext);
     }
 
     public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)
@@ -34,10 +40,10 @@ public class LetterController : Controller
         try
         {
             
-            _lvm.staffMember = _vmClin.GetStaffMemberDetails(user);
-            _lvm.patient = _vmClin.GetPatientDetails(mpi);
-            _lvm.documentsContent = _vmDoc.GetDocumentDetails(id);
-            _lvm.referrer = _vmClin.GetClinicianDetails(referrer);
+            _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
+            _lvm.patient = _patientData.GetPatientDetails(mpi);
+            _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
+            _lvm.referrer = _externalClinicianData.GetClinicianDetails(referrer);
 
             return View(_lvm);
         }
@@ -47,12 +53,13 @@ public class LetterController : Controller
         }
     }
 
+    //Creates a preview of the DOT letter
     public void PreviewDOTPDF(int dID,string user)
     {
         try
         {
-            _lvm.staffMember = _vmClin.GetStaffMemberDetails(user);
-            _lvm.dictatedLetter = _vmClin.GetDictatedLetterDetails(dID);                        
+            _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
+            _lvm.dictatedLetter = _dictatedLetterData.GetDictatedLetterDetails(dID);                        
             string ourAddress = _docContext.DocumentsContent.FirstOrDefault(d => d.OurAddress != null).OurAddress;            
             //creates a new PDF document
             PdfDocument document = new PdfDocument();
@@ -72,7 +79,7 @@ public class LetterController : Controller
             //Our address and contact details
             tf.DrawString(ourAddress, font, XBrushes.Black, new XRect(-20, 150, page.Width, 200));
             //the email address just absolutely will not align right, for some stupid reason!!! So we have to force it.
-            tf.DrawString(_vmDoc.GetConstant("MainCGUEmail", 1), font, XBrushes.Black, new XRect(450, 250, page.Width, 200));
+            tf.DrawString(_constantsData.GetConstant("MainCGUEmail", 1), font, XBrushes.Black, new XRect(450, 250, page.Width, 200));
 
             tf.Alignment = XParagraphAlignment.Left;
             tf.DrawString($"Consultant: {_lvm.dictatedLetter.Consultant}", fontBold, XBrushes.Black, new XRect(20, 150, page.Width/2, 200));
@@ -83,7 +90,7 @@ public class LetterController : Controller
 
             string phoneNumbers = "Secretaries Direct Line:" + System.Environment.NewLine;
 
-            var secretariesList = _vmClin.GetStaffMemberList().Where(s => s.BILL_ID == _lvm.dictatedLetter.SecTeam);
+            var secretariesList = _staffUser.GetStaffMemberList().Where(s => s.BILL_ID == _lvm.dictatedLetter.SecTeam);
             foreach (var t in secretariesList)
             {
                 phoneNumbers = phoneNumbers + $"{t.NAME} {t.TELEPHONE}" + System.Environment.NewLine;
@@ -94,7 +101,7 @@ public class LetterController : Controller
             string datesInfo = $"Dictated Date: {_lvm.dictatedLetter.DateDictated.Value.ToString("dd/MM/yyyy")}" + System.Environment.NewLine +
                                $"Date Typed: {_lvm.dictatedLetter.CreatedDate.Value.ToString("dd/MM/yyyy")}";
                        
-            _lvm.patient = _vmClin.GetPatientDetails(_lvm.dictatedLetter.MPI);
+            _lvm.patient = _patientData.GetPatientDetails(_lvm.dictatedLetter.MPI);
             tf.DrawString($"Please quote our reference on all correspondence: {_lvm.patient.CGU_No}", fontItalic, XBrushes.Black, new XRect(20, 270, page.Width, 200));
 
             tf.DrawString(datesInfo, font, XBrushes.Black, new XRect(20, 290, page.Width / 2, 200));
@@ -163,14 +170,15 @@ public class LetterController : Controller
         }
     }
 
+    //Prints standard letter templates from the menu
     public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "")
     {
         try
         {            
-            _lvm.staffMember = _vmClin.GetStaffMemberDetails(user);
-            _lvm.patient = _vmClin.GetPatientDetails(mpi);
-            _lvm.documentsContent = _vmDoc.GetDocumentDetails(id);
-            _lvm.referrer = _vmClin.GetClinicianDetails(referrer);
+            _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
+            _lvm.patient = _patientData.GetPatientDetails(mpi);
+            _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
+            _lvm.referrer = _externalClinicianData.GetClinicianDetails(referrer);
 
 
             //creates a new PDF document
@@ -420,7 +428,7 @@ public class LetterController : Controller
             if (cc != "")
             {
                 printCount = printCount += 1;
-                cc = cc + _vmClin.GetCCDetails(_lvm.referrer);
+                cc = cc + _externalClinicianData.GetCCDetails(_lvm.referrer);
                 XGraphics gfxcc = XGraphics.FromPdfPage(pageCC);
                 var tfcc = new XTextFormatter(gfxcc);
                 tfcc.DrawString("cc:", font, XBrushes.Black, new XRect(50, 50, 500, 100));
@@ -430,13 +438,13 @@ public class LetterController : Controller
             if (cc2 != "")
             {
                 printCount = printCount += 1;
-                cc = cc + _vmClin.GetCCDetails(_lvm.referrer);
+                cc = cc + _externalClinicianData.GetCCDetails(_lvm.referrer);
                 XGraphics gfxcc = XGraphics.FromPdfPage(pageCC);
                 var tfcc = new XTextFormatter(gfxcc);
                 tfcc.DrawString(cc, font, XBrushes.Black, new XRect(75, 150, 500, 100));
             }
 
-            //Finally we set the flename for the output PDF
+            //Finally we set the filename for the output PDF
             //needs to be: "CaStdLetter"-CGU number-DocCode-Patient/relative ID (usually "[MPI]-0")-RefID-"print count (if CCs present)"-date/time stamp-Diary ID
             string fileCGU = _lvm.patient.CGU_No.Replace(".", "_");
             string mpiString = _lvm.patient.MPI.ToString();
@@ -453,8 +461,7 @@ public class LetterController : Controller
             string letterFileName = filePath.Replace(" ", "") + "\\CaStdLetter-" + fileCGU + "-" + docCode + "-" + mpiString + "-0-" + refIDString + "-" + printCount.ToString() + "-" + dateTimeString + "-" + diaryIDString;
             letterFileName = letterFileName.Replace("ScannerOPEX2", "Letters");
 
-            document.Save(letterFileName + ".pdf");
-            
+            document.Save(letterFileName + ".pdf");            
         }
         catch (Exception ex)
         {

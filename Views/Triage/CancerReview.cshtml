@@ -229,7 +229,7 @@
                 </div>
                 <div class="col-md-8">
                     <select id="ddlLetter" name="letter" asp-for=@Model.icpCancer.ReviewedOption>
-                        <option value="">None</option>
+                        @*<option value="">Select...</option>*@
                         @foreach (var item in Model.cancerReviewActionsLists)
                         {
                             <option value=@item.ID>@item.Action - @item.description</option>

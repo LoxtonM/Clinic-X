@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ClinicX.Data;
 using ClinicX.ViewModels;
-using Microsoft.Data.SqlClient;
-using ClinicX.Models;
 using System.Data;
 using ClinicX.Meta;
 
@@ -15,7 +12,8 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly TestDiseaseVM _tvm;
-        private readonly VMData _vm;
+        private readonly PatientData _patientData;
+        private readonly TestData _testData;
         private readonly CRUD _crud;
 
         public TestController(ClinicalContext context, IConfiguration config)
@@ -23,7 +21,8 @@ namespace ClinicX.Controllers
             _clinContext = context;
             _config = config;
             _tvm = new TestDiseaseVM();
-            _vm = new VMData(_clinContext);
+            _patientData = new PatientData(_clinContext);
+            _testData = new TestData(_clinContext);
             _crud = new CRUD(_config);
         }
 
@@ -32,8 +31,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _tvm.patient = _vm.GetPatientDetails(id);
-                _tvm.tests = _vm.GetTestListByPatient(id).OrderBy(t => t.ExpectedDate).ToList();
+                _tvm.patient = _patientData.GetPatientDetails(id);
+                _tvm.tests = _testData.GetTestListByPatient(id).OrderBy(t => t.ExpectedDate).ToList();
 
                 return View(_tvm);
             }
@@ -48,7 +47,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _tvm.tests = _vm.GetTestListByUser(User.Identity.Name).OrderBy(t => t.ExpectedDate).ToList();
+                _tvm.tests = _testData.GetTestListByUser(User.Identity.Name).OrderBy(t => t.ExpectedDate).ToList();
 
                 return View(_tvm);
             }
@@ -64,8 +63,8 @@ namespace ClinicX.Controllers
             try
             {
                 
-                _tvm.testList = _vm.GetTestList();
-                _tvm.patient = _vm.GetPatientDetails(id);
+                _tvm.testList = _testData.GetTestList();
+                _tvm.patient = _patientData.GetPatientDetails(id);
                 return View(_tvm);
             }
             catch (Exception ex)
@@ -96,8 +95,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _tvm.test = _vm.GetTestDetails(id);
-                _tvm.patient = _vm.GetPatientDetails(_tvm.test.MPI);
+                _tvm.test = _testData.GetTestDetails(id);
+                _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);
                 if (_tvm.test == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
@@ -155,7 +154,7 @@ namespace ClinicX.Controllers
                 }
 
                 //var patient = await _clinContext.Test.FirstOrDefaultAsync(t => t.TestID == testID);
-                int mpi = _vm.GetTestDetails(testID).MPI;
+                int mpi = _testData.GetTestDetails(testID).MPI;
                                                 
                 int success = _crud.CallStoredProcedure("Test", "Update", testID, complete, 0, result, "", "", comments, User.Identity.Name, dateReceived, dateGiven);
 

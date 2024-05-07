@@ -1,11 +1,8 @@
 ﻿using ClinicX.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using ClinicX.Meta;
-using System.Security.Cryptography.X509Certificates;
 using ClinicX.ViewModels;
-using System.Net.NetworkInformation;
 
 namespace ClinicX.Controllers
 {
@@ -15,14 +12,20 @@ namespace ClinicX.Controllers
         private readonly IConfiguration _config;
         private readonly CRUD _crud;
         private readonly ReviewVM _rvm;
-        private readonly VMData _vm;
+        private readonly ActivityData _activityData;        
+        private readonly PatientData _patientData;
+        private readonly StaffUserData _staffUser;
+        private readonly ReviewData _reviewData;
 
         public ReviewController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
             _rvm = new ReviewVM();
-            _vm = new VMData(_clinContext);
+            _patientData = new PatientData(_clinContext);
+            _activityData = new ActivityData(_clinContext);
+            _staffUser = new StaffUserData(_clinContext);
+            _reviewData = new ReviewData(_clinContext);
             _crud = new CRUD(_config);
         }
 
@@ -36,7 +39,7 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                _rvm.reviewList = _vm.GetReviewsList(User.Identity.Name);
+                _rvm.reviewList = _reviewData.GetReviewsList(User.Identity.Name);
 
                 return View(_rvm);
             }
@@ -52,9 +55,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _rvm.referrals = _vm.GetActivityDetails(id);
-                _rvm.staffMembers = _vm.GetClinicalStaffList();
-                _rvm.patient = _vm.GetPatientDetails(_rvm.referrals.MPI);
+                _rvm.referrals = _activityData.GetActivityDetails(id);
+                _rvm.staffMembers = _staffUser.GetClinicalStaffList();
+                _rvm.patient = _patientData.GetPatientDetails(_rvm.referrals.MPI);
                
                 return View(_rvm);
             }
@@ -106,8 +109,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _rvm.review = _vm.GetReviewDetails(id);
-                _rvm.patient = _vm.GetPatientDetails(_rvm.review.MPI);
+                _rvm.review = _reviewData.GetReviewDetails(id);
+                _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);
 
                 if (_rvm.review == null)
                 {
@@ -127,7 +130,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _rvm.review = _vm.GetReviewDetails(id);
+                _rvm.review = _reviewData.GetReviewDetails(id);
 
                 DateTime reviewDate = new DateTime();
 

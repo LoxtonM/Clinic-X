@@ -21,6 +21,10 @@ namespace ClinicX.ViewModels
         public ExternalFacility GPFacility { get; set; }
         public List<ExternalFacility> facilities { get; set; }
         public List<ExternalClinician> clinicians { get; set; }
+        public List<ExternalClinician> cardio { get; set; }
+        public List<ExternalClinician> genetics { get; set; }
+        public List<ExternalClinician> gynae { get; set; }
+        public List<ExternalClinician> histo { get; set; }
         public List<string> consultants { get; set; }
         public List<string> gcs { get; set; }
         public List<string> secteams { get; set; }

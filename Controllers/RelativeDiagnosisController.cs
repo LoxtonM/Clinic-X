@@ -9,24 +9,27 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly VMData _vm;
+        private readonly RelativeData _relativeData;
+        private readonly RelativeDiagnosisData _relativeDiagnosisData;
+        private readonly StaffUserData _staffUser;        
         private readonly CRUD _crud;
         private readonly RelativeDiagnosisVM _rdvm;
         public RelativeDiagnosisController(ClinicalContext context, IConfiguration config) 
         {
             _clinContext = context;
-            _config = config;            
-            _vm = new VMData(_clinContext);
+            _config = config;                        
+            _relativeData = new RelativeData(_clinContext);
+            _relativeDiagnosisData = new RelativeDiagnosisData(_clinContext);
+            _staffUser = new StaffUserData(_clinContext);
             _crud = new CRUD(_config);
             _rdvm = new RelativeDiagnosisVM();
         }
         public IActionResult Index(int relID)
         {
             try
-            {
-                //var relDiag = _vm.GetRelativeDiagnosisList(relID);
-                _rdvm.relativeDetails = _vm.GetRelativeDetails(relID);
-                _rdvm.relativesDiagnosisList = _vm.GetRelativeDiagnosisList(relID);                
+            {                
+                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(relID);
+                _rdvm.relativesDiagnosisList = _relativeDiagnosisData.GetRelativeDiagnosisList(relID);                
                 return View(_rdvm);
             }
             catch (Exception ex)
@@ -40,11 +43,11 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _rdvm.relativeDetails = _vm.GetRelativeDetails(id);
-                _rdvm.cancerRegList = _vm.GetCancerRegList();
-                _rdvm.requestStatusList = _vm.GetRequestStatusList();     
-                _rdvm.staffList = _vm.GetStaffMemberList();
-                _rdvm.clinicianList = _vm.GetClinicalStaffList();
+                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
+                _rdvm.cancerRegList = _relativeDiagnosisData.GetCancerRegList();
+                _rdvm.requestStatusList = _relativeDiagnosisData.GetRequestStatusList();     
+                _rdvm.staffList = _staffUser.GetStaffMemberList();
+                _rdvm.clinicianList = _staffUser.GetClinicalStaffList();
 
                 return View(_rdvm);
             }
@@ -78,14 +81,10 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _rdvm.relativesDiagnosis = _vm.GetRelativeDiagnosisDetails(id);
-                //_rdvm.cancerRegList = _vm.GetCancerRegList();
-                //_rdvm.requestStatusList = _vm.GetRequestStatusList();
-                //_rdvm.staffList = _vm.GetStaffMemberList();
-                //_rdvm.clinicianList = _vm.GetClinicalStaffList();
-                _rdvm.tumourSiteList = _vm.GetTumourSiteList();
-                _rdvm.tumourLatList = _vm.GetTumourLatList();
-                _rdvm.tumourMorphList = _vm.GetTumourMorphList();
+                _rdvm.relativesDiagnosis = _relativeDiagnosisData.GetRelativeDiagnosisDetails(id);               
+                _rdvm.tumourSiteList = _relativeDiagnosisData.GetTumourSiteList();
+                _rdvm.tumourLatList = _relativeDiagnosisData.GetTumourLatList();
+                _rdvm.tumourMorphList = _relativeDiagnosisData.GetTumourMorphList();
 
                 return View(_rdvm);
             }
@@ -102,10 +101,10 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _rdvm.relativesDiagnosis = _vm.GetRelativeDiagnosisDetails(tumourID);
-                _rdvm.tumourSiteList = _vm.GetTumourSiteList();
-                _rdvm.tumourLatList = _vm.GetTumourLatList();
-                _rdvm.tumourMorphList = _vm.GetTumourMorphList();
+                _rdvm.relativesDiagnosis = _relativeDiagnosisData.GetRelativeDiagnosisDetails(tumourID);
+                _rdvm.tumourSiteList = _relativeDiagnosisData.GetTumourSiteList();
+                _rdvm.tumourLatList = _relativeDiagnosisData.GetTumourLatList();
+                _rdvm.tumourMorphList = _relativeDiagnosisData.GetTumourMorphList();
 
                 string data = "ConfDiagAge:" + confDiagAge + ",Grade:" + grade + ",Dukes:" + dukes + ",HistologyNumber:" + histologyNumber;
                
