@@ -4,7 +4,12 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class ExternalFacilityData
+    interface IExternalFacilityData
+    {
+        public ExternalFacility GetFacilityDetails(string sref);
+        public List<ExternalFacility> GetFacilityList();
+    }
+    public class ExternalFacilityData : IExternalFacilityData
     {
         private readonly ClinicalContext _clinContext;
       

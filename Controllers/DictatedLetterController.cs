@@ -12,17 +12,16 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
-        private readonly IConfiguration _config;
-        private readonly DictatedLetterVM _lvm;
-        private readonly PatientData _patientData;
-        private readonly StaffUserData _staffUser;
-        private readonly ActivityData _activityData;
-        private readonly DictatedLetterData _dictatedLetterData;
-        private readonly ExternalClinicianData _externalClinicianData;
-        private readonly ExternalFacilityData _externalFacilityData;
-        private readonly CRUD _crud;
         private readonly LetterController _lc;
-
+        private readonly DictatedLetterVM _lvm;
+        private readonly IConfiguration _config;        
+        private readonly IPatientData _patientData;
+        private readonly IStaffUserData _staffUser;
+        private readonly IActivityData _activityData;
+        private readonly IDictatedLetterData _dictatedLetterData;
+        private readonly IExternalClinicianData _externalClinicianData;
+        private readonly IExternalFacilityData _externalFacilityData;
+        private readonly ICRUD _crud;        
 
         public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext)
         {

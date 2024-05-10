@@ -15,12 +15,12 @@ public class LetterController : Controller
     private readonly ClinicalContext _clinContext;
     private readonly DocumentContext _docContext;
     private readonly LetterVM _lvm;
-    private readonly PatientData _patientData;
-    private readonly DictatedLetterData _dictatedLetterData;
-    private readonly StaffUserData _staffUser;
-    private readonly DocumentsData _documentsData;
-    private readonly ExternalClinicianData _externalClinicianData;
-    private readonly ConstantsData _constantsData;
+    private readonly IPatientData _patientData;
+    private readonly IDictatedLetterData _dictatedLetterData;
+    private readonly IStaffUserData _staffUser;
+    private readonly IDocumentsData _documentsData;
+    private readonly IExternalClinicianData _externalClinicianData;
+    private readonly IConstantsData _constantsData;
 
     public LetterController(ClinicalContext clinContext, DocumentContext docContext)
     {

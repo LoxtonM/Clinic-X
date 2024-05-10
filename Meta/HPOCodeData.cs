@@ -6,7 +6,15 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class HPOCodeData
+    interface IHPOCodeData
+    {
+        public List<HPOTermDetails> GetHPOTermsAddedList(int id);
+        public List<HPOTerms> GetHPOTermsList();
+        public List<HPOTermDetails> GetExistingHPOTermsList(int id);
+        public List<HPOExtractVM> GetExtractedTermsList(int noteID, IConfiguration _config);
+
+    }
+    public class HPOCodeData : IHPOCodeData
     {
         private readonly ClinicalContext _clinContext;
 

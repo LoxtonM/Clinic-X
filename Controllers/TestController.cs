@@ -10,11 +10,11 @@ namespace ClinicX.Controllers
     public class TestController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly IConfiguration _config;
         private readonly TestDiseaseVM _tvm;
-        private readonly PatientData _patientData;
-        private readonly TestData _testData;
-        private readonly CRUD _crud;
+        private readonly IConfiguration _config;        
+        private readonly IPatientData _patientData;
+        private readonly ITestData _testData;
+        private readonly ICRUD _crud;
 
         public TestController(ClinicalContext context, IConfiguration config)
         {

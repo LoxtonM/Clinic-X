@@ -9,13 +9,13 @@ namespace ClinicX.Controllers
     public class ReviewController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly IConfiguration _config;
-        private readonly CRUD _crud;
         private readonly ReviewVM _rvm;
-        private readonly ActivityData _activityData;        
-        private readonly PatientData _patientData;
-        private readonly StaffUserData _staffUser;
-        private readonly ReviewData _reviewData;
+        private readonly IConfiguration _config;
+        private readonly IActivityData _activityData;        
+        private readonly IPatientData _patientData;
+        private readonly IStaffUserData _staffUser;
+        private readonly IReviewData _reviewData;
+        private readonly ICRUD _crud;
 
         public ReviewController(ClinicalContext context, IConfiguration config)
         {

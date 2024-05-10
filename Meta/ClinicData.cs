@@ -4,7 +4,15 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class ClinicData
+    interface IClinicData
+    {
+        public List<Clinics> GetClinicList(string username);
+        public List<Clinics> GetClinicByPatientsList(int mpi);
+        public Clinics GetClinicDetails(int refID);
+        public List<OutcomeList> GetOutcomesList();
+        public List<Ethnicity> GetEthnicitiesList();
+    }
+    public class ClinicData : IClinicData
     {
         private readonly ClinicalContext _clinContext;        
         private readonly StaffUserData _staffUser;

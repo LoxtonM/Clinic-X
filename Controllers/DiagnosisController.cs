@@ -10,11 +10,11 @@ namespace ClinicX.Controllers
     public class DiagnosisController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly TestDiseaseVM _dvm;
         private readonly IConfiguration _config;
-        private readonly TestDiseaseVM _dvm;        
-        private readonly PatientData _patientData;
-        private readonly DiseaseData _diseaseData;
-        private readonly CRUD _crud;
+        private readonly IPatientData _patientData;
+        private readonly IDiseaseData _diseaseData;
+        private readonly ICRUD _crud;        
 
         public DiagnosisController(ClinicalContext context, IConfiguration config)
         {

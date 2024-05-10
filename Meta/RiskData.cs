@@ -4,7 +4,14 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class RiskData
+    interface IRiskData
+    {
+        public List<Risk> GetRiskList(int? icpID);
+        public Risk GetRiskDetails(int? riskID);
+        public List<RiskCodes> GetRiskCodesList();
+        public List<CalculationTools> GetCalculationToolsList();
+    }
+    public class RiskData : IRiskData
     {
         private readonly ClinicalContext _clinContext;
 

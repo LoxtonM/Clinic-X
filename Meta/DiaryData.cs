@@ -4,7 +4,11 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class DiaryData
+    interface IDiaryData
+    {
+        public List<Diary> GetDiaryList(int id);
+    }
+    public class DiaryData : IDiaryData
     {
         private readonly ClinicalContext _clinContext;
 

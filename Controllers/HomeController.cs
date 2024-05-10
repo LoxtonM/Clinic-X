@@ -4,18 +4,17 @@ using Microsoft.AspNetCore.Mvc;
 using ClinicX.Data;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace ClinicX.Controllers
 {
     public class HomeController : Controller
     {        
         private readonly ClinicalContext _clinContext;
-        private readonly IConfiguration _config;
         private readonly CaseloadVM _cvm;
-        private readonly CaseloadData _caseload;
-        private readonly StaffUserData _staffUser;
-        private readonly NotificationData _notificationData;
+        private readonly IConfiguration _config;        
+        private readonly ICaseloadData _caseload;
+        private readonly IStaffUserData _staffUser;
+        private readonly INotificationData _notificationData;
 
         public HomeController(ClinicalContext context, IConfiguration config)
         {

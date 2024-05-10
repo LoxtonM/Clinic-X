@@ -1,13 +1,14 @@
 ﻿using ClinicX.Data;
 using ClinicX.Models;
-using ClinicX.ViewModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class AlertData 
+    interface IAlertData    
+    {        
+        public List<Alert> GetAlertsList(int id);
+    }
+    public class AlertData : IAlertData
     {
         private readonly ClinicalContext _clinContext;
 

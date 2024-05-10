@@ -4,7 +4,12 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class ReviewData
+    interface IReviewData
+    {
+        public List<Reviews> GetReviewsList(string username);
+        public Reviews GetReviewDetails(int id);
+    }
+    public class ReviewData : IReviewData
     {
         private readonly ClinicalContext _clinContext;
         private readonly StaffUserData _staffUser;

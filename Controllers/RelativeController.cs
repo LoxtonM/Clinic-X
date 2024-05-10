@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ClinicX.Meta;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using ClinicX.ViewModels;
 
 namespace ClinicX.Controllers
@@ -10,11 +9,11 @@ namespace ClinicX.Controllers
     public class RelativeController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly IConfiguration _config;
-        private readonly CRUD _crud;
-        private readonly PatientData _patientData;
-        private readonly RelativeData _relativeData;
         private readonly RelativeDiagnosisVM _rdvm;
+        private readonly IConfiguration _config;        
+        private readonly IPatientData _patientData;
+        private readonly IRelativeData _relativeData;
+        private readonly ICRUD _crud;
 
         public RelativeController(ClinicalContext context, IConfiguration config)
         {

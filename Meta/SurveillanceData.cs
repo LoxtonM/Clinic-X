@@ -4,7 +4,17 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class SurveillanceData
+    interface ISurveillanceData
+    {
+        public List<Surveillance> GetSurveillanceList(int? mpi);
+        public List<Surveillance> GetSurveillanceListByRiskID(int? riskID);
+        public Surveillance GetSurvDetails(int? riskID);
+        public List<SurvSiteCodes> GetSurvSiteCodesList();
+        public List<SurvTypeCodes> GetSurvTypeCodesList();
+        public List<SurvFreqCodes> GetSurvFreqCodesList();
+        public List<DiscontinuedReasonCodes> GetDiscReasonCodesList();
+    }
+    public class SurveillanceData : ISurveillanceData
     {
         private readonly ClinicalContext _clinContext;
         
@@ -13,12 +23,6 @@ namespace ClinicX.Meta
             _clinContext = context;        
         }
         
-
-        
-        
-
-       
-
         public List<Surveillance> GetSurveillanceList(int? mpi) //Get list of all surveillance recommendations for an ICP (by MPI)
         {
             var surveillances = from r in _clinContext.Surveillance

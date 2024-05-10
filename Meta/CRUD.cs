@@ -1,11 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class CRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
+    interface ICRUD
+    {
+        public int CallStoredProcedure(string sType, string sOperation, int int1, int int2, int int3,
+            string string1, string string2, string string3, string text, string sLogin,
+            DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
+            int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
+            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0);
+    }
+    public class CRUD : ICRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
                        //data modifications - creation, updates, and deletions. It does not retrieve any data, but uses a generic
                        //list of integers, strings, dates, and booleans that are passed to it.
     {

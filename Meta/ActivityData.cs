@@ -3,7 +3,12 @@ using ClinicX.Models;
 
 namespace ClinicX.Meta
 {
-    public class ActivityData 
+    interface IActivityData
+    {
+        public ActivityItems GetActivityDetails(int id);
+        public List<ActivityItems> GetClinicDetailsList(int refID);
+    }
+    public class ActivityData : IActivityData
     {
         private readonly ClinicalContext _clinContext;
 

@@ -1,13 +1,15 @@
 ﻿using ClinicX.Data;
 using ClinicX.Models;
-using ClinicX.ViewModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class ReferralData 
+    interface IReferralData
+    {
+        public Referrals GetReferralDetails(int id);
+        public List<Referrals> GetReferralsList(int id);
+    }
+    public class ReferralData : IReferralData
     {
         private readonly ClinicalContext _clinContext;
 

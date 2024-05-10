@@ -10,15 +10,15 @@ namespace ClinicX.Controllers
     public class ClinicController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly IConfiguration _config;
         private readonly ClinicVM _cvm;
-        private readonly PatientData _patientData;
-        private readonly ReferralData _referralData;
-        private readonly ActivityData _activityData;
-        private readonly StaffUserData _staffUser;
-        private readonly ClinicData _clinicData;
-        private readonly CRUD _crud;
-
+        private readonly IConfiguration _config;        
+        private readonly IPatientData _patientData;
+        private readonly IReferralData _referralData;
+        private readonly IActivityData _activityData;
+        private readonly IStaffUserData _staffUser;
+        private readonly IClinicData _clinicData;
+        private readonly ICRUD _crud;
+        
         public ClinicController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;

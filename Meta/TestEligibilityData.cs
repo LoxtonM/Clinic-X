@@ -4,7 +4,11 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class TestEligibilityData
+    interface ITestEligibilityData
+    {
+        public List<Eligibility> GetTestingEligibilityList(int? mpi);
+    }
+    public class TestEligibilityData : ITestEligibilityData
     {
         private readonly ClinicalContext _clinContext;
 

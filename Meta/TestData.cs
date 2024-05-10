@@ -4,7 +4,14 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class TestData
+    interface ITestData
+    {
+        public List<TestList> GetTestList();
+        public List<Test> GetTestListByUser(string username);
+        public List<Test> GetTestListByPatient(int mpi);
+        public Test GetTestDetails(int id);
+    }
+    public class TestData : ITestData
     {
         private readonly ClinicalContext _clinContext;
     

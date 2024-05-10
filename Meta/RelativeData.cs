@@ -4,7 +4,14 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class RelativeData
+    interface IRelativeData
+    {
+        public List<Relatives> GetRelativesList(int id);
+        public Relatives GetRelativeDetails(int relID);
+        public List<Relation> GetRelationsList();
+        public List<Gender> GetGenderList();
+    }
+    public class RelativeData : IRelativeData
     {
         private readonly ClinicalContext _clinContext;      
 

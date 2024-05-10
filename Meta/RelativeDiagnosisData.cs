@@ -4,7 +4,17 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class RelativeDiagnosisData
+    interface IRelativeDiagnosisData
+    {
+        public List<RelativesDiagnosis> GetRelativeDiagnosisList(int id);
+        public RelativesDiagnosis GetRelativeDiagnosisDetails(int id);
+        public List<CancerReg> GetCancerRegList();
+        public List<RequestStatus> GetRequestStatusList();
+        public List<TumourSite> GetTumourSiteList();
+        public List<TumourLat> GetTumourLatList();
+        public List<TumourMorph> GetTumourMorphList();
+    }
+    public class RelativeDiagnosisData : IRelativeDiagnosisData
     {
         private readonly ClinicalContext _clinContext;
 

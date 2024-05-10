@@ -4,7 +4,11 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class CaseloadData 
+    interface ICaseloadData
+    {
+        public List<Caseload> GetCaseloadList(string staffCode);
+    }
+    public class CaseloadData : ICaseloadData
     {
         private readonly ClinicalContext _clinContext;       
 

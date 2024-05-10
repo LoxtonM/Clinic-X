@@ -8,12 +8,13 @@ namespace ClinicX.Controllers
     public class RelativeDiagnosisController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly IConfiguration _config;
-        private readonly RelativeData _relativeData;
-        private readonly RelativeDiagnosisData _relativeDiagnosisData;
-        private readonly StaffUserData _staffUser;        
-        private readonly CRUD _crud;
         private readonly RelativeDiagnosisVM _rdvm;
+        private readonly IConfiguration _config;
+        private readonly IRelativeData _relativeData;
+        private readonly IRelativeDiagnosisData _relativeDiagnosisData;
+        private readonly IStaffUserData _staffUser;        
+        private readonly ICRUD _crud;
+        
         public RelativeDiagnosisController(ClinicalContext context, IConfiguration config) 
         {
             _clinContext = context;

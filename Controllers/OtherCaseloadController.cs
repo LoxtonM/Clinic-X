@@ -10,8 +10,8 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly CaseloadVM _cvm;        
-        private readonly StaffUserData _staffUser;
-        private readonly CaseloadData _caseloadData;
+        private readonly IStaffUserData _staffUser;
+        private readonly ICaseloadData _caseloadData;
 
         public OtherCaseloadController(ClinicalContext context)
         {

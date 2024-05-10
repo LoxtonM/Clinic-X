@@ -4,7 +4,16 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class DictatedLetterData
+    interface IDictatedLetterData
+    {
+        public List<DictatedLetters> GetDictatedLettersList(string staffcode);
+        public DictatedLetters GetDictatedLetterDetails(int dotID);
+        public List<DictatedLettersPatients> GetDictatedLettersPatientsList(int dotID);
+        public List<DictatedLettersCopies> GetDictatedLettersCopiesList(int dotID);
+        public DictatedLettersCopies GetDictatedLetterCopyDetails(int id);
+        public List<Patients> GetDictatedLetterPatientsList(int dotID);
+    }
+    public class DictatedLetterData : IDictatedLetterData
     {
         private readonly ClinicalContext _clinContext;
 

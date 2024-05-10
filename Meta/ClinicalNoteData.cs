@@ -4,7 +4,13 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class ClinicalNoteData
+    interface IClinicalNoteData
+    {
+        public ClinicalNotes GetClinicalNoteDetails(int? noteID);
+        public List<ClinicalNotes> GetClinicalNoteList(int? mpi);
+        public List<NoteTypeList> GetNoteTypesList();
+    }
+    public class ClinicalNoteData : IClinicalNoteData
     {
         private readonly ClinicalContext _clinContext;
         

@@ -8,12 +8,13 @@ namespace ClinicX.Controllers
     public class HPOController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly IConfiguration _config;
         private readonly HPOVM _hpo;
-        private readonly HPOCodeData _hpoData;
-        private readonly ClinicalNoteData _clinicaNoteData;
-        private readonly CRUD _crud;
-        private readonly MiscData _misc;
+        private readonly IConfiguration _config;        
+        private readonly IHPOCodeData _hpoData;
+        private readonly IClinicalNoteData _clinicaNoteData;        
+        private readonly IMiscData _misc;
+        private readonly ICRUD _crud;
+
 
         public HPOController(ClinicalContext context, IConfiguration config)
         {

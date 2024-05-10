@@ -4,7 +4,16 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class StaffUserData 
+    interface IStaffUserData
+    {
+        public StaffMemberList GetStaffMemberDetails(string suser);
+        public List<StaffMemberList> GetClinicalStaffList();
+        public List<StaffMemberList> GetStaffMemberList();
+        public List<string> GetConsultantsList();
+        public List<string> GetGCList();
+        public List<string> GetSecTeamsList();
+    }
+    public class StaffUserData : IStaffUserData
     {
         private readonly ClinicalContext _clinContext;       
 

@@ -10,13 +10,13 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly PatientVM _pvm;
-        private readonly PatientData _patientData;
-        private readonly RelativeData _relativeData;
-        private readonly PathwayData _pathwayData;
-        private readonly AlertData _alertData;
-        private readonly ReferralData _referralData;
-        private readonly DiaryData _diaryData;
-        private readonly HPOCodeData _hpoData;
+        private readonly IPatientData _patientData;
+        private readonly IRelativeData _relativeData;
+        private readonly IPathwayData _pathwayData;
+        private readonly IAlertData _alertData;
+        private readonly IReferralData _referralData;
+        private readonly IDiaryData _diaryData;
+        private readonly IHPOCodeData _hpoData;
 
         public PatientController(ClinicalContext context)
         {

@@ -4,7 +4,14 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class DiseaseData
+    interface IDiseaseData
+    {
+        public List<DiseaseList> GetDiseaseList();
+        public List<Diagnosis> GetDiseaseListByPatient(int mpi);
+        public List<DiseaseStatusList> GetStatusList();
+        public Diagnosis GetDiagnosisDetails(int id);
+    }
+    public class DiseaseData : IDiseaseData
     {
         private readonly ClinicalContext _clinContext;        
         public DiseaseData(ClinicalContext context)

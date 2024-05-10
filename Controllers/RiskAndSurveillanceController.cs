@@ -8,16 +8,16 @@ namespace ClinicX.Controllers
     public class RiskAndSurveillanceController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly IConfiguration _config;
         private readonly RiskSurveillanceVM _rsvm;
-        private readonly PatientData _patientData;
-        private readonly StaffUserData _staffUser;
-        private readonly TriageData _triageData;
-        private readonly RiskData _riskData;
-        private readonly SurveillanceData _survData;
-        private readonly TestEligibilityData _testEligibilityData;
-        private readonly MiscData _misc;
-        private readonly CRUD _crud;
+        private readonly IConfiguration _config;        
+        private readonly IPatientData _patientData;
+        private readonly IStaffUserData _staffUser;
+        private readonly ITriageData _triageData;
+        private readonly IRiskData _riskData;
+        private readonly ISurveillanceData _survData;
+        private readonly ITestEligibilityData _testEligibilityData;
+        private readonly IMiscData _misc;
+        private readonly ICRUD _crud;
 
         public RiskAndSurveillanceController(ClinicalContext context, IConfiguration config)
         {

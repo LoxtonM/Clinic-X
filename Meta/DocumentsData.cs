@@ -4,7 +4,13 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class DocumentsData
+    interface IDocumentsData
+    {
+        public DocumentsContent GetDocumentDetails(int id);
+        public DocumentsContent GetDocumentDetailsByDocCode(string docCode);
+        public List<Documents> GetDocumentsList();
+    }
+    public class DocumentsData : IDocumentsData
     {       
         private readonly DocumentContext? _docContext;
         

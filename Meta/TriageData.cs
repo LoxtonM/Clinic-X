@@ -4,7 +4,20 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class TriageData
+    interface ITriageData
+    {
+        public ICP GetICPDetails(int icpID);
+        public Triages GetTriageDetails(int? icpID);
+        public List<Triages> GetTriageList(string username);
+        public List<ICPCancer> GetCancerICPList(string username);        
+        public List<ClinicalFacilityList> GetClinicalFacilitiesList();
+        public ICPGeneral GetGeneralICPDetails(int? icpID);
+        public ICPCancer GetCancerICPDetails(int? icpID);
+        public ICPCancer GetCancerICPDetailsByICPID(int? icpID);
+        public int GetGeneralICPCountByICPID(int id);
+        public int GetCancerICPCountByICPID(int id);
+    }
+    public class TriageData : ITriageData
     {
         private readonly ClinicalContext _clinContext;
         
@@ -48,52 +61,7 @@ namespace ClinicX.Meta
             return icps.ToList();
         }
 
-        public List<ICPActionsList> GetICPCancerActionsList() //Get list of all triage actions for Cancer ICPs
-        {
-            var actions = from a in _clinContext.ICPCancerActionsList
-                         where a.InUse == true
-                         orderby a.ID
-                         select a;
-           
-            return actions.ToList();
-        }
-
-        public List<ICPGeneralActionsList> GetICPGeneralActionsList() //Get list of all "treatpath" items for General ICPs
-        {
-            var actions = from a in _clinContext.ICPGeneralActionsList
-                         where a.InUse == true
-                         orderby a.ID
-                         select a;
-           
-            return actions.ToList();
-        }
-
-        public List<ICPGeneralActionsList2> GetICPGeneralActionsList2() //Get list of all "treatpath2" items for General ICPs
-        {
-            var actions = from a in _clinContext.ICPGeneralActionsList2
-                         where a.InUse == true
-                         orderby a.ID
-                         select a;
-       
-            return actions.ToList();
-        }
-
-        public List<ICPCancerReviewActionsList> GetICPCancerReviewActionsList() //Get list of all "treatpath2" items for General ICPs
-        {
-            var actions = from a in _clinContext.ICPCancerReviewActionsList
-                          where a.InUse == true
-                          orderby a.ListOrder
-                          select a;
-
-            return actions.ToList();
-        }
-
-        public ICPCancerReviewActionsList GetICPCancerAction(int id)
-        {
-            var action = _clinContext.ICPCancerReviewActionsList.FirstOrDefault(a => a.ID == id);
-
-            return action;
-        }
+        
         public List<ClinicalFacilityList> GetClinicalFacilitiesList() //Get list of all clinic facilities where we hold clinics
         {
             var facs = from f in _clinContext.ClinicalFacilities

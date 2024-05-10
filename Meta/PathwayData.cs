@@ -1,13 +1,15 @@
 ﻿using ClinicX.Data;
 using ClinicX.Models;
-using ClinicX.ViewModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class PathwayData 
+    interface IPathwayData
+    {
+        public PatientPathway GetPathwayDetails(int id);
+        public List<Pathway> GetPathwayList();
+    }
+    public class PathwayData : IPathwayData
     {
         private readonly ClinicalContext _clinContext;
 

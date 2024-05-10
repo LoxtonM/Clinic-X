@@ -12,19 +12,19 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
-        private readonly IConfiguration _config;
-        private readonly ICPVM _ivm;        
-        private readonly StaffUserData _staffUser;
-        private readonly PathwayData _pathwayData;
-        private readonly ReferralData _referralData;
-        private readonly TriageData _triageData;
-        private readonly RiskData _riskData;
-        private readonly SurveillanceData _survData;
-        private readonly TestEligibilityData _testEligibilityData;
-        private readonly DocumentsData _documentsData;
-        private readonly CRUD _crud;
+        private readonly ICPVM _ivm;
         private readonly LetterController _lc;
-
+        private readonly IConfiguration _config;               
+        private readonly IStaffUserData _staffUser;
+        private readonly IPathwayData _pathwayData;
+        private readonly IReferralData _referralData;
+        private readonly ITriageData _triageData;
+        private readonly IICPActionData _icpActionData;
+        private readonly IRiskData _riskData;
+        private readonly ISurveillanceData _survData;
+        private readonly ITestEligibilityData _testEligibilityData;
+        private readonly IDocumentsData _documentsData;
+        private readonly ICRUD _crud;
 
         public TriageController(ClinicalContext clinContext, DocumentContext docContext, IConfiguration config)
         {
@@ -36,6 +36,7 @@ namespace ClinicX.Controllers
             _pathwayData = new PathwayData(_clinContext);
             _referralData = new ReferralData(_clinContext);
             _triageData = new TriageData(_clinContext);
+            _icpActionData = new ICPActionData(_clinContext);
             _riskData = new RiskData(_clinContext);
             _survData = new SurveillanceData(_clinContext);
             _testEligibilityData = new TestEligibilityData(_clinContext);
@@ -87,9 +88,9 @@ namespace ClinicX.Controllers
                 _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList();
                 _ivm.icpGeneral = _triageData.GetGeneralICPDetails(id);
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
-                _ivm.cancerActionsList = _triageData.GetICPCancerActionsList();
-                _ivm.generalActionsList = _triageData.GetICPGeneralActionsList();
-                _ivm.generalActionsList2 = _triageData.GetICPGeneralActionsList2();
+                _ivm.cancerActionsList = _icpActionData.GetICPCancerActionsList();
+                _ivm.generalActionsList = _icpActionData.GetICPGeneralActionsList();
+                _ivm.generalActionsList2 = _icpActionData.GetICPGeneralActionsList2();
                 _ivm.loggedOnUserType = _staffUser.GetStaffMemberDetails(User.Identity.Name).CLINIC_SCHEDULER_GROUPS;
                 return View(_ivm);
             }
@@ -247,7 +248,7 @@ namespace ClinicX.Controllers
                 _ivm.surveillanceList = _survData.GetSurveillanceList(_ivm.icpCancer.MPI);
                 _ivm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_ivm.icpCancer.MPI);
                 _ivm.documentList = _documentsData.GetDocumentsList().Where(d => (d.DocCode.StartsWith("O") && d.DocGroup == "Outcome") || d.DocCode.Contains("PrC")).ToList();
-                _ivm.cancerReviewActionsLists = _triageData.GetICPCancerReviewActionsList();
+                _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
                 return View(_ivm);
             }
             catch (Exception ex)
@@ -266,14 +267,14 @@ namespace ClinicX.Controllers
             string reviewText = "";
             string finalReviewText = "";
             string finalReviewBy = "";
-            _ivm.cancerReviewActionsLists = _triageData.GetICPCancerReviewActionsList();
+            _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
             //DateTime finalReviewDate = DateTime.Parse("1900-01-01");
             int mpi = icpDetails.MPI;
             int refID = icpDetails.REFID;
 
             if (letter != null && letter != 0)
             {                
-                _ivm.cancerAction = _triageData.GetICPCancerAction(letter.GetValueOrDefault());
+                _ivm.cancerAction = _icpActionData.GetICPCancerAction(letter.GetValueOrDefault());
                 string docCode = _ivm.cancerAction.DocCode;
 
                 if (letter != 1 && letter != 11)

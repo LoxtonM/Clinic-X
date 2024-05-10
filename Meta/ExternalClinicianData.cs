@@ -4,14 +4,19 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    public class ExternalClinicianData
+    interface IExternalClinicianData
+    {
+        public string GetCCDetails(ExternalClinician referrer);
+        public ExternalClinician GetClinicianDetails(string sref);
+        public List<ExternalClinician> GetClinicianList();
+    }
+    public class ExternalClinicianData : IExternalClinicianData
     {
         private readonly ClinicalContext _clinContext;
         
         public ExternalClinicianData(ClinicalContext context)
         {
             _clinContext = context;
-
         }
                 
         public string GetCCDetails(ExternalClinician referrer) //Get details of CC address

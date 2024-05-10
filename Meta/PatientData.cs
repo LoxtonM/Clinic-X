@@ -4,7 +4,12 @@ using ClinicX.Models;
 
 namespace ClinicX.Meta
 {
-    public class PatientData //This contains all of the data "get" functions that retrieve data from a data model.
+    interface IPatientData
+    {
+        public Patients GetPatientDetails(int id);
+        public Patients GetPatientDetailsByWMFACSID(int id);
+    }
+    public class PatientData : IPatientData //This contains all of the data "get" functions that retrieve data from a data model.
                         //They each return either a list or a data model.
         //there are two constructors because there are two possible "datacontext" parameters that can be passed to it.
     {

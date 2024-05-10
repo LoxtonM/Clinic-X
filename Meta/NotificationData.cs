@@ -3,7 +3,11 @@
 
 namespace ClinicX.Meta
 {
-    public class NotificationData
+    interface INotificationData
+    {
+        public string GetMessage();
+    }
+    public class NotificationData : INotificationData
     {        
         private readonly ClinicalContext _context;
         
