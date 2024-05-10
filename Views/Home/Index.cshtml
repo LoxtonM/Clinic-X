@@ -10,6 +10,11 @@
             <h1 class="text-center" style="color:red">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
         }
 
+        @if (Model.notificationMessage != null && Model.notificationMessage != "")
+        {
+            <h1 class="text-center" style="color:red">@Model.notificationMessage</h1>
+        }
+
         @if(Model.caseLoad.Count() == 0)
         {        
             <h2 class="text-center">You have no current caseload.</h2>

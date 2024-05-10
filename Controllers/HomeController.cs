@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ClinicX.Data;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace ClinicX.Controllers
 {
@@ -14,6 +15,7 @@ namespace ClinicX.Controllers
         private readonly CaseloadVM _cvm;
         private readonly CaseloadData _caseload;
         private readonly StaffUserData _staffUser;
+        private readonly NotificationData _notificationData;
 
         public HomeController(ClinicalContext context, IConfiguration config)
         {
@@ -22,14 +24,15 @@ namespace ClinicX.Controllers
             _cvm = new CaseloadVM();
             _caseload = new CaseloadData(_clinContext);
             _staffUser = new StaffUserData(_clinContext);
-
+            _notificationData = new NotificationData(_clinContext);
         }
 
         [Authorize]
         public async Task<IActionResult> Index()
         {
             try
-            {                
+            {
+                _cvm.notificationMessage = _notificationData.GetMessage();
                 var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 _cvm.caseLoad = _caseload.GetCaseloadList(user.STAFF_CODE).OrderBy(c => c.BookedDate).ToList();
                 _cvm.countClinics = _cvm.caseLoad.Where(c => c.Type.Contains("App")).Count();

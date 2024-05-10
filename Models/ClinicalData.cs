@@ -848,4 +848,14 @@ namespace ClinicX.Models
         [Key]
         public string CGU_Pathway { get; set; }
     }
+
+    [Table("Notifications")]
+    public class Notifications
+    {
+        [Key]
+        public int ID { get; set; }
+        public string MessageCode { get; set; }
+        public string Message { get; set; }
+        public bool IsActive { get; set; }
+    }
 }

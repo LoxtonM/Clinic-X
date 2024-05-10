@@ -68,7 +68,7 @@ namespace ClinicX.Data
         public DbSet<CalculationTools> CalculationTools { get; set; }
         public DbSet<Relation> Relations { get; set; }
         public DbSet<Gender> Genders { get; set; }
-
         public DbSet<Pathway> Pathways { get; set; }
+        public DbSet<Notifications> Notifications { get; set; }
     }
 }
