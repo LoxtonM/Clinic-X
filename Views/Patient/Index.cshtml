@@ -1,0 +1,71 @@
+﻿@model ClinicX.ViewModels.PatientVM
+@{
+    ViewData["Title"] = "Clinic-X - Patient Search";
+}
+
+<container>
+    <div class="row">
+        <form id="ContactOutcome" asp-action="Index">
+            <div class="row mb-5 g-5">
+                <div class="col-md-1">
+                    <label class="w-100">CGU Number:</label>
+                </div>
+                <div class="col-md-1">
+                    <input class="w-100" type="text" name="cguNo" />
+                </div>
+                <div class="col-md-1">
+                    <label class="w-100">Forename:</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="text" name="firstname" />
+                </div>
+                <div class="col-md-1">
+                    <label class="w-100">Surname:</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="text" name="lastname" />
+                </div>
+                <div class="col-md-2">
+                    <label class="w-100">NHS Number (without spaces):</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="text" name="nhsNo" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <button class="btn btn-success" type="submit">Search</button>
+                </div>
+            </div>
+            </div>
+        </form>
+    </div>
+
+    @if(Model.patientsList!= null)
+    {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>CGU Number</th>
+                <th>Name</th>
+                <th>Date of Birth</th>
+                <th>NHS Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.patientsList)
+            {
+                <tr>
+                        <td><a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@item.MPI type="button" class="btn btn-success">@item.CGU_No</a></td>
+                    <td>@item.Title @item.FIRSTNAME @item.LASTNAME</td>
+                    @if(@item.DOB.HasValue)
+                    {
+                        <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                    }
+                    <td>@item.SOCIAL_SECURITY</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    }
+</container>

@@ -32,6 +32,36 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
+        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob)
+        {
+            try
+            {
+                if (cguNo != null || firstname != null || lastname != null || nhsNo != null || dob != null)
+                {
+                    if (cguNo != null)
+                    {
+                        _pvm.patientsList = _patientData.GetPatientsListByCGUNo(cguNo);
+                    }
+                    if (firstname != null || lastname != null)
+                    {
+                        _pvm.patientsList = _patientData.GetPatientsListByName(firstname, lastname);                        
+                    }
+                    if (nhsNo != null)
+                    {
+                        _pvm.patientsList = _patientData.GetPatientsListByNHS(nhsNo);
+                    }
+                    
+                }
+
+                return View(_pvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+            }
+        }
+
+        [Authorize]
         public async Task<IActionResult> PatientDetails(int id)
         {
             try

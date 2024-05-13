@@ -7,7 +7,7 @@ namespace ClinicX.Meta
     {
         public string GetConstant(string constantCode, int constantValue);
     }
-    public class ConstantsData
+    public class ConstantsData : IConstantsData
     {        
         private readonly DocumentContext? _docContext;
         

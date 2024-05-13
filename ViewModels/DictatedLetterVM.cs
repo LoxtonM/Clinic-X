@@ -13,8 +13,7 @@ namespace ClinicX.ViewModels
         public List<DictatedLetters> dictatedLettersForPrinting { get; set; }
         public List<Patients> patients { get; set; }
         public List<StaffMemberList> staffMemberList { get; set;}
-        public Patients patientDetails { get; set; }
-        //public Referrals referralDetails { get; set; }
+        public Patients patientDetails { get; set; }        
         public ActivityItems activityDetails { get; set; }
         public ExternalFacility referrerFacility { get; set; }
         public ExternalClinician referrer { get; set; }
@@ -25,6 +24,11 @@ namespace ClinicX.ViewModels
         public List<ExternalClinician> genetics { get; set; }
         public List<ExternalClinician> gynae { get; set; }
         public List<ExternalClinician> histo { get; set; }
+        //Relatives
+        //Screening co-ordinators
+        //Genetics lab
+        //GP (all)
+        //Clinician (all)
         public List<string> consultants { get; set; }
         public List<string> gcs { get; set; }
         public List<string> secteams { get; set; }
