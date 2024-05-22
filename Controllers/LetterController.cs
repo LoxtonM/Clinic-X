@@ -5,6 +5,7 @@ using ClinicX.Meta;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
+using ClinicX.Models;
 
 
 
@@ -171,10 +172,11 @@ public class LetterController : Controller
     }
 
     //Prints standard letter templates from the menu
-    public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "")
+    public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
+        string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false)
     {
         try
-        {            
+        {
             _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
             _lvm.patient = _patientData.GetPatientDetails(mpi);
             _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
@@ -246,6 +248,7 @@ public class LetterController : Controller
             string content3 = "";
             string content4 = "";
             string content5 = "";
+            string content6 = "";
             string quoteRef = "";
             string signOff = "";
             string sigFlename = "";
@@ -363,7 +366,7 @@ public class LetterController : Controller
 
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 5));
                 totalLength = totalLength + content1.Length / 5;
-                if (content2 != null)
+                if (content2 != null && content2 != "")
                 {
                     tf.DrawString(content2, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
                     totalLength = totalLength + content2.Length / 4;
@@ -372,6 +375,261 @@ public class LetterController : Controller
                 totalLength = totalLength + content3.Length / 4;
                 tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
                 totalLength = totalLength + content4.Length / 4;
+                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
+                totalLength = totalLength + 20;
+                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
+                int len = imageSig.PixelWidth;
+                int hig = imageSig.PixelHeight;
+
+                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                totalLength = totalLength + hig + 20;
+                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                cc = referrerName;
+            }
+
+            if (docCode == "O1A")
+            {
+                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
+                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
+                quoteRef = quoteRef + "Genetic Counsellor: ";
+                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
+
+                content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2;
+                content2 = additionalText;
+                if (reviewAtAge > 0)
+                {
+                    content3 = "This advice is based upon the information currently available.  You may wish to contact us again around the age of " +
+                        reviewAtAge.ToString() + " so we can update our advice.";
+                }
+                if (tissueType != "")
+                {
+                    content4 = "Further Investigations: "; //all these strings have been hard-coded in the Access front-end, for some reason
+                    if (tissueType == "Blood")
+                    {
+                        content4 = content4 + "It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
+                    }
+                    else if (tissueType == "Tissue")
+                    {
+                        content4 = content4 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
+                    }
+                    else if (tissueType == "Blood & Tissue")
+                    {
+                        content4 = content4 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
+                    }
+                }
+                content5 = _lvm.documentsContent.Para3 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
+                if (isResearchStudy.GetValueOrDefault())
+                {
+                    content6 = _lvm.documentsContent.Para9;
+                }
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+                if (content2 != null && content2 != "")
+                {
+                    tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                    totalLength = totalLength + content2.Length / 4;
+                }
+                if (content3 != null && content3 != "")
+                {
+                    tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                    totalLength = totalLength + content3.Length / 4;
+                }
+                tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                totalLength = totalLength + content3.Length / 4;
+                tf.DrawString(content5, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
+                totalLength = totalLength + content4.Length / 4;
+                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
+                totalLength = totalLength + 20;
+                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
+                int len = imageSig.PixelWidth;
+                int hig = imageSig.PixelHeight;
+                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                totalLength = totalLength + hig + 20;
+                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                cc = referrerName;
+            }
+
+            if (docCode == "O1C")
+            {
+                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
+                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
+                quoteRef = quoteRef + "Genetic Counsellor: ";
+                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
+
+                content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2 + Environment.NewLine +
+                    Environment.NewLine + _lvm.documentsContent.Para3 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
+                if (reviewAtAge > 0)
+                {
+                    content2 = "This advice is based upon the information currently available.  You may wish to contact us again around the age of " +
+                        reviewAtAge.ToString() + " so we can update our advice.";
+                }
+                if (isResearchStudy.GetValueOrDefault())
+                {
+                    content3 = _lvm.documentsContent.Para9;
+                }
+
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+                if (content2 != null && content2 != "")
+                {
+                    tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                    totalLength = totalLength + content2.Length / 4;
+                }
+                if (content3 != null && content3 != "")
+                {
+                    tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                    totalLength = totalLength + content3.Length / 4;
+                }
+                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
+                totalLength = totalLength + 20;
+                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
+                int len = imageSig.PixelWidth;
+                int hig = imageSig.PixelHeight;
+                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                totalLength = totalLength + hig + 20;
+                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                cc = referrerName;
+            }
+
+            if (docCode == "O2")
+            {
+                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
+                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
+                quoteRef = quoteRef + "Genetic Counsellor: ";
+                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
+
+                content1 = _lvm.documentsContent.Para1;
+                content2 = _lvm.documentsContent.Para2 + " " + additionalText;
+                if (isScreeningRels.GetValueOrDefault())
+                {
+                    content3 = _lvm.documentsContent.Para8;
+                }
+                if (reviewAtAge > 0)
+                {
+                    content4 = "This advice is based upon the information currently available.  You may wish to contact us again around the age of "
+                        + reviewAtAge.ToString() + " so we can update our advice.";
+                }
+                if (tissueType != "")
+                {
+                    content5 = "Further Investigations: "; //all these strings have been hard-coded in the Access front-end, for some reason
+                    if (tissueType == "Blood")
+                    {
+                        content5 = content5 + "It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
+                    }
+                    else if (tissueType == "Tissue")
+                    {
+                        content5 = content5 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
+                    }
+                    else if (tissueType == "Blood & Tissue")
+                    {
+                        content5 = content5 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
+                    }
+                }
+
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+                tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                totalLength = totalLength + content2.Length / 4;
+                if (content3 != "")
+                { 
+                    tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                    totalLength = totalLength + content3.Length / 4;
+                }
+                if (content4 != "")
+                {
+                    tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
+                    totalLength = totalLength + content4.Length / 4;
+                }
+                if (content5 != "")
+                {
+                    tf.DrawString(content5, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content5.Length / 4));
+                    totalLength = totalLength + content5.Length / 4;
+                }    
+                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+                
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
+                totalLength = totalLength + 20;
+                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
+                int len = imageSig.PixelWidth;
+                int hig = imageSig.PixelHeight;
+                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                totalLength = totalLength + hig + 20;
+                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                cc = referrerName;
+            }
+
+            if (docCode == "O2A")
+            {
+                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
+                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
+                quoteRef = quoteRef + "Genetic Counsellor: ";
+                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
+
+                content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2 + " " + additionalText;
+                if (tissueType != "")
+                {
+                    content2 = "Further Investigations: "; //all these strings have been hard-coded in the Access front-end, for some reason
+                    if (tissueType == "Blood")
+                    {
+                        content2 = content2 + "It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
+                    }
+                    else if (tissueType == "Tissue")
+                    {
+                        content2 = content2 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
+                    }
+                    else if (tissueType == "Blood & Tissue")
+                    {
+                        content2 = content2 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
+                    }
+                }
+                content3 = _lvm.documentsContent.Para3 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
+                if (isResearchStudy.GetValueOrDefault())
+                {
+                    content4 = _lvm.documentsContent.Para9;
+                }
+                if (reviewAtAge > 0)
+                {
+                    content5 = "This advice is based upon the information currently available.  You may wish to contact us again around the age of "
+                        + reviewAtAge.ToString() + " so we can update our advice.";
+                }                
+
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+                if (content2 != "")
+                {
+                    tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                    totalLength = totalLength + content2.Length / 4;
+                }
+                tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                totalLength = totalLength + content3.Length / 4;
+                
+                if (content4 != "")
+                {
+                    tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
+                    totalLength = totalLength + content4.Length / 4;
+                }
+                if (content5 != "")
+                {
+                    tf.DrawString(content5, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content5.Length / 4));
+                    totalLength = totalLength + content5.Length / 4;
+                }
+                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
 
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
@@ -385,7 +643,159 @@ public class LetterController : Controller
                 cc = referrerName;
             }
 
-                //Reject letter
+            if (docCode == "O2D")
+            {
+                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
+                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
+                quoteRef = quoteRef + "Genetic Counsellor: ";
+                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
+
+                content1 = _lvm.documentsContent.Para1;
+                content2 = _lvm.documentsContent.Para2;
+                content3 = additionalText;
+
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+                tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                totalLength = totalLength + content2.Length / 4;                
+                tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                totalLength = totalLength + content3.Length / 4;
+                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
+                totalLength = totalLength + 20;
+                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
+                int len = imageSig.PixelWidth;
+                int hig = imageSig.PixelHeight;
+                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                totalLength = totalLength + hig + 20;
+                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                cc = referrerName;
+            }
+
+            if (docCode == "O3")
+            {
+                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
+                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
+                quoteRef = quoteRef + "Genetic Counsellor: ";
+                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
+                List<Risk> _riskList = new List<Risk>();
+                RiskData _rData = new RiskData(_clinContext);
+                Surveillance _surv = new Surveillance();
+                SurveillanceData _survData = new SurveillanceData(_clinContext);
+                _riskList = _rData.GetRiskListByRefID(refID);
+                
+                content1 = _lvm.documentsContent.Para1;
+                content2 = _lvm.documentsContent.Para3;
+                foreach (var item in _riskList)
+                {
+                    _surv = _survData.GetSurvDetails(item.RiskID);
+                    content3 = content3 + ", " + _surv.SurvFreqCode; //TODO - get this to display properly
+                }
+                
+                content4 = _lvm.documentsContent.Para4;
+
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+                tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                totalLength = totalLength + content2.Length / 4;
+                tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                totalLength = totalLength + content3.Length / 4;
+                tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
+                totalLength = totalLength + content4.Length / 4;
+
+                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
+                totalLength = totalLength + 20;
+                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
+                int len = imageSig.PixelWidth;
+                int hig = imageSig.PixelHeight;
+                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                totalLength = totalLength + hig + 20;
+                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                cc = referrerName;
+            }
+
+            if (docCode == "O3A")
+            {
+                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
+                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
+                quoteRef = quoteRef + "Genetic Counsellor: ";
+                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
+
+                content1 = _lvm.documentsContent.Para1;
+                content2 = _lvm.documentsContent.Para2;
+                content3 = _lvm.documentsContent.Para3;
+                content4 = _lvm.documentsContent.Para4;
+
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+                tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                totalLength = totalLength + content2.Length / 4;
+                tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                totalLength = totalLength + content3.Length / 4;
+                tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
+                totalLength = totalLength + content4.Length / 4;
+                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
+                totalLength = totalLength + 20;
+                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
+                int len = imageSig.PixelWidth;
+                int hig = imageSig.PixelHeight;
+                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                totalLength = totalLength + hig + 20;
+                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                cc = referrerName;
+            }
+
+            if (docCode == "O4")
+            {
+                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
+                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
+                quoteRef = quoteRef + "Genetic Counsellor: ";
+                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
+
+                content1 = _lvm.documentsContent.Para1;
+                content2 = _lvm.documentsContent.Para2;
+                content3 = _lvm.documentsContent.Para3;
+                content4 = _lvm.documentsContent.Para4;
+
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+                tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                totalLength = totalLength + content2.Length / 4;
+                tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                totalLength = totalLength + content3.Length / 4;
+                tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
+                totalLength = totalLength + content4.Length / 4;
+                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
+                totalLength = totalLength + 20;
+                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
+                int len = imageSig.PixelWidth;
+                int hig = imageSig.PixelHeight;
+                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                totalLength = totalLength + hig + 20;
+                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                cc = referrerName;
+            }
+
+            //Reject letter
             if (docCode == "RejectCMA")
             {
                 quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;

@@ -9,29 +9,35 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly HPOVM _hpo;
+        private readonly IStaffUserData _staffUser;
         private readonly IConfiguration _config;        
         private readonly IHPOCodeData _hpoData;
         private readonly IClinicalNoteData _clinicaNoteData;        
         private readonly IMiscData _misc;
         private readonly ICRUD _crud;
-
+        private readonly IAuditService _audit;
 
         public HPOController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
+            _staffUser = new StaffUserData(_clinContext);
             _hpo = new HPOVM();
             _hpoData = new HPOCodeData(_clinContext);
             _clinicaNoteData = new ClinicalNoteData(_clinContext);
             _crud = new CRUD(_config);
             _misc = new MiscData(_config);
+            _audit = new AuditService(_config);
         }
 
         [HttpGet]
         public async Task<IActionResult> HPOTerm(int id, string? searchTerm)
         {
             try
-            {                
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - HPO", id.ToString());
+
                 _hpo.clinicalNote = _clinicaNoteData.GetClinicalNoteDetails(id);
                 _hpo.hpoTermDetails = _hpoData.GetExistingHPOTermsList(id);
                 _hpo.hpoTerms = _hpoData.GetHPOTermsList();

@@ -63,8 +63,6 @@
                 <input id="txtLetterToCode" name="letterToCode" />
             </div>
 
-            
-
             <div class="row mb-5 g-5">
                 <div class="col-md-1" style="text-align:right">
                     To:
@@ -80,7 +78,7 @@
                                 <option value="Referrer">Referrer</option>                            
                             }
                             <option value="GP">GP</option>
-                            <option value="Other">Other</option>
+                            @*<option value="Other">Other</option>*@
                         </select>
                     </div>
                     <div class="row">
@@ -281,6 +279,8 @@
                                 <option value="Cardio">Cardiologists</option>
                                 <option value="Gynae">Gynacologists</option>
                                 <option value="Genetics">Geneticists</option>
+                                <option value="ScreenCo">Screening Coordinators</option>
+                                @*<option value="GpsAll">GPs (all)</option> We can't have this option, it simply flat-out refuses to work*@
                             </select>
                             <select class="w-100" id="ddlCCCardio" hidden="true" onchange="SetCCAddress('Cardio')">
                                 @foreach(var item in Model.cardio)
@@ -288,25 +288,36 @@
                                     <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
                                 }
                             </select>
-                            <select class="w-100" id="ddlCCGenetics" hidden="true">
+                            <select class="w-100" id="ddlCCGenetics" hidden="true" onchange="SetCCAddress('Genetics')">
                                 @foreach (var item in Model.genetics)
                                 {
                                     <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
                                 }
                             </select>
-                            <select class="w-100" id="ddlCCGynae" hidden="true">
+                            <select class="w-100" id="ddlCCGynae" hidden="true" onchange="SetCCAddress('Gynae')">
                                 @foreach (var item in Model.gynae)
                                 {
                                     <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
                                 }
                             </select>
-                            <select class="w-100" id="ddlCCHisto" hidden="true">
+                            <select class="w-100" id="ddlCCHisto" hidden="true" onchange="SetCCAddress('Histo')">
                                 @foreach (var item in Model.histo)
                                 {
                                     <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
                                 }
                             </select>
-
+                            <select class="w-100" id="ddlCCScreeningCo" hidden="true" onchange="SetCCAddress('ScreeningCo')">
+                                @foreach (var item in Model.screeningco)
+                                {
+                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
+                                }
+                            </select>
+                            @*<select class="w-100" id="ddlCCGPAll" hidden="true">
+                                @foreach (var item in Model.gps_all)
+                                {
+                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
+                                }
+                            </select>*@
                             @*<select id="ddlCC" hidden="true">            
                                 @foreach (var item in Model.clinicians)
                                 {
@@ -524,6 +535,8 @@
         document.getElementById("ddlCCGenetics").hidden = true;
         document.getElementById("ddlCCGynae").hidden = true;
         document.getElementById("ddlCCHisto").hidden = true;
+        document.getElementById("ddlCCScreeningCo").hidden = true;
+        //document.getElementById("ddlCCGPAll").hidden = true;
 
         if (document.getElementById("ddlCCType2").value == "Cardio") 
         {            
@@ -544,6 +557,16 @@
         {
             document.getElementById("ddlCCHisto").hidden = false;
         }
+
+        if (document.getElementById("ddlCCType2").value == "ScreenCo") 
+        {
+            document.getElementById("ddlCCScreeningCo").hidden = false;
+        }
+        if (document.getElementById("ddlCCType2").value == "GpsAll") 
+        {
+            document.getElementById("ddlCCGPAll").hidden = false;
+        }
+
     }
 
     function SetLetterToClinician() 
@@ -664,12 +687,12 @@
             var lastnameArray = [];
             var facilityArray = [];
             var facilityCode;
-
+            var _ccCode;
             
 
             if (ccCode == "Cardio") 
             {
-                const _ccCode = document.getElementById("ddlCCCardio").value
+                _ccCode = document.getElementById("ddlCCCardio").value
                 //can't do easy way, obviously, so have to hard way                
                 //this is the ONLY way to get another clinician's details into this variable!!!
 
@@ -684,18 +707,89 @@
                         @:facilityArray.push("@item.FACILITY");
                     }
                 }
-                              
+            }
+
+            if (ccCode == "Genetics") 
+            {
+                _ccCode = document.getElementById("ddlCCGenetics").value
                 
-                for (var k = 0; k < clinicianArray.length; k++) 
+                @if (Model.genetics != null)
                 {
-                    var nameToTest = clinicianArray[k];
-                    if (nameToTest == _ccCode) 
+                    @foreach (var item in Model.genetics)
                     {
-                        sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
-                        facilityCode = facilityArray[k];
-                        document.getElementById("txtCCCode").value = _ccCode;
+                        @:clinicianArray.push("@item.MasterClinicianCode");
+                        @:titleArray.push("@item.TITLE");
+                        @:firstnameArray.push("@item.FIRST_NAME");
+                        @:lastnameArray.push("@item.NAME");
+                        @:facilityArray.push("@item.FACILITY");
+                    }
+                }   
+            }
+
+            if (ccCode == "Gynae") 
+            {
+                _ccCode = document.getElementById("ddlCCGynae").value
+                
+                @if (Model.gynae != null)
+                {
+                    @foreach (var item in Model.gynae)
+                    {
+                        @:clinicianArray.push("@item.MasterClinicianCode");
+                        @:titleArray.push("@item.TITLE");
+                        @:firstnameArray.push("@item.FIRST_NAME");
+                        @:lastnameArray.push("@item.NAME");
+                        @:facilityArray.push("@item.FACILITY");
                     }
                 }
+            }
+
+            if (ccCode == "Histo") 
+            {
+                _ccCode = document.getElementById("ddlCCCardio").value
+                
+                @if (Model.histo != null)
+                {
+                    @foreach (var item in Model.histo)
+                    {
+                        @:clinicianArray.push("@item.MasterClinicianCode");
+                        @:titleArray.push("@item.TITLE");
+                        @:firstnameArray.push("@item.FIRST_NAME");
+                        @:lastnameArray.push("@item.NAME");
+                        @:facilityArray.push("@item.FACILITY");
+                    }
+                }
+            }
+
+            if (ccCode == "ScreeningCo") 
+            {                
+                _ccCode = document.getElementById("ddlCCScreeningCo").value
+                
+                @if (Model.screeningco != null)
+                {                    
+                    @foreach (var item in Model.screeningco)
+                    {
+                        @:clinicianArray.push("@item.MasterClinicianCode");
+                        @:titleArray.push("@item.TITLE");
+                        @:firstnameArray.push("@item.FIRST_NAME");
+                        @:lastnameArray.push("@item.NAME");
+                        @:facilityArray.push("@item.FACILITY");
+                    }
+                }
+            }
+
+
+                              
+                
+            for (var k = 0; k < clinicianArray.length; k++) 
+            {
+                var nameToTest = clinicianArray[k];
+                if (nameToTest == _ccCode) 
+                {
+                    sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
+                    facilityCode = facilityArray[k];
+                    document.getElementById("txtCCCode").value = _ccCode;
+                }
+            }
 
                 //and now we have to do the address... which is going to be even more fun!!!
 
@@ -729,7 +823,7 @@
                         
                     }
                 }
-            }
+            
         }        
 
         document.getElementById("txtCC").value = sName + "\n" + sAddress.replace("&#x27;", "'").replace("&#xD;&#xA;", " ");

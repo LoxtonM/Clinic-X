@@ -380,8 +380,15 @@
                         @foreach (var a in Model.alerts)
                         {
                             <tr>                            
-                                <td>@a.AlertType</td>                            
-                                <td>@a.ProtectedAddress</td>
+                                <td>@a.AlertType</td>
+                                @if (@a.ProtectedAddress)
+                                {
+                                    <td style="color:red"><strong>Yes</strong></td>
+                                }
+                                else
+                                {
+                                    <td>No</td>
+                                }
                                 <td>@a.EffectiveFromDate.ToString("dd/MM/yyyy")</td>
                                 <td>@a.Comments</td>
                             </tr>

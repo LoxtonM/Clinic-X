@@ -8,6 +8,7 @@ namespace ClinicX.Meta
     {
         public List<Risk> GetRiskList(int? icpID);
         public Risk GetRiskDetails(int? riskID);
+        public List<Risk> GetRiskListByRefID(int? refID);
         public List<RiskCodes> GetRiskCodesList();
         public List<CalculationTools> GetCalculationToolsList();
     }
@@ -35,6 +36,12 @@ namespace ClinicX.Meta
         {
             var risk = _clinContext.Risk.FirstOrDefault(c => c.RiskID == riskID);
             return risk;
+        }
+
+        public List<Risk> GetRiskListByRefID(int? refID) //Get details of risk item by RiskID
+        {
+            var risk = _clinContext.Risk.Where(c => c.RefID == refID);
+            return risk.ToList();
         }
 
         public List<RiskCodes> GetRiskCodesList()

@@ -11,19 +11,23 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly TestDiseaseVM _tvm;
-        private readonly IConfiguration _config;        
+        private readonly IConfiguration _config;
+        private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
         private readonly ITestData _testData;
         private readonly ICRUD _crud;
+        private readonly IAuditService _audit;
 
         public TestController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
             _tvm = new TestDiseaseVM();
+            _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
             _testData = new TestData(_clinContext);
             _crud = new CRUD(_config);
+            _audit = new AuditService(_config);
         }
 
         [Authorize]
@@ -31,6 +35,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Tests", id.ToString());
+
                 _tvm.patient = _patientData.GetPatientDetails(id);
                 _tvm.tests = _testData.GetTestListByPatient(id).OrderBy(t => t.ExpectedDate).ToList();
 
@@ -47,6 +54,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - All Tests");
+
                 _tvm.tests = _testData.GetTestListByUser(User.Identity.Name).OrderBy(t => t.ExpectedDate).ToList();
 
                 return View(_tvm);
@@ -62,7 +72,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Test", id.ToString());
+
                 _tvm.testList = _testData.GetTestList();
                 _tvm.patient = _patientData.GetPatientDetails(id);
                 return View(_tvm);
@@ -95,6 +107,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Test", id.ToString());
+
                 _tvm.test = _testData.GetTestDetails(id);
                 _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);
                 if (_tvm.test == null)

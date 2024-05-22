@@ -14,6 +14,7 @@ namespace ClinicX.Controllers
         private readonly IRelativeDiagnosisData _relativeDiagnosisData;
         private readonly IStaffUserData _staffUser;        
         private readonly ICRUD _crud;
+        private readonly IAuditService _audit;
         
         public RelativeDiagnosisController(ClinicalContext context, IConfiguration config) 
         {
@@ -24,11 +25,15 @@ namespace ClinicX.Controllers
             _staffUser = new StaffUserData(_clinContext);
             _crud = new CRUD(_config);
             _rdvm = new RelativeDiagnosisVM();
+            _audit = new AuditService(_config);
         }
         public IActionResult Index(int relID)
         {
             try
-            {                
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relative Diagnoses", relID.ToString());
+
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(relID);
                 _rdvm.relativesDiagnosisList = _relativeDiagnosisData.GetRelativeDiagnosisList(relID);                
                 return View(_rdvm);
@@ -44,6 +49,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative Diagnosis", id.ToString());
+
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
                 _rdvm.cancerRegList = _relativeDiagnosisData.GetCancerRegList();
                 _rdvm.requestStatusList = _relativeDiagnosisData.GetRequestStatusList();     
@@ -82,6 +90,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Relative Diagnosis", id.ToString());
+
                 _rdvm.relativesDiagnosis = _relativeDiagnosisData.GetRelativeDiagnosisDetails(id);               
                 _rdvm.tumourSiteList = _relativeDiagnosisData.GetTumourSiteList();
                 _rdvm.tumourLatList = _relativeDiagnosisData.GetTumourLatList();

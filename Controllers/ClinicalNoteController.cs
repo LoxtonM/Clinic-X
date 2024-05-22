@@ -12,17 +12,20 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly ClinicalNoteVM _cvm;
         private readonly IConfiguration _config;
+        private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
         private readonly IActivityData _activityData;
         private readonly IClinicalNoteData _clinicalNoteData;        
         private readonly IClinicData _clinicData;
         private readonly IMiscData _misc;        
         private readonly ICRUD _crud;
+        private readonly IAuditService _audit;
 
         public ClinicalNoteController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
-            _config = config;            
+            _config = config;
+            _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
             _activityData = new ActivityData(_clinContext);
             _clinicalNoteData = new ClinicalNoteData(_clinContext);
@@ -30,13 +33,17 @@ namespace ClinicX.Controllers
             _crud = new CRUD(_config);
             _cvm = new ClinicalNoteVM();
             _misc = new MiscData(_config);
+            _audit = new AuditService(_config);
         }       
         
         [Authorize]
         public async Task<IActionResult> Index(int id)
         {
             try
-            {                                        
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinical Notes");
+
                 _cvm.clinicalNotesList = _clinicalNoteData.GetClinicalNoteList(id);
                 _cvm.patient = _patientData.GetPatientDetails(id);
                 _cvm.noteCount = _cvm.clinicalNotesList.Count();                
@@ -53,7 +60,10 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Create(int id)
         {
             try
-            {                
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Clinical Note", id.ToString());
+
                 _cvm.activityItem = _activityData.GetActivityDetails(id);
                 _cvm.noteTypeList = _clinicalNoteData.GetNoteTypesList();
 
@@ -92,7 +102,10 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             try
-            {                
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinical Note", id.ToString());
+
                 _cvm.clinicalNote = _clinicalNoteData.GetClinicalNoteDetails(id);
                 _cvm.patient = _patientData.GetPatientDetails(_cvm.clinicalNote.MPI.GetValueOrDefault());
 
@@ -133,6 +146,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinical Notes Choose Appt", id.ToString());
+
                 _cvm.patient = _patientData.GetPatientDetails(id);
                 _cvm.Clinics = _clinicData.GetClinicByPatientsList(id);
 

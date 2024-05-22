@@ -22,10 +22,13 @@ namespace ClinicX.Meta
         public string GetCCDetails(ExternalClinician referrer) //Get details of CC address
         {
             string cc = "";
-            var facility = _clinContext.ExternalFacility.FirstOrDefault(f => f.MasterFacilityCode == referrer.FACILITY);
+            if (referrer.FACILITY != null) //believe it or not, there are actually some nulls!!!
+            {
+                var facility = _clinContext.ExternalFacility.FirstOrDefault(f => f.MasterFacilityCode == referrer.FACILITY);
 
-            cc = cc + Environment.NewLine + facility.NAME + Environment.NewLine + facility.ADDRESS + Environment.NewLine
-                + facility.CITY + Environment.NewLine + facility.STATE + Environment.NewLine + facility.ZIP;
+                cc = cc + Environment.NewLine + facility.NAME + Environment.NewLine + facility.ADDRESS + Environment.NewLine
+                    + facility.CITY + Environment.NewLine + facility.STATE + Environment.NewLine + facility.ZIP;
+            }
             return cc;
         }
 

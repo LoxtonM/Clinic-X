@@ -258,6 +258,18 @@
                     <option value="Yes">Yes - complete and remove from list</option>
                 </select>
             </div>
+            <div class="col-md-2">
+                To Be Reviewed By:
+            </div>
+            <div class="col-md-4">
+                <select name="toBeReviewedBy" asp-for=@Model.icpCancer.ToBeReviewedby>
+                    <option value="">Select...</option>
+                    @foreach(var item in Model.staffMembers)
+                    {
+                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                    }
+                </select>
+            </div>
         </div>
 
         <div class="row mb-5 g-5">

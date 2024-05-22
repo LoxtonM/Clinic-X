@@ -15,6 +15,7 @@ namespace ClinicX.Controllers
         private readonly ICaseloadData _caseload;
         private readonly IStaffUserData _staffUser;
         private readonly INotificationData _notificationData;
+        private readonly IAuditService _audit;
 
         public HomeController(ClinicalContext context, IConfiguration config)
         {
@@ -24,6 +25,7 @@ namespace ClinicX.Controllers
             _caseload = new CaseloadData(_clinContext);
             _staffUser = new StaffUserData(_clinContext);
             _notificationData = new NotificationData(_clinContext);
+            _audit = new AuditService(_config);
         }
 
         [Authorize]
@@ -31,27 +33,35 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _cvm.notificationMessage = _notificationData.GetMessage();
-                var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                _cvm.caseLoad = _caseload.GetCaseloadList(user.STAFF_CODE).OrderBy(c => c.BookedDate).ToList();
-                _cvm.countClinics = _cvm.caseLoad.Where(c => c.Type.Contains("App")).Count();
-                _cvm.countTriages = _cvm.caseLoad.Where(c => c.Type.Contains("Triage")).Count();
-                _cvm.countCancerICPs = _cvm.caseLoad.Where(c => c.Type.Contains("Cancer")).Count();
-                _cvm.countTests = _cvm.caseLoad.Where(c => c.Type.Contains("Test")).Count();
-                _cvm.countReviews = _cvm.caseLoad.Where(c => c.Type.Contains("Review")).Count();
-                _cvm.countLetters = _cvm.caseLoad.Where(c => c.Type.Contains("Letter")).Count();
-                if (_cvm.caseLoad.Count > 0)
+                if (!User.Identity.IsAuthenticated)
                 {
-                    _cvm.name = _cvm.caseLoad.FirstOrDefault().Clinician;
+                    return RedirectToAction("UserLogin", "Login");
                 }
                 else
                 {
-                    _cvm.name = "";
+                    _cvm.notificationMessage = _notificationData.GetMessage();
+                    var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                    _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Home");
+                    _cvm.caseLoad = _caseload.GetCaseloadList(user.STAFF_CODE).OrderBy(c => c.BookedDate).ToList();
+                    _cvm.countClinics = _cvm.caseLoad.Where(c => c.Type.Contains("App")).Count();
+                    _cvm.countTriages = _cvm.caseLoad.Where(c => c.Type.Contains("Triage")).Count();
+                    _cvm.countCancerICPs = _cvm.caseLoad.Where(c => c.Type.Contains("Cancer")).Count();
+                    _cvm.countTests = _cvm.caseLoad.Where(c => c.Type.Contains("Test")).Count();
+                    _cvm.countReviews = _cvm.caseLoad.Where(c => c.Type.Contains("Review")).Count();
+                    _cvm.countLetters = _cvm.caseLoad.Where(c => c.Type.Contains("Letter")).Count();
+                    if (_cvm.caseLoad.Count > 0)
+                    {
+                        _cvm.name = _cvm.caseLoad.FirstOrDefault().Clinician;
+                    }
+                    else
+                    {
+                        _cvm.name = "";
+                    }
+
+                    _cvm.isLive = bool.Parse(_config.GetValue("IsLive", ""));
+
+                    return View(_cvm);
                 }
-
-                _cvm.isLive = bool.Parse(_config.GetValue("IsLive", ""));
-
-                return View(_cvm);
             }
             catch (Exception ex)
             {

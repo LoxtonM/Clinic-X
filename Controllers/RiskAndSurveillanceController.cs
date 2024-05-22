@@ -18,6 +18,7 @@ namespace ClinicX.Controllers
         private readonly ITestEligibilityData _testEligibilityData;
         private readonly IMiscData _misc;
         private readonly ICRUD _crud;
+        private readonly IAuditService _audit;
 
         public RiskAndSurveillanceController(ClinicalContext context, IConfiguration config)
         {
@@ -32,12 +33,16 @@ namespace ClinicX.Controllers
             _testEligibilityData = new TestEligibilityData(_clinContext);
             _misc = new MiscData(_config);
             _crud = new CRUD(_config);
+            _audit = new AuditService(_config);
         }
 
         public IActionResult RiskDetails(int id)
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", id.ToString());
+
                 _rsvm.riskDetails = _riskData.GetRiskDetails(id);
                 _rsvm.surveillanceList = _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
                 _rsvm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
@@ -54,6 +59,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Risk", id.ToString());
+
                 _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(id);
                 _rsvm.patient = _patientData.GetPatientDetails(_rsvm.icpCancer.MPI);
                 _rsvm.refID = _triageData.GetICPDetails(id).REFID;
@@ -99,6 +107,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Surveillance", id.ToString());
+
                 _rsvm.riskID = id;
                 _rsvm.riskDetails = _riskData.GetRiskDetails(id);
                 _rsvm.patient = _patientData.GetPatientDetails(_rsvm.riskDetails.MPI);

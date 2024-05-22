@@ -16,6 +16,7 @@ namespace ClinicX.Controllers
         private readonly IStaffUserData _staffUser;
         private readonly IReviewData _reviewData;
         private readonly ICRUD _crud;
+        private readonly IAuditService _audit;
 
         public ReviewController(ClinicalContext context, IConfiguration config)
         {
@@ -27,6 +28,7 @@ namespace ClinicX.Controllers
             _staffUser = new StaffUserData(_clinContext);
             _reviewData = new ReviewData(_clinContext);
             _crud = new CRUD(_config);
+            _audit = new AuditService(_config);
         }
 
         [Authorize]
@@ -38,6 +40,9 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
+
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Reviews");
 
                 _rvm.reviewList = _reviewData.GetReviewsList(User.Identity.Name);
 
@@ -55,6 +60,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Review", id.ToString());
+
                 _rvm.referrals = _activityData.GetActivityDetails(id);
                 _rvm.staffMembers = _staffUser.GetClinicalStaffList();
                 _rvm.patient = _patientData.GetPatientDetails(_rvm.referrals.MPI);
@@ -109,6 +117,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Review", id.ToString());
+
                 _rvm.review = _reviewData.GetReviewDetails(id);
                 _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);
 

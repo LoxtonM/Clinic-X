@@ -1,43 +1,56 @@
-﻿@model ClinicX.ViewModels.PatientVM
+﻿@model ClinicX.ViewModels.PatientSearchVM
 @{
     ViewData["Title"] = "Clinic-X - Patient Search";
 }
 
 <container>
     <div class="row">
-        <form id="ContactOutcome" asp-action="Index">
+        <form id="PatientSearch" asp-action="Index">
             <div class="row mb-5 g-5">
-                <div class="col-md-1">
-                    <label class="w-100">CGU Number:</label>
+                <div class="col-md-2">
+                    <label class="w-100">CGU/File Number:</label>
                 </div>
                 <div class="col-md-1">
-                    <input class="w-100" type="text" name="cguNo" />
+                    <input id="cguSearch" class="w-100" type="text" name="cguNo" asp-for=@Model.cguNumberSearch />
                 </div>
                 <div class="col-md-1">
                     <label class="w-100">Forename:</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="text" name="firstname" />
+                    <input id="forenameSearch" class="w-100" type="text" name="firstname" asp-for=@Model.forenameSearch />
                 </div>
                 <div class="col-md-1">
                     <label class="w-100">Surname:</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="text" name="lastname" />
+                    <input id="surnameSearch" class="w-100" type="text" name="lastname" asp-for=@Model.surnameSearch />
+                </div>
+                
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label>Date of Birth</label>
                 </div>
                 <div class="col-md-2">
+                    <input id="dobSearch" class="w-100" type="date" name="dob" asp-for=@Model.dobSearch />
+                </div>
+                <div class="col-md-3">
                     <label class="w-100">NHS Number (without spaces):</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="text" name="nhsNo" />
+                    <input id="nhsSearch" class="w-100" type="text" name="nhsNo" asp-for=@Model.nhsNoSearch />
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-md-2">
                     <button class="btn btn-success" type="submit">Search</button>
                 </div>
-            </div>
-            </div>
+                <div class="col-md-8"></div>
+                <div class="col-md-2">
+                    <button class="btn btn-success" type="button" onclick="ClearForm()">Clear</button>
+                </div>
+            </div>            
         </form>
     </div>
 
@@ -69,3 +82,15 @@
     </table>
     }
 </container>
+
+<script>
+    function ClearForm() 
+    {
+        document.getElementById("cguSearch").value = null;
+        document.getElementById("forenameSearch").value = null;
+        document.getElementById("surnameSearch").value = null;
+        document.getElementById("dobSearch").value = null;
+        document.getElementById("nhsSearch").value = null;
+        document.getElementById("PatientSearch").submit();
+    }
+</script>

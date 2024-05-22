@@ -21,7 +21,8 @@ namespace ClinicX.Controllers
         private readonly IDictatedLetterData _dictatedLetterData;
         private readonly IExternalClinicianData _externalClinicianData;
         private readonly IExternalFacilityData _externalFacilityData;
-        private readonly ICRUD _crud;        
+        private readonly ICRUD _crud;
+        private readonly IAuditService _audit;
 
         public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext)
         {
@@ -37,6 +38,7 @@ namespace ClinicX.Controllers
             _externalFacilityData = new ExternalFacilityData(_clinContext);
             _crud = new CRUD(_config);
             _lc = new LetterController(_clinContext, _docContext);
+            _audit = new AuditService(_config);
         }
 
         [Authorize]
@@ -50,7 +52,8 @@ namespace ClinicX.Controllers
                 }
 
                 var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                
+                _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Letters");
+
                 var letters = _dictatedLetterData.GetDictatedLettersList(user.STAFF_CODE);
 
                 _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
@@ -68,7 +71,10 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Edit(int id)
         {            
             try
-            {                
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Letter", id.ToString());
+
                 _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(id);
                 _lvm.dictatedLettersPatients = _dictatedLetterData.GetDictatedLettersPatientsList(id);
                 _lvm.dictatedLettersCopies = _dictatedLetterData.GetDictatedLettersCopiesList(id);
@@ -91,6 +97,8 @@ namespace ClinicX.Controllers
                 _lvm.genetics = extClins.Where(c => c.POSITION.Contains("Genetic")).ToList();
                 _lvm.gynae = extClins.Where(c => c.POSITION.Contains("Gyna")).ToList();
                 _lvm.histo = extClins.Where(c => c.POSITION.Contains("Histo")).ToList();
+                _lvm.screeningco = extClins.Where(c => c.POSITION.Contains("Screening")).ToList();
+                //_lvm.gps_all = extClins.Where(c => c.Is_Gp != 0).ToList(); this refuses to work, for some reason!!!
                 _lvm.consultants = _staffUser.GetConsultantsList().ToList();
                 _lvm.gcs = _staffUser.GetGCList().ToList();
                 _lvm.secteams = _staffUser.GetSecTeamsList();

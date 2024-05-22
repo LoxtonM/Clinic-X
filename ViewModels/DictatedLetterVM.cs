@@ -1,4 +1,5 @@
-﻿using ClinicX.Models;
+﻿using ClinicX.Meta;
+using ClinicX.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicX.ViewModels
@@ -6,6 +7,7 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class DictatedLetterVM
     {
+        public StaffMemberList staffUser { get; set; }
         public List<DictatedLettersCopies> dictatedLettersCopies  { get; set; }
         public List<DictatedLettersPatients> dictatedLettersPatients { get; set; }
         public DictatedLetters dictatedLetters { get; set; }
@@ -24,10 +26,12 @@ namespace ClinicX.ViewModels
         public List<ExternalClinician> genetics { get; set; }
         public List<ExternalClinician> gynae { get; set; }
         public List<ExternalClinician> histo { get; set; }
+        public List<ExternalClinician> screeningco { get; set; }
+        public List<ExternalClinician> gps_all { get; set; }
         //Relatives
-        //Screening co-ordinators
+        
         //Genetics lab
-        //GP (all)
+        
         //Clinician (all)
         public List<string> consultants { get; set; }
         public List<string> gcs { get; set; }

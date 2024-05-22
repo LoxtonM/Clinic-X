@@ -12,18 +12,22 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly TestDiseaseVM _dvm;
         private readonly IConfiguration _config;
+        private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
         private readonly IDiseaseData _diseaseData;
-        private readonly ICRUD _crud;        
+        private readonly ICRUD _crud;
+        private readonly IAuditService _audit; 
 
         public DiagnosisController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
+            _staffUser = new StaffUserData(_clinContext);
             _dvm = new TestDiseaseVM();            
             _patientData = new PatientData(_clinContext);
             _diseaseData = new DiseaseData(_clinContext);
             _crud = new CRUD(_config);
+            _audit = new AuditService(_config);
         }
 
 
@@ -32,6 +36,8 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Diagnosis");
                 _dvm.diagnosisList = _diseaseData.GetDiseaseListByPatient(id);
                 _dvm.patient = _patientData.GetPatientDetails(id);
 
@@ -47,7 +53,9 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> AddNew(int id)
         {
             try
-            {                
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add New Diagnosis", id.ToString());
                 _dvm.diseaseList = _diseaseData.GetDiseaseList();
                 _dvm.patient = _patientData.GetPatientDetails(id);
                 _dvm.statusList = _diseaseData.GetStatusList();
@@ -85,7 +93,9 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             try
-            {                
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Diagnosis", id.ToString());
                 _dvm.diagnosis = _diseaseData.GetDiagnosisDetails(id);               
                 _dvm.patient = _patientData.GetPatientDetails(_dvm.diagnosis.MPI);
                 _dvm.statusList = _diseaseData.GetStatusList();

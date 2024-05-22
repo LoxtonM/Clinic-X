@@ -68,6 +68,7 @@ namespace ClinicX.Meta
             cmd.Parameters.Add("@float3", SqlDbType.Float).Value = f3;
             cmd.Parameters.Add("@float4", SqlDbType.Float).Value = f4;
             cmd.Parameters.Add("@float5", SqlDbType.Float).Value = f5;
+            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); //return success or not
             returnValue.Direction = ParameterDirection.ReturnValue;
             cmd.ExecuteNonQuery();

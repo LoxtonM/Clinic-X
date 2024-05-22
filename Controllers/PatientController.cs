@@ -10,6 +10,8 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly PatientVM _pvm;
+        private readonly StaffUserData _staffUser;
+        private readonly IConfiguration _config;
         private readonly IPatientData _patientData;
         private readonly IRelativeData _relativeData;
         private readonly IPathwayData _pathwayData;
@@ -17,11 +19,14 @@ namespace ClinicX.Controllers
         private readonly IReferralData _referralData;
         private readonly IDiaryData _diaryData;
         private readonly IHPOCodeData _hpoData;
+        private readonly IAuditService _audit;
 
-        public PatientController(ClinicalContext context)
+        public PatientController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
+            _config = config;
             _pvm = new PatientVM();
+            _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
             _relativeData = new RelativeData(_clinContext);
             _pathwayData = new PathwayData(_clinContext);
@@ -29,49 +34,24 @@ namespace ClinicX.Controllers
             _referralData = new ReferralData(_clinContext);
             _diaryData = new DiaryData(_clinContext);
             _hpoData = new HPOCodeData(_clinContext);
+            _audit = new AuditService(_config);
         }
-
-        [Authorize]
-        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob)
-        {
-            try
-            {
-                if (cguNo != null || firstname != null || lastname != null || nhsNo != null || dob != null)
-                {
-                    if (cguNo != null)
-                    {
-                        _pvm.patientsList = _patientData.GetPatientsListByCGUNo(cguNo);
-                    }
-                    if (firstname != null || lastname != null)
-                    {
-                        _pvm.patientsList = _patientData.GetPatientsListByName(firstname, lastname);                        
-                    }
-                    if (nhsNo != null)
-                    {
-                        _pvm.patientsList = _patientData.GetPatientsListByNHS(nhsNo);
-                    }
-                    
-                }
-
-                return View(_pvm);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
-            }
-        }
+        
 
         [Authorize]
         public async Task<IActionResult> PatientDetails(int id)
         {
             try
-            {                
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient", id.ToString());
+
                 _pvm.patient = _patientData.GetPatientDetails(id);
                 if (_pvm.patient == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-                _pvm.relatives = _relativeData.GetRelativesList(id);
+                _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
                 _pvm.hpoTermDetails = _hpoData.GetHPOTermsAddedList(id);
                 _pvm.referrals = _referralData.GetReferralsList(id);
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);

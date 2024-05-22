@@ -9,16 +9,20 @@ namespace ClinicX.Controllers
     public class OtherCaseloadController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly CaseloadVM _cvm;        
+        private readonly CaseloadVM _cvm;
+        private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly ICaseloadData _caseloadData;
+        private IAuditService _audit;
 
-        public OtherCaseloadController(ClinicalContext context)
+        public OtherCaseloadController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
+            _config = config;
             _cvm = new CaseloadVM();            
             _staffUser = new StaffUserData(_clinContext);
             _caseloadData = new CaseloadData(_clinContext);
+            _audit = new AuditService(_config);
         }
 
         [Authorize]
@@ -30,6 +34,8 @@ namespace ClinicX.Controllers
                 {
                     staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 }
+                string userStaffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(userStaffCode, "ClinicX - Caseloads", staffCode);
 
                 _cvm.staffCode = staffCode;
                 _cvm.caseLoad = _caseloadData.GetCaseloadList(staffCode).OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();

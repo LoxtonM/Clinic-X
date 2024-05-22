@@ -25,6 +25,7 @@ namespace ClinicX.Controllers
         private readonly ITestEligibilityData _testEligibilityData;
         private readonly IDocumentsData _documentsData;
         private readonly ICRUD _crud;
+        private readonly IAuditService _audit;
 
         public TriageController(ClinicalContext clinContext, DocumentContext docContext, IConfiguration config)
         {
@@ -43,14 +44,17 @@ namespace ClinicX.Controllers
             _documentsData = new DocumentsData(_docContext);
             _crud = new CRUD(_config);
             _lc = new LetterController(_clinContext, _docContext);
+            _audit = new AuditService(_config);
         }
 
         [Authorize]
         public async Task<IActionResult> Index()
         {
             try
-            {
+            {       
                 _ivm.staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(_ivm.staffCode, "ClinicX - Triage");
+
                 _ivm.triages = _triageData.GetTriageList(User.Identity.Name);
                 _ivm.icpCancerListOwn = _triageData.GetCancerICPList(User.Identity.Name).Where(r => r.GC_CODE == _ivm.staffCode).ToList();
                 _ivm.icpCancerListOther = _triageData.GetCancerICPList(User.Identity.Name).Where(r => r.ToBeReviewedby == User.Identity.Name.ToUpper()).ToList();
@@ -70,6 +74,8 @@ namespace ClinicX.Controllers
             try
             {
                 //var triages = await _clinContext.Triages.FirstOrDefaultAsync(t => t.ICPID == id);
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - ICP Details", id.ToString());
 
                 _ivm.triage = _triageData.GetTriageDetails(id);
 
@@ -240,7 +246,10 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-                
+
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Review", id.ToString());
+
                 _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList();
                 _ivm.staffMembers = _staffUser.GetClinicalStaffList();
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
@@ -259,14 +268,14 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> CancerReview(int id, string finalReview, string? clinician = "", string? clinic = "", string? comments = "", 
-            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0)
+            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "")
         {
             //bool isfinalReview = false;
             _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
             var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
             string reviewText = "";
-            string finalReviewText = "";
-            string finalReviewBy = "";
+            //string finalReviewText = "";
+            string reviewBy = "";
             _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
             //DateTime finalReviewDate = DateTime.Parse("1900-01-01");
             int mpi = icpDetails.MPI;
@@ -280,22 +289,27 @@ namespace ClinicX.Controllers
                 if (letter != 1 && letter != 11)
                 {
                     reviewText = docCode;
-                    
+
                     if (reviewText != null)
                     {
                         reviewText = reviewText + " letter on " + DateTime.Now.ToString("dd/MM/yyyy") + " by " + _staffUser.GetStaffMemberDetails(User.Identity.Name).NAME;
                     }
+
+
+                    string diaryText = "";
+                    int letterID = _documentsData.GetDocumentDetailsByDocCode(docCode).DocContentID;
+
+                    _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferringClinician);
+                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+
+                    if (successDiary == 0) { return RedirectToAction("Index", "WIP"); }
                 }
-
-                string diaryText = "";
-                int letterID = _documentsData.GetDocumentDetailsByDocCode(docCode).DocContentID;
-                
-                _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferringClinician);
-                int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
-
-                if (successDiary == 0) { return RedirectToAction("Index", "WIP"); }
             }
             
+            if(toBeReviewedBy == null)
+            {
+                toBeReviewedBy = ""; //because the default value isn't being assigned for some reason!
+            }
 
             if(clinician != null && clinician != "")
             {                
@@ -305,14 +319,14 @@ namespace ClinicX.Controllers
                 if (successWL == 0) { return RedirectToAction("Index", "WIP"); }
             }
 
-            if(finalReview == "Yes")
-            {
-                finalReviewText = reviewText;
-                finalReviewBy = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            //if(finalReview == "Yes")
+            //{
+                //finalReviewText = reviewText;
+            reviewBy = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 //finalReviewDate = DateTime.Today;
-            }
+            //}
 
-            int success = _crud.CallStoredProcedure("ICP Cancer", "ICP Review", id, letter.GetValueOrDefault(), 0, finalReviewBy, finalReviewText, "", addNotes,
+            int success = _crud.CallStoredProcedure("ICP Cancer", "ICP Review", id, letter.GetValueOrDefault(), 0, reviewBy, finalReview, toBeReviewedBy, addNotes,
                     User.Identity.Name, null, null, false, false);
 
             if (success == 0) { return RedirectToAction("Index", "WIP"); }
@@ -329,7 +343,10 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-                
+
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk and Surveillance", id.ToString());
+
                 _ivm.riskDetails = _riskData.GetRiskDetails(id);
                 int mpi = _referralData.GetReferralDetails(_ivm.riskDetails.RefID).MPI;               
                 _ivm.surveillanceList = _survData.GetSurveillanceList(mpi).Where(s => s.RiskID == id).ToList();
@@ -347,6 +364,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change General Triage", id.ToString());
+
                 _ivm.icpGeneral = _triageData.GetGeneralICPDetails(id);
                 _ivm.consultants = _staffUser.GetClinicalStaffList().Where(s => s.CLINIC_SCHEDULER_GROUPS == "Consultant").ToList();
                 _ivm.GCs = _staffUser.GetClinicalStaffList().Where(s => s.CLINIC_SCHEDULER_GROUPS == "GC").ToList();
@@ -384,10 +404,11 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _ivm.triage = _triageData.GetTriageDetails(id);
-                _ivm.pathways = _pathwayData.GetPathwayList();
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change Triage Pathway", id.ToString());
 
-                
+                _ivm.triage = _triageData.GetTriageDetails(id);
+                _ivm.pathways = _pathwayData.GetPathwayList();                
 
                 return View(_ivm);
             }

@@ -10,19 +10,23 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly RelativeDiagnosisVM _rdvm;
-        private readonly IConfiguration _config;        
+        private readonly IConfiguration _config;
+        private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
         private readonly IRelativeData _relativeData;
         private readonly ICRUD _crud;
+        private readonly IAuditService _audit;
 
         public RelativeController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
             _crud = new CRUD(_config);
+            _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
             _relativeData = new RelativeData(_clinContext);
             _rdvm = new RelativeDiagnosisVM();
+            _audit = new AuditService(_config);
         }
 
         [Authorize]
@@ -30,6 +34,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relatives");
+
                 return View();
             }
             catch (Exception ex)
@@ -44,6 +51,8 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - View Relative", id.ToString());
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
                 _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
                 
@@ -60,7 +69,11 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Relative", id.ToString());
+
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
+                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
                 _rdvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
                 _rdvm.genderList = _relativeData.GetGenderList();
 
@@ -132,6 +145,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative", wmfacsid.ToString());
+
                 _rdvm.WMFACSID = wmfacsid;
                 _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
                 _rdvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
