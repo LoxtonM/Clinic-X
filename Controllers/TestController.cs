@@ -36,7 +36,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Tests", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Tests", "MPI=" + id.ToString());
 
                 _tvm.patient = _patientData.GetPatientDetails(id);
                 _tvm.tests = _testData.GetTestListByPatient(id).OrderBy(t => t.ExpectedDate).ToList();
@@ -73,7 +73,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Test", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Test", "MPI=" + id.ToString());
 
                 _tvm.testList = _testData.GetTestList();
                 _tvm.patient = _patientData.GetPatientDetails(id);
@@ -108,7 +108,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Test", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Test", "ID=" + id.ToString());
 
                 _tvm.test = _testData.GetTestDetails(id);
                 _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);

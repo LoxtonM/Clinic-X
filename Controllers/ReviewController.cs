@@ -61,7 +61,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Review", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Review", "ID=" + id.ToString());
 
                 _rvm.referrals = _activityData.GetActivityDetails(id);
                 _rvm.staffMembers = _staffUser.GetClinicalStaffList();
@@ -118,7 +118,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Review", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Review", "ID=" + id.ToString());
 
                 _rvm.review = _reviewData.GetReviewDetails(id);
                 _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);

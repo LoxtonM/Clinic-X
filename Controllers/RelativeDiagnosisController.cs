@@ -32,7 +32,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relative Diagnoses", relID.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relative Diagnoses", "ID=" + relID.ToString());
 
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(relID);
                 _rdvm.relativesDiagnosisList = _relativeDiagnosisData.GetRelativeDiagnosisList(relID);                
@@ -50,7 +50,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative Diagnosis", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative Diagnosis", "ID=" + id.ToString());
 
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
                 _rdvm.cancerRegList = _relativeDiagnosisData.GetCancerRegList();
@@ -91,7 +91,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Relative Diagnosis", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Relative Diagnosis", "ID=" + id.ToString());
 
                 _rdvm.relativesDiagnosis = _relativeDiagnosisData.GetRelativeDiagnosisDetails(id);               
                 _rdvm.tumourSiteList = _relativeDiagnosisData.GetTumourSiteList();

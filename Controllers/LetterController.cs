@@ -407,7 +407,7 @@ public class LetterController : Controller
                 }
                 if (tissueType != "")
                 {
-                    content4 = "Further Investigations: "; //all these strings have been hard-coded in the Access front-end, for some reason
+                    content4 = "Further Investigations: "; //all these strings have been hard-coded in the Access front-end!
                     if (tissueType == "Blood")
                     {
                         content4 = content4 + "It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
@@ -523,7 +523,7 @@ public class LetterController : Controller
                 }
                 if (tissueType != "")
                 {
-                    content5 = "Further Investigations: "; //all these strings have been hard-coded in the Access front-end, for some reason
+                    content5 = "Further Investigations: ";
                     if (tissueType == "Blood")
                     {
                         content5 = content5 + "It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
@@ -583,7 +583,7 @@ public class LetterController : Controller
                 content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2 + " " + additionalText;
                 if (tissueType != "")
                 {
-                    content2 = "Further Investigations: "; //all these strings have been hard-coded in the Access front-end, for some reason
+                    content2 = "Further Investigations: "; 
                     if (tissueType == "Blood")
                     {
                         content2 = content2 + "It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
@@ -867,11 +867,13 @@ public class LetterController : Controller
 
 
             //EDMS flename - we have to strip out the spaces that keep inserting themselves into the backend data!
-            //Also, we only have a constant value for the OPEX scanner, not the letters folder, for some reason!
+            //Also, we only have a constant value for the OPEX scanner, not the letters folder!
             string letterFileName = filePath.Replace(" ", "") + "\\CaStdLetter-" + fileCGU + "-" + docCode + "-" + mpiString + "-0-" + refIDString + "-" + printCount.ToString() + "-" + dateTimeString + "-" + diaryIDString;
             letterFileName = letterFileName.Replace("ScannerOPEX2", "Letters");
 
-            document.Save(letterFileName + ".pdf");            
+            //document.Save(letterFileName + ".pdf"); - the server can't save it to the watchfolder due to permission issues.
+            //So we have to create it locally and have a scheduled job to move it instead.
+            document.Save($@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
         }
         catch (Exception ex)
         {

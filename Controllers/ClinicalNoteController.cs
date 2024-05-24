@@ -62,7 +62,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Clinical Note", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Clinical Note", "ClinicalNoteID=" + id.ToString());
 
                 _cvm.activityItem = _activityData.GetActivityDetails(id);
                 _cvm.noteTypeList = _clinicalNoteData.GetNoteTypesList();
@@ -104,7 +104,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinical Note", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinical Note", "ClinicalNoteID=" + id.ToString());
 
                 _cvm.clinicalNote = _clinicalNoteData.GetClinicalNoteDetails(id);
                 _cvm.patient = _patientData.GetPatientDetails(_cvm.clinicalNote.MPI.GetValueOrDefault());

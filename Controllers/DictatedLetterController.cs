@@ -73,7 +73,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Letter", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Letter", "ID=" + id.ToString());
 
                 _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(id);
                 _lvm.dictatedLettersPatients = _dictatedLetterData.GetDictatedLettersPatientsList(id);

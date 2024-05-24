@@ -90,7 +90,7 @@ namespace ClinicX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinic Details", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinic Details", "RefID=" + id.ToString());
 
                 _cvm.Clinic = _clinicData.GetClinicDetails(id);
                 _cvm.linkedReferral = _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
@@ -120,7 +120,7 @@ namespace ClinicX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinic", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinic", "RefID=" + id.ToString());
 
                 _cvm.staffMembers = _staffUser.GetClinicalStaffList();
                 _cvm.activityItems = _activityData.GetClinicDetailsList(id);

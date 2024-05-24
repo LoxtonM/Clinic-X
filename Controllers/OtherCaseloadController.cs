@@ -35,7 +35,7 @@ namespace ClinicX.Controllers
                     staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 }
                 string userStaffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "ClinicX - Caseloads", staffCode);
+                _audit.CreateUsageAuditEntry(userStaffCode, "ClinicX - Caseloads", "StaffCode=" + staffCode);
 
                 _cvm.staffCode = staffCode;
                 _cvm.caseLoad = _caseloadData.GetCaseloadList(staffCode).OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();

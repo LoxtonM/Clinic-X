@@ -75,7 +75,7 @@ namespace ClinicX.Controllers
             {
                 //var triages = await _clinContext.Triages.FirstOrDefaultAsync(t => t.ICPID == id);
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - ICP Details", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - ICP Details", "ID=" + id.ToString());
 
                 _ivm.triage = _triageData.GetTriageDetails(id);
 
@@ -248,7 +248,7 @@ namespace ClinicX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Review", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Review", "ID=" + id.ToString());
 
                 _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList();
                 _ivm.staffMembers = _staffUser.GetClinicalStaffList();
@@ -345,7 +345,7 @@ namespace ClinicX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk and Surveillance", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk and Surveillance", "ID=" + id.ToString());
 
                 _ivm.riskDetails = _riskData.GetRiskDetails(id);
                 int mpi = _referralData.GetReferralDetails(_ivm.riskDetails.RefID).MPI;               
@@ -365,7 +365,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change General Triage", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change General Triage", "ID=" + id.ToString());
 
                 _ivm.icpGeneral = _triageData.GetGeneralICPDetails(id);
                 _ivm.consultants = _staffUser.GetClinicalStaffList().Where(s => s.CLINIC_SCHEDULER_GROUPS == "Consultant").ToList();
@@ -405,7 +405,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change Triage Pathway", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change Triage Pathway", "ID=" + id.ToString());
 
                 _ivm.triage = _triageData.GetTriageDetails(id);
                 _ivm.pathways = _pathwayData.GetPathwayList();                

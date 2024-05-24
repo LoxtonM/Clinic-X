@@ -32,15 +32,14 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                string searchTerm = ""; // = cguNo + "," + firstname + "," + lastname + "," + nhsNo + "," + dob.ToString();
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient Search", searchTerm);
+                string searchTerm = "";
 
                 if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")))
                 {
                     if (cguNo != null)
                     {
                         _pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(cguNo);
-                        searchTerm = cguNo;
+                        searchTerm = "CGU_No=" + cguNo;
                         _pvm.cguNumberSearch = cguNo;
                     }
                     if (nhsNo != null)
@@ -53,7 +52,7 @@ namespace ClinicX.Controllers
                         {
                             _pvm.patientsList = _pvm.patientsList.Where(p => p.SOCIAL_SECURITY == nhsNo).ToList();
                         }
-                        searchTerm = searchTerm + "," + nhsNo;
+                        searchTerm = searchTerm + "," + "NHSNo=" + nhsNo;
                         _pvm.nhsNoSearch = nhsNo;
                     }
                     if (firstname != null)
@@ -66,7 +65,7 @@ namespace ClinicX.Controllers
                         {
                             _pvm.patientsList = _pvm.patientsList.Where(p => p.FIRSTNAME.ToUpper().Contains(firstname.ToUpper())).ToList();
                         }
-                        searchTerm = searchTerm + "," + firstname;
+                        searchTerm = searchTerm + "," + "Forename=" + firstname;
                         _pvm.forenameSearch = firstname;
                     }
                     if (lastname != null)
@@ -79,7 +78,7 @@ namespace ClinicX.Controllers
                         {
                             _pvm.patientsList = _pvm.patientsList.Where(p => p.LASTNAME.ToUpper().Contains(lastname.ToUpper())).ToList();
                         }
-                        searchTerm = searchTerm + "," + lastname;
+                        searchTerm = searchTerm + "," + "Surname=" + lastname;
                         _pvm.surnameSearch = lastname;
                     }
                     if (dob != null && dob != DateTime.Parse("0001-01-01"))
@@ -92,12 +91,13 @@ namespace ClinicX.Controllers
                         {
                             _pvm.patientsList = _pvm.patientsList.Where(p => p.DOB == dob).ToList();
                         }
-                        searchTerm = searchTerm + "," + dob;
+                        searchTerm = searchTerm + "," + "DOB=" + dob.ToString();
                         _pvm.dobSearch = dob.GetValueOrDefault();
                     }
 
                     _pvm.patientsList = _pvm.patientsList.OrderBy(p => p.LASTNAME).ThenBy(p => p.FIRSTNAME).ToList();
                 }
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient Search", searchTerm);
 
                 return View(_pvm);
             }

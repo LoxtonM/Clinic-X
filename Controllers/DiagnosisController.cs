@@ -55,7 +55,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add New Diagnosis", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add New Diagnosis", "ID=" + id.ToString());
                 _dvm.diseaseList = _diseaseData.GetDiseaseList();
                 _dvm.patient = _patientData.GetPatientDetails(id);
                 _dvm.statusList = _diseaseData.GetStatusList();
@@ -95,7 +95,7 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Diagnosis", id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Diagnosis", "ID=" + id.ToString());
                 _dvm.diagnosis = _diseaseData.GetDiagnosisDetails(id);               
                 _dvm.patient = _patientData.GetPatientDetails(_dvm.diagnosis.MPI);
                 _dvm.statusList = _diseaseData.GetStatusList();
