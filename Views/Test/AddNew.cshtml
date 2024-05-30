@@ -28,7 +28,7 @@
                         <option value="" selected>select...</option>
                         @foreach (var t in Model.testList)
                         {
-                            <option value="@t.TEST ">@t.TEST</option>
+                            <option value="@t.TEST">@t.TEST</option>
                         }
                     </select>
                 </div>
@@ -39,7 +39,7 @@
                     <input class="w-100" id="txtSentTo" type="text" name="sentTo" />
                 </div>
                 <div class="col-md-2">
-                    <label class="w-100">Expected/Follow Up: (leave blank to use standard TAT)</label>
+                    <label class="w-100">Expected/Follow Up:</label>
                 </div>
                 <div class="col-md-2">
                     <input class="w-100" id="txtExpected" type="date" name="expectedDate" />
@@ -67,6 +67,7 @@
     //window.addEventListener("load", LoadData)
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnSave").addEventListener("click", AddTest);
+    document.getElementById("ddlTest").addEventListener("change", SetDefaultTAT);
 
 
     function GoBack() 
@@ -82,6 +83,33 @@
         //{ 
         //    //somehow get standard date
        // }
+    }
+
+    function SetDefaultTAT()
+    { 
+        var testArray = [];
+        var tatArray = [];
+        const testCode = document.getElementById("ddlTest").value;
+        
+
+        @foreach(var item in Model.testList) //believe it or not, we can't combine JS and C#, so we can't compare the two inside here.
+        { //we HAVE to populate the entire array first!
+            @:testArray.push("@item.TEST");
+            @:tatArray.push("@item.T_O");
+        }
+        for (var k in testArray) 
+        {
+            if (testArray[k] == testCode) 
+            {
+                if (tatArray[k] != null && tatArray[k] != "") 
+                {
+                    var date = new Date;
+                    date.setDate(date.getDate() + parseInt(tatArray[k]));
+                    txtExpected.value = date.toISOString().split('T')[0];
+                    //because why would there be a simple way to get the date in standard format???
+                }
+            }            
+        }
     }
 
     function AddTest()

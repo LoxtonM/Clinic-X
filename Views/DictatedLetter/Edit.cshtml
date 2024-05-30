@@ -14,6 +14,7 @@
         <div class="col-md-2">
             <form id="DictatedLetterApproval" asp-action="Approve">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
+                <input id="txtCloseReferral" name="isCloseReferral" hidden="true" />
                 <input type="button" class="btn btn-default btn-success" value="Approve" id="btnApprove" hidden="true" />
             </form>
             <form id="DictatedLetterUnapproval" asp-action="Unapprove">
@@ -411,7 +412,13 @@
     }
 
     function ApproveLetter()
-    {     
+    {
+        if (window.confirm("Do you want to close the referral?")) 
+        {            
+            document.getElementById("txtCloseReferral").value = "true";
+        }
+        
+
         document.getElementById("DictatedLetterApproval").submit();        
         
         document.getElementById("btnApprove").hidden = true;

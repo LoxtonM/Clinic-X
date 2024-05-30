@@ -849,6 +849,16 @@ namespace ClinicX.Models
         public string CGU_Pathway { get; set; }
     }
 
+    [Table("CLIN_CLASS", Schema = "dbo")]
+    public class Priority
+    {
+        [Key]
+        public int PriorityLevel { get; set; }
+        public string CLASS { get; set; }
+        public string DESCRIPTION { get; set; }
+        public bool IsActive { get; set; }
+    }
+
     [Table("Notifications")]
     public class Notifications
     {

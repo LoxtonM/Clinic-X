@@ -175,11 +175,12 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Approve(int dID)
+        public async Task<IActionResult> Approve(int dID, bool? isCloseReferral=false)
         {
             try
             {
-                int success = _crud.CallStoredProcedure("Letter", "Approve", dID, 0, 0, "", "", "", "", User.Identity.Name);
+                
+                int success = _crud.CallStoredProcedure("Letter", "Approve", dID, 0, 0, "", "", "", "", User.Identity.Name, null, null, isCloseReferral);
 
                 if (success == 0) { return RedirectToAction("Index", "WIP"); }
 

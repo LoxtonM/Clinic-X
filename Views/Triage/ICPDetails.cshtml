@@ -108,7 +108,7 @@
             <div class="col-md-2">
                 <label>Treatment Pathway:</label>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <select id="ddlTreatPath1" name="tp" asp-for=@Model.triage.TreatPath>                    
                     <option value="">Select...</option>
                     @foreach(var item in Model.generalActionsList)
@@ -117,7 +117,18 @@
                     }
                 </select>
             </div>
-            <div class="col-md-2"></div>
+            <div class="col-md-2">
+                <label>Waiting List Priority</label>
+            </div>
+            <div class="col-md-2">
+                <select id="ddlPriority" name="wlPriority">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.priorityList)
+                    {
+                        <option value=@item.PriorityLevel>@item.CLASS = @item.DESCRIPTION</option>
+                    }
+                </select>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-2"></div>

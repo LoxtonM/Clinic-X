@@ -7,8 +7,6 @@ using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using ClinicX.Models;
 
-
-
 namespace ClinicX.Controllers;
 
 public class LetterController : Controller
@@ -21,6 +19,7 @@ public class LetterController : Controller
     private readonly IStaffUserData _staffUser;
     private readonly IDocumentsData _documentsData;
     private readonly IExternalClinicianData _externalClinicianData;
+    private readonly IExternalFacilityData _externalFacilityData;
     private readonly IConstantsData _constantsData;
 
     public LetterController(ClinicalContext clinContext, DocumentContext docContext)
@@ -33,6 +32,7 @@ public class LetterController : Controller
         _dictatedLetterData = new DictatedLetterData(_clinContext);
         _documentsData = new DocumentsData(_docContext);
         _externalClinicianData = new ExternalClinicianData(_clinContext);
+        _externalFacilityData = new ExternalFacilityData(_clinContext);
         _constantsData = new ConstantsData(_docContext);
     }
 
@@ -182,7 +182,6 @@ public class LetterController : Controller
             _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
             _lvm.referrer = _externalClinicianData.GetClinicianDetails(referrer);
 
-
             //creates a new PDF document
             PdfDocument document = new PdfDocument();
             document.Info.Title = "My PDF";
@@ -214,9 +213,12 @@ public class LetterController : Controller
             tf.DrawString(_lvm.patient.PtLetterAddressee, font, XBrushes.Black, new XRect(50, 235, 500, 10));
 
             string address = "";
+            string salutation = "";
 
             if (_lvm.documentsContent.LetterTo == "PT")
             {
+                salutation = _lvm.patient.SALUTATION;
+
                 address = _lvm.patient.ADDRESS1 + Environment.NewLine;
                 if (_lvm.patient.ADDRESS2 != null) //this is sometimes null
                 {
@@ -231,8 +233,15 @@ public class LetterController : Controller
                 //placeholder
             }
             if (_lvm.documentsContent.LetterTo == "GP")
-            {
-                //placeholder
+            {                
+                var gpAddressee = _externalClinicianData.GetClinicianDetails(_lvm.patient.GP_Code);
+                salutation = gpAddressee.TITLE + " " + gpAddressee.FIRST_NAME + " " + gpAddressee.NAME;
+                var gpFac = _externalFacilityData.GetFacilityDetails(gpAddressee.FACILITY);
+                address = gpFac.NAME + Environment.NewLine;
+                address = address + gpFac.ADDRESS + Environment.NewLine;
+                address += address + gpFac.CITY + Environment.NewLine;
+                address += address + gpFac.STATE + Environment.NewLine;
+                address += address + gpFac.ZIP + Environment.NewLine;
             }
 
             tf.DrawString(address, font, XBrushes.Black, new XRect(50, 250, 490, 100));
@@ -240,7 +249,7 @@ public class LetterController : Controller
             //Date letter created
             tf.DrawString(DateTime.Today.ToString("dd MMMM yyyy"), font, XBrushes.Black, new XRect(50, 350, 500, 10)); //today's date
 
-            tf.DrawString("Dear " + _lvm.patient.SALUTATION, font, XBrushes.Black, new XRect(50, 375, 500, 10)); //salutation
+            tf.DrawString("Dear " + salutation, font, XBrushes.Black, new XRect(50, 375, 500, 10)); //salutation
 
             //Content containers for all of the paragraphs, as well as other data required
             string content1 = "";
@@ -261,10 +270,10 @@ public class LetterController : Controller
 
             ///////////////////////////////////////////////////////////////////////////////////////
             //////All letter templates need to be defined individually here////////////////////////
-            //////Since some of them go over two pages, and this function requires/////////////////
+            //////Since some of them go over two pages, and this pdf tool requires/////////////////
             //////each page to be defined, we can't use a separate function for any of this!///////
             ///////////////////////////////////////////////////////////////////////////////////////
-            ///
+            
             //Ack letter
             if (docCode == "Ack")
             {
@@ -805,7 +814,6 @@ public class LetterController : Controller
                 tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
 
                 content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2;
-                    
 
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 5));
                 totalLength = totalLength + content1.Length / 5;
@@ -856,7 +864,7 @@ public class LetterController : Controller
 
             //Finally we set the filename for the output PDF
             //needs to be: "CaStdLetter"-CGU number-DocCode-Patient/relative ID (usually "[MPI]-0")-RefID-"print count (if CCs present)"-date/time stamp-Diary ID
-            string fileCGU = _lvm.patient.CGU_No.Replace(".", "_");
+            string fileCGU = _lvm.patient.CGU_No.Replace(".", "-");
             string mpiString = _lvm.patient.MPI.ToString();
             string refIDString = refID.ToString();
             string dateTimeString = DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -864,7 +872,6 @@ public class LetterController : Controller
 
             var par = _docContext.Constants.FirstOrDefault(p => p.ConstantCode == "FilePathEDMS");
             string filePath = par.ConstantValue;
-
 
             //EDMS flename - we have to strip out the spaces that keep inserting themselves into the backend data!
             //Also, we only have a constant value for the OPEX scanner, not the letters folder!
@@ -880,9 +887,6 @@ public class LetterController : Controller
             RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
         }
     }
-
-    
-
 }
 
     

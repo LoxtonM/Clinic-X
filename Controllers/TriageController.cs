@@ -17,6 +17,7 @@ namespace ClinicX.Controllers
         private readonly IConfiguration _config;               
         private readonly IStaffUserData _staffUser;
         private readonly IPathwayData _pathwayData;
+        private readonly IPriorityData _priorityData;
         private readonly IReferralData _referralData;
         private readonly ITriageData _triageData;
         private readonly IICPActionData _icpActionData;
@@ -35,6 +36,7 @@ namespace ClinicX.Controllers
             _ivm = new ICPVM();
             _staffUser = new StaffUserData(_clinContext);
             _pathwayData = new PathwayData(_clinContext);
+            _priorityData = new PriorityData(_clinContext);
             _referralData = new ReferralData(_clinContext);
             _triageData = new TriageData(_clinContext);
             _icpActionData = new ICPActionData(_clinContext);
@@ -98,6 +100,7 @@ namespace ClinicX.Controllers
                 _ivm.generalActionsList = _icpActionData.GetICPGeneralActionsList();
                 _ivm.generalActionsList2 = _icpActionData.GetICPGeneralActionsList2();
                 _ivm.loggedOnUserType = _staffUser.GetStaffMemberDetails(User.Identity.Name).CLINIC_SCHEDULER_GROUPS;
+                _ivm.priorityList = _priorityData.GetPriorityList();
                 return View(_ivm);
             }
             catch (Exception ex)
@@ -107,7 +110,8 @@ namespace ClinicX.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, int? tp2nc)
+        public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, 
+            int? tp2nc, int? wlPriority)
         {
             try
             {
@@ -179,10 +183,11 @@ namespace ClinicX.Controllers
                         if (success == 0) { return RedirectToAction("Index", "WIP"); }
                     }
                 }
-
+                //add to waiting list
                 if (facility != null && facility != "")
                 {
-                    int success = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, facility, "General", "", comment, User.Identity.Name);
+                    int success = _crud.CallStoredProcedure("Waiting List", "Create", mpi, wlPriority.GetValueOrDefault(), referral.refid, facility, "General", "", 
+                        comment, User.Identity.Name);
 
                     if (success == 0) { return RedirectToAction("Index", "WIP"); }
                 }

@@ -14,6 +14,5 @@ namespace ClinicX.ViewModels
         public List<Diagnosis> diagnosisList { get; set; }
         public List<DiseaseList> diseaseList { get; set; }
         public List<DiseaseStatusList> statusList { get; set; }
-
     }
 }
