@@ -26,7 +26,7 @@
 
     @if (Model.patient.DCTM_Folder_ID == null)
     {
-        <h3 style="text-align:center">Patient not yet made electronic - no EDMS record exists</h3>
+        <h3 class="text-center">Patient not yet made electronic - no EDMS record exists</h3>
     }
 
     <div class="row mb-5">
@@ -191,7 +191,7 @@
     }
     else
     {
-        <h2 style="text-align:center">No active pathway exists</h2>
+        <h2 class="text-center">No active pathway exists</h2>
     }
 
     <div class="row mb-2">
@@ -200,7 +200,7 @@
 
     @if (Model.alerts.Count > 0)
     {
-        <h1 class="text-danger" style="text-align:center">There are active alerts for this patient</h1>
+        <h1 class="text-danger" class="text-center">There are active alerts for this patient</h1>
     }
 
     <div class="row mb-5 g-5">
@@ -383,7 +383,7 @@
                                 <td>@a.AlertType</td>
                                 @if (@a.ProtectedAddress)
                                 {
-                                    <td style="color:red"><strong>Yes</strong></td>
+                                    <td class="redtext"><strong>Yes</strong></td>
                                 }
                                 else
                                 {

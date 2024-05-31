@@ -7,12 +7,12 @@
     <div class="row mb-5 g-5"> 
         @if(!Model.isLive)
         {
-            <h1 class="text-center" style="color:red">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
+            <h1 class="text-center redtext">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
         }
 
         @if (Model.notificationMessage != null && Model.notificationMessage != "")
         {
-            <h1 class="text-center" style="color:red">@Model.notificationMessage</h1>
+            <h1 class="text-center redtext">@Model.notificationMessage</h1>
         }
 
         @if(Model.caseLoad.Count() == 0)
@@ -24,7 +24,7 @@
             <h2 class="text-center">Welcome, @Model.name!</h2>
             <br />
 
-            <p style="text-align:center"><img src="~/images/clinic-x-logo-2.png" width="500" height="200" /></p>
+            <p class="text-center"><img src="~/images/clinic-x-logo-2.png" width="500" height="200" /></p>
             <br />
 
             <h3 class="text-center">The new system for clinicians to manage their workload.</h3>
@@ -39,7 +39,7 @@
                     <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Triages - @Model.countTriages</a>
                 </div>
                 <div class="col-md-2">
-                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index"><span style="font-size:medium">Cancer ICPs - @Model.countCancerICPs</span></a>
+                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index"><span class="mediumfonttext">Cancer ICPs - @Model.countCancerICPs</span></a>
                 </div>
                 <div class="col-md-2">
                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Test" asp-action="AllOutstandingTests">Tests - @Model.countTests</a>
@@ -59,7 +59,7 @@
     </div>
 
     <div class="row mb-5 g-5">
-        <h3 style="text-align:center">Caseload Overview</h3>
+        <h3 class="text-center">Caseload Overview</h3>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -115,7 +115,7 @@
                             {
                                 @if (item.BookedDate < DateTime.Today)
                                 {
-                                    <span style="color:red">@item.BookedDate.Value.ToString("dd/MM/yyyy")</span>
+                                    <span class="redtext">@item.BookedDate.Value.ToString("dd/MM/yyyy")</span>
                                 }
                                 else
                                 {
@@ -128,7 +128,7 @@
                             {
                                 @if (item.BookedDate < DateTime.Today && item.BookedDate.Value.ToString() != "01/01/1900 00:00:00")
                                 {
-                                    <span style="color:red">N/A</span>
+                                    <span class="redtext">N/A</span>
                                 }
                                 else
                                 {
@@ -139,7 +139,7 @@
                             {
                                 @if (item.BookedDate < DateTime.Today && item.BookedDate.Value.ToString() != "01/01/1900 00:00:00")
                                 {
-                                    <span style="color:red">@item.BookedTime.Value.ToString("HH:mm")</span>
+                                    <span class="redtext">@item.BookedTime.Value.ToString("HH:mm")</span>
                                 }
                                 else
                                 {
@@ -150,7 +150,7 @@
                         <td>
                             @if (item.BookedDate < DateTime.Today && item.BookedDate.Value.ToString() != "01/01/1900 00:00:00")
                             {
-                                <span style="color:red">@item.Name</span>
+                                <span class="redtext">@item.Name</span>
                             }
                             else
                             {
@@ -160,7 +160,7 @@
                         <td>
                             @if (item.BookedDate < DateTime.Today && item.BookedDate.Value.ToString() != "01/01/1900 00:00:00")
                             {
-                                <span style="color:red">@item.State</span>
+                                <span class="redtext">@item.State</span>
                             }
                             else
                             {

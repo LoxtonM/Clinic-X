@@ -16,3 +16,19 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.redtext {
+    color:red;
+}
+
+.greybg {
+    background-color: lightgrey;
+}
+
+.solidbordertext {
+    border: solid;
+}
+
+.mediumfonttext {
+    font-size: medium;
+}

@@ -119,44 +119,7 @@
         <div class="row mb-5 g-5" hidden="true">
             <input asp-for=@Model.icpCancer.ICP_Cancer_ID name="id" />
         </div>
-
-        @*<div class="row mb-5 g-5">
-            <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePreClinicStatus" aria-expanded="false" aria-controls="collapseExample">Pre-Clinic Status (click to expand/hide)</button>
-        </div>
-
-        
-        <div class="collapse" id="collapsePreClinicStatus">
-            <div class="row mb-5 g-5">
-                <h2>Pre-Clinic Status</h2>
-            </div>
-
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <label style="text-align:right">Family History Form Review:</label>
-                </div>
-                <div class="col-md-1">
-                    <input type="checkbox" class="form-check-input" asp-for=@Model.icpCancer.FHFRev />
-                </div>
-                <div class="col-md-2">
-                    <label style="text-align:right">Pedigree Review:</label>
-                </div>
-                <div class="col-md-1">
-                    <input type="checkbox" class="form-check-input" asp-for=@Model.icpCancer.PedRev />
-                </div>
-                <div class="col-md-2">
-                    <label style="text-align:right">Confirmation Review:</label>
-                </div>
-                <div class="col-md-1">
-                    <input type="checkbox" class="form-check-input" asp-for=@Model.icpCancer.ConfRev />
-                </div>
-                <div class="col-md-2">
-                    <label style="text-align:right">Pathology Review:</label>
-                </div>
-                <div class="col-md-1">
-                    <input type="checkbox" class="form-check-input" asp-for=@Model.icpCancer.PathRepRev />
-                </div>
-            </div>
-        </div>*@
+               
 
         <div class="row mb-5 g-5">
             <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseSeeInClinic" aria-expanded="false" aria-controls="collapseExample">See in Clinic (click to expand/hide)</button>
@@ -169,7 +132,7 @@
 
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
-                    <label style="text-align:right">Clinician:</label>
+                    <label class="text-right">Clinician:</label>
                 </div>
                 <div class="col-md-4">
                     <select id="ddlClinician" asp-for=@Model.icpCancer.WaitingListClinician name="clinician">
@@ -181,7 +144,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label style="text-align:right">Clinic:</label>
+                    <label class="text-right">Clinic:</label>
                 </div>
                 <div class="col-md-4">
                     <select id="ddlClinic" asp-for=@Model.icpCancer.WaitingListVenue name="clinic">
@@ -196,7 +159,7 @@
         
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
-                    <label style="text-align:right">Comments:</label>
+                    <label class="text-right">Comments:</label>
                 </div>
                 <div class="col-md-10">
                     <textarea name="comments" id="txtComments" asp-for=@Model.icpCancer.WaitingListComments rows="5" cols="25"></textarea>

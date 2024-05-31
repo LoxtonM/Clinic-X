@@ -188,8 +188,10 @@
         var clinicDate = new Date(bs[2].replace(" 00:00:00", "") + "-" + bs[1] + "-" + bs[0]);        
         var today = new Date();
         today.setHours(0, 0, 0, 0);
-        
-        if (clinicDate > today) 
+
+        //because simply being able to compare dates without times is just too much for Javascript!!!
+        if (clinicDate.getFullYear() >= today.getFullYear() && (clinicDate.getMonth() > today.getMonth() || 
+            (clinicDate.getMonth() == today.getMonth() && clinicDate.getDate() > today.getDate())))
         {           
             //since disabled refuses to work, I have to hide it instead
             document.getElementById("btnRecordOutcome").hidden = true;
