@@ -13,20 +13,38 @@
 
     <h1>Add new diagnosis for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME)</h1>
 
+    <form id="DiseaseSearch">
+        <div class="row mb-2 g-2">
+            <div class="col-md-2" class="text-right">
+                <label>Search:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="w-100" id="txtSearch" name="searchTerm" asp-for=@Model.searchTerm />
+                <input name="id" value="@Html.DisplayFor(model => model.patient.MPI)" hidden="true" />
+            </div>
+            <div class="col-md-8">
+                <label>(enter a search term to display the list)</label>
+            </div>
+        </div>
+    </form>
+
     <form id="frmAddNew" asp-action="AddNew">
         <div class="row g-5 mb-5">
-            <div class="col-md-2">
-                Diagnosis:
-            </div>
-            <div class="col-md-4">
-                <select id="ddlDiag" name="diseaseCode" class="w-100">
-                    <option value="" selected>select...</option>
-                    @foreach (var d in Model.diseaseList)
-                    {
-                        <option value="@d.DISEASE_CODE">@d.DISEASE_CODE - @d.DESCRIPTION</option>
-                    }
-                </select>
-            </div>
+            @if(Model.searchTerm != null)
+            {
+                <div class="col-md-2">
+                    Diagnosis:
+                </div>
+                <div class="col-md-4">                              
+                    <select id="ddlDiag" name="diseaseCode" class="w-100">
+                        <option value="" selected>select...</option>
+                        @foreach (var d in Model.diseaseList)
+                        {
+                            <option value="@d.DISEASE_CODE">@d.DISEASE_CODE - @d.DESCRIPTION</option>
+                        }
+                    </select>
+                </div>
+            }
         </div>
 
         <div class="row g-5 mb-5">   
@@ -60,7 +78,12 @@
 <script type="text/javascript">
 
     document.getElementById("btnSave").addEventListener("click", AddTest);
+    document.getElementById("txtSearch").addEventListener("blur", DoSearch);
    
+    function DoSearch()
+    {
+        document.getElementById("DiseaseSearch").submit();
+    }
    
 
     function AddTest() 

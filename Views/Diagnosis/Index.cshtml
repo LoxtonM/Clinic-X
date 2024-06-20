@@ -47,7 +47,8 @@
 
     <div class="row g-5 mb-5">
         <div col-md-2></div>
-        <div col-md-2><a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AddNew" asp-route-id=@Model.patient.MPI)>Add New</a></div>
+        <div col-md-2><a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="AddNew" asp-route-id="@Model.patient.MPI")>Add New</a></div>
+        @*wow, this makes no fucking sense... for some reason the id has to be on quotes, even though it doesn't elsewhere...FFS!!!!*@
         @*<div col-md-2><button id="btnAddNew" class="btn btn-default btn-success">Add New</button> </div>*@
         <div col-md-8></div>
     </div>    

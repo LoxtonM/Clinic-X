@@ -50,7 +50,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddNew(int id)
+        public async Task<IActionResult> AddNew(int id, string? searchTerm)
         {
             try
             {
@@ -59,6 +59,13 @@ namespace ClinicX.Controllers
                 _dvm.diseaseList = _diseaseData.GetDiseaseList();
                 _dvm.patient = _patientData.GetPatientDetails(id);
                 _dvm.statusList = _diseaseData.GetStatusList();
+
+                if (searchTerm != null)
+                {
+                    _dvm.diseaseList = _dvm.diseaseList.Where(d => d.DESCRIPTION.ToUpper().Contains(searchTerm.ToUpper())).ToList();
+                    _dvm.searchTerm = searchTerm;
+                }
+
                 return View(_dvm);
             }
             catch (Exception ex)
