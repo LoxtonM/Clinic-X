@@ -27,7 +27,7 @@ namespace ClinicX.Meta
             cmd.Parameters.Add("@staffCode", SqlDbType.VarChar).Value = staffCode;
             cmd.Parameters.Add("@form", SqlDbType.VarChar).Value = formName;
             cmd.Parameters.Add("@searchTerm", SqlDbType.VarChar).Value = searchTerm;
-            cmd.Parameters.Add("@database", SqlDbType.VarChar).Value = "CGU_DB";
+            cmd.Parameters.Add("@database", SqlDbType.VarChar).Value = "ClinicX";
             cmd.Parameters.Add("@machine", SqlDbType.VarChar).Value = System.Environment.MachineName;
             cmd.ExecuteNonQuery();
             conn.Close();

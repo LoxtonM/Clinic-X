@@ -9,6 +9,8 @@ namespace ClinicX.Meta
         public string GetCCDetails(ExternalClinician referrer);
         public ExternalClinician GetClinicianDetails(string sref);
         public List<ExternalClinician> GetClinicianList();
+        public List<ExternalClinician> GetGPList();
+        public List<string> GetClinicianTypeList();
     }
     public class ExternalClinicianData : IExternalClinicianData
     {
@@ -41,11 +43,38 @@ namespace ClinicX.Meta
         public List<ExternalClinician> GetClinicianList() //Get list of all external/referring clinicians
         {
             var clinicians = from rf in _clinContext.ExternalClinician
-                             where rf.NON_ACTIVE == 0
+                             where rf.NON_ACTIVE == 0 & rf.Is_Gp == 0
                              orderby rf.NAME
                              select rf;
 
-            return clinicians.ToList();
-        }        
+            return clinicians.Distinct().ToList();
+        }
+
+        public List<ExternalClinician> GetGPList() //Get list of all external/referring clinicians
+        {
+            var clinicians = from rf in _clinContext.ExternalClinician
+                             where rf.NON_ACTIVE == 0 & rf.Is_Gp == -1
+                             orderby rf.NAME
+                             select rf;
+
+            return clinicians.Distinct().ToList();
+        }
+
+        public List<string> GetClinicianTypeList() //Get list of all external/referring clinicians
+        {
+            var clinicians = from rf in _clinContext.ExternalClinician
+                             where rf.NON_ACTIVE == 0 & rf.SPECIALITY != null & rf.POSITION != null & !rf.SPECIALITY.Contains("Family") 
+                             orderby rf.SPECIALITY
+                             select rf;
+
+            List<string> specialties = new List<string>();
+            
+            foreach (var item in clinicians)
+            {
+                specialties.Add(item.SPECIALITY);
+            }
+
+            return specialties.Distinct().ToList();
+        }
     }
 }

@@ -41,7 +41,9 @@
         </div>
     </div>
 
-    <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME)</h1>
+    <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
+        <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
+    </h1>
 
     <h2>Re: @Html.ValueFor(model => model.dictatedLetters.LetterRe)</h2>
 
@@ -50,6 +52,9 @@
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
                     <button type="button" class="btn btn-success" id="btnPreview">Preview</button>
+                </div>
+                <div class="col-md-8">
+                    <label class="redtext">Note: the preview may not accurately reflect the formatting of the letter when printed, only the content.</label>
                 </div>
             </div>
             <div hidden="true">
@@ -79,23 +84,21 @@
                                 <option value="Referrer">Referrer</option>                            
                             }
                             <option value="GP">GP</option>
-                            @*<option value="Other">Other</option>*@
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                     <div class="row">
-                        <select class="w-100" id="ddlLetterToType" hidden="true">
-                            <option value="Screening Coordinator">Screening Coordinator</option>
-                            <option value="Genetics Lab">Genetics Lab</option>
-                            <option value="Histopathologist">Histopathologist</option>
-                            <option value="Consultant Geneticist">Consultant Geneticist</option>
+                        <select class="w-100" id="ddlLetterToType" hidden="true">                            
+                            <option value="">Select...</option>
+                            @foreach (var item in Model.specialities)
+                            {
+                                <option value=@item>@item</option>
+                            }
                         </select>
                     </div>
                     <div class="row">
                         <select class="w-100" id="ddlLetterToClinician" hidden="true">
-                            @foreach(var item in Model.clinicians)
-                            {
-                                <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME</option>
-                            }
+                            
                         </select>
                     </div>
                 </div>
@@ -106,7 +109,7 @@
                     From:
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode>
+                    <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
                         <option value="">Select...</option>                    
                         @foreach(var item in Model.staffMemberList)
                         {
@@ -192,7 +195,7 @@
         </form>
 
         <div class="row mb-5 g-5">
-            <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Patients</button>
+            <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Re: Patients</button>
         </div>
 
         <div class="collapse" id="collapsePatientsTable">
@@ -276,14 +279,13 @@
                             </select>
                             <select class="w-100" id="ddlCCType2" hidden="true">
                                 <option value="" selected>Select...</option>
-                                <option value="Histo">Histopathologists</option>                               
-                                <option value="Cardio">Cardiologists</option>
-                                <option value="Gynae">Gynacologists</option>
-                                <option value="Genetics">Geneticists</option>
-                                <option value="ScreenCo">Screening Coordinators</option>
-                                @*<option value="GpsAll">GPs (all)</option> We can't have this option, it simply flat-out refuses to work*@
+                                @foreach (var item in Model.specialities)
+                                {
+                                    <option value=@item>@item</option>
+                                }
                             </select>
-                            <select class="w-100" id="ddlCCCardio" hidden="true" onchange="SetCCAddress('Cardio')">
+
+                            @*<select class="w-100" id="ddlCCCardio" hidden="true" onchange="SetCCAddress('Cardio')">
                                 @foreach(var item in Model.cardio)
                                 {
                                     <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
@@ -313,18 +315,15 @@
                                     <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
                                 }
                             </select>
-                            @*<select class="w-100" id="ddlCCGPAll" hidden="true">
+                            <select class="w-100" id="ddlCCGPAll" hidden="true">
                                 @foreach (var item in Model.gps_all)
                                 {
                                     <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
                                 }
                             </select>*@
-                            @*<select id="ddlCC" hidden="true">            
-                                @foreach (var item in Model.clinicians)
-                                {
-                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.SPECIALITY</option>
-                                }
-                            </select>*@
+                            <select id="ddlCC" hidden="true">
+                                
+                            </select>
                         </div>
                         <div class="row">
                             <div class="col-md-10">
@@ -538,43 +537,112 @@
 
     function ShowCCTypes() 
     {
-        document.getElementById("ddlCCCardio").hidden = true;
-        document.getElementById("ddlCCGenetics").hidden = true;
-        document.getElementById("ddlCCGynae").hidden = true;
-        document.getElementById("ddlCCHisto").hidden = true;
-        document.getElementById("ddlCCScreeningCo").hidden = true;
-        //document.getElementById("ddlCCGPAll").hidden = true;
+        const ccType = document.getElementById("ddlCCType2");
+        const ccList = document.getElementById("ddlCC");
 
-        if (document.getElementById("ddlCCType2").value == "Cardio") 
+        ccList.innerHTML = "";
+        
+        var clinCodeArray = [];
+        var clinNameArray = [];
+        var clinPositionArray = [];
+        var clinSpecArray = [];
+        
+        @foreach (var item in Model.clinicians)
+        {
+        @if (item.SPECIALITY != null && item.Is_Gp == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null) 
+            { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
+                @:clinCodeArray.push("@item.MasterClinicianCode");
+                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.NAME");
+                @:clinPositionArray.push("@item.POSITION");
+                @:clinSpecArray.push("@item.SPECIALITY");       
+                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
+            }
+        }
+                
+        for (var i in clinSpecArray)
         {            
-            document.getElementById("ddlCCCardio").hidden = false;
+            if(clinSpecArray[i] != ccType.value)
+            {                
+                delete clinSpecArray[i];
+                delete clinCodeArray[i];
+                delete clinNameArray[i];
+                delete clinPositionArray[i];
+            }            
+        }
+        
+        var def = document.createElement('option');
+        def.value = "";
+        def.innerHTML = "Select...";
+        ccList.appendChild(def);
+
+        for (var i in clinSpecArray)
+        {
+            if (ccList.length < 1000) //because it can't handle more than 1000 items, so this is a safeguard
+            {
+                var opt = document.createElement('option');
+                opt.value = clinCodeArray[i];
+                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i];
+                ccList.appendChild(opt);
+            }
         }
 
-        if (document.getElementById("ddlCCType2").value == "Genetics") 
-        {
-            document.getElementById("ddlCCGenetics").hidden = false;
-        }
-
-        if (document.getElementById("ddlCCType2").value == "Gynae") 
-        {
-            document.getElementById("ddlCCGynae").hidden = false;
-        }
-
-        if (document.getElementById("ddlCCType2").value == "Histo") 
-        {
-            document.getElementById("ddlCCHisto").hidden = false;
-        }
-
-        if (document.getElementById("ddlCCType2").value == "ScreenCo") 
-        {
-            document.getElementById("ddlCCScreeningCo").hidden = false;
-        }
-        if (document.getElementById("ddlCCType2").value == "GpsAll") 
-        {
-            document.getElementById("ddlCCGPAll").hidden = false;
-        }
-
+        ccList.hidden = false;
     }
+        
+    function ShowLetterToClinician()
+    {        
+        const ccType = document.getElementById("ddlLetterToType");
+        const ccList = document.getElementById("ddlLetterToClinician");
+
+        ccList.innerHTML = "";
+
+        var clinCodeArray = [];
+        var clinNameArray = [];
+        var clinPositionArray = [];
+        var clinSpecArray = [];
+
+       @foreach (var item in Model.clinicians)
+        {
+            @if (item.SPECIALITY != null && item.Is_Gp == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
+            { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
+                @:clinCodeArray.push("@item.MasterClinicianCode");
+                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.NAME");
+                @:clinPositionArray.push("@item.POSITION");
+                @:clinSpecArray.push("@item.SPECIALITY");
+                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
+            }
+        }
+
+        for (var i in clinSpecArray)
+        {
+            if (clinSpecArray[i] != ccType.value)
+            {
+                delete clinSpecArray[i];
+                delete clinCodeArray[i];
+                delete clinNameArray[i];
+                delete clinPositionArray[i];
+            }
+        }        
+
+        var def = document.createElement('option');
+        def.value = "";
+        def.innerHTML = "Select...";
+        ccList.appendChild(def);
+
+        for (var i in clinSpecArray)
+        {
+            if (ccList.length < 1000)
+            {
+                var opt = document.createElement('option');
+                opt.value = clinCodeArray[i];
+                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i];
+                ccList.appendChild(opt);
+            }
+        }
+        
+        ccList.hidden = false;
+    }
+
 
     function SetLetterToClinician() 
     { 
@@ -695,97 +763,7 @@
             var facilityArray = [];
             var facilityCode;
             var _ccCode;
-            
-
-            if (ccCode == "Cardio") 
-            {
-                _ccCode = document.getElementById("ddlCCCardio").value
-                //can't do easy way, obviously, so have to hard way                
-                //this is the ONLY way to get another clinician's details into this variable!!!
-
-                @if (Model.cardio != null) 
-                {
-                    @foreach (var item in Model.cardio)
-                    {
-                        @:clinicianArray.push("@item.MasterClinicianCode");
-                        @:titleArray.push("@item.TITLE");
-                        @:firstnameArray.push("@item.FIRST_NAME");
-                        @:lastnameArray.push("@item.NAME");
-                        @:facilityArray.push("@item.FACILITY");
-                    }
-                }
-            }
-
-            if (ccCode == "Genetics") 
-            {
-                _ccCode = document.getElementById("ddlCCGenetics").value
-                
-                @if (Model.genetics != null)
-                {
-                    @foreach (var item in Model.genetics)
-                    {
-                        @:clinicianArray.push("@item.MasterClinicianCode");
-                        @:titleArray.push("@item.TITLE");
-                        @:firstnameArray.push("@item.FIRST_NAME");
-                        @:lastnameArray.push("@item.NAME");
-                        @:facilityArray.push("@item.FACILITY");
-                    }
-                }   
-            }
-
-            if (ccCode == "Gynae") 
-            {
-                _ccCode = document.getElementById("ddlCCGynae").value
-                
-                @if (Model.gynae != null)
-                {
-                    @foreach (var item in Model.gynae)
-                    {
-                        @:clinicianArray.push("@item.MasterClinicianCode");
-                        @:titleArray.push("@item.TITLE");
-                        @:firstnameArray.push("@item.FIRST_NAME");
-                        @:lastnameArray.push("@item.NAME");
-                        @:facilityArray.push("@item.FACILITY");
-                    }
-                }
-            }
-
-            if (ccCode == "Histo") 
-            {
-                _ccCode = document.getElementById("ddlCCCardio").value
-                
-                @if (Model.histo != null)
-                {
-                    @foreach (var item in Model.histo)
-                    {
-                        @:clinicianArray.push("@item.MasterClinicianCode");
-                        @:titleArray.push("@item.TITLE");
-                        @:firstnameArray.push("@item.FIRST_NAME");
-                        @:lastnameArray.push("@item.NAME");
-                        @:facilityArray.push("@item.FACILITY");
-                    }
-                }
-            }
-
-            if (ccCode == "ScreeningCo") 
-            {                
-                _ccCode = document.getElementById("ddlCCScreeningCo").value
-                
-                @if (Model.screeningco != null)
-                {                    
-                    @foreach (var item in Model.screeningco)
-                    {
-                        @:clinicianArray.push("@item.MasterClinicianCode");
-                        @:titleArray.push("@item.TITLE");
-                        @:firstnameArray.push("@item.FIRST_NAME");
-                        @:lastnameArray.push("@item.NAME");
-                        @:facilityArray.push("@item.FACILITY");
-                    }
-                }
-            }
-
-
-                              
+                                          
                 
             for (var k = 0; k < clinicianArray.length; k++) 
             {

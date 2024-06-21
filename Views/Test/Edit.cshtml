@@ -101,8 +101,8 @@
                 <div class="col-md-1">
                     <select class="w-100" asp-for=@Model.test.COMPLETE id="ddlComplete" name="complete">
                         @*because obviously a yes/no field is an integer not a boolean!*@                        
-                        <option value=0>No</option>
-                        <option value=-1>Yes</option>
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
                     </select>
                 </div>
             </div>

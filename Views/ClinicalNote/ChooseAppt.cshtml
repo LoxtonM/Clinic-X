@@ -13,7 +13,7 @@
     </div>
 
     <div class ="row g-5 mb-5">
-        <h2>Choose appointment to create new clinical note for @Model.patient.FIRSTNAME Model.patient.LASTNAME)</h2>
+        <h2>Choose appointment to create new clinical note for @Model.patient.FIRSTNAME @Model.patient.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h2>
     </div>
 
     <div class="row g-5 mb-5">

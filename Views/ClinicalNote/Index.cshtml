@@ -21,7 +21,7 @@
 
     @if(Model.noteCount > 0)
     {
-        <h1>Clinical Notes for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME</a></h1>
+        <h1>Clinical Notes for @Model.patient.FIRSTNAME @Model.patient.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h1>
     }
     else
     {

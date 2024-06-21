@@ -31,7 +31,7 @@ namespace ClinicX.Meta
         {   
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
-            if (text == null) { text = ""; } //because it won't take the default value anymore for some reason!
+            if (text == null) { text = ""; }
             if (string4 == null) { string4 = ""; }
             if (string5 == null) { string5 = ""; }
             if (string6 == null) { string6 = ""; }

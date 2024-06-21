@@ -25,6 +25,7 @@
                         <th>@Html.DisplayNameFor(model => model.test.DATE_REQUESTED)</th>
                         <th>@Html.DisplayNameFor(model => model.test.ExpectedDate)</th>     
                         <th>Comments</th>
+                        <th>Complete</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,7 +51,8 @@
                             {
                                 <td>Unknown</td>
                             }
-                            <td>@item.COMMENTS</td>              
+                            <td>@item.COMMENTS</td>
+                            <td>@item.COMPLETE</td>
                         </tr>
                     }
                 </tbody>

@@ -85,10 +85,13 @@ namespace ClinicX.Controllers
                 _lvm.patientDetails = _patientData.GetPatientDetails(mpi.GetValueOrDefault());
                 _lvm.activityDetails = _activityData.GetActivityDetails(refID.GetValueOrDefault());
                 string sGPCode = _lvm.patientDetails.GP_Facility_Code;
+                if (sGPCode == null ) { sGPCode = "Unknown1"; } //because obviously there are nulls.
                 string sRefFacCode = _lvm.activityDetails.REF_FAC;
+                if (sRefFacCode == null) { sRefFacCode = "Unknown"; } 
                 string sRefPhysCode = _lvm.activityDetails.REF_PHYS;
-                _lvm.referrerFacility = _externalFacilityData.GetFacilityDetails(sRefFacCode);
-                _lvm.referrer = _externalClinicianData.GetClinicianDetails(sRefPhysCode);
+                if (sRefPhysCode == null) { sRefPhysCode = "Unknown"; }
+                _lvm.referrerFacility = _externalFacilityData.GetFacilityDetails(sRefFacCode);                
+                _lvm.referrer = _externalClinicianData.GetClinicianDetails(sRefPhysCode);                
                 _lvm.GPFacility = _externalFacilityData.GetFacilityDetails(sGPCode);
                 _lvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
                 _lvm.clinicians = _externalClinicianData.GetClinicianList().Where(c => c.Is_Gp == 0 && c.NAME != null && c.FACILITY != null).ToList();
@@ -102,6 +105,7 @@ namespace ClinicX.Controllers
                 _lvm.consultants = _staffUser.GetConsultantsList().ToList();
                 _lvm.gcs = _staffUser.GetGCList().ToList();
                 _lvm.secteams = _staffUser.GetSecTeamsList();
+                _lvm.specialities = _externalClinicianData.GetClinicianTypeList();
 
                 return View(_lvm);
             }
@@ -112,7 +116,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFrom, string letterContent, string letterContentBold, 
+        public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
             bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode)
         {
             try
@@ -122,7 +126,7 @@ namespace ClinicX.Controllers
                 //two updates required - one to update the addressee (if addressee has changed)
                 if (isAddresseeChanged)
                 {
-                    int success2 = _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, "", letterToCode, letterFrom, letterTo, User.Identity.Name);
+                    int success2 = _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, "", letterToCode, letterFromCode, letterTo, User.Identity.Name);
 
                     if (success2 == 0) { return RedirectToAction("Index", "WIP"); }
                 }
