@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using System;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Intrinsics.X86;
 
 namespace ClinicX.Models
 {
@@ -366,7 +362,7 @@ namespace ClinicX.Models
     }
 
     [Table("STAFF", Schema = "dbo")] //Staff members
-    public class StaffMemberList
+    public class StaffMember
     {
         [Key]
         public string STAFF_CODE { get; set; }
@@ -670,7 +666,12 @@ namespace ClinicX.Models
         public double? R50_60 { get; set; }
         public string? CalculationToolUsed { get; set; }
         public string? SurvSiteCode { get; set; }
+        public string? SurvSite {  get; set; }
+        public string? SurvFreq {  get; set; }
+        public string? SurvType { get; set; }
         public double? LifetimeRiskPercentage { get; set; }
+        public int? SurvStartAge { get; set; }
+        public int? SurvStopAge { get; set; }
         public string? Clinician { get; set; }
         public int ICPID { get; set; }
     }

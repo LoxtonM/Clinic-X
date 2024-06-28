@@ -9,7 +9,7 @@ namespace ClinicX.ViewModels
     {
         public Patients patient { get; set; }
         public DocumentsContent documentsContent { get; set; }
-        public StaffMemberList staffMember { get; set; }
+        public StaffMember staffMember { get; set; }
         public ExternalClinician referrer { get; set; }
         public ExternalFacility facility { get; set; }
         public DictatedLetters dictatedLetter { get; set; }

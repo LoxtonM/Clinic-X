@@ -6,7 +6,7 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class ClinicVM
     {
-        public List<StaffMemberList> staffMembers { get; set; }
+        public List<StaffMember> staffMembers { get; set; }
         public List<ActivityItems> activityItems { get; set; }
         public ActivityItems activityItem { get; set; }
         public Clinics Clinic { get; set; }

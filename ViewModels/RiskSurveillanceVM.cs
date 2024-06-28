@@ -15,7 +15,7 @@ namespace ClinicX.ViewModels
         public Eligibility eligibilityDetails { get; set; }
         public List<RiskCodes> riskCodes { get; set; }
         public List<SurvSiteCodes> survSiteCodes { get; set; }
-        public List<StaffMemberList> staffMembersList { get; set; }
+        public List<StaffMember> staffMembersList { get; set; }
         public List<CalculationTools> calculationTools {  get; set; }
         public List<SurvTypeCodes> survTypeCodes { get; set; }
         public List<SurvFreqCodes> survFreqCodes { get; set; }

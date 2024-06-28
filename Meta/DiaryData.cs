@@ -7,6 +7,7 @@ namespace ClinicX.Meta
     interface IDiaryData
     {
         public List<Diary> GetDiaryList(int id);
+        public Diary GetLatestDiaryByRefID(int refID, string? docCode = "");
     }
     public class DiaryData : IDiaryData
     {
@@ -27,6 +28,13 @@ namespace ClinicX.Meta
                         select d;
 
             return diary.ToList();
-        }        
+        }
+
+        public Diary GetLatestDiaryByRefID(int refID, string? docCode = "")
+        {
+            var diary = _clinContext.Diary.FirstOrDefault(d => d.RefID == refID && d.DocCode == docCode);
+
+            return diary;
+        }
     }
 }

@@ -183,6 +183,7 @@
                 <div class="col-md-4"></div>
             </div>
             <div class="row mb-5 g-5">
+
                 <div class="col-md-2">
                     <label for="ddlIsSPR" id="lblIsSPR">Suitable for SpR:</label>
                 </div>
@@ -334,6 +335,11 @@
             else 
             {
                 document.getElementById("WaitingListDetails").hidden = false;
+                if(_user == "GC")
+                {
+                    document.getElementById("lblIsSPR").hidden = true;
+                    document.getElementById("ddlIsSPR").hidden = true;
+                }
             }           
         }
 

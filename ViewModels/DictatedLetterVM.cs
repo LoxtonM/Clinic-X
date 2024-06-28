@@ -7,14 +7,14 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class DictatedLetterVM
     {
-        public StaffMemberList staffUser { get; set; }
+        public StaffMember staffUser { get; set; }
         public List<DictatedLettersCopies> dictatedLettersCopies  { get; set; }
         public List<DictatedLettersPatients> dictatedLettersPatients { get; set; }
         public DictatedLetters dictatedLetters { get; set; }
         public List<DictatedLetters> dictatedLettersForApproval { get; set; }
         public List<DictatedLetters> dictatedLettersForPrinting { get; set; }
         public List<Patients> patients { get; set; }
-        public List<StaffMemberList> staffMemberList { get; set;}
+        public List<StaffMember> staffMemberList { get; set;}
         public Patients patientDetails { get; set; }        
         public ActivityItems activityDetails { get; set; }
         public ExternalFacility referrerFacility { get; set; }

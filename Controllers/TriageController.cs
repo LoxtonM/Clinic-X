@@ -24,6 +24,7 @@ namespace ClinicX.Controllers
         private readonly IRiskData _riskData;
         private readonly ISurveillanceData _survData;
         private readonly ITestEligibilityData _testEligibilityData;
+        private readonly IDiaryData _diaryData;
         private readonly IDocumentsData _documentsData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
@@ -43,6 +44,7 @@ namespace ClinicX.Controllers
             _riskData = new RiskData(_clinContext);
             _survData = new SurveillanceData(_clinContext);
             _testEligibilityData = new TestEligibilityData(_clinContext);
+            _diaryData = new DiaryData(_clinContext);
             _documentsData = new DocumentsData(_docContext);
             _crud = new CRUD(_config);
             _lc = new LetterController(_clinContext, _docContext);
@@ -119,6 +121,7 @@ namespace ClinicX.Controllers
                 var referral = await _clinContext.Referrals.FirstOrDefaultAsync(r => r.refid == icp.RefID);
                 var staffmember = await _clinContext.StaffMembers.FirstOrDefaultAsync(s => s.EMPLOYEE_NUMBER == User.Identity.Name);
                 int mpi = icp.MPI;
+                int refID = icp.RefID;
                 int tp2;
                 string referrer = referral.ReferrerCode;
                 string sApptIntent = "";
@@ -195,7 +198,10 @@ namespace ClinicX.Controllers
                 if (tp2 == 2) //CTB letter
                 {
                     //LetterController _lc = new LetterController(_docContext);
-                    _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer);
+                    int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
+                    if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                    int diaryID = _diaryData.GetLatestDiaryByRefID(refID, "CTBAck").DiaryID;
+                    _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer,"","",0,"",false,false,diaryID);
                 }                
 
                 if (tp2 == 7) //Reject letter
@@ -304,9 +310,11 @@ namespace ClinicX.Controllers
                     string diaryText = "";
                     int letterID = _documentsData.GetDocumentDetailsByDocCode(docCode).DocContentID;
 
-                    _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferringClinician);
                     int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+                    int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
 
+                    _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferringClinician, "", "", 0, "", false, false, diaryID);
+                    
                     if (successDiary == 0) { return RedirectToAction("Index", "WIP"); }
                 }
             }

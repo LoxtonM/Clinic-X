@@ -7,8 +7,7 @@ namespace ClinicX.Meta
     interface IPatientData
     {
         public Patients GetPatientDetails(int id);
-        public Patients GetPatientDetailsByWMFACSID(int id);
-        
+        public Patients GetPatientDetailsByWMFACSID(int id);        
     }
     public class PatientData : IPatientData 
     {

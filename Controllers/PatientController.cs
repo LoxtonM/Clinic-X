@@ -10,8 +10,8 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly PatientVM _pvm;
-        private readonly StaffUserData _staffUser;
         private readonly IConfiguration _config;
+        private readonly IStaffUserData _staffUser;        
         private readonly IPatientData _patientData;
         private readonly IRelativeData _relativeData;
         private readonly IPathwayData _pathwayData;

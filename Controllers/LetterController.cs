@@ -15,25 +15,31 @@ public class LetterController : Controller
     private readonly DocumentContext _docContext;
     private readonly LetterVM _lvm;
     private readonly IPatientData _patientData;
+    private readonly IReferralData _referralData;
     private readonly IDictatedLetterData _dictatedLetterData;
     private readonly IStaffUserData _staffUser;
     private readonly IDocumentsData _documentsData;
     private readonly IExternalClinicianData _externalClinicianData;
     private readonly IExternalFacilityData _externalFacilityData;
     private readonly IConstantsData _constantsData;
+    //private readonly IConfiguration _config;
+    //private readonly ICRUD _crud;
 
     public LetterController(ClinicalContext clinContext, DocumentContext docContext)
     {
         _clinContext = clinContext;
         _docContext = docContext;
+       // _config = config;
         _lvm = new LetterVM();        
         _patientData = new PatientData(_clinContext);
+        _referralData = new ReferralData(_clinContext);
         _staffUser = new StaffUserData(_clinContext);
         _dictatedLetterData = new DictatedLetterData(_clinContext);
         _documentsData = new DocumentsData(_docContext);
         _externalClinicianData = new ExternalClinicianData(_clinContext);
         _externalFacilityData = new ExternalFacilityData(_clinContext);
         _constantsData = new ConstantsData(_docContext);
+       // _crud = new CRUD(_config);
     }
 
     public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)
@@ -252,7 +258,7 @@ public class LetterController : Controller
 
     //Prints standard letter templates from the menu
     public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
-        string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false)
+        string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0)
     {
         try
         {
@@ -260,6 +266,8 @@ public class LetterController : Controller
             _lvm.patient = _patientData.GetPatientDetails(mpi);
             _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
             _lvm.referrer = _externalClinicianData.GetClinicianDetails(referrer);
+
+            var referral = _referralData.GetReferralDetails(refID);
 
             //creates a new PDF document
             PdfDocument document = new PdfDocument();
@@ -347,46 +355,32 @@ public class LetterController : Controller
             int printCount = 1;
             int totalLength = 400; //used for spacing - so the paragraphs can dynamically resize
 
+            quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
+            quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+            quoteRef = quoteRef + "Consultant: " + referral.LeadClinician + Environment.NewLine;
+            quoteRef = quoteRef + "Genetic Counsellor: " + referral.GC;
+            tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 130, page.Width, 150)); //"Please quote CGU number" etc
+
+            //_crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", user);
+
             ///////////////////////////////////////////////////////////////////////////////////////
-            //////All letter templates need to be defined individually here////////////////////////
-            //////Since some of them go over two pages, and this pdf tool requires/////////////////
-            //////each page to be defined, we can't use a separate function for any of this!///////
+            //////All letter templates need to be defined individually here////////////////////////            
             ///////////////////////////////////////////////////////////////////////////////////////
-            
+
             //Ack letter
             if (docCode == "Ack")
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY;
-
-                tf.Alignment = XParagraphAlignment.Right;
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(-20, 300, page.Width, 200)); //"Please quote CGU number" etc
-
                 tf.Alignment = XParagraphAlignment.Left;
                 content1 = _lvm.documentsContent.Para1;
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, totalLength, 500, content1.Length / 4));
                 totalLength = totalLength + content1.Length / 4 - 40;
-                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;               
                 cc = referrerName;
             }
 
             //CTB Ack letter
-            if (docCode == "CTBAck") //Referrer name must be included here
+            if (docCode == "CTBAck") 
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
-
                 content1 = referrerName + " " + _lvm.documentsContent.Para1;
                 content2 = _lvm.documentsContent.Para2;
                 content3 = _lvm.documentsContent.Para3 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
@@ -396,23 +390,14 @@ public class LetterController : Controller
                 tf.DrawString(content2, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
                 totalLength = totalLength + content2.Length / 4 + 10;
                 tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 3));
-                totalLength = totalLength + content3.Length / 3;
-                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                signOff = "CGU Booking Centre";
-                totalLength = totalLength + 80;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + content3.Length / 3;               
+                signOff = "CGU Booking Centre";                
                 cc = referrerName;
             }
 
             //KC letter
-            if (docCode == "Kc") //Paragraph 1 sometimes needs the referrer name
+            if (docCode == "Kc")
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY;
-
-                tf.Alignment = XParagraphAlignment.Right;
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(-20, 300, page.Width, 200)); //"Please quote CGU number" etc
-
                 tf.Alignment = XParagraphAlignment.Left;
                 content1 = _lvm.documentsContent.Para1 + " " + referrerName + " " + _lvm.documentsContent.Para2 +
                     Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para3 +
@@ -425,35 +410,38 @@ public class LetterController : Controller
                 var tf2 = new XTextFormatter(gfx2);
                 tf2.DrawString(content2, font, XBrushes.Black, new XRect(50, 50, 500, content2.Length / 4));
                 totalLength = 50 + content2.Length / 4;
-                tf2.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx2.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf2.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+            }
+
+            //PrC letter
+            if (docCode == "PrC")
+            {
+                content1 = _lvm.documentsContent.Para1;
+                content2 = _lvm.documentsContent.Para2;
+                content3 = _lvm.documentsContent.Para3;
+                content4 = _lvm.documentsContent.Para4;
+
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, totalLength, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+                tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                totalLength = totalLength + content2.Length / 4;
+                tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                totalLength = totalLength + content3.Length / 4;
+                tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
+                totalLength = totalLength + content4.Length / 4;
             }
 
             //O1 letter
             if (docCode == "O1")
-            {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
-
+            {  
                 content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2;
                 content2 = additionalText;
                 content3 = _lvm.documentsContent.Para4;
                 content4 = _lvm.documentsContent.Para7;
                 content5 = _lvm.documentsContent.Para9;
 
-                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 5));
-                totalLength = totalLength + content1.Length / 5;
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4 + 20;
                 if (content2 != null && content2 != "")
                 {
                     tf.DrawString(content2, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
@@ -463,29 +451,13 @@ public class LetterController : Controller
                 totalLength = totalLength + content3.Length / 4;
                 tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
                 totalLength = totalLength + content4.Length / 4;
-                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 cc = referrerName;
             }
 
+            //O1a
             if (docCode == "O1A")
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
-
                 content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2;
                 content2 = additionalText;
                 if (reviewAtAge > 0)
@@ -515,43 +487,28 @@ public class LetterController : Controller
                     content6 = _lvm.documentsContent.Para9;
                 }
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
-                totalLength = totalLength + content1.Length / 4;
+                totalLength = totalLength + content1.Length / 4 + 20;
                 if (content2 != null && content2 != "")
                 {
                     tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
-                    totalLength = totalLength + content2.Length / 4;
+                    totalLength = totalLength + content2.Length / 4 + 20;
                 }
                 if (content3 != null && content3 != "")
                 {
                     tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
-                    totalLength = totalLength + content3.Length / 4;
+                    totalLength = totalLength + content3.Length / 4 + 20;
                 }
                 tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
-                totalLength = totalLength + content3.Length / 4;
+                totalLength = totalLength + content3.Length / 4 + 20;
                 tf.DrawString(content5, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
-                totalLength = totalLength + content4.Length / 4;
-                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
+                totalLength = totalLength + content4.Length + 40;
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 cc = referrerName;
             }
 
+            //O1c
             if (docCode == "O1C")
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
-
                 content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2 + Environment.NewLine +
                     Environment.NewLine + _lvm.documentsContent.Para3 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
                 if (reviewAtAge > 0)
@@ -576,28 +533,13 @@ public class LetterController : Controller
                     tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
                     totalLength = totalLength + content3.Length / 4;
                 }
-                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 cc = referrerName;
             }
 
+            //O2
             if (docCode == "O2")
-            {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
-
+            {                
                 content1 = _lvm.documentsContent.Para1;
                 content2 = _lvm.documentsContent.Para2 + " " + additionalText;
                 if (isScreeningRels.GetValueOrDefault())
@@ -627,7 +569,7 @@ public class LetterController : Controller
                 }
 
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
-                totalLength = totalLength + content1.Length / 4;
+                totalLength = totalLength + content1.Length / 3;
                 tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
                 totalLength = totalLength + content2.Length / 4;
                 if (content3 != "")
@@ -644,30 +586,14 @@ public class LetterController : Controller
                 {
                     tf.DrawString(content5, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content5.Length / 4));
                     totalLength = totalLength + content5.Length / 4;
-                }    
-                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
-                
+                }
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 cc = referrerName;
             }
 
-            if (docCode == "O2A")
+            //O2a
+            if (docCode == "O2a")
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
-
                 content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2 + " " + additionalText;
                 if (tissueType != "")
                 {
@@ -697,7 +623,7 @@ public class LetterController : Controller
                 }                
 
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
-                totalLength = totalLength + content1.Length / 4;
+                totalLength = totalLength + content1.Length /4 + 30;
                 if (content2 != "")
                 {
                     tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
@@ -716,61 +642,30 @@ public class LetterController : Controller
                     tf.DrawString(content5, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content5.Length / 4));
                     totalLength = totalLength + content5.Length / 4;
                 }
-                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
-
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                cc = referrerName;
+                cc = referrerName;                
             }
 
-            if (docCode == "O2D")
+            //O2d
+            if (docCode == "O2d")
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
-
                 content1 = _lvm.documentsContent.Para1;
                 content2 = _lvm.documentsContent.Para2;
                 content3 = additionalText;
 
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
-                totalLength = totalLength + content1.Length / 4;
+                totalLength = totalLength + content1.Length / 4 + 20;
                 tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
                 totalLength = totalLength + content2.Length / 4;                
                 tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
                 totalLength = totalLength + content3.Length / 4;
-                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
-
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                cc = referrerName;
+                cc = referrerName;                
             }
 
+            //O3
             if (docCode == "O3")
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
                 List<Risk> _riskList = new List<Risk>();
                 RiskData _rData = new RiskData(_clinContext);
                 Surveillance _surv = new Surveillance();
@@ -782,79 +677,50 @@ public class LetterController : Controller
                 foreach (var item in _riskList)
                 {
                     _surv = _survData.GetSurvDetails(item.RiskID);
-                    content3 = content3 + ", " + _surv.SurvFreqCode; //TODO - get this to display properly
+                    content3 = item.SurvSite + " surveillance " + " by " + item.SurvType + " " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
+                    if(item.SurvStopAge != null)
+                    {
+                        content3 = content3 + " to " + item.SurvStopAge.ToString();
+                    }
                 }
                 
                 content4 = _lvm.documentsContent.Para4;
 
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
-                totalLength = totalLength + content1.Length / 4;
+                totalLength = totalLength + content1.Length / 4 + 40; //because it's just exactly the wrong size to work with just /3 or /4
+                tf.DrawString(content3, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                totalLength = totalLength + content3.Length / 4 + 10;
                 tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
                 totalLength = totalLength + content2.Length / 4;
-                tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
-                totalLength = totalLength + content3.Length / 4;
                 tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
                 totalLength = totalLength + content4.Length / 4;
-
-                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
-
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 cc = referrerName;
             }
 
-            if (docCode == "O3A")
+            //O3a
+            if (docCode == "O3a")
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
-
                 content1 = _lvm.documentsContent.Para1;
                 content2 = _lvm.documentsContent.Para2;
                 content3 = _lvm.documentsContent.Para3;
-                content4 = _lvm.documentsContent.Para4;
+                content4 = _lvm.documentsContent.Para9;
 
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 4));
                 totalLength = totalLength + content1.Length / 4;
                 tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
                 totalLength = totalLength + content2.Length / 4;
                 tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
-                totalLength = totalLength + content3.Length / 4;
+                totalLength = totalLength + content3.Length / 5;
                 tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
                 totalLength = totalLength + content4.Length / 4;
-                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
-
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 cc = referrerName;
             }
 
+            //O4
             if (docCode == "O4")
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
-
                 content1 = _lvm.documentsContent.Para1;
                 content2 = _lvm.documentsContent.Para2;
                 content3 = _lvm.documentsContent.Para3;
@@ -868,30 +734,13 @@ public class LetterController : Controller
                 totalLength = totalLength + content3.Length / 4;
                 tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
                 totalLength = totalLength + content4.Length / 4;
-                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
-
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 cc = referrerName;
             }
 
             //Reject letter
             if (docCode == "RejectCMA")
             {
-                quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
-                quoteRef = quoteRef + "Consultant: " + Environment.NewLine;
-                quoteRef = quoteRef + "Genetic Counsellor: ";
-                tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 150, page.Width, 150)); //"Please quote CGU number" etc
-
                 content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2;
 
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, 400, 500, content1.Length / 5));
@@ -905,49 +754,54 @@ public class LetterController : Controller
                 totalLength = totalLength + content3.Length / 4;
                 tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
                 totalLength = totalLength + content4.Length / 4;
-
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                cc = referrerName;
+            }
+
+            tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+            totalLength = totalLength + 20;
+            if (signOff == "CGU Booking Centre")
+            {
+                totalLength = totalLength + 50;
+            }
+            else
+            {
                 sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                totalLength = totalLength + 20;
                 XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
                 int len = imageSig.PixelWidth;
                 int hig = imageSig.PixelHeight;
                 gfx.DrawImage(imageSig, 50, totalLength, len, hig);
                 totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                cc = referrerName;
-
-            }
-
-            //Add a page for all of the CC addresses (must be declared here or we can't use it)
-            PdfPage pageCC = document.AddPage();
-
+            }            
+            
+            tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+            
+            //Add a page for all of the CC addresses (must be declared here or we can't use it)            
             if (cc != "")
             {
+                PdfPage pageCC = document.AddPage();
                 printCount = printCount += 1;
                 cc = cc + _externalClinicianData.GetCCDetails(_lvm.referrer);
                 XGraphics gfxcc = XGraphics.FromPdfPage(pageCC);
                 var tfcc = new XTextFormatter(gfxcc);
                 tfcc.DrawString("cc:", font, XBrushes.Black, new XRect(50, 50, 500, 100));
                 tfcc.DrawString(cc, font, XBrushes.Black, new XRect(75, 50, 500, 100));
+                if (cc2 != "")
+                {
+                    printCount = printCount += 1;
+                    cc = cc + _externalClinicianData.GetCCDetails(_lvm.referrer);
+                    XGraphics gfxcc2 = XGraphics.FromPdfPage(pageCC);
+                    var tfcc2 = new XTextFormatter(gfxcc);
+                    tfcc2.DrawString(cc, font, XBrushes.Black, new XRect(75, 150, 500, 100));
+                }
             }
-
-            if (cc2 != "")
-            {
-                printCount = printCount += 1;
-                cc = cc + _externalClinicianData.GetCCDetails(_lvm.referrer);
-                XGraphics gfxcc = XGraphics.FromPdfPage(pageCC);
-                var tfcc = new XTextFormatter(gfxcc);
-                tfcc.DrawString(cc, font, XBrushes.Black, new XRect(75, 150, 500, 100));
-            }
-
             //Finally we set the filename for the output PDF
             //needs to be: "CaStdLetter"-CGU number-DocCode-Patient/relative ID (usually "[MPI]-0")-RefID-"print count (if CCs present)"-date/time stamp-Diary ID
             string fileCGU = _lvm.patient.CGU_No.Replace(".", "-");
             string mpiString = _lvm.patient.MPI.ToString();
             string refIDString = refID.ToString();
             string dateTimeString = DateTime.Now.ToString("yyyyMMddHHmmss");
-            string diaryIDString = "00000"; //need to create diary entry first
+            string diaryIDString = diaryID.ToString();
 
             var par = _docContext.Constants.FirstOrDefault(p => p.ConstantCode == "FilePathEDMS");
             string filePath = par.ConstantValue;

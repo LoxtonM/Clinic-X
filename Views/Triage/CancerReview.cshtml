@@ -287,7 +287,17 @@
         {
             window.alert("Oi! Stop trying to inject SQL code into my form!");
             return 0;
+        }        
+
+        if (document.getElementById("ddlLetter").value == 9 || document.getElementById("ddlLetter").value == 10)
+        {   
+            @if (Model.surveillanceList.Count() == 0)
+            {
+                @:window.alert("You have selected an O3 or O3a with no surveillance recommendations. Please amend.");
+                @:return 0;            
+            }
         }
+
         return 1;
     }
 

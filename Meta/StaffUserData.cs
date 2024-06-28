@@ -6,9 +6,9 @@ namespace ClinicX.Meta
 {
     interface IStaffUserData
     {
-        public StaffMemberList GetStaffMemberDetails(string suser);
-        public List<StaffMemberList> GetClinicalStaffList();
-        public List<StaffMemberList> GetStaffMemberList();
+        public StaffMember GetStaffMemberDetails(string suser);
+        public List<StaffMember> GetClinicalStaffList();
+        public List<StaffMember> GetStaffMemberList();
         public List<string> GetConsultantsList();
         public List<string> GetGCList();
         public List<string> GetSecTeamsList();
@@ -22,13 +22,13 @@ namespace ClinicX.Meta
             _clinContext = context;
         }
                 
-        public StaffMemberList GetStaffMemberDetails(string suser) //Get details of a staff member by login name
+        public StaffMember GetStaffMemberDetails(string suser) //Get details of a staff member by login name
         {
             var item = _clinContext.StaffMembers.FirstOrDefault(i => i.EMPLOYEE_NUMBER == suser);
             return item;
         }
 
-        public List<StaffMemberList> GetClinicalStaffList() //Get list of all clinical staff members currently in post
+        public List<StaffMember> GetClinicalStaffList() //Get list of all clinical staff members currently in post
         {
             var clinicians = from s in _clinContext.StaffMembers
                              where s.InPost == true && (s.CLINIC_SCHEDULER_GROUPS == "GC" || s.CLINIC_SCHEDULER_GROUPS == "Consultant")
@@ -38,7 +38,7 @@ namespace ClinicX.Meta
             return clinicians.ToList();
         }
 
-        public List<StaffMemberList> GetStaffMemberList() //Get list of all staff members currently in post 
+        public List<StaffMember> GetStaffMemberList() //Get list of all staff members currently in post 
         {
             var sm = from s in _clinContext.StaffMembers
                      where s.InPost.Equals(true)
