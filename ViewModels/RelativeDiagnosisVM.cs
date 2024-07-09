@@ -6,7 +6,7 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class RelativeDiagnosisVM
     {
-        public Relatives relativeDetails { get; set; }
+        public Relative relativeDetails { get; set; }
         public RelativesDiagnosis relativesDiagnosis { get; set; }
         public List<RelativesDiagnosis> relativesDiagnosisList { get; set; }
         public List<StaffMember> staffList { get; set; }

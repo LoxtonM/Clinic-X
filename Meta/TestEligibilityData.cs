@@ -20,7 +20,7 @@ namespace ClinicX.Meta
 
         public List<Eligibility> GetTestingEligibilityList(int? mpi) //Get list of testing aligibility codes by IcpID
         {
-            var eligibilities = from e in _clinContext.Eligibility
+            IQueryable<Eligibility> eligibilities = from e in _clinContext.Eligibility
                               where e.MPI == mpi
                               select e;
 

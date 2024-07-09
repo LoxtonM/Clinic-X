@@ -26,7 +26,7 @@ namespace ClinicX.Meta
             string cc = "";
             if (referrer.FACILITY != null) //believe it or not, there are actually some nulls!!!
             {
-                var facility = _clinContext.ExternalFacility.FirstOrDefault(f => f.MasterFacilityCode == referrer.FACILITY);
+                ExternalFacility facility = _clinContext.ExternalFacility.FirstOrDefault(f => f.MasterFacilityCode == referrer.FACILITY);
 
                 cc = cc + Environment.NewLine + facility.NAME + Environment.NewLine + facility.ADDRESS + Environment.NewLine
                     + facility.CITY + Environment.NewLine + facility.STATE + Environment.NewLine + facility.ZIP;
@@ -36,13 +36,13 @@ namespace ClinicX.Meta
 
         public ExternalClinician GetClinicianDetails(string sref) //Get details of external/referring clinician
         {
-            var item = _clinContext.ExternalClinician.FirstOrDefault(f => f.MasterClinicianCode == sref);
+            ExternalClinician item = _clinContext.ExternalClinician.FirstOrDefault(f => f.MasterClinicianCode == sref);
             return item;
         }
 
         public List<ExternalClinician> GetClinicianList() //Get list of all external/referring clinicians
         {
-            var clinicians = from rf in _clinContext.ExternalClinician
+            IQueryable<ExternalClinician> clinicians = from rf in _clinContext.ExternalClinician
                              where rf.NON_ACTIVE == 0 & rf.Is_Gp == 0
                              orderby rf.NAME
                              select rf;
@@ -50,9 +50,9 @@ namespace ClinicX.Meta
             return clinicians.Distinct().ToList();
         }
 
-        public List<ExternalClinician> GetGPList() //Get list of all external/referring clinicians
+        public List<ExternalClinician> GetGPList() //Get list of all external/referring GPs
         {
-            var clinicians = from rf in _clinContext.ExternalClinician
+            IQueryable<ExternalClinician> clinicians = from rf in _clinContext.ExternalClinician
                              where rf.NON_ACTIVE == 0 & rf.Is_Gp == -1
                              orderby rf.NAME
                              select rf;
@@ -60,9 +60,9 @@ namespace ClinicX.Meta
             return clinicians.Distinct().ToList();
         }
 
-        public List<string> GetClinicianTypeList() //Get list of all external/referring clinicians
+        public List<string> GetClinicianTypeList() //Get list of all external clinician specialities
         {
-            var clinicians = from rf in _clinContext.ExternalClinician
+            IQueryable<ExternalClinician> clinicians = from rf in _clinContext.ExternalClinician
                              where rf.NON_ACTIVE == 0 & rf.SPECIALITY != null & rf.POSITION != null & !rf.SPECIALITY.Contains("Family") 
                              orderby rf.SPECIALITY
                              select rf;

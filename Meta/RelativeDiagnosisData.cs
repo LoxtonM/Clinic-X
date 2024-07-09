@@ -25,7 +25,7 @@ namespace ClinicX.Meta
 
         public List<RelativesDiagnosis> GetRelativeDiagnosisList(int id)
         {
-            var reldiag = from r in _clinContext.RelativesDiagnoses
+            IQueryable<RelativesDiagnosis> reldiag = from r in _clinContext.RelativesDiagnoses
                            where r.RelsID == id
                            select r;
             
@@ -34,13 +34,13 @@ namespace ClinicX.Meta
 
         public RelativesDiagnosis GetRelativeDiagnosisDetails(int id)
         {
-            var item = _clinContext.RelativesDiagnoses.FirstOrDefault(rd => rd.TumourID == id);
+            RelativesDiagnosis item = _clinContext.RelativesDiagnoses.FirstOrDefault(rd => rd.TumourID == id);
             return item;
         }
 
         public List<CancerReg> GetCancerRegList()
         {
-            var creg = from c in _clinContext.CancerReg
+            IQueryable<CancerReg> creg = from c in _clinContext.CancerReg
                        where c.Creg_InUse == true
                        select c;
             int dfs = creg.Count();
@@ -49,7 +49,7 @@ namespace ClinicX.Meta
 
         public List<RequestStatus> GetRequestStatusList()
         {
-            var status = from s in _clinContext.RequestStatus
+            IQueryable<RequestStatus> status = from s in _clinContext.RequestStatus
                          select s;
             int dfs = status.Count();
             return status.ToList();
@@ -57,7 +57,7 @@ namespace ClinicX.Meta
 
         public List<TumourSite> GetTumourSiteList()
         {
-            var item = from i in _clinContext.TumourSite
+            IQueryable<TumourSite> item = from i in _clinContext.TumourSite
                        select i;
 
             return item.ToList();
@@ -65,7 +65,7 @@ namespace ClinicX.Meta
 
         public List<TumourLat> GetTumourLatList()
         {
-            var item = from i in _clinContext.TumourLat
+            IQueryable<TumourLat> item = from i in _clinContext.TumourLat
                        select i;
 
             return item.ToList();
@@ -73,7 +73,7 @@ namespace ClinicX.Meta
 
         public List<TumourMorph> GetTumourMorphList()
         {
-            var item = from i in _clinContext.TumourMorph
+            IQueryable<TumourMorph> item = from i in _clinContext.TumourMorph
                        select i;
 
             return item.ToList();

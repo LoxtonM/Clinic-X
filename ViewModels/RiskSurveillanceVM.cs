@@ -6,7 +6,7 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class RiskSurveillanceVM
     {
-        public Patients patient { get; set; }
+        public Patient patient { get; set; }
         public ICPCancer icpCancer { get; set; }
         public Risk riskDetails { get; set; }
         public Surveillance surveillanceDetails { get; set; }
@@ -16,7 +16,7 @@ namespace ClinicX.ViewModels
         public List<RiskCodes> riskCodes { get; set; }
         public List<SurvSiteCodes> survSiteCodes { get; set; }
         public List<StaffMember> staffMembersList { get; set; }
-        public List<CalculationTools> calculationTools {  get; set; }
+        public List<CalculationTool> calculationTools {  get; set; }
         public List<SurvTypeCodes> survTypeCodes { get; set; }
         public List<SurvFreqCodes> survFreqCodes { get; set; }
         public List<DiscontinuedReasonCodes> discontinuedReasonCodes { get; set; }

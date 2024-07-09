@@ -7,9 +7,9 @@ namespace ClinicX.Data
                                              //It contains no clinical data.
     { 
         public DocumentContext(DbContextOptions<DocumentContext> options) : base(options) { }
-        public DbSet<Documents> Documents { get; set; }
+        public DbSet<Document> Documents { get; set; }
         public DbSet<DocumentsContent> DocumentsContent { get; set; }
-        public DbSet<Constants> Constants { get; set; }
+        public DbSet<Constant> Constants { get; set; }
         
     }
 }

@@ -6,8 +6,8 @@ namespace ClinicX.Meta
 {
     interface IReviewData
     {
-        public List<Reviews> GetReviewsList(string username);
-        public Reviews GetReviewDetails(int id);
+        public List<Review> GetReviewsList(string username);
+        public Review GetReviewDetails(int id);
     }
     public class ReviewData : IReviewData
     {
@@ -21,11 +21,11 @@ namespace ClinicX.Meta
         }
        
 
-        public List<Reviews> GetReviewsList(string username) 
+        public List<Review> GetReviewsList(string username) 
         {
             string staffCode = _staffUser.GetStaffMemberDetails(username).STAFF_CODE;
 
-            var reviews = from r in _clinContext.Reviews
+            IQueryable<Review> reviews = from r in _clinContext.Reviews
                           where r.Review_Recipient == staffCode && r.Review_Status == "Pending"
                           orderby r.Planned_Date
                           select r;
@@ -33,9 +33,9 @@ namespace ClinicX.Meta
             return reviews.ToList();
         }
 
-        public Reviews GetReviewDetails(int id)
+        public Review GetReviewDetails(int id)
         {
-            var review = _clinContext.Reviews.FirstOrDefault(r => r.ReviewID == id);
+            Review review = _clinContext.Reviews.FirstOrDefault(r => r.ReviewID == id);
 
             return review;
         }

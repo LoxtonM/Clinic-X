@@ -20,9 +20,9 @@ namespace ClinicX.Meta
         
         public List<Diary> GetDiaryList(int id) //Get list of diary entries for patient by MPI
         {
-            var pat = _clinContext.Patients.FirstOrDefault(p => p.MPI == id);
+            Patient pat = _clinContext.Patients.FirstOrDefault(p => p.MPI == id);
 
-            var diary = from d in _clinContext.Diary
+            IQueryable<Diary> diary = from d in _clinContext.Diary
                         where d.WMFACSID == pat.WMFACSID
                         orderby d.DiaryDate
                         select d;
@@ -32,7 +32,7 @@ namespace ClinicX.Meta
 
         public Diary GetLatestDiaryByRefID(int refID, string? docCode = "")
         {
-            var diary = _clinContext.Diary.FirstOrDefault(d => d.RefID == refID && d.DocCode == docCode);
+            Diary diary = _clinContext.Diary.FirstOrDefault(d => d.RefID == refID && d.DocCode == docCode);
 
             return diary;
         }

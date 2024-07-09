@@ -6,8 +6,8 @@ namespace ClinicX.Meta
 {
     interface IReferralData
     {
-        public Referrals GetReferralDetails(int id);
-        public List<Referrals> GetReferralsList(int id);
+        public Referral GetReferralDetails(int id);
+        public List<Referral> GetReferralsList(int id);
     }
     public class ReferralData : IReferralData
     {
@@ -18,15 +18,15 @@ namespace ClinicX.Meta
             _clinContext = context;
         }
                 
-        public Referrals GetReferralDetails(int id) //Get details of referral by RefID
+        public Referral GetReferralDetails(int id) //Get details of referral by RefID
         {
-            var referral = _clinContext.Referrals?.FirstOrDefault(i => i.refid == id);
+            Referral referral = _clinContext.Referrals?.FirstOrDefault(i => i.refid == id);
             return referral;
         } 
                 
-        public List<Referrals> GetReferralsList(int id) //Get list of active referrals for patient by MPI
+        public List<Referral> GetReferralsList(int id) //Get list of active referrals for patient by MPI
         {
-            var referrals = from r in _clinContext.Referrals
+            IQueryable<Referral> referrals = from r in _clinContext.Referrals
                            where r.MPI == id & r.RefType.Contains("Referral") & r.COMPLETE != "Complete"
                            orderby r.RefDate
                            select r;            

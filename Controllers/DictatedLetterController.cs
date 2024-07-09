@@ -95,13 +95,7 @@ namespace ClinicX.Controllers
                 _lvm.GPFacility = _externalFacilityData.GetFacilityDetails(sGPCode);
                 _lvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
                 _lvm.clinicians = _externalClinicianData.GetClinicianList().Where(c => c.Is_Gp == 0 && c.NAME != null && c.FACILITY != null).ToList();
-                List<ExternalClinician> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();
-                _lvm.cardio = extClins.Where(c => c.POSITION.Contains("Cardio")).ToList();
-                _lvm.genetics = extClins.Where(c => c.POSITION.Contains("Genetic")).ToList();
-                _lvm.gynae = extClins.Where(c => c.POSITION.Contains("Gyna")).ToList();
-                _lvm.histo = extClins.Where(c => c.POSITION.Contains("Histo")).ToList();
-                _lvm.screeningco = extClins.Where(c => c.POSITION.Contains("Screening")).ToList();
-                //_lvm.gps_all = extClins.Where(c => c.Is_Gp != 0).ToList(); this refuses to work, for some reason!!!
+                List<ExternalClinician> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();                
                 _lvm.consultants = _staffUser.GetConsultantsList().ToList();
                 _lvm.gcs = _staffUser.GetGCList().ToList();
                 _lvm.secteams = _staffUser.GetSecTeamsList();

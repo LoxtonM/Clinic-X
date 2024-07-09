@@ -1,4 +1,5 @@
 ﻿using ClinicX.Data;
+using ClinicX.Models;
 
 
 namespace ClinicX.Meta
@@ -19,7 +20,7 @@ namespace ClinicX.Meta
 
         public string GetConstant(string constantCode, int constantValue)
         {
-            var item = _docContext.Constants.FirstOrDefault(c => c.ConstantCode == constantCode);
+            Constant item = _docContext.Constants.FirstOrDefault(c => c.ConstantCode == constantCode);
 
             if (constantValue == 1)
             {

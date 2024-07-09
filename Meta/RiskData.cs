@@ -10,7 +10,7 @@ namespace ClinicX.Meta
         public Risk GetRiskDetails(int? riskID);
         public List<Risk> GetRiskListByRefID(int? refID);
         public List<RiskCodes> GetRiskCodesList();
-        public List<CalculationTools> GetCalculationToolsList();
+        public List<CalculationTool> GetCalculationToolsList();
     }
     public class RiskData : IRiskData
     {
@@ -23,9 +23,9 @@ namespace ClinicX.Meta
 
         public List<Risk> GetRiskList(int? icpID) //Get list of all risk items for an ICP (by IcpID)
         {
-            var icp = _clinContext.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == icpID);
+            ICPCancer icp = _clinContext.ICPCancer.FirstOrDefault(c => c.ICP_Cancer_ID == icpID);
 
-            var risks = from r in _clinContext.Risk
+            IQueryable<Risk> risks = from r in _clinContext.Risk
                        where r.MPI == icp.MPI
                        select r;
            
@@ -34,28 +34,28 @@ namespace ClinicX.Meta
 
         public Risk GetRiskDetails(int? riskID) //Get details of risk item by RiskID
         {
-            var risk = _clinContext.Risk.FirstOrDefault(c => c.RiskID == riskID);
+            Risk risk = _clinContext.Risk.FirstOrDefault(c => c.RiskID == riskID);
             return risk;
         }
 
         public List<Risk> GetRiskListByRefID(int? refID) //Get details of risk item by RiskID
         {
-            var risk = _clinContext.Risk.Where(c => c.RefID == refID);
+            IQueryable<Risk> risk = _clinContext.Risk.Where(c => c.RefID == refID);
             return risk.ToList();
         }
 
         public List<RiskCodes> GetRiskCodesList()
         {
-            var item = from i in _clinContext.RiskCodes
+            IQueryable<RiskCodes> item = from i in _clinContext.RiskCodes
                        orderby i.RiskCode
                        select i;
 
             return item.ToList();
         }
 
-        public List<CalculationTools> GetCalculationToolsList()
+        public List<CalculationTool> GetCalculationToolsList()
         {
-            var item = from i in _clinContext.CalculationTools
+            IQueryable<CalculationTool> item = from i in _clinContext.CalculationTools
                        select i;
 
             return item.ToList();

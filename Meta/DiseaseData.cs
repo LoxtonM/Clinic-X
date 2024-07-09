@@ -6,9 +6,9 @@ namespace ClinicX.Meta
 {
     interface IDiseaseData
     {
-        public List<DiseaseList> GetDiseaseList();
+        public List<Disease> GetDiseaseList();
         public List<Diagnosis> GetDiseaseListByPatient(int mpi);
-        public List<DiseaseStatusList> GetStatusList();
+        public List<DiseaseStatus> GetStatusList();
         public Diagnosis GetDiagnosisDetails(int id);
     }
     public class DiseaseData : IDiseaseData
@@ -19,9 +19,9 @@ namespace ClinicX.Meta
             _clinContext = context;
         }
         
-        public List<DiseaseList> GetDiseaseList() //Get list of all diseases
+        public List<Disease> GetDiseaseList() //Get list of all diseases
         {
-            var items = from i in _clinContext.Diseases
+            IQueryable<Disease> items = from i in _clinContext.Diseases
                         orderby i.DESCRIPTION
                         select i;           
 
@@ -31,7 +31,7 @@ namespace ClinicX.Meta
         public List<Diagnosis> GetDiseaseListByPatient(int mpi) //Get list of all diseases recorded against a patient
         {            
 
-            var items = from i in _clinContext.Diagnosis
+            IQueryable<Diagnosis> items = from i in _clinContext.Diagnosis
                         where i.MPI == mpi
                         orderby i.DESCRIPTION
                         select i;
@@ -39,9 +39,9 @@ namespace ClinicX.Meta
             return items.ToList();
         }
 
-        public List<DiseaseStatusList> GetStatusList() //Get list of all possible disease statuses
+        public List<DiseaseStatus> GetStatusList() //Get list of all possible disease statuses
         {
-            var items = from i in _clinContext.DiseaseStatusList
+            IQueryable<DiseaseStatus> items = from i in _clinContext.DiseaseStatusList
                         select i;
             
             return items.ToList();
@@ -49,7 +49,7 @@ namespace ClinicX.Meta
         
         public Diagnosis GetDiagnosisDetails(int id) //Get details of diagnosis by the diagnosis ID
         {
-            var diagnosis = _clinContext.Diagnosis.FirstOrDefault(i => i.ID == id);
+            Diagnosis diagnosis = _clinContext.Diagnosis.FirstOrDefault(i => i.ID == id);
 
             return diagnosis;
         }  

@@ -19,7 +19,7 @@ namespace ClinicX.Meta
         
         public List<Caseload> GetCaseloadList(string staffCode) //Get caseload for clinician
         {
-            var caseload = from c in _clinContext.Caseload
+            IQueryable<Caseload> caseload = from c in _clinContext.Caseload
                            where c.StaffCode == staffCode
                            select c;
 

@@ -6,7 +6,7 @@ namespace ClinicX.Meta
 {
     interface ITestData
     {
-        public List<TestList> GetTestList();
+        public List<TestType> GetTestList();
         public List<Test> GetTestListByUser(string username);
         public List<Test> GetTestListByPatient(int mpi);
         public Test GetTestDetails(int id);
@@ -22,9 +22,9 @@ namespace ClinicX.Meta
         }
         
 
-        public List<TestList> GetTestList() //Get list of all available tests
+        public List<TestType> GetTestList() //Get list of all available tests
         {
-            var items = from i in _clinContext.Tests
+            IQueryable<TestType> items = from i in _clinContext.Tests
                         select i;           
 
             return items.ToList();
@@ -34,7 +34,7 @@ namespace ClinicX.Meta
         {
             string staffCode = _clinContext.StaffMembers.FirstOrDefault(s => s.EMPLOYEE_NUMBER == username).STAFF_CODE;
              
-            var tests = from t in _clinContext.Test
+            IQueryable<Test> tests = from t in _clinContext.Test
                         where t.ORDEREDBY.Equals(staffCode) & t.COMPLETE == "No"
                         select t;
 
@@ -43,7 +43,7 @@ namespace ClinicX.Meta
 
         public List<Test> GetTestListByPatient(int mpi)
         {
-            var tests = from t in _clinContext.Test
+            IQueryable<Test> tests = from t in _clinContext.Test
                         where t.MPI.Equals(mpi)
                         select t;
 
@@ -52,7 +52,7 @@ namespace ClinicX.Meta
 
         public Test GetTestDetails(int id)
         {
-            var test = _clinContext.Test.FirstOrDefault(t => t.TestID == id);
+            Test test = _clinContext.Test.FirstOrDefault(t => t.TestID == id);
 
             return test;
         }

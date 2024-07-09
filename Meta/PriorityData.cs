@@ -19,7 +19,7 @@ namespace ClinicX.Meta
 
         public List<Priority> GetPriorityList()
         {
-            var priority = from p in _clinContext.Priority
+            IQueryable<Priority> priority = from p in _clinContext.Priority
                           where p.IsActive == true
                           orderby p.PriorityLevel
                          select p;

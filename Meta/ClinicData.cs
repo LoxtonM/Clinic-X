@@ -6,10 +6,10 @@ namespace ClinicX.Meta
 {
     interface IClinicData
     {
-        public List<Clinics> GetClinicList(string username);
-        public List<Clinics> GetClinicByPatientsList(int mpi);
-        public Clinics GetClinicDetails(int refID);
-        public List<OutcomeList> GetOutcomesList();
+        public List<Appointment> GetClinicList(string username);
+        public List<Appointment> GetClinicByPatientsList(int mpi);
+        public Appointment GetClinicDetails(int refID);
+        public List<Outcome> GetOutcomesList();
         public List<Ethnicity> GetEthnicitiesList();
     }
     public class ClinicData : IClinicData
@@ -25,20 +25,20 @@ namespace ClinicX.Meta
         
              
 
-        public List<Clinics> GetClinicList(string username) //Get list of your clinics
+        public List<Appointment> GetClinicList(string username) //Get list of your clinics
         {
             string staffCode = _staffUser.GetStaffMemberDetails(username).STAFF_CODE;
 
-            var clinics = from c in _clinContext.Clinics
+            IQueryable<Appointment> clinics = from c in _clinContext.Clinics
                           where c.AppType.Contains("App") && c.STAFF_CODE_1 == staffCode && c.Attendance != "Declined" && !c.Attendance.Contains("Canc")
                           select c;
 
             return clinics.ToList();
         }
 
-        public List<Clinics> GetClinicByPatientsList(int mpi)
+        public List<Appointment> GetClinicByPatientsList(int mpi)
         {
-            var appts = from c in _clinContext.Clinics
+            IQueryable<Appointment> appts = from c in _clinContext.Clinics
                         where c.MPI.Equals(mpi)
                         orderby c.BOOKED_DATE descending
                         select c;
@@ -46,16 +46,16 @@ namespace ClinicX.Meta
             return appts.ToList();
         }
 
-        public Clinics GetClinicDetails(int refID) //Get details of an appointment for display only
+        public Appointment GetClinicDetails(int refID) //Get details of an appointment for display only
         {
-            var appt = _clinContext.Clinics.FirstOrDefault(a => a.RefID == refID);
+            Appointment appt = _clinContext.Clinics.FirstOrDefault(a => a.RefID == refID);
 
             return appt;
         }
 
-        public List<OutcomeList> GetOutcomesList() //Get list of outcomes for clinic appointments
+        public List<Outcome> GetOutcomesList() //Get list of outcomes for clinic appointments
         {
-            var outcomes = from o in _clinContext.Outcomes
+            IQueryable<Outcome> outcomes = from o in _clinContext.Outcomes
                           where o.DEFAULT_CLINIC_STATUS.Equals("Active")
                           select o;
 
@@ -64,7 +64,7 @@ namespace ClinicX.Meta
 
         public List<Ethnicity> GetEthnicitiesList() //Get list of ethnicities
         {
-            var ethnicities = from e in _clinContext.Ethnicity
+            IQueryable<Ethnicity> ethnicities = from e in _clinContext.Ethnicity
                          orderby e.Ethnic
                          select e;
 

@@ -9,7 +9,7 @@ namespace ClinicX.Meta
     interface IHPOCodeData
     {
         public List<HPOTermDetails> GetHPOTermsAddedList(int id);
-        public List<HPOTerms> GetHPOTermsList();
+        public List<HPOTerm> GetHPOTermsList();
         public List<HPOTermDetails> GetExistingHPOTermsList(int id);
         public List<HPOExtractVM> GetExtractedTermsList(int noteID, IConfiguration _config);
 
@@ -25,16 +25,16 @@ namespace ClinicX.Meta
         
         public List<HPOTermDetails> GetHPOTermsAddedList(int id) //Get list of HPO codes added to a patient by MPI
         {
-            var notes = from n in _clinContext.HPOTermDetails
+            IQueryable<HPOTermDetails> notes = from n in _clinContext.HPOTermDetails
                         where n.MPI == id
                         select n;            
 
             return notes.ToList();
         }
 
-        public List<HPOTerms> GetHPOTermsList() //Get list of all possible HPO codes
+        public List<HPOTerm> GetHPOTermsList() //Get list of all possible HPO codes
         {
-            var terms = from t in _clinContext.HPOTerms
+            IQueryable<HPOTerm> terms = from t in _clinContext.HPOTerms
                         select t;
 
             return terms.ToList();
@@ -42,7 +42,7 @@ namespace ClinicX.Meta
 
         public List<HPOTermDetails> GetExistingHPOTermsList(int id) //Get list of all HPO codes added to a clinical note, by the ClinicalNoteID
         {
-            var terms = from t in _clinContext.HPOTermDetails
+            IQueryable<HPOTermDetails> terms = from t in _clinContext.HPOTermDetails
                         where t.ClinicalNoteID == id
                         select t;
 

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ClinicX.Models
 {
     [Table("ViewPatientDemographicDetails", Schema="dbo")] //Patient demographic data
-    public class Patients
+    public class Patient
     {
         [Key]
         public int MPI { get; set; }
@@ -48,7 +48,7 @@ namespace ClinicX.Models
     }   
 
     [Table("ViewPatientRelativeDetails", Schema = "dbo")] //Patients' relatives
-    public class Relatives
+    public class Relative
     {
         [Key]
         public int relsid { get; set; }
@@ -109,7 +109,7 @@ namespace ClinicX.Models
     }
 
     [Table("ViewPatientAppointmentDetails", Schema="dbo")] //Appointment data
-    public class Clinics
+    public class Appointment
     {
         [Key]
         public int RefID { get; set; }
@@ -145,7 +145,7 @@ namespace ClinicX.Models
     }
 
     [Table("ViewPatientReferralDetails", Schema ="dbo")] //Referral data
-    public class Referrals
+    public class Referral
     {
         [Key]
         public int refid { get; set; }
@@ -170,7 +170,7 @@ namespace ClinicX.Models
     }
 
     [Table("MasterActivityTable", Schema="dbo")] //Any activity
-    public class ActivityItems
+    public class ActivityItem
     {
         [Key]
         public int RefID { get; set; }
@@ -213,7 +213,7 @@ namespace ClinicX.Models
     }
 
     [Table("ViewTriageDetails", Schema = "dbo")] //Cases to be triaged
-    public class Triages
+    public class Triage
     {
         [Key]
         public int ICPID { get; set; }        
@@ -241,7 +241,7 @@ namespace ClinicX.Models
     }
 
     [Table("ViewPatientReviews", Schema = "dbo")] //Requested reviews
-    public class Reviews
+    public class Review
     {
         [Key]
         public int ReviewID { get; set; }
@@ -319,7 +319,7 @@ namespace ClinicX.Models
     }
 
     [Table("CLIN_FACILITIES", Schema = "dbo")] //Facilities where we hold clinics
-    public class ClinicalFacilityList
+    public class ClinicalFacility
     {
         [Key]
         public string FACILITY { get; set; }
@@ -328,7 +328,7 @@ namespace ClinicX.Models
     }
 
     [Table("ViewPatientClinicalNoteDetails", Schema = "dbo" )] //Clinical notes (including patient data)
-    public class ClinicalNotes
+    public class Note
     {
         [Key]
         public int? ClinicalNoteID { get; set; }
@@ -350,7 +350,7 @@ namespace ClinicX.Models
     }
 
     [Table("ClinicalNotes", Schema = "dbo")] //Clinical notes (just the note data)
-    public class NoteItems
+    public class NoteItem
     {
         [Key]
         public int ClinicalNoteID { get; set; }
@@ -431,7 +431,7 @@ namespace ClinicX.Models
     }
 
     [Table("CLIN_OUTCOMES", Schema = "dbo")] //List of possible outcomes for appointments
-    public class OutcomeList
+    public class Outcome
     {
         [Key]
         public string CLINIC_OUTCOME { get; set;}
@@ -439,7 +439,7 @@ namespace ClinicX.Models
     }
 
     [Table("ClinicalNoteTypes", Schema = "dbo")]//List of types of clinical note
-    public class  NoteTypeList
+    public class  ClinicalNoteType
     {
         [Key]
         public int NoteTypeID { get; set; }
@@ -448,7 +448,7 @@ namespace ClinicX.Models
     }
 
     [Table("HPOTerm", Schema = "dbo")] //List of all HPO codes
-    public class HPOTerms
+    public class HPOTerm
     {
         [Key]
         public int ID { get; set; }
@@ -477,7 +477,7 @@ namespace ClinicX.Models
     }
 
     [Table("DISEASE", Schema = "dbo")] //List of all diseases
-    public class DiseaseList
+    public class Disease
     {
         [Key]
         public string DISEASE_CODE { get; set; }
@@ -485,7 +485,7 @@ namespace ClinicX.Models
     }
 
     [Table("PAT_TESTTYPE", Schema = "dbo")] //List of all tests
-    public class TestList
+    public class TestType
     {
         [Key]
         public string TEST { get; set; }
@@ -493,7 +493,7 @@ namespace ClinicX.Models
     }
 
     [Table("DISEASE_STATUS", Schema = "dbo")] //List of all statuses for diagnoses
-    public class  DiseaseStatusList
+    public class  DiseaseStatus
     {
         [Key]
         public string DISEASE_STATUS { get; set; }
@@ -509,7 +509,7 @@ namespace ClinicX.Models
     }
 
     [Table("ListICPActions", Schema = "dbo")] //List of ICP actions (duh!)
-    public class ICPActionsList
+    public class ICPAction
     {
         [Key]
         public int ID { get; set; }
@@ -518,7 +518,7 @@ namespace ClinicX.Models
     }
 
     [Table("ListICPGeneralActions", Schema = "dbo")] //List of treatpath actions
-    public class ICPGeneralActionsList
+    public class ICPGeneralAction
     {
         [Key]
         public int ID { get; set; }
@@ -527,7 +527,7 @@ namespace ClinicX.Models
     }
 
     [Table("ListICPGeneralActions2", Schema = "dbo")] //List of trheatpath2 actions
-    public class ICPGeneralActionsList2
+    public class ICPGeneralAction2
     {
         [Key]
         public int ID { get; set; }
@@ -538,7 +538,7 @@ namespace ClinicX.Models
     }
 
     [Table("ListICPCancerReviewActions", Schema = "dbo")]
-    public class ICPCancerReviewActionsList
+    public class ICPCancerReviewAction
     {
         [Key]
         public int ID { get; set; }
@@ -550,7 +550,7 @@ namespace ClinicX.Models
     }
 
     [Table("ViewPatientDictatedLetterDetails", Schema = "dbo")] //Dictated le'ahs
-    public class DictatedLetters
+    public class DictatedLetter
     {
         [Key]
         public int DoTID { get; set; }
@@ -575,7 +575,7 @@ namespace ClinicX.Models
     }
 
     [Table("DictatedLettersPatients", Schema = "dbo")] //Patients added to DOT
-    public class DictatedLettersPatients
+    public class DictatedLettersPatient
     {
         [Key]
         public int DOTPID { get; set; }
@@ -585,7 +585,7 @@ namespace ClinicX.Models
     }
 
     [Table("DictatedLettersCopies", Schema = "dbo")] //CC copies added to DOTs
-    public class DictatedLettersCopies
+    public class DictatedLettersCopy
     {
         [Key]
         public int CCID { get; set; }
@@ -820,7 +820,7 @@ namespace ClinicX.Models
     
     [Keyless]
     [Table("ListCalculationTools", Schema = "dbo")]
-    public class  CalculationTools
+    public class  CalculationTool
     {
         public string CalculationToolCode { get; set; }
     }
@@ -861,7 +861,7 @@ namespace ClinicX.Models
     }
 
     [Table("Notifications")]
-    public class Notifications
+    public class Notification
     {
         [Key]
         public int ID { get; set; }

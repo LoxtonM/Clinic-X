@@ -6,9 +6,9 @@ namespace ClinicX.Meta
 {
     interface IClinicalNoteData
     {
-        public ClinicalNotes GetClinicalNoteDetails(int? noteID);
-        public List<ClinicalNotes> GetClinicalNoteList(int? mpi);
-        public List<NoteTypeList> GetNoteTypesList();
+        public Note GetClinicalNoteDetails(int? noteID);
+        public List<Note> GetClinicalNoteList(int? mpi);
+        public List<ClinicalNoteType> GetNoteTypesList();
     }
     public class ClinicalNoteData : IClinicalNoteData
     {
@@ -19,25 +19,25 @@ namespace ClinicX.Meta
             _clinContext = context;
         }
 
-        public ClinicalNotes GetClinicalNoteDetails(int? noteID) //Get details of a clinical note by ClinicalNotesID
+        public Note GetClinicalNoteDetails(int? noteID) //Get details of a clinical note by ClinicalNotesID
         {
-            var note = _clinContext.ClinicalNotes.FirstOrDefault(i => i.ClinicalNoteID == noteID);
+            Note note = _clinContext.ClinicalNotes.FirstOrDefault(i => i.ClinicalNoteID == noteID);
 
             return note;
         }
 
-        public List<ClinicalNotes> GetClinicalNoteList(int? mpi) //Get list of clinical notes by MPI
+        public List<Note> GetClinicalNoteList(int? mpi) //Get list of clinical notes by MPI
         {
-            var notes = from n in _clinContext.ClinicalNotes
+            IQueryable<Note> notes = from n in _clinContext.ClinicalNotes
                         where n.MPI == mpi
                         select n;
 
             return notes.ToList();
         }
 
-        public List<NoteTypeList> GetNoteTypesList() //Get list of possible types of clinical note
+        public List<ClinicalNoteType> GetNoteTypesList() //Get list of possible types of clinical note
         {
-            var notetypes = from t in _clinContext.NoteTypes
+            IQueryable<ClinicalNoteType> notetypes = from t in _clinContext.NoteTypes
                             where t.NoteInUse == true
                             select t;
 

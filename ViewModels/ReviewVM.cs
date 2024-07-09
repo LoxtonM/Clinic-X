@@ -7,10 +7,10 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class ReviewVM
     {
-        public Patients patient { get; set; }
-        public ActivityItems referrals { get; set; }
+        public Patient patient { get; set; }
+        public ActivityItem referrals { get; set; }
         public List<StaffMember> staffMembers { get; set; }
-        public Reviews review { get; set; }
-        public List<Reviews> reviewList { get; set; }
+        public Review review { get; set; }
+        public List<Review> reviewList { get; set; }
     }
 }

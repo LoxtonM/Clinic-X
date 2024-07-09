@@ -6,15 +6,15 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class ClinicalNoteVM
     {
-        public ActivityItems activityItem { get; set; }
-        public List<ActivityItems> activityItems { get; set; }    
-        public Clinics Clinic { get; set; }
-        public List<Clinics> Clinics { get; set; }
-        public Referrals linkedReferral { get; set; }       
-        public List<NoteTypeList> noteTypeList { get; set; }
-        public ClinicalNotes clinicalNote { get; set; }
-        public List<ClinicalNotes> clinicalNotesList { get; set; }       
-        public Patients patient { get; set; }
+        public ActivityItem activityItem { get; set; }
+        public List<ActivityItem> activityItems { get; set; }    
+        public Appointment Clinic { get; set; }
+        public List<Appointment> Clinics { get; set; }
+        public Referral linkedReferral { get; set; }       
+        public List<ClinicalNoteType> noteTypeList { get; set; }
+        public Note clinicalNote { get; set; }
+        public List<Note> clinicalNotesList { get; set; }       
+        public Patient patient { get; set; }
         public int noteCount { get; set; }
     }
 }

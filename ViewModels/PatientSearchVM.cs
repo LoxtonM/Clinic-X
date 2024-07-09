@@ -6,7 +6,7 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class PatientSearchVM
     { 
-        public List<Patients> patientsList { get; set; }
+        public List<Patient> patientsList { get; set; }
         public string cguNumberSearch { get; set; }
         public string forenameSearch { get; set; }
         public string surnameSearch { get; set;}

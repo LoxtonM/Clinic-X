@@ -6,10 +6,10 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class HPOVM
     {
-        public List<ClinicalNotes> clinicalNotes { get; set; }
-        public ClinicalNotes clinicalNote { get; set; }
+        public List<Note> clinicalNotes { get; set; }
+        public Note clinicalNote { get; set; }
         public List<HPOTermDetails> hpoTermDetails { get; set; }
-        public List<HPOTerms> hpoTerms { get; set; }
+        public List<HPOTerm> hpoTerms { get; set; }
         public List<HPOExtractVM> hpoExtractVM { get; set;}
         public string searchTerm { get; set; }
     }

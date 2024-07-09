@@ -1,4 +1,5 @@
 ﻿using ClinicX.Data;
+using ClinicX.Models;
 
 
 namespace ClinicX.Meta
@@ -21,7 +22,7 @@ namespace ClinicX.Meta
         {
             string message = ""; 
 
-            var messageNotifications = _context.Notifications.Where(n => n.MessageCode == "ClinicXOutage" && n.IsActive == true);
+            IQueryable<Notification> messageNotifications = _context.Notifications.Where(n => n.MessageCode == "ClinicXOutage" && n.IsActive == true);
 
             if (messageNotifications.Count() > 0) 
             { 

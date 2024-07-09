@@ -6,11 +6,11 @@ namespace ClinicX.Meta
 {
     interface IICPActionData
     {        
-        public List<ICPActionsList> GetICPCancerActionsList();
-        public List<ICPGeneralActionsList> GetICPGeneralActionsList();
-        public List<ICPGeneralActionsList2> GetICPGeneralActionsList2();
-        public List<ICPCancerReviewActionsList> GetICPCancerReviewActionsList();
-        public ICPCancerReviewActionsList GetICPCancerAction(int id);
+        public List<ICPAction> GetICPCancerActionsList();
+        public List<ICPGeneralAction> GetICPGeneralActionsList();
+        public List<ICPGeneralAction2> GetICPGeneralActionsList2();
+        public List<ICPCancerReviewAction> GetICPCancerReviewActionsList();
+        public ICPCancerReviewAction GetICPCancerAction(int id);
         
     }
     public class ICPActionData : IICPActionData
@@ -22,9 +22,9 @@ namespace ClinicX.Meta
             _clinContext = context;           
         }
         
-        public List<ICPActionsList> GetICPCancerActionsList() //Get list of all triage actions for Cancer ICPs
+        public List<ICPAction> GetICPCancerActionsList() //Get list of all triage actions for Cancer ICPs
         {
-            var actions = from a in _clinContext.ICPCancerActionsList
+            IQueryable<ICPAction> actions = from a in _clinContext.ICPCancerActionsList
                          where a.InUse == true
                          orderby a.ID
                          select a;
@@ -32,9 +32,9 @@ namespace ClinicX.Meta
             return actions.ToList();
         }
 
-        public List<ICPGeneralActionsList> GetICPGeneralActionsList() //Get list of all "treatpath" items for General ICPs
+        public List<ICPGeneralAction> GetICPGeneralActionsList() //Get list of all "treatpath" items for General ICPs
         {
-            var actions = from a in _clinContext.ICPGeneralActionsList
+            IQueryable<ICPGeneralAction> actions = from a in _clinContext.ICPGeneralActionsList
                          where a.InUse == true
                          orderby a.ID
                          select a;
@@ -42,9 +42,9 @@ namespace ClinicX.Meta
             return actions.ToList();
         }
 
-        public List<ICPGeneralActionsList2> GetICPGeneralActionsList2() //Get list of all "treatpath2" items for General ICPs
+        public List<ICPGeneralAction2> GetICPGeneralActionsList2() //Get list of all "treatpath2" items for General ICPs
         {
-            var actions = from a in _clinContext.ICPGeneralActionsList2
+            IQueryable<ICPGeneralAction2> actions = from a in _clinContext.ICPGeneralActionsList2
                          where a.InUse == true
                          orderby a.ID
                          select a;
@@ -52,9 +52,9 @@ namespace ClinicX.Meta
             return actions.ToList();
         }
 
-        public List<ICPCancerReviewActionsList> GetICPCancerReviewActionsList() //Get list of all "treatpath2" items for General ICPs
+        public List<ICPCancerReviewAction> GetICPCancerReviewActionsList() //Get list of all "treatpath2" items for General ICPs
         {
-            var actions = from a in _clinContext.ICPCancerReviewActionsList
+            IQueryable<ICPCancerReviewAction> actions = from a in _clinContext.ICPCancerReviewActionsList
                           where a.InUse == true
                           orderby a.ListOrder
                           select a;
@@ -62,9 +62,9 @@ namespace ClinicX.Meta
             return actions.ToList();
         }
 
-        public ICPCancerReviewActionsList GetICPCancerAction(int id)
+        public ICPCancerReviewAction GetICPCancerAction(int id)
         {
-            var action = _clinContext.ICPCancerReviewActionsList.FirstOrDefault(a => a.ID == id);
+            ICPCancerReviewAction action = _clinContext.ICPCancerReviewActionsList.FirstOrDefault(a => a.ID == id);
 
             return action;
         }

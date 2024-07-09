@@ -25,7 +25,7 @@ namespace ClinicX.Meta
         
         public List<Surveillance> GetSurveillanceList(int? mpi) //Get list of all surveillance recommendations for an ICP (by MPI)
         {
-            var surveillances = from r in _clinContext.Surveillance
+            IQueryable<Surveillance> surveillances = from r in _clinContext.Surveillance
                                where r.MPI == mpi
                                select r;
 
@@ -34,7 +34,7 @@ namespace ClinicX.Meta
 
         public List<Surveillance> GetSurveillanceListByRiskID(int? riskID) //Get list of all surveillance recommendations for a  risk item (by RiskID)
         {
-            var surveillances = from r in _clinContext.Surveillance
+            IQueryable<Surveillance> surveillances = from r in _clinContext.Surveillance
                                 where r.RiskID == riskID
                                 select r;
 
@@ -45,14 +45,14 @@ namespace ClinicX.Meta
 
         public Surveillance GetSurvDetails(int? riskID) //Get details of surveillance recommendation by RiskID
         {
-            var surv = _clinContext.Surveillance.FirstOrDefault(c => c.RiskID == riskID);
+            Surveillance surv = _clinContext.Surveillance.FirstOrDefault(c => c.RiskID == riskID);
             return surv;
         }
 
 
         public List<SurvSiteCodes> GetSurvSiteCodesList()
         {
-            var item = from i in _clinContext.SurvSiteCodes
+            IQueryable<SurvSiteCodes> item = from i in _clinContext.SurvSiteCodes
                        orderby i.SurvSite
                        select i;
 
@@ -61,7 +61,7 @@ namespace ClinicX.Meta
 
         public List<SurvTypeCodes> GetSurvTypeCodesList()
         {
-            var item = from i in _clinContext.SurvTypeCodes
+            IQueryable<SurvTypeCodes> item = from i in _clinContext.SurvTypeCodes
                        orderby i.SurvType
                        select i;
 
@@ -70,7 +70,7 @@ namespace ClinicX.Meta
 
         public List<SurvFreqCodes> GetSurvFreqCodesList()
         {
-            var item = from i in _clinContext.SurvFreqCodes
+            IQueryable<SurvFreqCodes> item = from i in _clinContext.SurvFreqCodes
                        orderby i.SurvFreq
                        select i;
 
@@ -79,7 +79,7 @@ namespace ClinicX.Meta
 
         public List<DiscontinuedReasonCodes> GetDiscReasonCodesList()
         {
-            var item = from i in _clinContext.DiscontinuedReasonCodes
+            IQueryable<DiscontinuedReasonCodes> item = from i in _clinContext.DiscontinuedReasonCodes
                        orderby i.SurvDiscReason
                        select i;
 

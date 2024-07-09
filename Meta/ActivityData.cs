@@ -5,8 +5,8 @@ namespace ClinicX.Meta
 {
     interface IActivityData
     {
-        public ActivityItems GetActivityDetails(int id);
-        public List<ActivityItems> GetClinicDetailsList(int refID);
+        public ActivityItem GetActivityDetails(int id);
+        public List<ActivityItem> GetClinicDetailsList(int refID);
     }
     public class ActivityData : IActivityData
     {
@@ -17,19 +17,19 @@ namespace ClinicX.Meta
             _clinContext = context;
         }
         
-        public ActivityItems GetActivityDetails(int id) //Get details of any activity item by RefID
+        public ActivityItem GetActivityDetails(int id) //Get details of any activity item by RefID
         {
-            var referral = _clinContext.ActivityItems?.FirstOrDefault(i => i.RefID == id);
+            ActivityItem referral = _clinContext.ActivityItems?.FirstOrDefault(i => i.RefID == id);
             return referral;
         }
 
-        public List<ActivityItems> GetClinicDetailsList(int refID) //Get details of an appointment by the RefID for editing
+        public List<ActivityItem> GetClinicDetailsList(int refID) //Get details of an appointment by the RefID for editing
         {
-            var cl = from c in _clinContext.ActivityItems
+            IQueryable<ActivityItem> cl = from c in _clinContext.ActivityItems
                      where c.RefID == refID
                      select c;
 
-            List<ActivityItems> clinics = new List<ActivityItems>();
+            List<ActivityItem> clinics = new List<ActivityItem>();
 
             foreach (var c in cl)
             {
@@ -56,7 +56,7 @@ namespace ClinicX.Meta
                     letterReq = c.LetterReq;
                 }
 
-                clinics.Add(new ActivityItems()
+                clinics.Add(new ActivityItem()
                 {
                     RefID = c.RefID,
                     BOOKED_DATE = c.BOOKED_DATE,

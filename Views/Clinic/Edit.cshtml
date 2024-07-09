@@ -75,7 +75,7 @@
                     <label for="ddlSeenBy" id="lblSeenBy">Seen by:</label>
                 </div>
                 <div class="col-md-4">                    
-                    <select asp-for=@Model.activityItem.STAFF_CODE_1 id="ddlSeenBy" name="seenBy" class="w-100">
+                    <select asp-for=@Model.activityItem.SEEN_BY id="ddlSeenBy" name="seenBy" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach (var c in Model.staffMembers)
                         {
@@ -163,24 +163,26 @@
         //window.close();
     }
 
-    function LoadClinic() {
-       
-        //document.getElementById("txtRefID").hidden = true;        
+    function LoadClinic() 
+    {        
+        //document.getElementById("txtRefID").hidden = true;             
         var _att = "@(Model.activityItem.COUNSELED)";        
-        document.getElementById("ContactDetails").hidden = true;             
-        
+        document.getElementById("ContactDetails").hidden = true;
+        var _seenBy = document.getElementById("ddlSeenBy");
+        if ("@Model.activityItem.SEEN_BY" == "")
+        {
+            _seenBy.value = "@Model.activityItem.STAFF_CODE_1"
+        }
         if (_att != null && _att != "")         
         {            
             document.getElementById("ddlContactOutcome").disabled = true;
             document.getElementById("ContactDetails").hidden = false;            
-
-            var _seenBy = document.getElementById("ddlSeenBy");
             var _arrivalTime = document.getElementById("txtArrivalTime");
             var _noPatientsSeen = document.getElementById("txtNoPatientsSeen");
             var _letterRequired = document.getElementById("ddlLetterRequired");
             var _clockStop = document.getElementById("ddlClockStop");
             var _complete = document.getElementById("ddlCloseRef");
-            var _ethnic = document.getElementById("ddlEthnicity");
+            var _ethnic = document.getElementById("ddlEthnicity");            
             
             if (_att.match("Att*")) 
             {                
@@ -200,10 +202,8 @@
             {
                 _arrivalTime.hidden = true;
                 document.getElementById("lblSeenBy").hidden = true;
-                document.getElementById("ddlSeenBy").hidden = true;
-                document.getElementById("lblArrivalTime").hidden = true;
-                //_duration.hidden = true;
-                //document.getElementById("lblDuration").hidden = true;
+                _seenBy.hidden = true;
+                document.getElementById("lblArrivalTime").hidden = true;                
                 _noPatientsSeen.hidden = true;
                 document.getElementById("lblNoPatientsSeen").hidden = true;
                 _letterRequired.hidden = true;
@@ -214,10 +214,13 @@
         }
     }
 
-    function LoadOutcome() {
-        if (document.getElementById("ddlContactOutcome").value != "") {
+    function LoadOutcome() 
+    {
+        if (document.getElementById("ddlContactOutcome").value != "") 
+        {
             document.getElementById("ContactDetails").hidden = false;
-            if (document.getElementById("ddlContactOutcome").value != "Attended") {
+            if (document.getElementById("ddlContactOutcome").value != "Attended") 
+            {
                 //var today = new Date();                
                 document.getElementById("lblSeenBy").hidden = true;
                 document.getElementById("ddlSeenBy").hidden = true;
@@ -234,7 +237,7 @@
             {
                 //var today = new Date();                
                 document.getElementById("lblSeenBy").hidden = false;
-                document.getElementById("ddlSeenBy").hidden = false;
+                document.getElementById("ddlSeenBy").hidden = false;                
                 document.getElementById("lblArrivalTime").hidden = false;
                 //it simply MUST have something in the ARRIVAL_TIME field, but we can't simply get "now", so we have to use this function
                 //TimeNow(document.getElementById("txtArrivalTime"));
@@ -317,7 +320,8 @@
         return 1;
     }
 
-    function TimeNow(i) { //gets the current time and puts it into a valid form
+    function TimeNow(i) 
+    { //gets the current time and puts it into a valid form
         var d = new Date(),
             h = (d.getHours() < 10 ? '0' : '') + d.getHours(),
             m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();

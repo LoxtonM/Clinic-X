@@ -6,12 +6,12 @@ namespace ClinicX.Meta
 {
     interface IDictatedLetterData
     {
-        public List<DictatedLetters> GetDictatedLettersList(string staffcode);
-        public DictatedLetters GetDictatedLetterDetails(int dotID);
-        public List<DictatedLettersPatients> GetDictatedLettersPatientsList(int dotID);
-        public List<DictatedLettersCopies> GetDictatedLettersCopiesList(int dotID);
-        public DictatedLettersCopies GetDictatedLetterCopyDetails(int id);
-        public List<Patients> GetDictatedLetterPatientsList(int dotID);
+        public List<DictatedLetter> GetDictatedLettersList(string staffcode);
+        public DictatedLetter GetDictatedLetterDetails(int dotID);
+        public List<DictatedLettersPatient> GetDictatedLettersPatientsList(int dotID);
+        public List<DictatedLettersCopy> GetDictatedLettersCopiesList(int dotID);
+        public DictatedLettersCopy GetDictatedLetterCopyDetails(int id);
+        public List<Patient> GetDictatedLetterPatientsList(int dotID);
     }
     public class DictatedLetterData : IDictatedLetterData
     {
@@ -23,9 +23,9 @@ namespace ClinicX.Meta
         }
                
 
-        public List<DictatedLetters> GetDictatedLettersList(string staffcode)
+        public List<DictatedLetter> GetDictatedLettersList(string staffcode)
         {
-            var letters = from l in _clinContext.DictatedLetters
+            IQueryable<DictatedLetter> letters = from l in _clinContext.DictatedLetters
                           where l.LetterFromCode == staffcode && l.MPI != null && l.RefID != null && l.Status != "Printed"
                           orderby l.DateDictated descending
                           select l;
@@ -33,52 +33,52 @@ namespace ClinicX.Meta
             return letters.ToList();
         }
         
-        public DictatedLetters GetDictatedLetterDetails(int dotID) //Get details of DOT letter by its DotID
+        public DictatedLetter GetDictatedLetterDetails(int dotID) //Get details of DOT letter by its DotID
         {
-            var letter = _clinContext.DictatedLetters.FirstOrDefault(l => l.DoTID == dotID);
+            DictatedLetter letter = _clinContext.DictatedLetters.FirstOrDefault(l => l.DoTID == dotID);
 
             return letter;
         }
 
-        public List<DictatedLettersPatients> GetDictatedLettersPatientsList(int dotID) //Get list of patients added to a DOT letter by the DotID
+        public List<DictatedLettersPatient> GetDictatedLettersPatientsList(int dotID) //Get list of patients added to a DOT letter by the DotID
         {
-            var patient = from p in _clinContext.DictatedLettersPatients
+            IQueryable<DictatedLettersPatient> patient = from p in _clinContext.DictatedLettersPatients
                           where p.DOTID == dotID
                           select p;
 
-            List<DictatedLettersPatients> patients = new List<DictatedLettersPatients>();
+            List<DictatedLettersPatient> patients = new List<DictatedLettersPatient>();
 
             foreach (var p in patient)
             {
-                patients.Add(new DictatedLettersPatients() { DOTID = p.DOTID });
+                patients.Add(new DictatedLettersPatient() { DOTID = p.DOTID });
             }
 
             return patients;
         }
 
-        public List<DictatedLettersCopies> GetDictatedLettersCopiesList(int dotID) //Get list of all CCs added to a DOT letter by DotID
+        public List<DictatedLettersCopy> GetDictatedLettersCopiesList(int dotID) //Get list of all CCs added to a DOT letter by DotID
         {
-            var copies = from c in _clinContext.DictatedLettersCopies
+            IQueryable<DictatedLettersCopy> copies = from c in _clinContext.DictatedLettersCopies
                        where c.DotID == dotID
                        select c;            
 
             return copies.ToList();
         }        
         
-        public DictatedLettersCopies GetDictatedLetterCopyDetails(int id)  //Get details of a CC on a letter for deletion
+        public DictatedLettersCopy GetDictatedLetterCopyDetails(int id)  //Get details of a CC on a letter for deletion
         {
-            var letter = _clinContext.DictatedLettersCopies.FirstOrDefault(x => x.CCID == id);
+            DictatedLettersCopy letter = _clinContext.DictatedLettersCopies.FirstOrDefault(x => x.CCID == id);
 
             return letter;
         }
 
-        public List<Patients> GetDictatedLetterPatientsList(int dotID) //Get list of all patients in the family that can be added to a DOT, by the DotID
+        public List<Patient> GetDictatedLetterPatientsList(int dotID) //Get list of all patients in the family that can be added to a DOT, by the DotID
         {
-            var letter = _clinContext.DictatedLetters.FirstOrDefault(l => l.DoTID == dotID);
+            DictatedLetter letter = _clinContext.DictatedLetters.FirstOrDefault(l => l.DoTID == dotID);
             int? mpi = letter.MPI;
-            var pat = _clinContext.Patients.FirstOrDefault(p => p.MPI == mpi.GetValueOrDefault());
+            Patient pat = _clinContext.Patients.FirstOrDefault(p => p.MPI == mpi.GetValueOrDefault());
 
-            var patients = from p in _clinContext.Patients
+            IQueryable<Patient> patients = from p in _clinContext.Patients
                            where p.PEDNO == pat.PEDNO
                            select p;
 
