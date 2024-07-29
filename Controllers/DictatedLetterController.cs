@@ -122,12 +122,12 @@ namespace ClinicX.Controllers
                 {
                     int success2 = _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, "", letterToCode, letterFromCode, letterTo, User.Identity.Name);
 
-                    if (success2 == 0) { return RedirectToAction("Index", "WIP"); }
+                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
                 }
 
                 int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, "", letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Edit", new { id = dID });
             }
@@ -143,7 +143,7 @@ namespace ClinicX.Controllers
             {
                 int success = _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 var dot = await _clinContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
                 int dID = dot.DoTID;
@@ -162,7 +162,7 @@ namespace ClinicX.Controllers
             {
                 int success = _crud.CallStoredProcedure("Letter", "Delete", dID, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Index");
             }
@@ -180,7 +180,7 @@ namespace ClinicX.Controllers
                 
                 int success = _crud.CallStoredProcedure("Letter", "Approve", dID, 0, 0, "", "", "", "", User.Identity.Name, null, null, isCloseReferral);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Edit", new { id = dID });
 
@@ -198,7 +198,7 @@ namespace ClinicX.Controllers
             {
                 int success = _crud.CallStoredProcedure("Letter", "Unapprove", dID, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Edit", new { id = dID });
 
@@ -216,7 +216,7 @@ namespace ClinicX.Controllers
             {                
                 int success = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, pID, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Edit", new { id = dID });
             }
@@ -233,7 +233,7 @@ namespace ClinicX.Controllers
             {
                 int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, cc, "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Edit", new { id = dID });
             }
@@ -254,7 +254,7 @@ namespace ClinicX.Controllers
 
                 int success = _crud.CallStoredProcedure("Letter", "DeleteCC", id, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Edit", new { id = dID });
                 

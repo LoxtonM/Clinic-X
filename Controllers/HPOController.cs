@@ -64,7 +64,7 @@ namespace ClinicX.Controllers
             {                
                 int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, termID, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("HPOTerm", new { id = noteID });
             }
@@ -81,7 +81,7 @@ namespace ClinicX.Controllers
             {                
                 int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, termID, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("HPOTerm", new { id = noteID });
             }
@@ -101,7 +101,7 @@ namespace ClinicX.Controllers
 
                 int success = _crud.CallStoredProcedure("Clinical Note", "Delete HPO Term", id, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("HPOTerm", new { id = noteID });
             }

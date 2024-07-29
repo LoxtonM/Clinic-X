@@ -89,7 +89,7 @@ namespace ClinicX.Controllers
                     User.Identity.Name, riskDate, null, isUseLetter, false, 0, 0, 0, tool, "", "", lifetimePercent,
                     f2529, f3040, f4050, f5060);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 int riskID = _misc.GetRiskID(refID);
                 int icpID = _riskData.GetRiskDetails(riskID).ICPID;
@@ -142,7 +142,7 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Surveillance", "Create", riskID, startAge, endAge, siteCode, typeCode, clinCode, "",
                     User.Identity.Name, recDate, null, isUseLetter, isYN, 0, 0, 0, frequency, discReason);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = riskID });
             }

@@ -86,7 +86,7 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 0, noteType, "", "",
                     clinicalNote, User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 noteID = _misc.GetClinicalNoteID(refID);
 
@@ -131,7 +131,7 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Clinical Note", "Update", noteID, 0, 0, 
                     "", "", "", clinicalNote, User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Edit", new { id = noteID });
             }
@@ -166,7 +166,7 @@ namespace ClinicX.Controllers
             {
                 int success = _crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 var note = await _clinContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
 

@@ -803,6 +803,7 @@ public class LetterController : Controller
             string dateTimeString = DateTime.Now.ToString("yyyyMMddHHmmss");
             string diaryIDString = diaryID.ToString();
 
+            /*
             var par = _docContext.Constants.FirstOrDefault(p => p.ConstantCode == "FilePathEDMS");
             string filePath = par.ConstantValue;
 
@@ -810,7 +811,7 @@ public class LetterController : Controller
             //Also, we only have a constant value for the OPEX scanner, not the letters folder!
             string letterFileName = filePath.Replace(" ", "") + "\\CaStdLetter-" + fileCGU + "-" + docCode + "-" + mpiString + "-0-" + refIDString + "-" + printCount.ToString() + "-" + dateTimeString + "-" + diaryIDString;
             letterFileName = letterFileName.Replace("ScannerOPEX2", "Letters");
-
+            */
             //document.Save(letterFileName + ".pdf"); - the server can't save it to the watchfolder due to permission issues.
             //So we have to create it locally and have a scheduled job to move it instead.
             document.Save($@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");

@@ -130,7 +130,7 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, title, forename1, forename2, surname,
                         User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("RelativeDetails", "Relative", new { id = id });
             }
@@ -197,7 +197,7 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, isAffected, 0, title, forename1, forename2, surname,
                     User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 var patient = _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
 

@@ -66,6 +66,8 @@ namespace ClinicX.Controllers
 
                     _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.BOOKED_DATE >= filterDate).ToList();
                     _cvm.pastClinicsList = _cvm.pastClinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                    _cvm.currentClinicsList = _cvm.currentClinicsList.OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                    _cvm.futureClinicsList = _cvm.futureClinicsList.OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
                     _cvm.clinicFilterDate = filterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
                     _cvm.isClinicOutstanding = isShowOutstanding.GetValueOrDefault();
 
@@ -170,14 +172,14 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
                     letterRequired, ethnicity, User.Identity.Name, arrivalTime, null, isClockStop, isComplete);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 if (letterRequired != "No")
                 {
                     int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "",
                     "", "", User.Identity.Name);
 
-                    if (success2 == 0) { return RedirectToAction("Index", "WIP"); }
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
                 }
 
                 return RedirectToAction("ApptDetails", new { id = refID });                

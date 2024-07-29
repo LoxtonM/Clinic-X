@@ -92,7 +92,7 @@ namespace ClinicX.Controllers
             {                
                 int success = _crud.CallStoredProcedure("Test", "Create", mpi, 0, 0, test, sentTo, "", "", User.Identity.Name, expectedDate);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Index", new { id = mpi });
             }
@@ -177,7 +177,7 @@ namespace ClinicX.Controllers
 
                 int success = _crud.CallStoredProcedure("Test", "Update", testID, isComplete, 0, result, "", "", comments, User.Identity.Name, dateReceived, dateGiven);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Index", new { id = mpi });
             }

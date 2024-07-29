@@ -75,7 +75,7 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Create", id, 0, 0, diagnosis, age, hospital, cRegCode, User.Identity.Name,
                     dateRequested, DateTime.Parse("1900-01-01"), false, false, 0, 0, 0, status, consent, consultant);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 return RedirectToAction("Index", "RelativeDiagnosis", new { relID = id });
             }
@@ -126,7 +126,7 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Edit", tumourID, 0, 0, consent, confirmed, data, notes, User.Identity.Name, dateReceived, confDiagDate,
                     false, false, 0, 0, 0, siteCode, latCode, morphCode);
 
-                if (success == 0) { return RedirectToAction("Index", "WIP"); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 //return View(_rdvm);
                 return RedirectToAction("Index", "RelativeDiagnosis", new { relID = tumourID });
