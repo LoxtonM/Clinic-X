@@ -76,7 +76,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName="Clinic" });
             }
         }
 
@@ -106,7 +106,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName="Clinic-AppDetails" });
             }
         }
 
@@ -136,7 +136,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formname="Clinic-edit" });
             }
         }
 
@@ -172,21 +172,21 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
                     letterRequired, ethnicity, User.Identity.Name, arrivalTime, null, isClockStop, isComplete);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="Clinic-edit(SQL)" }); }
 
                 if (letterRequired != "No")
                 {
                     int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "",
                     "", "", User.Identity.Name);
 
-                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
-                }
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.",formName = "Clinic-edit(SQL)" }); }
+                    }
 
                 return RedirectToAction("ApptDetails", new { id = refID });                
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName="Clinic-edit" });
             }
         }        
     }

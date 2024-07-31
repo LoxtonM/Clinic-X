@@ -50,7 +50,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review" });
             }
         }
 
@@ -71,7 +71,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-add" });
             }
         }
 
@@ -100,13 +100,13 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Review", "Create", mpi, refID, 0, pathway, category, recipient, comments, User.Identity.Name,
                      reviewDate);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Review-add(SQL)" }); }
 
                 return RedirectToAction("Index", "Review");
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-add" });
             }
         }
 
@@ -132,7 +132,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-edit" });
             }
         }
 
@@ -157,13 +157,13 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Review", "Edit", id, 0, 0, status, comments, "", "", User.Identity.Name,
                     reviewDate);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Review-edit(SQL)" }); }
 
                 return RedirectToAction("Index", "Review");
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-edit" });
             }
         }
     }

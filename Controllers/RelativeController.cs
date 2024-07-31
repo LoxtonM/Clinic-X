@@ -41,7 +41,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative" });
             }
         }
 
@@ -60,7 +60,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RelativeDetails" });
             }
         }
 
@@ -81,7 +81,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-edit" });
             }
         }
 
@@ -130,13 +130,13 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, title, forename1, forename2, surname,
                         User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-edit(SQL)" }); }
 
                 return RedirectToAction("RelativeDetails", "Relative", new { id = id });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-edit" });
             }
         }
 
@@ -156,7 +156,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
             }
         }
 
@@ -197,7 +197,7 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, isAffected, 0, title, forename1, forename2, surname,
                     User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-add(SQL)" }); }
 
                 var patient = _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
 
@@ -205,7 +205,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
             }
         }
     }

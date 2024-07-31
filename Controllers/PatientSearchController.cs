@@ -103,7 +103,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "PatientSearch" });
             }
         }             
     }

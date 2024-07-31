@@ -53,7 +53,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "HPO" });
             }
         }
 
@@ -64,13 +64,13 @@ namespace ClinicX.Controllers
             {                
                 int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, termID, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "HPO-add(SQL)" }); }
 
                 return RedirectToAction("HPOTerm", new { id = noteID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "HPO-add" });
             }
         }
                 
@@ -81,13 +81,13 @@ namespace ClinicX.Controllers
             {                
                 int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, termID, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "HPO-addFromText(SQL)" }); }
 
                 return RedirectToAction("HPOTerm", new { id = noteID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "HPO-addFromText" });
             }
         }
 
@@ -101,13 +101,13 @@ namespace ClinicX.Controllers
 
                 int success = _crud.CallStoredProcedure("Clinical Note", "Delete HPO Term", id, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "HPO-delete(SQL)" }); }
 
                 return RedirectToAction("HPOTerm", new { id = noteID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "HPO-delete" });
             }
         }  
     }

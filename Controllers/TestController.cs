@@ -45,7 +45,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test" });
             }
         }
 
@@ -63,7 +63,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "TestAll" });
             }
         }
 
@@ -81,7 +81,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test-add" });
             }
         }
 
@@ -92,13 +92,13 @@ namespace ClinicX.Controllers
             {                
                 int success = _crud.CallStoredProcedure("Test", "Create", mpi, 0, 0, test, sentTo, "", "", User.Identity.Name, expectedDate);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-add(SQL)" }); }
 
                 return RedirectToAction("Index", new { id = mpi });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test-add" });
             }
         }
 
@@ -121,7 +121,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test-edit" });
             }
         }
 
@@ -177,13 +177,13 @@ namespace ClinicX.Controllers
 
                 int success = _crud.CallStoredProcedure("Test", "Update", testID, isComplete, 0, result, "", "", comments, User.Identity.Name, dateReceived, dateGiven);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-edit(SQL)" }); }
 
                 return RedirectToAction("Index", new { id = mpi });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test-edit" });
             }
         }
         

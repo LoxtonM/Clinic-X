@@ -6,6 +6,7 @@ using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using ClinicX.Models;
+using System.Text.RegularExpressions;
 
 namespace ClinicX.Controllers;
 
@@ -56,7 +57,7 @@ public class LetterController : Controller
         }
         catch (Exception ex)
         {
-            return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+            return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Letter" });
         }
     }
 
@@ -73,7 +74,8 @@ public class LetterController : Controller
             document.Info.Title = "DOT Letter Preview";
             PdfPage page = document.AddPage();
             PdfPage page2 = document.AddPage();
-            PdfPage page3 = document.AddPage(); //we HAVE to add all three pages whether we want them or not, or we can't use them later!
+            PdfPage page3 = document.AddPage();
+            PdfPage page4 = document.AddPage(); //we HAVE to add all four pages whether we want them or not, or we can't use them later!
             XGraphics gfx = XGraphics.FromPdfPage(page);
             var tf = new XTextFormatter(gfx);
             //set the fonts used for the letters
@@ -99,7 +101,7 @@ public class LetterController : Controller
 
             string phoneNumbers = "Secretaries Direct Line:" + System.Environment.NewLine;
 
-            var secretariesList = _staffUser.GetStaffMemberList().Where(s => s.BILL_ID == _lvm.dictatedLetter.SecTeam);
+            var secretariesList = _staffUser.GetStaffMemberList().Where(s => s.BILL_ID == _lvm.dictatedLetter.SecTeam && s.CLINIC_SCHEDULER_GROUPS == "Admin");
             foreach (var t in secretariesList)
             {
                 phoneNumbers = phoneNumbers + $"{t.NAME} {t.TELEPHONE}" + System.Environment.NewLine;
@@ -107,9 +109,13 @@ public class LetterController : Controller
             
             tf.DrawString(phoneNumbers, font, XBrushes.Black, new XRect(20, 200, page.Width/2, 200));
 
-            string datesInfo = $"Dictated Date: {_lvm.dictatedLetter.DateDictated.Value.ToString("dd/MM/yyyy")}" + System.Environment.NewLine +
-                               $"Date Typed: {_lvm.dictatedLetter.CreatedDate.Value.ToString("dd/MM/yyyy")}";
-                       
+            string datesInfo = "";
+
+            if (_lvm.dictatedLetter.DateDictated != null)
+            {
+                datesInfo = $"Dictated Date: {_lvm.dictatedLetter.DateDictated.Value.ToString("dd/MM/yyyy")}" + System.Environment.NewLine +
+                                   $"Date Typed: {_lvm.dictatedLetter.CreatedDate.Value.ToString("dd/MM/yyyy")}";
+            }         
             _lvm.patient = _patientData.GetPatientDetails(_lvm.dictatedLetter.MPI);
             tf.DrawString($"Please quote our reference on all correspondence: {_lvm.patient.CGU_No}", fontItalic, XBrushes.Black, new XRect(20, 270, page.Width, 200));
 
@@ -142,21 +148,26 @@ public class LetterController : Controller
             int printCount = 1;
             int totalLength = 500; //used for spacing - so the paragraphs can dynamically resize
             int totalLength2 = 0;
-            int totalLength3 = 0; //for multiple pages
+            int totalLength3 = 0;
+            int totalLength4 = 0; //for multiple pages
             XGraphics gfx2 = XGraphics.FromPdfPage(page2); //they have to be declared here or I can't use them later
             var tf2 = new XTextFormatter(gfx2);
             XGraphics gfx3 = XGraphics.FromPdfPage(page3);
             var tf3 = new XTextFormatter(gfx3);
+            XGraphics gfx4 = XGraphics.FromPdfPage(page4);
+            var tf4 = new XTextFormatter(gfx4);
 
-            if (summary == null)
-            {
-                summary = "";
-            }
-            
+            if (summary == null) { summary = ""; }
+
+            if (letterRe == null) { letterRe = ""; }
+
+            if (content.Contains("</")) { content = RemoveHTML(content); }
+
             if (_lvm.dictatedLetter.LetterRe != null)
             {
                 tf.DrawString($"Re  {letterRe}", fontBold, XBrushes.Black, new XRect(20, totalLength, 500, letterRe.Length));
             }
+
             totalLength = totalLength + (letterRe.Length / 2) + 20;
             tf.DrawString(summary, fontBold, XBrushes.Black, new XRect(20, totalLength, 500, summary.Length));
             totalLength = totalLength + (summary.Length / 2) + 20;
@@ -182,6 +193,9 @@ public class LetterController : Controller
                 tf3 = new XTextFormatter(gfx3);
                 totalLength3 = 20;
 
+                tf4 = new XTextFormatter(gfx4);
+                totalLength4 = 20;
+
                 foreach (var line in lines)
                 {
                     if(totalLength < 800)
@@ -194,14 +208,18 @@ public class LetterController : Controller
                         tf2.DrawString(line, font, XBrushes.Black, new XRect(20, totalLength2, 500, line.Length));
                         totalLength2 = totalLength2 + (line.Length / 4) + 10;
                     }
-                    else
+                    else if (totalLength3 < 800)
                     {
                         tf3.DrawString(line, font, XBrushes.Black, new XRect(20, totalLength3, 500, line.Length));
                         totalLength3 = totalLength3 + (line.Length / 4) + 10;
                     }
+                    else if (totalLength4 < 800)
+                    {
+                        tf4.DrawString(line, font, XBrushes.Black, new XRect(20, totalLength4, 500, line.Length));
+                        totalLength4 = totalLength4 + (line.Length / 4) + 10;
+                    }
                 }
-                totalLength2 = totalLength2 + 20;
-                             
+                totalLength2 = totalLength2 + 20;                             
             }
 
             if (System.IO.File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
@@ -215,6 +233,7 @@ public class LetterController : Controller
                 {
                     document.Pages.Remove(page2);
                     document.Pages.Remove(page3);
+                    document.Pages.Remove(page4);
                     tf.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength, 500, 20));
                     totalLength = totalLength + 20;
                     gfx.DrawImage(imageSig, 50, totalLength, len, hig);
@@ -224,6 +243,7 @@ public class LetterController : Controller
                 else if (totalLength2 < 800)
                 {
                     document.Pages.Remove(page3);
+                    document.Pages.Remove(page4);
                     totalLength2 = totalLength2 + 20;
                     tf2.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength2, 500, 20));
                     totalLength2 = totalLength2 + 20;
@@ -231,8 +251,9 @@ public class LetterController : Controller
                     totalLength2 = totalLength2 + hig + 20;
                     tf2.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength2, 500, 20));
                 }
-                else
+                else if(totalLength3 < 800)
                 {
+                    document.Pages.Remove(page4);
                     totalLength3 = totalLength3 + 20;
                     tf3.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength3, 500, 20));
                     totalLength3 = totalLength3 + 20;
@@ -240,19 +261,24 @@ public class LetterController : Controller
                     totalLength3 = totalLength3 + hig + 20;
                     tf3.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength3, 500, 20));
                 }
-
-                
+                else
+                {
+                    totalLength4 = totalLength4 + 20;
+                    tf4.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength4, 500, 20));
+                    totalLength4 = totalLength4 + 20;
+                    gfx4.DrawImage(imageSig, 50, totalLength4, len, hig);
+                    totalLength4 = totalLength4 + hig + 20;
+                    tf4.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength4, 500, 20));
+                }                
             }
-            
 
-
-
-            document.Save($"c:\\projects\\VS Test\\ClinicX\\wwwroot\\preview-{user}.pdf");
+            //document.Save($"c:\\projects\\VS Test\\ClinicX\\wwwroot\\DOTLetterPreviews\\preview-{user}.pdf");
+            document.Save($"~/DOTLetterPreviews/preview-{user}.pdf");
         }
 
         catch (Exception ex)
         {
-            RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+            RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DOTPreview" });
         }
     }
 
@@ -818,8 +844,24 @@ public class LetterController : Controller
         }
         catch (Exception ex)
         {
-            RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+            RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "StdLetter" });
         }
+    }
+
+    string RemoveHTML(string text)
+    {
+        
+        text = text.Replace("&nbsp;", System.Environment.NewLine);
+        text = text.Replace(System.Environment.NewLine, "newline");
+        text = Regex.Replace(text, @"<[^>]+>", "").Trim();
+        //text = Regex.Replace(text, @"\n{2,}", " ");
+        text = text.Replace("&lt;", "<");
+        text = text.Replace("&gt;", ">"); //because sometimes clinicians like to actually use those symbols
+        text = text.Replace("newlinenewline", System.Environment.NewLine);
+        text = text.Replace("newline", "");
+        //this is the ONLY way to strip out the excessive new lines!! (and still can't remove all of them)
+
+        return text;
     }
 }
 

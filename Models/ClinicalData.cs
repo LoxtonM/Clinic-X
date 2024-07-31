@@ -16,14 +16,14 @@ namespace ClinicX.Models
         [DataType(DataType.Date)]
         public DateTime? DOB { get; set; }
         [Display(Name = "Forename")]
-        public string? FIRSTNAME { get; set; }
+        public string FIRSTNAME { get; set; }
         [Display(Name = "Surname")]
-        public string? LASTNAME { get; set; }
+        public string LASTNAME { get; set; }
         [Display(Name = "CGU Number")]
         public string? CGU_No { get; set; }
         public string? PEDNO { get; set; }
         [Display(Name = "NHS Number")]
-        public string? SOCIAL_SECURITY { get; set; }
+        public string SOCIAL_SECURITY { get; set; }
         public string? ADDRESS1 { get; set; }
         public string? ADDRESS2 { get; set; }
         public string? ADDRESS3 { get; set; }

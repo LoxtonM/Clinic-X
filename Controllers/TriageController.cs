@@ -68,7 +68,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage" });
             }
         }
 
@@ -107,7 +107,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-ICP" });
             }
         }
         
@@ -153,7 +153,7 @@ namespace ClinicX.Controllers
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), 0,
                         facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration);
 
-                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }
                         //_crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, facility, "General", "", comment, User.Identity.Name);
 
                         //_lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer);
@@ -163,7 +163,7 @@ namespace ClinicX.Controllers
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), 0,
                         "", sApptIntent, "", comment, User.Identity.Name);
 
-                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
                     }
                 }
                 else
@@ -173,7 +173,7 @@ namespace ClinicX.Controllers
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, 0, tp2,
                         facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration);
 
-                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
                         //_crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, facility, "General", "", comment, User.Identity.Name);
 
                         //_lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer);
@@ -183,7 +183,7 @@ namespace ClinicX.Controllers
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, 0, tp2,
                         "", sApptIntent, "", comment, User.Identity.Name);
 
-                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
                     }
                 }
                 //add to waiting list
@@ -192,14 +192,14 @@ namespace ClinicX.Controllers
                     int success = _crud.CallStoredProcedure("Waiting List", "Create", mpi, wlPriority.GetValueOrDefault(), referral.refid, facility, "General", "", 
                         comment, User.Identity.Name);
 
-                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genAddWL(SQL)" }); }
                 }
 
                 if (tp2 == 2) //CTB letter
                 {
                     //LetterController _lc = new LetterController(_docContext);
                     int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
-                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genDiaryUpdate(SQL)" }); }
                     int diaryID = _diaryData.GetLatestDiaryByRefID(refID, "CTBAck").DiaryID;
                     _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer,"","",0,"",false,false,diaryID);
                 }                
@@ -214,7 +214,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-genTriage" });
             }
         }
 
@@ -232,7 +232,7 @@ namespace ClinicX.Controllers
                 CRUD _crud = new CRUD(_config);
                 int success = _crud.CallStoredProcedure("ICP Cancer", "Triage", icpID, action, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canTriage(SQL)" }); }
 
                 if (action == 5)
                 {
@@ -244,7 +244,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-canTriage" });
             }
         }
 
@@ -273,7 +273,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-canReview" });
             }
         }
 
@@ -314,8 +314,8 @@ namespace ClinicX.Controllers
                     int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
 
                     _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferringClinician, "", "", 0, "", false, false, diaryID);
-                    
-                    if (successDiary == 0) { return RedirectToAction("Index", "WIP"); }
+
+                    if (successDiary == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canDiaryUpdate(SQL)" }); }
                 }
             }
             
@@ -329,7 +329,7 @@ namespace ClinicX.Controllers
                 int successWL = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, clinic, "Cancer", clinician, comments,
                     User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
 
-                if (successWL == 0) { return RedirectToAction("Index", "WIP"); }
+                if (successWL == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canAddWL(SQL)" }); }
             }
 
             //if(finalReview == "Yes")
@@ -342,7 +342,7 @@ namespace ClinicX.Controllers
             int success = _crud.CallStoredProcedure("ICP Cancer", "ICP Review", id, letter.GetValueOrDefault(), 0, reviewBy, finalReview, toBeReviewedBy, addNotes,
                     User.Identity.Name, null, null, false, false);
 
-            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canReview" }); }
 
             return RedirectToAction("Index");            
         }
@@ -368,7 +368,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-canRiskSurv" });
             }
         }
 
@@ -387,7 +387,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-changeGenTriage" });
             }
         }
 
@@ -402,13 +402,13 @@ namespace ClinicX.Controllers
                 }
                 int success = _crud.CallStoredProcedure("ICP General", "Change", icpId, 0, 0, newConsultant, newGC, "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-changeGenTriage(SQL)" }); }
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = icpId });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-changeGenTriage" });
             }
         }
 
@@ -427,7 +427,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-changePathway" });
             }
         }
 
@@ -436,13 +436,14 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _crud.CallStoredProcedure("ICP Cancer", "Change Pathway", id, 0, 0, newPathway, "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("ICP Cancer", "Change Pathway", id, 0, 0, newPathway, "", "", "", User.Identity.Name);
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-changePathway(SQL)" }); }
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = id });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-changePathway" });
             }
         }
 
@@ -455,7 +456,7 @@ namespace ClinicX.Controllers
             {                
                 int success = _crud.CallStoredProcedure("ICP General", "Return", icpId, 0, 0, "", "", "", "", User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons" }); }
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = icpId });
             }
@@ -472,13 +473,13 @@ namespace ClinicX.Controllers
             {
                 int success = _crud.CallStoredProcedure("ICP General", "Indication Notes", icpID, 0, 0, "", "", "", indicationNotes, User.Identity.Name);
                 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }                
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons(SQL)" }); }                
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = icpID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-returnToCons" });
             }
         }
     }

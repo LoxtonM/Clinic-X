@@ -52,7 +52,7 @@ namespace ClinicX.Controllers
             }
             catch(Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName="ClinicalNotes" });
             }
         }
 
@@ -71,7 +71,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ClinicalNote-create" });
             }
         }
 
@@ -86,7 +86,7 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 0, noteType, "", "",
                     clinicalNote, User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="ClinicalNote-create(SQL)" }); }
 
                 noteID = _misc.GetClinicalNoteID(refID);
 
@@ -94,7 +94,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ClinicalNote-create" });
             }
         }
 
@@ -113,7 +113,7 @@ namespace ClinicX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ClinicalNote-edit" });
             }
         }
 
@@ -131,13 +131,13 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Clinical Note", "Update", noteID, 0, 0, 
                     "", "", "", clinicalNote, User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="ClinicalNote-edit(SQL)" }); }
 
                 return RedirectToAction("Edit", new { id = noteID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ClinicalNote-edit" });
             }
         }
 
