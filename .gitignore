@@ -364,3 +364,5 @@ FodyWeavers.xsd
 
 .vs/
 \secrets.json
+/wwwroot/Errorlogs/Log.txt
+/wwwroot/DOTLetterPreviews/preview-mnln.pdf
