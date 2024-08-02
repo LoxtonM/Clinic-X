@@ -648,7 +648,7 @@ namespace ClinicX.Models
         public DateTime EffectiveFromDate { get; set; }
         public DateTime? EffectiveToDate { get; set; }
         public string AlertType { get; set; }
-        public string Comments { get; set; }
+        public string? Comments { get; set; }
     }
 
     [Table("ViewPatientRisk", Schema = "dbo")] //Cancer risk items
