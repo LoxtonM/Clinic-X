@@ -366,3 +366,5 @@ FodyWeavers.xsd
 \secrets.json
 /wwwroot/Errorlogs/Log.txt
 /wwwroot/DOTLetterPreviews/preview-mnln.pdf
+/wwwroot/Signatures/MartinLoxton.jpg
+/wwwroot/Signatures/ColinSultant.jpg
