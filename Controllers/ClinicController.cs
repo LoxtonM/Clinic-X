@@ -179,8 +179,8 @@ namespace ClinicX.Controllers
                     int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "",
                     "", "", User.Identity.Name);
 
-                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.",formName = "Clinic-edit(SQL)" }); }
-                    }
+                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.",formName = "Clinic-edit(SQL)" }); }
+                }
 
                 return RedirectToAction("ApptDetails", new { id = refID });                
             }

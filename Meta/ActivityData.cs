@@ -7,6 +7,7 @@ namespace ClinicX.Meta
     {
         public ActivityItem GetActivityDetails(int id);
         public List<ActivityItem> GetClinicDetailsList(int refID);
+        public List<ActivityItem> GetActivityList(int mpi);
     }
     public class ActivityData : IActivityData
     {
@@ -21,6 +22,16 @@ namespace ClinicX.Meta
         {
             ActivityItem referral = _clinContext.ActivityItems?.FirstOrDefault(i => i.RefID == id);
             return referral;
+        }
+
+        public List<ActivityItem> GetActivityList(int mpi) //Get all activity for a specific patient
+        {
+            IQueryable<ActivityItem> cl = from c in _clinContext.ActivityItems
+                                          where c.MPI == mpi
+                                          orderby c.DATE_SCHEDULED
+                                          select c;
+            
+            return cl.ToList();
         }
 
         public List<ActivityItem> GetClinicDetailsList(int refID) //Get details of an appointment by the RefID for editing

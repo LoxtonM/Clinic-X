@@ -284,7 +284,7 @@ public class LetterController : Controller
 
     //Prints standard letter templates from the menu
     public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
-        string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0)
+        string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText="")
     {
         try
         {
@@ -301,6 +301,9 @@ public class LetterController : Controller
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
             var tf = new XTextFormatter(gfx);
+            PdfPage page2 = document.AddPage();
+            XGraphics gfx2 = XGraphics.FromPdfPage(page2);
+            var tf2 = new XTextFormatter(gfx2);
             //set the fonts used for the letters
             XFont font = new XFont("Arial", 12, XFontStyle.Regular);
             XFont fontBold = new XFont("Arial", 12, XFontStyle.Bold);
@@ -371,23 +374,25 @@ public class LetterController : Controller
             string content4 = "";
             string content5 = "";
             string content6 = "";
+            string freetext = freeText;
             string quoteRef = "";
             string signOff = "";
             string sigFlename = "";
             string docCode = _lvm.documentsContent.DocCode;
-            string referrerName = _lvm.referrer.TITLE + " " + _lvm.referrer.FIRST_NAME + " " + _lvm.referrer.NAME;
+            //WHY IS THERE ALWAYS A NULL SOMEWHWERE?????????
+            string referrerName = "";
+            if (_lvm.referrer != null) { referrerName = _lvm.referrer.TITLE + " " + _lvm.referrer.FIRST_NAME + " " + _lvm.referrer.NAME; }
             string cc = "";
             string cc2 = "";
             int printCount = 1;
             int totalLength = 400; //used for spacing - so the paragraphs can dynamically resize
+            int pageCount = 1;
 
             quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
             quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
             quoteRef = quoteRef + "Consultant: " + referral.LeadClinician + Environment.NewLine;
             quoteRef = quoteRef + "Genetic Counsellor: " + referral.GC;
             tf.DrawString(quoteRef, font, XBrushes.Black, new XRect(50, 130, page.Width, 150)); //"Please quote CGU number" etc
-
-            //_crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", user);
 
             ///////////////////////////////////////////////////////////////////////////////////////
             //////All letter templates need to be defined individually here////////////////////////            
@@ -424,16 +429,14 @@ public class LetterController : Controller
             //KC letter
             if (docCode == "Kc")
             {
+                pageCount = 2; //because this can't happen automatically, obviously, so we have to hard code it! Oh PDFSharp you are so wonderful.
                 tf.Alignment = XParagraphAlignment.Left;
                 content1 = _lvm.documentsContent.Para1 + " " + referrerName + " " + _lvm.documentsContent.Para2 +
                     Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para3 +
                     Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
                 content2 = _lvm.documentsContent.Para5;
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, totalLength, 500, content1.Length / 4));
-                totalLength = totalLength + content1.Length / 4 - 40;
-                PdfPage page2 = document.AddPage();
-                XGraphics gfx2 = XGraphics.FromPdfPage(page2);
-                var tf2 = new XTextFormatter(gfx2);
+                totalLength = totalLength + content1.Length / 4 - 40;                
                 tf2.DrawString(content2, font, XBrushes.Black, new XRect(50, 50, 500, content2.Length / 4));
                 totalLength = 50 + content2.Length / 4;
                 signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -455,6 +458,7 @@ public class LetterController : Controller
                 totalLength = totalLength + content3.Length / 4;
                 tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
                 totalLength = totalLength + content4.Length / 4;
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
             }
 
             //O1 letter
@@ -784,23 +788,53 @@ public class LetterController : Controller
                 cc = referrerName;
             }
 
-            tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-            totalLength = totalLength + 20;
-            if (signOff == "CGU Booking Centre")
+            sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'","").Replace(" ", "") + ".jpg";
+
+            if (!System.IO.File.Exists(@"wwwroot\Signatures\" + sigFlename)) { sigFlename = "empty.jpg"; } //this only exists because we can't define the image if it's null.
+            
+            XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
+            int len = imageSig.PixelWidth;
+            int hig = imageSig.PixelHeight;
+
+            if (pageCount == 1)
             {
-                totalLength = totalLength + 50;
+                document.Pages.Remove(page2);                
+                tf.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+                
+                if (signOff == "CGU Booking Centre")
+                {
+                    totalLength = totalLength + 50;
+                }
+                else
+                {                    
+                    if (sigFlename != "empty.jpg")
+                    {
+                        gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                    }
+                    totalLength = totalLength + hig + 20;
+                }
+                tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
             }
             else
             {
-                sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname + ".jpg";
-                XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFlename);
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-            }            
-            
-            tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                tf2.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+                
+                if (signOff == "CGU Booking Centre")
+                {
+                    totalLength = totalLength + 50;
+                }
+                else
+                {
+                    if (sigFlename != "empty.jpg")
+                    {
+                        gfx2.DrawImage(imageSig, 50, totalLength, len, hig);
+                    }
+                    totalLength = totalLength + hig + 20;
+                }
+                tf2.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+            }
             
             //Add a page for all of the CC addresses (must be declared here or we can't use it)            
             if (cc != "")

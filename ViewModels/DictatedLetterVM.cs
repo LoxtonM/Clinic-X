@@ -26,5 +26,6 @@ namespace ClinicX.ViewModels
         public List<string> gcs { get; set; }
         public List<string> secteams { get; set; }
         public List<string> specialities { get; set; }
+        public List<ActivityItem> activities { get; set; }
     }
 }

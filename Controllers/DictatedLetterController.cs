@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
 using ClinicX.Models;
+using System.Security.Cryptography;
 
 namespace ClinicX.Controllers
 {
@@ -141,7 +142,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                int success = _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", "", "", User.Identity.Name);
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                int success = _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", staffCode, "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
 
@@ -277,6 +279,22 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-preview" });
             }
+        }
+
+        public async Task<IActionResult> ActivityItems(int id)
+        {
+            try
+            {
+                _lvm.patientDetails = _patientData.GetPatientDetails(id);
+                _lvm.activities = _activityData.GetActivityList(id);
+                
+                return View(_lvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-activityitems" });
+            }
+
         }
     }
 }

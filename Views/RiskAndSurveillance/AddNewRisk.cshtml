@@ -55,7 +55,7 @@
                 <label>Clinician:</label>
             </div>
             <div class="col-md-2">
-                <select class="w-100" name="clinCode">
+                <select class="w-100" id="ddlClinician" name="clinCode">
                     <option value="">Select...</option>
                     @foreach (var item in Model.staffMembersList)
                     {
@@ -69,7 +69,7 @@
                 <label>Date:</label>
             </div>
             <div class="col-md-2">
-                <input class="w-100" type="date" name="riskDate" />
+                <input class="w-100" id="txtDate" type="date" name="riskDate" />
             </div>
             <div class="col-md-2">
                 <label>Lifetime %:</label>
@@ -148,6 +148,7 @@
 
     document.getElementById("chkUseLetter").addEventListener("change", SetUseLetter);
     document.getElementById("btnBack").addEventListener("click", GoBack);
+    window.addEventListener("load", LoadForm);
 
     function GoBack() 
     {
@@ -160,6 +161,12 @@
         document.getElementById("txtUseLetter").value = document.getElementById("chkUseLetter").checked;
     }
     
+    function LoadForm()
+    {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById("txtDate").value = today;
+        document.getElementById("ddlClinician").value = "@Model.staffCode";
+    }
 
 
 </script>

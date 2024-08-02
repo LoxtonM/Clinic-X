@@ -83,15 +83,9 @@ namespace ClinicX.Controllers
 
                 _ivm.triage = _triageData.GetTriageDetails(id);
 
-                if (_triageData.GetCancerICPCountByICPID(id) > 0 || _triageData.GetGeneralICPCountByICPID(id) > 0)
-                {
-                    _ivm.isICPTriageStarted = true;
-                }
+                if (_triageData.GetCancerICPCountByICPID(id) > 0 || _triageData.GetGeneralICPCountByICPID(id) > 0) { _ivm.isICPTriageStarted = true; }
 
-                if (_ivm.triage == null)
-                {
-                    return RedirectToAction("NotFound", "WIP");
-                }
+                if (_ivm.triage == null) { return RedirectToAction("NotFound", "WIP"); }
 
                 //_ivm.triage = _vm.GetTriageDetails(id);
                 _ivm.referralDetails = _referralData.GetReferralDetails(_ivm.triage.RefID);
@@ -127,25 +121,13 @@ namespace ClinicX.Controllers
                 string sApptIntent = "";
                 string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;
 
-                if (comment == null)
-                {
-                    comment = "";
-                }
+                if (comment == null) { comment = ""; }
 
-                if (tp2c != null)
-                {
-                    tp2 = tp2c.GetValueOrDefault();
-                }
-                else
-                {
-                    tp2 = tp2nc.GetValueOrDefault();
-                }
+                if (tp2c != null) { tp2 = tp2c.GetValueOrDefault(); }
+                else { tp2 = tp2nc.GetValueOrDefault(); }
 
-                if (tp2 == 3)
-                {
-                    sApptIntent = "CLICS";
-                }
-  
+                if (tp2 == 3) { sApptIntent = "CLICS"; }
+
                 if (sStaffType == "Consultant")
                 {
                     if (facility != null && facility != "") // && clinician != null && clinician != "")
@@ -189,7 +171,7 @@ namespace ClinicX.Controllers
                 //add to waiting list
                 if (facility != null && facility != "")
                 {
-                    int success = _crud.CallStoredProcedure("Waiting List", "Create", mpi, wlPriority.GetValueOrDefault(), referral.refid, facility, "General", "", 
+                    int success = _crud.CallStoredProcedure("Waiting List", "Create", mpi, wlPriority.GetValueOrDefault(), referral.refid, facility, "General", "",
                         comment, User.Identity.Name);
 
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genAddWL(SQL)" }); }
@@ -201,8 +183,15 @@ namespace ClinicX.Controllers
                     int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genDiaryUpdate(SQL)" }); }
                     int diaryID = _diaryData.GetLatestDiaryByRefID(refID, "CTBAck").DiaryID;
-                    _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer,"","",0,"",false,false,diaryID);
-                }                
+                    _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
+                }
+
+                if (tp2 == 6) //Dictate letter
+                { 
+                    int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "", "", "", User.Identity.Name);
+
+                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
+                }
 
                 if (tp2 == 7) //Reject letter
                 {
@@ -253,10 +242,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                if (id == null)
-                {
-                    return RedirectToAction("NotFound", "WIP");
-                }
+                if (id == null) { return RedirectToAction("NotFound", "WIP");}
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Review", "ID=" + id.ToString());
@@ -279,8 +265,9 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> CancerReview(int id, string finalReview, string? clinician = "", string? clinic = "", string? comments = "", 
-            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "")
+            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "", string? freeText="")
         {
+            string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             //bool isfinalReview = false;
             _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
             var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
@@ -301,11 +288,7 @@ namespace ClinicX.Controllers
                 {
                     reviewText = docCode;
 
-                    if (reviewText != null)
-                    {
-                        reviewText = reviewText + " letter on " + DateTime.Now.ToString("dd/MM/yyyy") + " by " + _staffUser.GetStaffMemberDetails(User.Identity.Name).NAME;
-                    }
-
+                    if (reviewText != null) { reviewText = reviewText + " letter on " + DateTime.Now.ToString("dd/MM/yyyy") + " by " + _staffUser.GetStaffMemberDetails(User.Identity.Name).NAME; }
 
                     string diaryText = "";
                     int letterID = _documentsData.GetDocumentDetailsByDocCode(docCode).DocContentID;
@@ -313,16 +296,22 @@ namespace ClinicX.Controllers
                     int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
                     int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
 
-                    _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferringClinician, "", "", 0, "", false, false, diaryID);
+                    if (letter == 3)
+                    {
+                        int successDOT = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "", staffCode, "", User.Identity.Name);
+
+                        if (successDOT == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
+                    }
+                    else
+                    {
+                        _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferringClinician, "", "", 0, "", false, false, diaryID, freeText);
+                    }
 
                     if (successDiary == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canDiaryUpdate(SQL)" }); }
                 }
             }
-            
-            if(toBeReviewedBy == null)
-            {
-                toBeReviewedBy = ""; //because the default value isn't being assigned for some reason!
-            }
+
+            if (toBeReviewedBy == null) { toBeReviewedBy = ""; }//because the default value isn't being assigned for some reason!            
 
             if(clinician != null && clinician != "")
             {                
@@ -352,10 +341,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                if (id == null)
-                {
-                    return RedirectToAction("NotFound", "WIP");
-                }
+                if (id == null) { return RedirectToAction("NotFound", "WIP"); }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk and Surveillance", "ID=" + id.ToString());
@@ -396,10 +382,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                if(newConsultant == null) 
-                {
-                    newConsultant = "";
-                }
+                if(newConsultant == null) { newConsultant = ""; }
                 int success = _crud.CallStoredProcedure("ICP General", "Change", icpId, 0, 0, newConsultant, newGC, "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-changeGenTriage(SQL)" }); }

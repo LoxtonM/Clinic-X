@@ -13,12 +13,15 @@
             <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>Record Diagnoses</a>
         </div>
         <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.patient.MPI>Record Tests</a>
+            <a id="btnTest" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.patient.MPI>Record Tests</a>
         </div>
         <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Clinical Notes</a>
+            <a id="btnClinicalNote" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Clinical Notes</a>
         </div>
-        <div class="col-md-6"></div>
+        <div class="col-md-1">
+            <a id="btnLetter" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="ActivityItems" asp-route-id=@Model.patient.MPI>New Dictated Letter</a>
+        </div>
+        <div class="col-md-5"></div>
         <div class="col-md-1">
             <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
         </div>

@@ -1,0 +1,50 @@
+﻿@model ClinicX.ViewModels.DictatedLetterVM
+@{
+    ViewData["Title"] = "Clinic-X - Select Activity Item";
+}
+
+<div class="container">
+    <div class="row g-5 mb-5">
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        <div class="col-md-2">
+            <a type="button" id="btnBack" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>Back to Patient</a>
+        </div>
+    </div>
+    
+    <div class="row g-5 mb-5">
+        <h2>Choose activity item to create new dictated letter for @Model.patientDetails.FIRSTNAME @Model.patientDetails.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Model.patientDetails.CGU_No</a></h2>
+    </div>
+
+    <div class="row g-5 mb-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Pathway</th>
+                    <th>Referral/Booked Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.activities)
+                {
+                    <tr>
+                        <td><a asp-controller="DictatedLetter" asp-action="Create" asp-route-id=@item.RefID>Select</a></td>
+                        <td>@item.TYPE</td>
+                        <td>@item.PATHWAY</td>                        
+                        @if(item.BOOKED_DATE.HasValue)
+                        {
+                            <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td>@item.REFERRAL_DATE.ToString("dd/MM/yyyy")</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+

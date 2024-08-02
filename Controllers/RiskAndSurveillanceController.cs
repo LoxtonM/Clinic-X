@@ -68,6 +68,7 @@ namespace ClinicX.Controllers
                 _rsvm.riskCodes = _riskData.GetRiskCodesList();
                 _rsvm.survSiteCodes = _survData.GetSurvSiteCodesList();
                 _rsvm.staffMembersList = _staffUser.GetClinicalStaffList();
+                _rsvm.staffCode = staffCode;
                 _rsvm.calculationTools = _riskData.GetCalculationToolsList();
                 return View(_rsvm);
             }

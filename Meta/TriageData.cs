@@ -54,7 +54,7 @@ namespace ClinicX.Meta
             string staffCode = user.STAFF_CODE;
 
             IQueryable<ICPCancer> icps = from i in _clinContext.ICPCancer
-                       where i.ActOnRefBy != null && i.FinalReviewed == null && (i.GC_CODE == staffCode || i.ToBeReviewedby == username.ToUpper())
+                       where i.ActOnRefBy != null && i.FinalReviewed == null && (i.GC_CODE == staffCode || i.ToBeReviewedby.ToUpper() == username.ToUpper())
                       orderby i.REFERRAL_DATE
                        select i;
             

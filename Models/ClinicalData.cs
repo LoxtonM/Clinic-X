@@ -174,7 +174,13 @@ namespace ClinicX.Models
     {
         [Key]
         public int RefID { get; set; }
-        public int MPI { get; set; }            
+        public int MPI { get; set; }
+        [Display(Name = "Referral Date")]
+        [DataType(DataType.Date)]
+        public DateTime REFERRAL_DATE { get; set; }
+        [Display(Name = "Scheduled Date")]
+        [DataType(DataType.Date)]
+        public DateTime DATE_SCHEDULED { get; set; }
         public string? COUNSELED { get; set; }        
         public DateTime? ARRIVAL_TIME { get; set; }
         public string? SEEN_BY { get; set; }
@@ -264,6 +270,7 @@ namespace ClinicX.Models
         public string? Review_Recipient { get; set; }
         public string? RecipientLogin { get; set; }
     }
+
     [Table("ICP", Schema = "dbo")]
     public class ICP
     {

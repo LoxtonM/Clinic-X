@@ -22,5 +22,6 @@ namespace ClinicX.ViewModels
         public List<DiscontinuedReasonCodes> discontinuedReasonCodes { get; set; }
         public int refID { get; set; }
         public int riskID { get; set; }
+        public string staffCode { get; set; }
     }
 }

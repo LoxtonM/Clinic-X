@@ -190,14 +190,20 @@
                 <div class="col-md-2">
                     <label>Select letter:</label>
                 </div>
-                <div class="col-md-8">
-                    <select id="ddlLetter" name="letter" asp-for=@Model.icpCancer.ReviewedOption>
+                <div class="col-md-5">
+                    <select id="ddlLetter" class="w-100" name="letter" asp-for=@Model.icpCancer.ReviewedOption>
                         @*<option value="">Select...</option>*@
                         @foreach (var item in Model.cancerReviewActionsLists)
                         {
                             <option value=@item.ID>@item.Action - @item.description</option>
                         }
                     </select>
+                </div>
+                <div class="col-md-1">
+                    <label>Free text:</label>
+                </div>
+                <div class="col-md-4">
+                    <textarea class="w-100" name="freeText"></textarea>
                 </div>
             </div>
         </div>
@@ -229,7 +235,7 @@
                     <option value="">Select...</option>
                     @foreach(var item in Model.staffMembers)
                     {
-                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                        <option value=@item.EMPLOYEE_NUMBER>@item.NAME</option>
                     }
                 </select>
             </div>
