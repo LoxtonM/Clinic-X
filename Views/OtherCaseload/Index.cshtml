@@ -43,7 +43,7 @@
 
     @if (Model.caseLoad.Count() > 0)
     {
-        <table class="table table-striped">
+        <table id="myTable" class="table table-striped">
             <thead>
                 <tr>
                     <th>CGU No</th>
@@ -113,3 +113,15 @@
         </table>
     }
 </div>
+
+<script>
+    window.addEventListener("load", LoadTable)
+
+    function LoadTable()
+    {
+        let table = new DataTable('#myTable',
+            {
+                "order": []
+            });
+    }
+</script>

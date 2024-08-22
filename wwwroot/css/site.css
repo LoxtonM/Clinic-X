@@ -17,6 +17,13 @@ body {
   margin-bottom: 60px;
 }
 
+.img-blurrededge {
+    background-color: #f5f7fb;
+    box-shadow: 0 0 2px 10px #f5f7fb;
+    border-radius: 10px;
+}
+
+
 .redtext {
     color:red;
 }
