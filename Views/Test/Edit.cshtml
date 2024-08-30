@@ -4,8 +4,8 @@
     ViewData["Title"] = "Clinic-X - Test Details";
 }
 
-<div class="container">
-    <div class="row mb-5">
+<div class="container card">
+    <div class="row mb-5 mt-2 g-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AllOutstandingTests">Back to Test Index</a>
@@ -15,6 +15,7 @@
         </div>
         
     </div>
+    <hr />
 
     <h1>Record Test for @Model.patient.FIRSTNAME @Model.patient.LASTNAME </h1>
     <div>
@@ -91,18 +92,22 @@
                 <div class="col-md-4">                     
                     <input class="w-100" asp-for=@Model.test.DATE_RECEIVED id="txtDateRec" type="date" name="receivedDate" />
                 </div>
-                <div class="col-md-1">
-                    Date Given to Patient:
+                <div class="col-md-2">
+                    Result Given to Patient:
                 </div>
-                <div class="col-md-4">                    
-                    <input class="w-100" asp-for=@Model.test.ResultGivenDate id="txtDateGib" type="date" name="givenDate" />                   
+                <div class="col-md-2">
+                    <select id="ddlResultGiven">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                    <input class="w-100" asp-for=@Model.test.ResultGivenDate id="txtDateGib" type="date" name="givenDate" hidden="true" />                   
                 </div>
                 <div class="col-md-1">Complete:</div>
                 <div class="col-md-1">
                     <select class="w-100" asp-for=@Model.test.COMPLETE id="ddlComplete" name="complete">
                         @*because obviously a yes/no field is an integer not a boolean!*@                        
-                        <option value="No">No</option>
-                        <option value="Yes">Yes</option>
+                        <option value=0>No</option>
+                        <option value=-1>Yes</option>
                     </select>
                 </div>
             </div>
@@ -120,6 +125,7 @@
 <script>
 
     window.addEventListener("load", LoadTestData);
+    document.getElementById("ddlResultGiven").addEventListener("change", SetResultGiven);
     document.getElementById("btnSaveTest").addEventListener("click", SaveTest);
     document.getElementById("btnBack").addEventListener("click", GoBack);
    
@@ -130,9 +136,10 @@
         //window.close();
     }
 
-   function LoadTestData()   
-   {
+    function LoadTestData()   
+    {
         var _complete = "@(Model.test.COMPLETE)";
+        var _dateGiven = "@(Model.test.ResultGivenDate)";
 
         if (_complete == -1) 
         {
@@ -142,8 +149,29 @@
             document.getElementById("txtDateRec").disabled = true;
             document.getElementById("txtDateGib").disabled = true;
             document.getElementById("btnSaveTest").disabled = true;
-        }               
-   }
+        }
+        
+        if (_dateGiven != "")
+        {
+            document.getElementById("ddlResultGiven").value = "Yes";
+            document.getElementById("ddlResultGiven").disabled = true;
+        }
+
+    }
+
+    function SetResultGiven()
+    {        
+        const today = new Date();
+        
+        if (document.getElementById("ddlResultGiven").value == "Yes")
+        {
+            document.getElementById("txtDateGib").value = today.toISOString().split('T')[0];
+        }
+        else
+        {
+            document.getElementById("txtDateGib").value = "";
+        }
+    }
 
     function SaveTest()
     {

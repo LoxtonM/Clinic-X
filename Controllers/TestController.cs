@@ -126,7 +126,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int testID, string result, string comments, string receivedDate, string givenDate, string complete)
+        public async Task<IActionResult> Edit(int testID, string result, string comments, string receivedDate, string givenDate, int complete)
         {
             try
             {
@@ -169,13 +169,13 @@ namespace ClinicX.Controllers
                 }
                 //var patient = await _clinContext.Test.FirstOrDefaultAsync(t => t.TestID == testID);
                 int mpi = _testData.GetTestDetails(testID).MPI;
-                int isComplete = 0;
-                if (complete == "Yes")
-                {
-                    isComplete = -1;
-                }
+                //int isComplete = 0;
+                //if (complete == "Yes")
+                //{
+                //    isComplete = -1;
+                //}
 
-                int success = _crud.CallStoredProcedure("Test", "Update", testID, isComplete, 0, result, "", "", comments, User.Identity.Name, dateReceived, dateGiven);
+                int success = _crud.CallStoredProcedure("Test", "Update", testID, complete, 0, result, "", "", comments, User.Identity.Name, dateReceived, dateGiven);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-edit(SQL)" }); }
 

@@ -3,10 +3,13 @@
     ViewData["Title"] = "Clinic-X - Edit Appointment Outcome";
 }
 
-<div class="container">
-    <div class="mb-5">
+<div class="container card">
+    <div class="row mb-5 mt-2">
+
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        <a type="button" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@Model.activityItem.RefID>Back to Appt Details</a>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@Model.activityItem.RefID>Back to Appt Details</a>
+        </div>
     </div>
 
     <h1>Record Outcome</h1>
@@ -253,69 +256,69 @@
 
     function DoOutcome() 
     {
-        if (document.getElementById("ddlContactOutcome").value == "Attended")
+        if(CheckFormValid() == 1)
         {
-            if(CheckFormValid() == 1)
-            {
             //window.alert("Submitted!");
-                document.getElementById("ContactOutcome").submit();
-            }
-        }
-        else //allow for cancelled and DNA'd appointments to not include "seen by" etc
-        {
             document.getElementById("ContactOutcome").submit();
-        }                
+        }                      
     }
 
     function CheckFormValid()
     { //validation to ensure all required data is entered
-        if (document.getElementById("ddlEthnicity").value == null || document.getElementById("ddlEthnicity").value == "") 
-        {
-            window.alert("Please select an ethnicity.");
-            return 0;
-        }
 
-        if (document.getElementById("ddlContactOutcome").value == null || document.getElementById("ddlContactOutcome").value == "") 
+        if (document.getElementById("ddlContactOutcome").value == null || document.getElementById("ddlContactOutcome").value == "")
         {
             window.alert("Please select an outcome.");
             return 0;
         }
 
-        if (document.getElementById("ddlSeenBy").value == null || document.getElementById("ddlSeenBy").value == "") 
+        if (document.getElementById("ddlContactOutcome").value == "Attended")
         {
-            window.alert("Please choose a clinician.");
-            return 0;
+
+            if (document.getElementById("ddlEthnicity").value == null || document.getElementById("ddlEthnicity").value == "") 
+            {
+                window.alert("Please select an ethnicity.");
+                return 0;
+            }
+
+            if (document.getElementById("ddlSeenBy").value == null || document.getElementById("ddlSeenBy").value == "") 
+            {
+                window.alert("Please choose a clinician.");
+                return 0;
+            }
+
+            if (document.getElementById("txtArrivalTime").value == null || document.getElementById("txtArrivalTime").value == "") 
+            {
+                window.alert("Please enter an arrival time.");
+                return 0;
+            }
+
+            if (document.getElementById("txtNoPatientsSeen").value == null || document.getElementById("txtNoPatientsSeen").value == "") 
+            {
+                window.alert("Please enter the number of patients seen.");
+                return 0;
+            }
+
+            if (document.getElementById("ddlLetterRequired").value == null || document.getElementById("ddlLetterRequired").value == "") 
+            {
+                window.alert("Please choose an option for post-clinic letter requirements.");
+                return 0;
+            }
+
+            if (document.getElementById("ddlClockStop").value == null || document.getElementById("ddlClockStop").value == "") 
+            {
+                window.alert("Please choose an option for 18w clock stop.");
+                return 0;
+            }
+
+            if (document.getElementById("ddlCloseRef").value == null || document.getElementById("ddlCloseRef").value == "") 
+            {
+                window.alert("Please choose an option for closing the referral.");
+                return 0;
+            }
         }
 
-        if (document.getElementById("txtArrivalTime").value == null || document.getElementById("txtArrivalTime").value == "") 
-        {
-            window.alert("Please enter an arrival time.");
-            return 0;
-        }
 
-        if (document.getElementById("txtNoPatientsSeen").value == null || document.getElementById("txtNoPatientsSeen").value == "") 
-        {
-            window.alert("Please enter the number of patients seen.");
-            return 0;
-        }
-
-        if (document.getElementById("ddlLetterRequired").value == null || document.getElementById("ddlLetterRequired").value == "") 
-        {
-            window.alert("Please choose an option for post-clinic letter requirements.");
-            return 0;
-        }
-
-        if (document.getElementById("ddlClockStop").value == null || document.getElementById("ddlClockStop").value == "") 
-        {
-            window.alert("Please choose an option for 18w clock stop.");
-            return 0;
-        }
-
-        if (document.getElementById("ddlCloseRef").value == null || document.getElementById("ddlCloseRef").value == "") 
-        {
-            window.alert("Please choose an option for closing the referral.");
-            return 0;
-        }
 
         return 1;
     }

@@ -3,23 +3,23 @@
     ViewData["Title"] = "Clinic-X - Patient Search";
 }
 
-<container>
-    <div class="row">
+<div class="container card">
+    <div class="row mb-5 mt-2 g-2">
         <form id="PatientSearch" asp-action="Index">
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
                     <label class="w-100">CGU/File Number:</label>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <input id="cguSearch" class="w-100" type="text" name="cguNo" asp-for=@Model.cguNumberSearch />
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label class="w-100">Forename:</label>
                 </div>
                 <div class="col-md-2">
                     <input id="forenameSearch" class="w-100" type="text" name="firstname" asp-for=@Model.forenameSearch />
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label class="w-100">Surname:</label>
                 </div>
                 <div class="col-md-2">
@@ -81,7 +81,7 @@
         </tbody>
     </table>
     }
-</container>
+</div>
 
 <script>
     function ClearForm() 

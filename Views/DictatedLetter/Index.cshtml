@@ -4,30 +4,30 @@
     ViewData["Title"] = "Clinic-X - Dictated Letters";
 }
 
-<div class="container">
+<div class="container card">
     @*<div>
         <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
     </div>*@
 
    
 
-    <div class="row g-5 mb-5">
+    <div class="d-grid">
         @if (Model.dictatedLettersForApproval.Count() == 0)
         {
             <h1>There are no letters outstanding</h1>
         }
         else
         {
-            <div class="row g-5 mb-5">
+            <div class="row g-2 mb-5 mt-2">
                 @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().LetterFrom)!</h1>*@
-
                 <h2 class="text-center">Letters to approve:</h2>
             </div>
 
             <table class="table">
                 <thead>
                     <tr>
-                        <th>CGU No</th>               
+                        <th>CGU No</th>
+                        <th>Patient</th>
                         <th>Letter To</th>                        
                         <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>                
                         <th>Status</th>
@@ -41,6 +41,7 @@
                         {
                             <tr>
                                 <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-success">@item.CGU_No</a></td>
+                                <td>@item.Patient</td>
                                 <td>@item.LetterTo</td>                                
                                 @if (@item.DateDictated.HasValue)
                                 {
@@ -64,7 +65,7 @@
 
    
 
-    <div class="row g-5 mb-5">       
+    <div class="d-grid">       
         @if (Model.dictatedLettersForPrinting.Count() == 0)
         {
             <h1>There are no letters awaiting printing</h1>                   
@@ -78,6 +79,7 @@
                 <thead>
                     <tr>
                         <th>CGU No</th>
+                        <th>Patient</th>
                         <th>Letter To</th>
                         <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>
                         <th>Status</th>
@@ -91,6 +93,7 @@
                         {
                             <tr>
                                 <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-success">@item.CGU_No</a></td>
+                                <td>@item.Patient</td>
                                 <td>@item.LetterTo</td>                                
                                 @if (@item.DateDictated.HasValue)
                                 {

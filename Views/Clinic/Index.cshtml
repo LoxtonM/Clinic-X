@@ -4,8 +4,8 @@
     ViewData["Title"] = "Clinic-X - Clinics";
 }
 
-<div class="container">
-    <div class="row g-5 mb-5">
+<div class="container card">
+    <div class="row g-2 mb-5 mt-2">
         
         @if (Model.currentClinicsList.Count() == 0)
         {
@@ -50,12 +50,10 @@
         }
     </div>
 
-    <div class="row g-5 mb-5">
-        <hr />
-    </div>
+    <hr />    
 
 
-    <div class="row g-5 mb-5">
+    <div class="d-grid">
         @if (Model.futureClinicsList.Count() > 0)
         {
             <div class="row">
@@ -93,7 +91,7 @@
             </div>            
         }
     </div>
-    <div class="row g-5 mb-5">
+    <div class="d-grid">
         <form id="frmPastClinics">
             <div class="row g-5 mb-3">
                 <h2>Past clinics</h2>
@@ -109,7 +107,7 @@
                     <label>Only Show Outstanding:</label>
                 </div>
                 <div class="col-md-1">
-                    <input type="checkbox" id="chkIsShowOutstanding" class="check" asp-for=@Model.isClinicOutstanding) onchange="SetShowOutstandingChecked()" />
+                    <input type="checkbox" id="chkIsShowOutstanding" class="check" asp-for=@Model.isClinicOutstanding onchange="SetShowOutstandingChecked()" />
                 </div>
                 <div class="col-md-1">
                     <input type="text" id="txtIsShowOutstanding" name="isShowOutstanding" asp-for=@Model.isClinicOutstanding hidden="true" />

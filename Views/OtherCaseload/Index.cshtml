@@ -8,7 +8,7 @@
 @{
 }
 
-<div class="container">
+<div class="container card">
     @if(Model.caseLoad.Count() > 0)
     {
         <div class="row mb-5 g-5">
@@ -20,7 +20,7 @@
         <h1>There is no caseload for this staff member.</h1>
     }
 
-    <div class="row mb-5 g-5">
+    <div class="d-grid">
         <form asp-action="Index">
             <div class="row">
                 <div class="col-md-2">

@@ -3,8 +3,8 @@
     ViewData["Title"] = "Clinic-X - Select Activity Item";
 }
 
-<div class="container">
-    <div class="row g-5 mb-5">
+<div class="container card">
+    <div class="row g-2 mb-5 mt-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
         <div class="col-md-2">
             <a type="button" id="btnBack" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>Back to Patient</a>
@@ -15,7 +15,7 @@
         <h2>Choose activity item to create new dictated letter for @Model.patientDetails.FIRSTNAME @Model.patientDetails.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Model.patientDetails.CGU_No</a></h2>
     </div>
 
-    <div class="row g-5 mb-5">
+    <div class="d-grid">
         <table class="table">
             <thead>
                 <tr>

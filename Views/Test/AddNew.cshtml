@@ -4,8 +4,8 @@
     ViewData["Title"] = "Clinic-X - Add New Test";
 }
 
-<div class="container">
-    <div class ="row g-5 mb-5">
+<div class="container card">
+    <div class ="row g-2 mb-5 mt-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Test List</a>

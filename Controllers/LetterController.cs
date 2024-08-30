@@ -39,7 +39,7 @@ public class LetterController : Controller
         _documentsData = new DocumentsData(_docContext);
         _externalClinicianData = new ExternalClinicianData(_clinContext);
         _externalFacilityData = new ExternalFacilityData(_clinContext);
-        _constantsData = new ConstantsData(_docContext);
+        _constantsData = new ConstantsData(_clinContext);
        // _crud = new CRUD(_config);
     }
 

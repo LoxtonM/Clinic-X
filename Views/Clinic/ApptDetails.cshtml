@@ -3,8 +3,8 @@
     ViewData["Title"] = "Clinic-X - Appointment Details";
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
+<div class="container card">
+    <div class="row mb-5 g-2 mt-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
         <div class="col-md-2">
             <a class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Clinics Index</a>
@@ -31,11 +31,12 @@
             <a id="btnReview" class="btn btn-default btn-success" asp-controller="Review" asp-action="Create" asp-route-id=@Model.Clinic.RefID>Schedule Review</a>
         </div>
     </div>
+    <hr />
 
     <h1>Appointment Details</h1>
 
     <div>
-        <dl class="row">
+        <dl class="row mb-5 mt-2">
             <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.Clinic.CGU_No):
             </dt>
@@ -102,10 +103,10 @@
             }
         </dl>
     </div>
-    <br /><br />
+    <hr />
     <h1>Linked Referral Details</h1>
 
-    <div class="row">
+    <div class="row mb-5 mt-2">
         <dt class="col-sm-2">
             Referral Type:
         </dt>

@@ -30,6 +30,7 @@ namespace ClinicX.Meta
         {
             IQueryable<Note> notes = from n in _clinContext.ClinicalNotes
                         where n.MPI == mpi
+                        orderby n.CreatedDate
                         select n;
 
             return notes.ToList();

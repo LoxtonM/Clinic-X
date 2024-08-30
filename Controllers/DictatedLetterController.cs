@@ -112,7 +112,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
-            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode)
+            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures)
         {
             try
             {
@@ -126,7 +126,7 @@ namespace ClinicX.Controllers
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
                 }
 
-                int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, "", letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc);
+                int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
 

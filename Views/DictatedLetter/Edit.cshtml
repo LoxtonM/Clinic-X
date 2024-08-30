@@ -3,8 +3,8 @@
     ViewData["Title"] = "Clinic-X - Edit Dictated Letter";
 }
 
-<div class="container">
-    <div class=" row mb-5 g-5">
+<div class="container card">    
+    <div class="row mb-2 mt-2 g-2">
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Index">Back to Dictated Letters Index</a>
         </div>
@@ -40,7 +40,7 @@
             <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
         </div>
     </div>
-
+    <hr />
     <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
         <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
     </h1>
@@ -70,11 +70,19 @@
             </div>
 
             <div class="row mb-5 g-5">
-                <div class="col-md-1" class="text-right">
-                    To:
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-1">
+                        <label>To:</label>
+                    </div>
+                    <div class="col-md-4"></div>
+                    <div class="col-md-1">
+                        <label>From:</label>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <div class="row">
+
+                <div class="row">
+                    <div class="col-md-2">                    
                         <select class="w-100" id="ddlLetterTo">
                             <option value="" selected>Select...</option>
                             <option value="Patient">Patient</option>
@@ -85,9 +93,8 @@
                             }
                             <option value="GP">GP</option>
                             <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="row">
+                        </select>                    
+                    
                         <select class="w-100" id="ddlLetterToType" hidden="true">                            
                             <option value="">Select...</option>
                             @foreach (var item in Model.specialities)
@@ -95,30 +102,28 @@
                                 <option value=@item>@item</option>
                             }
                         </select>
-                    </div>
-                    <div class="row">
+                    
+                    
                         <select class="w-100" id="ddlLetterToClinician" hidden="true">
                             
+                        </select>                    
+                    </div>
+                    <div class="col-md-4">
+                        <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo" name="letterTo"></textarea>
+                    </div>
+               
+                    <div class="col-md-2">
+                        <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
+                            <option value="">Select...</option>                    
+                            @foreach(var item in Model.staffMemberList)
+                            {
+                                <option value=@item.STAFF_CODE>@item.NAME</option>
+                            }
                         </select>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo" name="letterTo"></textarea>
-                </div>
-                <div class="col-md-1" class="text-right">
-                    From:
-                </div>
-                <div class="col-md-2">
-                    <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
-                        <option value="">Select...</option>                    
-                        @foreach(var item in Model.staffMemberList)
-                        {
-                            <option value=@item.STAFF_CODE>@item.NAME</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <textarea id="txtLetterFrom" rows="8" cols="40" asp-for="dictatedLetters.LetterFrom" name="letterFrom"></textarea>
+                    <div class="col-md-4">
+                        <textarea id="txtLetterFrom" rows="8" cols="40" asp-for="dictatedLetters.LetterFrom" name="letterFrom"></textarea>
+                    </div>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -179,22 +184,26 @@
                     <input class="w-100" id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="dateDictated" />
                 </div>
             </div>
-
+            <hr />
             <div class="row mb-5">
-                <div class="col-md-2" class="text-right">Content:</div>
-                <div class="col-md-10">
+                <div class="col-md-1" class="text-right"><b>Letter Content:</b> (type your letter here)</div>
+                <div class="col-md-11">
                     <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="letterContent" hidden="true"></textarea>
-                    <div class="col-md-10 solidbordertext" id="letterText" contenteditable="true">
+                    <div class="col-md-10 solidbordertext min-vh-50" id="letterText" contenteditable="true">
                         @Html.Raw(@Model.dictatedLetters.LetterContent)
                     </div>
                 </div>
             </div>
+            <hr />
             <div class="row mb-5">
-            
+                <div class="col-md-2" class="text-right">Enclosures:</div>
+                <div class="col-md-10">
+                    <textarea id="txtEnclosures" rows="8" cols="40" asp-for="dictatedLetters.Enclosures" name="enclosures"></textarea>
+                </div>
             </div>       
         </form>
-
-        <div class="row mb-5 g-5">
+        @*<div class="row mb-5 g-5">*@
+        <div class="d-grid mb-5">
             <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Re: Patients</button>
         </div>
 
@@ -228,7 +237,7 @@
             </form>
         </div>
     
-        <div class="row mb-5 g-5">
+        <div class="d-grid mb-5">
             <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseCopiesTable" aria-expanded="false" aria-controls="collapseExample">CCs</button>
         </div>
 

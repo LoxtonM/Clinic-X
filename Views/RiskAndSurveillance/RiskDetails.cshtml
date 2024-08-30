@@ -7,8 +7,8 @@
     ViewData["Title"] = "Clinic-X - Risk and Surveillance Details";
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
+<div class="container card">
+    <div class="row mb-5 g-2 mt-2">
         <div class="col-md-2">
             <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
             @*<a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Index</a>*@
@@ -17,6 +17,7 @@
             <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.riskDetails.MPI)>Patient Details</a>
         </div>
     </div>
+    <hr />
 
     <div class="row mb-5 g-5">
         <h1>Risk and Surveillance Details for @Html.DisplayFor(model => model.riskDetails.FIRSTNAME) @Html.DisplayFor(model => model.riskDetails.LASTNAME)</h1>
@@ -49,40 +50,42 @@
         </dd>
     </div>
 
-    <div class="row greybg">
-        <dt class="col-md-12 text-center">
-            <span class="text-center">Risk percentage details:</span>
-        </dt>
-        <dt class="col-md-4 text-center">
-            Lifetime:
-        </dt>
-        <dt class="col-md-2 text-center">
-            25-29
-        </dt>
-        <dt class="col-md-2 text-center">
-            30-40
-        </dt>
-        <dt class="col-md-2 text-center">
-            40-50
-        </dt>
-        <dt class="col-md-2 text-center">
-            50-60
-        </dt>
-        <dd class="col-md-4 text-center">
-            @Html.DisplayFor(model => model.riskDetails.LifetimeRiskPercentage)
-        </dd>
-        <dd class="col-md-2 text-center">
-            @Html.DisplayFor(model => model.riskDetails.R25_29)
-        </dd>
-        <dd class="col-md-2 text-center">
-            @Html.DisplayFor(model => model.riskDetails.R30_40)
-        </dd>
-        <dd class="col-md-2 text-center">
-            @Html.DisplayFor(model => model.riskDetails.R40_50)
-        </dd>
-        <dd class="col-md-2 text-center">
-            @Html.DisplayFor(model => model.riskDetails.R50_60)
-        </dd>
+    <div class="d-grid greybg">
+        <div class="row">
+            <dt class="col-md-12 text-center">
+                <span class="text-center">Risk percentage details:</span>
+            </dt>
+            <dt class="col-md-4 text-center">
+                Lifetime:
+            </dt>
+            <dt class="col-md-2 text-center">
+                25-29
+            </dt>
+            <dt class="col-md-2 text-center">
+                30-40
+            </dt>
+            <dt class="col-md-2 text-center">
+                40-50
+            </dt>
+            <dt class="col-md-2 text-center">
+                50-60
+            </dt>
+            <dd class="col-md-4 text-center">
+                @Html.DisplayFor(model => model.riskDetails.LifetimeRiskPercentage)
+            </dd>
+            <dd class="col-md-2 text-center">
+                @Html.DisplayFor(model => model.riskDetails.R25_29)
+            </dd>
+            <dd class="col-md-2 text-center">
+                @Html.DisplayFor(model => model.riskDetails.R30_40)
+            </dd>
+            <dd class="col-md-2 text-center">
+                @Html.DisplayFor(model => model.riskDetails.R40_50)
+            </dd>
+            <dd class="col-md-2 text-center">
+                @Html.DisplayFor(model => model.riskDetails.R50_60)
+            </dd>
+        </div>
     </div>
 
     <br />

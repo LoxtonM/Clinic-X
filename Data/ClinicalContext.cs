@@ -71,5 +71,6 @@ namespace ClinicX.Data
         public DbSet<Pathway> Pathways { get; set; }
         public DbSet<Priority> Priority { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Constant> Constants { get; set; }
     }
 }

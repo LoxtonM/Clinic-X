@@ -4,8 +4,8 @@
     ViewData["Title"] = "Clinic-X - Clinical Notes";
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
+<div class="container card">
+    <div class="row mb-5 g-2 mt-2">
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to Patient Details</a>
         </div>
@@ -17,6 +17,7 @@
         </div>
         <div class="col-md-8"></div>
     </div>
+    <hr />
 
 
     @if(Model.noteCount > 0)
@@ -27,7 +28,7 @@
     {
         <h1>There are no clinical notes for this patient.</h1>    
     }
-    <div class="row g-5 mb-5">
+    <div class="d-grid">
         <table class="table">
             <thead>
                 <tr>

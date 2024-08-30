@@ -4,18 +4,18 @@
 }
 
 
-<div class="container">
+<div class="container card">
     @*<div>
         <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
     </div>*@
 
-    <div class="row g-5 mb-5">
+    <div class="row g-2 mb-5 mt-2">
         @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().Clinician)!</h1>*@
 
         <h2 class="text-center">Cases to Triage:</h2>
     </div>
 
-    <div class="row mb-5 g-5">
+    <div class="d-grid">
         <table class="table">
             <thead>
                 <tr>
@@ -46,10 +46,10 @@
     @if (Model.icpCancerListOwn.Count > 0 || Model.icpCancerListOther.Count > 0)
     {
         <div class="row mb-5 g-5">
-            <h3>Other Clinicians' ICPs to Review:</h3>
+            <h2 class="text-center">Other Clinicians' ICPs to Review:</h2>
         </div>
 
-        <div class="row mb-5 g-5">
+        <div class="d-grid">
             <table class="table">
                 <thead>
                     <tr>
@@ -78,10 +78,10 @@
         </div>
 
         <div class="row mb-5 g-5">
-            <h2 class="text-center">Cancer ICPs For Review:</h2>
+            <h2 class="text-center">My Cancer ICPs For Review:</h2>
         </div>
 
-        <div class="row mb-5 g-5">
+        <div class="d-grid">
             <table class="table">
                 <thead>
                     <tr>

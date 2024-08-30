@@ -3,8 +3,8 @@
 @{
     ViewData["Title"] = "Clinic-X - Cancer ICP Review Details";
 }
-<div class="container">
-    <div class="row mb-5 g-5">
+<div class="container card">
+    <div class="row mb-5 g-2 mt-2">
         <div class="col-md-2">
             @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
             <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Triage Index</a>
@@ -18,7 +18,7 @@
         <h1>Cancer ICP Review for @Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME</h1>
     </div>
 
-    <div class="row mb-5 g-5">
+    <div class="d-grid mt-2 mb-2">
         <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseRiskItems" aria-expanded="false" aria-controls="collapseExample">Risk, Surveillance, and Testing (click to expand/hide)</button>
     </div>
 
@@ -121,7 +121,7 @@
         </div>
                
 
-        <div class="row mb-5 g-5">
+        <div class="d-grid mt-2 mb-2">
             <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseSeeInClinic" aria-expanded="false" aria-controls="collapseExample">See in Clinic (click to expand/hide)</button>
         </div>
 
@@ -178,7 +178,7 @@
             </div>
         </div>
 
-        <div class="row mb-5 g-5">
+        <div class="d-grid mt-3 mb-5">
             <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePreClinicLetter" aria-expanded="false" aria-controls="collapseExample">Pre-Clinic Letter (click to expand/hide)</button>
         </div>
 

@@ -3,7 +3,7 @@
     ViewData["Title"] = "Clinic-X - ICP Change Triaging Clinician(s)";
 }
 
-<div class="container">
+<div class="container card">
     <div class="row mb-5 g-5">
         <h1>Change Triaging Clinicians</h1>
     </div>
@@ -58,7 +58,7 @@
 
         <div class="row mb-5 g-5">
             <div class="col-md-2">
-                <button type="button" class="btn btn-success" onclick="GoBack">Back</button>
+                <button type="button" class="btn btn-success" onclick="GoBack()">Back</button>
             </div>
         </div>
     </div>
@@ -74,9 +74,9 @@
             document.getElementById("ddlCons").disabled = true;
         }
     }
-
     function GoBack() 
     {
+        
         window.history.back();
         //window.close();
     }

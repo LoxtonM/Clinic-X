@@ -24,6 +24,7 @@ namespace ClinicX.Models
         public string? PEDNO { get; set; }
         [Display(Name = "NHS Number")]
         public string SOCIAL_SECURITY { get; set; }
+        public string SEX { get; set; }
         public string? ADDRESS1 { get; set; }
         public string? ADDRESS2 { get; set; }
         public string? ADDRESS3 { get; set; }
@@ -563,6 +564,7 @@ namespace ClinicX.Models
         public int DoTID { get; set; }
         public int MPI { get; set; }
         public string CGU_No { get; set; }
+        public string Patient { get; set; }
         public int? RefID { get; set; }
         public string? LetterTo { get; set; }
         public string? LetterToSalutation { get; set; }
@@ -579,6 +581,7 @@ namespace ClinicX.Models
         public string? Consultant { get; set; }
         public string? GeneticCounsellor { get; set; }
         public string? Comments { get; set; }
+        public string? Enclosures { get; set; }
     }
 
     [Table("DictatedLettersPatients", Schema = "dbo")] //Patients added to DOT

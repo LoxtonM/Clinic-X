@@ -3,8 +3,8 @@
     ViewData["Title"] = "Clinic-X - Edit Clinical Note";
 }
 
-<div class="container">
-    <div class=" row mb-5 g-5">
+<div class="container card">
+    <div class="row mb-5 g-2 mt-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Clinical Notes Index</a>
@@ -19,6 +19,7 @@
             <a type="button" class="btn btn-default btn-success" id="btnFinalise" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Model.clinicalNote.ClinicalNoteID>Finalise</a>
         </div>
     </div>
+    <hr />
 
     <h1>Edit clinical note for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
 
@@ -42,7 +43,7 @@
             <div class="row mb-5">
                 <div class="col-md-2">Details:</div>
                 <div class="col-md-8">
-                    <textarea id="txtClinicalNote" rows="20" cols="150" asp-for=@Model.clinicalNote.ClinicalNote name="clinicalNote"></textarea>
+                    <textarea id="txtClinicalNote" rows="20" cols="120" asp-for=@Model.clinicalNote.ClinicalNote name="clinicalNote"></textarea>
                 </div>
                 <div class="col-md-2"></div>
             </div>

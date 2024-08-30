@@ -3,8 +3,8 @@
     ViewData["Title"] = "Clinic-X - Create Clinical Note";
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">       
+<div class="container card">
+    <div class="row mb-5 g-2 mt-2">       
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.activityItem.MPI>Back to Index</a>
         </div>
@@ -13,6 +13,7 @@
         </div>    
     </div>
 
+    <hr />
 
     <h1>New Clinical Note</h1>
 
@@ -44,7 +45,7 @@
             <div class="row mb-5">
                 <div class="col-md-2">Details:</div>
                 <div class="col-md-8">                    
-                    <textarea id="txtClinicalNote" rows="20" cols="150" name="clinicalNote"></textarea>
+                    <textarea id="txtClinicalNote" rows="20" cols="120" name="clinicalNote"></textarea>
                 </div>
                 <div class="col-md-2"></div>
             </div>

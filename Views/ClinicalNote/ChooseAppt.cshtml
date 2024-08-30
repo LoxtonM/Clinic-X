@@ -4,8 +4,8 @@
     ViewData["Title"] = "Clinic-X - Choose Appointment";
 }
 
-<div class="container">
-    <div class="row g-5 mb-5">
+<div class="container card">
+    <div class="row g-2 mb-5 mt-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
         <div class="col-md-2">
             <a type="button" id="btnBack" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Clinical Notes Index</a>
@@ -16,7 +16,7 @@
         <h2>Choose appointment to create new clinical note for @Model.patient.FIRSTNAME @Model.patient.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h2>
     </div>
 
-    <div class="row g-5 mb-5">
+    <div class="d-grid">
         <table class="table">
             <thead>
                 <tr>

@@ -10,17 +10,17 @@ namespace ClinicX.Meta
     }
     public class ConstantsData : IConstantsData
     {        
-        private readonly DocumentContext? _docContext;
+        private readonly ClinicalContext? _clinContext;
         
-        public ConstantsData(DocumentContext docContext)
-        {            
-            _docContext = docContext;
+        public ConstantsData(ClinicalContext docContext)
+        {
+            _clinContext = docContext;
         }        
        
 
         public string GetConstant(string constantCode, int constantValue)
         {
-            Constant item = _docContext.Constants.FirstOrDefault(c => c.ConstantCode == constantCode);
+            Constant item = _clinContext.Constants.FirstOrDefault(c => c.ConstantCode == constantCode);
 
             if (constantValue == 1)
             {

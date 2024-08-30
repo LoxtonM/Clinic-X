@@ -3,8 +3,8 @@
     ViewData["Title"] = "Clinic-X - HPO Term Extraction";
 }
 
-<div class="container">
-    <div class="mb-5">
+<div class="container card">
+    <div class="mb-5 mt-2 g-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
         <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Edit" asp-route-id=@Html.ValueFor(Model => Model.clinicalNote.ClinicalNoteID)>Back to Note</a>
     </div>
@@ -20,7 +20,7 @@
                         Note:
                     </div>
                     <div class="col-sm-10">
-                        <textarea id="txtClinicalNote" rows="10" cols="150" name="clinicalNote" asp-for=@Model.clinicalNote.ClinicalNote></textarea>
+                        <textarea id="txtClinicalNote" rows="10" cols="120" name="clinicalNote" asp-for=@Model.clinicalNote.ClinicalNote></textarea>
                     </div>
                 </div>
                 <div class="row">
@@ -37,7 +37,7 @@
         </form>
     </div>
 
-    <div class="row">
+    <div class="d-grid">
     <h4>Existing HPO codes:</h4>
         <form id="DeleteHPOTermFromNote" asp-action="DeleteHPOTermFromNote">
         <input id="txtID" name="id" hidden="true" />
@@ -56,18 +56,18 @@
         </form>
     </div>
 
-    <div class="row g-5 mb-5">
+    <div class="d-grid">
         <hr />
     </div>
 
-    <div class="row">    
+    <div class="d-grid">    
         <h4>Suggested HPO codes:</h4>
         <br /><br />
         <form id="AddHPOTermFromText" asp-action="AddHPOTermFromText">
             <input id="txtNoteID1" name="noteID" value=@Model.clinicalNote.ClinicalNoteID hidden="true" /> <input id="txtTermID" name="termID" hidden="true" />
             @if(Model.hpoExtractVM.Count > 0)
             {
-                <h5>The following HPO terms have been found from the text:</h5>
+                <h5>The following HPO terms have been found in the text:</h5>
             
                 @foreach (var t in Model.hpoExtractVM)
                 {
@@ -88,11 +88,11 @@
         </form>
     </div>
 
-    <div class="row g-5 mb-5">
+    <div class="d-grid">
         <hr />
     </div>
 
-    <div class="row">
+    <div class="d-grid">
         <h4>Add other HPO codes:</h4> <h6>(enter a search term to activate the menu)</h6>
         <form id="HPOSearch">
             <div class="row mb-2 g-2">
@@ -132,7 +132,7 @@
     
     </div>
 
-    <div class="row g-5 mb-5">
+    <div class="d-grid">
         <hr />
     </div>
 </div>
