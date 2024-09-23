@@ -12,6 +12,9 @@ namespace ClinicX.Meta
         public List<HPOTerm> GetHPOTermsList();
         public List<HPOTermDetails> GetExistingHPOTermsList(int id);
         public List<HPOExtractVM> GetExtractedTermsList(int noteID, IConfiguration _config);
+        public HPOTerm GetHPOTermByTermCode(string hpoTermCode);
+        public void AddHPOTermToDatabase(string hpoTermCode, string term, string userName, IConfiguration _config);
+        public void AddHPOSynonymToDatabase(int hpoTermID, string synonym, string userName, IConfiguration _config);
 
     }
     public class HPOCodeData : IHPOCodeData
@@ -78,6 +81,31 @@ namespace ClinicX.Meta
 
 
             return (model);
+        }
+
+        public HPOTerm GetHPOTermByTermCode(string hpoTermCode) //Get list of all possible HPO codes
+        {
+            HPOTerm term = _clinContext.HPOTerms.FirstOrDefault(t => t.TermCode == hpoTermCode);
+
+            return term;
+        }
+
+        public void AddHPOTermToDatabase(string hpoTermCode, string term, string userName, IConfiguration _config)
+        {
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open(); //TODO - turn this into a SP
+            SqlCommand cmd = new SqlCommand($"INSERT INTO HPOTerm (Term, TermCode, CreatedDate, CreatedBy) " +
+                $"values ('{term}','{hpoTermCode}','{DateTime.Now.ToString("yyyy-MM-dd")}','{userName}')", conn);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void AddHPOSynonymToDatabase(int hpoTermID, string synonym, string userName, IConfiguration _config)
+        {
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open(); //TODO - turn this into a SP
+            SqlCommand cmd = new SqlCommand($"INSERT INTO HPOTermSynonym (HPOTermId, TermSynonym, CreatedDate, CreatedBy) " +
+                $"values ({hpoTermID},'{synonym}','{DateTime.Now.ToString("yyyy-MM-dd")}','{userName}')", conn);
+            cmd.ExecuteNonQuery();
         }
     }
 }

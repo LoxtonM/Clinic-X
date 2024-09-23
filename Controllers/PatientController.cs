@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
 using RestSharp;
+using Newtonsoft.Json.Linq;
 
 namespace ClinicX.Controllers
 {
@@ -42,7 +43,7 @@ namespace ClinicX.Controllers
         
 
         [Authorize]
-        public async Task<IActionResult> PatientDetails(int id)
+        public async Task<IActionResult> PatientDetails(int id, bool? success)
         {
             try
             {
@@ -61,6 +62,20 @@ namespace ClinicX.Controllers
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
 
+                if (success.HasValue)
+                {
+                    _pvm.ptSuccess = success.GetValueOrDefault();
+                    
+                    if (success.GetValueOrDefault())
+                    {
+                        _pvm.message = "Patient successfully pushed to Phenotips.";
+                    }
+                    else
+                    {
+                        _pvm.message = "Push to Phenotips failed.";
+                    }
+                }
+
                 return View(_pvm);
             }
             catch (Exception ex)
@@ -69,32 +84,6 @@ namespace ClinicX.Controllers
             }
         }
         
-        public async Task<IActionResult> PushPtToPhenotips(int id)
-        {
-            _pvm.patient = _patientData.GetPatientDetails(id);
-            string firstName = _pvm.patient.FIRSTNAME;
-            string lastName = _pvm.patient.LASTNAME;
-            DateTime DOB = _pvm.patient.DOB.GetValueOrDefault();
-            int yob = DOB.Year;
-            int mob = DOB.Month;
-            int dob = DOB.Day;
-            string cguNo = _pvm.patient.CGU_No;
-            string gender = _pvm.patient.SEX.Substring(0, 1);
-            string apiURL = _constants.GetConstant("PhenotipsURL", 1).Trim(); //because for some reason, the Constants table padds all fields with lots of white space!!
-            apiURL = apiURL + ":443/rest/patients";            
-            var options = new RestClientOptions(apiURL);
-            var client = new RestClient(options);
-            var request = new RestRequest("");
-            request.AddHeader("authorization", "Basic UGV0ZXJOZXdjb21iZTpiS1d6ZW5tNkFEM0VYZHNyQ0ZCY000aFY=");
-            //string apiCall = "{\"patient_name\":{\"first_name\":\"firstName\",\"last_name\":\"lastName\"},\"date_of_birth\":{\"year\":9999,\"month\":8888,\"day\":7777},\"sex\":\"gender\",\"external_id\":\"cguNo\"}";
-            string apiCall = "{\"patient_name\":{\"first_name\":\"" + $"{firstName}" + "\",\"last_name\":\"" + $"{lastName}";
-            apiCall = apiCall + "\"},\"date_of_birth\":{\"year\":" + yob.ToString() + ",\"month\":" + mob.ToString() + ",\"day\":" + dob.ToString();
-            apiCall = apiCall + "},\"sex\":\"" + $"{gender}" + "\",\"external_id\":\"" + $"{cguNo}" + "\"}";
-            
-            request.AddJsonBody(apiCall, false);
-            var response = await client.PostAsync(request);
-
-            return RedirectToAction("PatientDetails", "Patient", new { id = _pvm.patient.MPI });
-        }
+        
     }
 }

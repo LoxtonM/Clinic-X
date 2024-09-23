@@ -271,9 +271,8 @@ public class LetterController : Controller
                     tf4.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength4, 500, 20));
                 }                
             }
-
             //document.Save($"c:\\projects\\VS Test\\ClinicX\\wwwroot\\DOTLetterPreviews\\preview-{user}.pdf");
-            document.Save($"~/DOTLetterPreviews/preview-{user}.pdf");
+            document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf"));
         }
 
         catch (Exception ex)

@@ -149,29 +149,24 @@
 
     function OpenPastClinic() 
     {
-        let _Clinic = document.getElementById('ddlPastClinics')
-
-        if (_Clinic.value == "" || _Clinic.value == null) {
-            alert("You must choose a clinic.");
-        }
-        else 
-        {
-            let _url = ""
-            _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/Clinic/ApptDetails?id=" + _Clinic.value;
-            location.href = _url;
-            //window.open(_url);
-        }
+        OpenClinic(document.getElementById('ddlPastClinics'));
     }
 
-    function OpenFutureClinic() {
-        let _Clinic = document.getElementById('ddlFutureClinics')
+    function OpenFutureClinic() 
+    {   
+        OpenClinic(document.getElementById('ddlFutureClinics'));
+    }
 
-        if (_Clinic.value == "" || _Clinic.value == null) {
+    function OpenClinic(clinic)
+    {
+        if (clinic.value == "" || clinic.value == null)
+        {
             alert("You must choose a clinic.");
         }
-        else {
+        else
+        {
             let _url = ""
-            _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/Clinic/ApptDetails?id=" + _Clinic.value;
+            _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/Clinic/ApptDetails?id=" + clinic.value;
             location.href = _url;
             //window.open(_url);
         }
@@ -180,6 +175,6 @@
     function SetShowOutstandingChecked()
     {
         document.getElementById("txtIsShowOutstanding").value = document.getElementById("chkIsShowOutstanding").checked;
-        }
+    }
 
 </script>

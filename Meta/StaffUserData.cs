@@ -31,7 +31,7 @@ namespace ClinicX.Meta
         public List<StaffMember> GetClinicalStaffList() //Get list of all clinical staff members currently in post
         {
             IQueryable<StaffMember> clinicians = from s in _clinContext.StaffMembers
-                             where s.InPost == true && (s.CLINIC_SCHEDULER_GROUPS == "GC" || s.CLINIC_SCHEDULER_GROUPS == "Consultant")
+                             where s.InPost == true && (s.CLINIC_SCHEDULER_GROUPS == "GC" || s.CLINIC_SCHEDULER_GROUPS == "Consultant" || s.CLINIC_SCHEDULER_GROUPS == "SpR")
                              orderby s.NAME
                              select s;
 

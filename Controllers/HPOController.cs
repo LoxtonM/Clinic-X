@@ -2,6 +2,7 @@
 using ClinicX.Data;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
+using ClinicX.Models;
 
 namespace ClinicX.Controllers
 {
@@ -16,6 +17,7 @@ namespace ClinicX.Controllers
         private readonly IMiscData _misc;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly APIController _api;
 
         public HPOController(ClinicalContext context, IConfiguration config)
         {
@@ -28,6 +30,7 @@ namespace ClinicX.Controllers
             _crud = new CRUD(_config);
             _misc = new MiscData(_config);
             _audit = new AuditService(_config);
+            _api = new APIController(_clinContext);
         }
 
         [HttpGet]
@@ -40,12 +43,13 @@ namespace ClinicX.Controllers
 
                 _hpo.clinicalNote = _clinicaNoteData.GetClinicalNoteDetails(id);
                 _hpo.hpoTermDetails = _hpoData.GetExistingHPOTermsList(id);
-                _hpo.hpoTerms = _hpoData.GetHPOTermsList();
+                //_hpo.hpoTerms = _hpoData.GetHPOTermsList();
                 _hpo.hpoExtractVM = _hpoData.GetExtractedTermsList(id, _config);
 
                 if(searchTerm != null) 
-                { 
-                    _hpo.hpoTerms = _hpo.hpoTerms.Where(t => t.Term.Contains(searchTerm)).ToList();
+                {
+                    _hpo.hpoTerms = await _api.GetHPOCodes(searchTerm);
+
                     _hpo.searchTerm = searchTerm;
                 }
 
@@ -58,11 +62,33 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddHPOTerm(int noteID, int termID)
+        //public async Task<IActionResult> AddHPOTerm(int noteID, int termID)
+        public async Task<IActionResult> AddHPOTerm(int noteID, string termCode)
         {
             try
-            {                
-                int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, termID, 0, "", "", "", "", User.Identity.Name);
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - HPO", "NoteID=" + noteID.ToString());
+                //check if code exists, add it if it doesn't
+                if (_hpoData.GetHPOTermByTermCode(termCode) == null)
+                {                    
+                    HPOTerm term = await _api.GetHPODataByTermCode(termCode);
+                    _hpoData.AddHPOTermToDatabase(termCode, term.Term, staffCode, _config);
+
+                    //and add its synonyms as well
+                    HPOTerm termAdded = _hpoData.GetHPOTermByTermCode(termCode);
+                    int hpoTermID = termAdded.ID;
+
+                    List<string> synonymsToAdd = new List<string>();
+                    synonymsToAdd = await _api.GetHPOSynonymsByTermCode(termCode);
+
+                    foreach (var item in synonymsToAdd)
+                    {
+                        _hpoData.AddHPOSynonymToDatabase(hpoTermID, item, staffCode, _config);
+                    }
+                }
+
+                int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, 0, 0, termCode, "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "HPO-add(SQL)" }); }
 

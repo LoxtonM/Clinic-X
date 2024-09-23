@@ -13,5 +13,7 @@ namespace ClinicX.ViewModels
         public PatientPathway patientPathway { get; set; }
         public List<Alert> alerts { get; set; }
         public List<Diary> diary { get; set; }
+        public bool ptSuccess { get; set; }
+        public string message { get; set; }
     }
 }

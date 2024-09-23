@@ -4,6 +4,23 @@
 }
 
 <div class="container card">
+
+    @if (Model.message != null)
+    {
+        @if (Model.ptSuccess)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
     <div class="row mb-5 g-2 mt-2">
         <div class="col-md-2">
             @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
@@ -19,13 +36,13 @@
             <a id="btnClinicalNote" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Clinical Notes</a>
         </div>
         <div class="col-md-1">
-            <a id="btnLetter" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="ActivityItems" asp-route-id=@Model.patient.MPI>New Dictated Letter</a>
+            <a id="btnLetter" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="ActivityItems" asp-route-id=@Model.patient.MPI>Dictate Letter</a>
         </div>
         <div class="col-md-1"></div>
-        <div class="col-md-3">
-            <a id="btnPhenotips" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PushPtToPhenotips" asp-route-id=@Model.patient.MPI>Push patient to Phenotips</a>
+        <div class="col-md-2">
+            <a id="btnPhenotips" class="btn btn-default btn-success" asp-controller="API" asp-action="PushPtToPhenotips" asp-route-id=@Model.patient.MPI>Push patient to Phenotips</a>
         </div>
-        <div class="col-md-1"></div>
+        <div class="col-md-2"></div>
         <div class="col-md-1">
             <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
         </div>
@@ -35,6 +52,8 @@
     {
         <h3 class="text-center">Patient not yet made electronic - no EDMS record exists</h3>
     }
+
+    
 
     <div class="row mb-5">
         <hr />
@@ -577,6 +596,7 @@
         {
             <h4>No relatives have been added.</h4>
         }
+        <a type="button" asp-controller="API" asp-action="ImportRelativesFromPhenotips" asp-route-id=@Model.patient.MPI class="btn btn-default btn-success">Import Relatives from Phenotips</a>
 
         <div class="d-grid mt-2 mb-2">
             <div class="col-md-2">
@@ -584,7 +604,7 @@
             </div>
         </div>
     </div>
-</div>
+</p>
 
 
 <script type="text/javascript">
@@ -595,10 +615,12 @@
     function LoadEDMSLink() 
     {
         //only load EDMS link if there actually is one
-        if ("@(Model.patient.DCTM_Folder_ID)" != "") {            
+        if ("@(Model.patient.DCTM_Folder_ID)" != "") 
+        {            
             document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
         }
-        else{
+        else
+        {
             document.getElementById("btnEDMS").hidden = true;            
         }
     }

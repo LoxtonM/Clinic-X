@@ -102,6 +102,7 @@
                 <div class="col-md-6">
                     <input type="text" id="txtSearch" name="searchTerm" asp-for=@Model.searchTerm />
                     <input name="id" value=@Model.clinicalNote.ClinicalNoteID hidden="true" />
+                    @*<a type="button" class="btn btn-success" asp-controller="API" asp-action="GetHPOCodes" asp-route-searchTerm="kidney">TestSearch</a>*@
                 </div>
             </div>
         </form>
@@ -113,15 +114,18 @@
                 </div>
     
                 <div class="col-md-8">
-                    <select class="w-100" id="ddlHPO" name="termID" disabled="true">
-                        @foreach (var t in Model.hpoTerms)
+                    <select class="w-100" id="ddlHPO" name="termCode" disabled="true">
+                        @if(Model.hpoTerms != null)
                         {
-                            <option value="@t.ID">@t.TermCode - @t.Term</option>
+                            @foreach (var t in Model.hpoTerms)
+                            {
+                                <option value="@t.TermCode">@t.TermCode - @t.Term</option>
+                            }
                         }
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <input type="button" value="Add HPO Code" id="btnAdd" class="btn btn-default btn-success" asp-controller="HPO" asp-action="AddHPOTerm" />
+                    <input type="button" value="Add HPO Code" id="btnAdd" class="btn btn-default btn-success" asp-controller="HPO" asp-action="AddHPOTerm" disabled="true" />
                 </div>    
             </div>
     
@@ -154,8 +158,10 @@
 
         //window.alert(document.getElementById("txtSearch").value);
 
-        if (document.getElementById("txtSearch").value != "" && document.getElementById("txtSearch").value != null) {
+        if (document.getElementById("txtSearch").value != "" && document.getElementById("txtSearch").value != null) 
+        {
             document.getElementById("ddlHPO").disabled = false;
+            document.getElementById("btnAdd").disabled = false;
         }
         //document.getElementById("ddlHPO").disabled = false;
     }
