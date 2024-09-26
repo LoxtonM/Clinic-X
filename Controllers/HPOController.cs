@@ -30,7 +30,7 @@ namespace ClinicX.Controllers
             _crud = new CRUD(_config);
             _misc = new MiscData(_config);
             _audit = new AuditService(_config);
-            _api = new APIController(_clinContext);
+            _api = new APIController(_clinContext, _config);
         }
 
         [HttpGet]
@@ -38,9 +38,10 @@ namespace ClinicX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _hpo.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _hpo.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - HPO", "ID=" + id.ToString());
-
+                
                 _hpo.clinicalNote = _clinicaNoteData.GetClinicalNoteDetails(id);
                 _hpo.hpoTermDetails = _hpoData.GetExistingHPOTermsList(id);
                 //_hpo.hpoTerms = _hpoData.GetHPOTermsList();

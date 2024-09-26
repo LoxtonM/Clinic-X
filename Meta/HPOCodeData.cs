@@ -97,6 +97,7 @@ namespace ClinicX.Meta
             SqlCommand cmd = new SqlCommand($"INSERT INTO HPOTerm (Term, TermCode, CreatedDate, CreatedBy) " +
                 $"values ('{term}','{hpoTermCode}','{DateTime.Now.ToString("yyyy-MM-dd")}','{userName}')", conn);
             cmd.ExecuteNonQuery();
+            conn.Close();
         }
 
         public void AddHPOSynonymToDatabase(int hpoTermID, string synonym, string userName, IConfiguration _config)
@@ -106,6 +107,7 @@ namespace ClinicX.Meta
             SqlCommand cmd = new SqlCommand($"INSERT INTO HPOTermSynonym (HPOTermId, TermSynonym, CreatedDate, CreatedBy) " +
                 $"values ({hpoTermID},'{synonym}','{DateTime.Now.ToString("yyyy-MM-dd")}','{userName}')", conn);
             cmd.ExecuteNonQuery();
+            conn.Close();
         }
     }
 }

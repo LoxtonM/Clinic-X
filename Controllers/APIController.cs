@@ -1,32 +1,35 @@
 ﻿using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.Models;
-using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
-using System.ComponentModel;
-using static System.Net.WebRequestMethods;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace ClinicX.Controllers
 {
     public class APIController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly IConfiguration _config;
         private readonly IPatientData _patientData;
         private readonly IConstantsData _constants;
+        private readonly IHPOCodeData _hpo;
         private string apiURL;
         private string authKey;
+        private string apiKey;
 
-        public APIController(ClinicalContext clinContext)
+        public APIController(ClinicalContext clinContext, IConfiguration config)
         {
-            _clinContext = clinContext;
+            _clinContext = clinContext;            
             _patientData = new PatientData(_clinContext);
             _constants = new ConstantsData(_clinContext);
+            _hpo = new HPOCodeData(_clinContext);
             apiURL = _constants.GetConstant("PhenotipsURL", 2).Trim();
             authKey = "Basic bW5sbjpFZGVuUHJpbWUxOTg0";
+            apiKey = "T-Si8nmMjT8SxJGIxgZ2oMw0135TnPUQ0XeA8Nva";
+            _config = config;
         }
 
         public async Task<IActionResult> PushPtToPhenotips(int id)
@@ -41,7 +44,8 @@ namespace ClinicX.Controllers
             var options = new RestClientOptions(apiURL);
             var client = new RestClient(options);
             var request = new RestRequest("");
-            request.AddHeader("authorization", authKey);
+            request.AddHeader("authorization", $"Basic {authKey}");
+            request.AddHeader("X-Gene42-Secret", apiKey);
             string apiCall = "{\"patient_name\":{\"first_name\":\"" + $"{patient.FIRSTNAME}" + "\",\"last_name\":\"" + $"{patient.LASTNAME}";
             apiCall = apiCall + "\"},\"date_of_birth\":{\"year\":" + yob.ToString() + ",\"month\":" + mob.ToString() + ",\"day\":" + dob.ToString();
             apiCall = apiCall + "},\"sex\":\"" + $"{patient.SEX.Substring(0, 1)}" + "\",\"external_id\":\"" + $"{patient.CGU_No}" + "\"}";
@@ -81,6 +85,7 @@ namespace ClinicX.Controllers
                 var request = new RestRequest("");
                 request.AddHeader("accept", "application/json");
                 request.AddHeader("authorization", authKey);
+                request.AddHeader("X-Gene42-Secret", apiKey);
                 var response = client.GetAsync(request);
 
                 string phenotipsID;
@@ -93,6 +98,7 @@ namespace ClinicX.Controllers
                 var request2 = new RestRequest("");
                 request2.AddHeader("content-type", "application/json");
                 request2.AddHeader("authorization", authKey);
+                request2.AddHeader("X-Gene42-Secret", apiKey);
                 request2.AddJsonBody("{\"owner\":{\"id\":\"" + userName + "\"}}", false);
                 var response2 = client2.PutAsync(request2);
             }
@@ -110,7 +116,6 @@ namespace ClinicX.Controllers
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
-            //request.AddHeader("authorization", authKey);
             
             var response = await client.GetAsync(request);
 
@@ -124,21 +129,18 @@ namespace ClinicX.Controllers
             }
 
             return hpoCodes.OrderBy(c => c.TermCode).ToList();
-
-            //http://localhost:7168/HPO/HPOTerm?id=196236
         }
 
         public async Task<HPOTerm> GetHPODataByTermCode(string hpoTermCode)
         {
             HPOTerm hPOTerm;
 
-            apiURL = $"https://ontology.jax.org/api/hp/terms/{hpoTermCode.Replace(":", "%3A")}";  //I don't know what the page and limit actually means,
-                                                                                                //but anything more than 50 seems to result in no results
+            apiURL = $"https://ontology.jax.org/api/hp/terms/{hpoTermCode.Replace(":", "%3A")}";  
+                                                                                                
             var options = new RestClientOptions(apiURL);
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
-            //request.AddHeader("authorization", authKey);
 
             var response = await client.GetAsync(request);
 
@@ -155,13 +157,12 @@ namespace ClinicX.Controllers
         {
             List<string> hpoSynonyms = new List<string>();
 
-            apiURL = $"https://ontology.jax.org/api/hp/terms/{hpoTermCode.Replace(":", "%3A")}";  //I don't know what the page and limit actually means,
-                                                                                                  //but anything more than 50 seems to result in no results
+            apiURL = $"https://ontology.jax.org/api/hp/terms/{hpoTermCode.Replace(":", "%3A")}";
+
             var options = new RestClientOptions(apiURL);
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
-            //request.AddHeader("authorization", authKey);
 
             var response = await client.GetAsync(request);
 
@@ -175,5 +176,47 @@ namespace ClinicX.Controllers
 
             return hpoSynonyms.ToList();
         }
+
+
+        public async Task<IActionResult> GetAllHPOTerms()
+        {
+            List<string> hpoSynonyms = new List<string>();
+
+            apiURL = $"https://ontology.jax.org/api/hp/terms";
+
+            var options = new RestClientOptions(apiURL);
+            var client = new RestClient(options);
+            var request = new RestRequest("");
+            request.AddHeader("accept", "application/json");
+
+            var response = await client.GetAsync(request);
+
+
+            dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
+
+            //string json = "";
+
+            List<HPOTerm> hpoTerms = new List<HPOTerm>();
+            
+            foreach (var item in dynJson)
+            {   
+                string hpoID = item.id;
+                string hpoName = item.name;
+                if (_hpo.GetHPOTermByTermCode(hpoID) == null)
+                {
+                    //_hpo.AddHPOTermToDatabase(hpoID, hpoName, User.Identity.Name, _config);
+                    hpoTerms.Add(new HPOTerm { TermCode = hpoID, Term = hpoName });
+                }                
+            }       
+
+            foreach (var term in hpoTerms)
+            {
+                _hpo.AddHPOTermToDatabase(term.TermCode, term.Term.Replace("'", "''"), User.Identity.Name, _config);                 
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        
     }
 }

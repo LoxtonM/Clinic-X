@@ -9,6 +9,14 @@
         <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Edit" asp-route-id=@Html.ValueFor(Model => Model.clinicalNote.ClinicalNoteID)>Back to Note</a>
     </div>
 
+    <div class="mb-5 mt-2 g-2">
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        @if (Model.staffMember.BILL_ID == "Technical")
+        {
+            <a type="button" class="btn btn-default btn-success" asp-controller="API" asp-action="GetAllHPOTerms">Get all HPO codes</a>
+        }
+    </div>
+
 
     <h1>Clinical Note HPO Terms</h1>
 
