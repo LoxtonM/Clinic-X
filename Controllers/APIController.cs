@@ -180,8 +180,6 @@ namespace ClinicX.Controllers
 
         public async Task<IActionResult> GetAllHPOTerms()
         {
-            List<string> hpoSynonyms = new List<string>();
-
             apiURL = $"https://ontology.jax.org/api/hp/terms";
 
             var options = new RestClientOptions(apiURL);
@@ -191,28 +189,27 @@ namespace ClinicX.Controllers
 
             var response = await client.GetAsync(request);
 
-
             dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
-
-            //string json = "";
-
-            List<HPOTerm> hpoTerms = new List<HPOTerm>();
             
             foreach (var item in dynJson)
             {   
                 string hpoID = item.id;
-                string hpoName = item.name;
+                string hpoName = item.name;                
+
                 if (_hpo.GetHPOTermByTermCode(hpoID) == null)
                 {
-                    //_hpo.AddHPOTermToDatabase(hpoID, hpoName, User.Identity.Name, _config);
-                    hpoTerms.Add(new HPOTerm { TermCode = hpoID, Term = hpoName });
-                }                
-            }       
+                    _hpo.AddHPOTermToDatabase(hpoID, hpoName.Replace("'", "''"), User.Identity.Name, _config);
 
-            foreach (var term in hpoTerms)
-            {
-                _hpo.AddHPOTermToDatabase(term.TermCode, term.Term.Replace("'", "''"), User.Identity.Name, _config);                 
-            }
+                    int hpocodeid = _hpo.GetHPOTermByTermCode(hpoID).ID;
+
+                    foreach (var synonym in item.synonyms)
+                    {
+                        string syn = synonym.ToString();
+                        syn = syn.Replace("{", "").Replace("}", "");
+                        _hpo.AddHPOSynonymToDatabase(hpocodeid, syn, User.Identity.Name, _config);
+                    }                    
+                }                
+            }           
 
             return RedirectToAction("Index", "Home");
         }
