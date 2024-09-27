@@ -47,7 +47,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient", "MPI=" + id.ToString());
 
                 _pvm.patient = _patientData.GetPatientDetails(id);

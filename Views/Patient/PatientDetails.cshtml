@@ -40,7 +40,10 @@
         </div>
         <div class="col-md-1"></div>
         <div class="col-md-2">
-            <a id="btnPhenotips" class="btn btn-default btn-success" asp-controller="API" asp-action="PushPtToPhenotips" asp-route-id=@Model.patient.MPI>Push patient to Phenotips</a>
+            @if (Model.staffMember.BILL_ID == "Technical")
+            {
+                <a id="btnPhenotips" class="btn btn-default btn-success" asp-controller="API" asp-action="PushPtToPhenotips" asp-route-id=@Model.patient.MPI>Push patient to Phenotips</a>
+            }
         </div>
         <div class="col-md-2"></div>
         <div class="col-md-1">
