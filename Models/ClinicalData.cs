@@ -15,6 +15,10 @@ namespace ClinicX.Models
         [Display(Name ="Date of Birth")]
         [DataType(DataType.Date)]
         public DateTime? DOB { get; set; }
+        [Display(Name = "Date of Death")]
+        [DataType(DataType.Date)]
+        public DateTime? DECEASED_DATE { get; set; }
+        public Int16 DECEASED {  get; set; }
         [Display(Name = "Forename")]
         public string FIRSTNAME { get; set; }
         [Display(Name = "Surname")]

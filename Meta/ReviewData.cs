@@ -7,6 +7,7 @@ namespace ClinicX.Meta
     interface IReviewData
     {
         public List<Review> GetReviewsList(string username);
+        public List<Review> GetReviewsListForPatient(int mpi);
         public Review GetReviewDetails(int id);
     }
     public class ReviewData : IReviewData
@@ -29,6 +30,16 @@ namespace ClinicX.Meta
                           where r.Review_Recipient == staffCode && r.Review_Status == "Pending"
                           orderby r.Planned_Date
                           select r;
+
+            return reviews.ToList();
+        }
+
+        public List<Review> GetReviewsListForPatient(int mpi)
+       {
+            IQueryable<Review> reviews = from r in _clinContext.Reviews
+                                         where r.MPI == mpi && r.Review_Status == "Pending"
+                                         orderby r.Planned_Date
+                                         select r;
 
             return reviews.ToList();
         }

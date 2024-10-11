@@ -13,6 +13,7 @@ namespace ClinicX.Meta
         public List<HPOTermDetails> GetExistingHPOTermsList(int id);
         public List<HPOExtractVM> GetExtractedTermsList(int noteID, IConfiguration _config);
         public HPOTerm GetHPOTermByTermCode(string hpoTermCode);
+        public HPOTerm GetHPOTermByID(int id);
         public void AddHPOTermToDatabase(string hpoTermCode, string term, string userName, IConfiguration _config);
         public void AddHPOSynonymToDatabase(int hpoTermID, string synonym, string userName, IConfiguration _config);
 
@@ -86,6 +87,13 @@ namespace ClinicX.Meta
         public HPOTerm GetHPOTermByTermCode(string hpoTermCode) //Get list of all possible HPO codes
         {
             HPOTerm term = _clinContext.HPOTerms.FirstOrDefault(t => t.TermCode == hpoTermCode);
+
+            return term;
+        }
+
+        public HPOTerm GetHPOTermByID(int id) //Get list of all possible HPO codes
+        {
+            HPOTerm term = _clinContext.HPOTerms.FirstOrDefault(t => t.ID == id);
 
             return term;
         }

@@ -54,6 +54,29 @@ namespace ClinicX.Controllers
             }
         }
 
+        public async Task<IActionResult> ReviewsForPatient(int id)
+        {
+            try
+            {
+                if (User.Identity.Name is null)
+                {
+                    return RedirectToAction("NotFound", "WIP");
+                }
+
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Reviews");
+
+                _rvm.reviewList = _reviewData.GetReviewsListForPatient(id);
+                _rvm.patient = _patientData.GetPatientDetails(id);
+
+                return View(_rvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review" });
+            }
+        }
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Create(int id)

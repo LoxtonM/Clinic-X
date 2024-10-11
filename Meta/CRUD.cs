@@ -10,7 +10,7 @@ namespace ClinicX.Meta
             string string1, string string2, string string3, string text, string sLogin,
             DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
-            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0);
+            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "");
     }
     public class CRUD : ICRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
                        //data modifications - creation, updates, and deletions. It does not retrieve any data, but uses a generic
@@ -27,7 +27,7 @@ namespace ClinicX.Meta
             string string1, string string2, string string3, string text, string sLogin,
             DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
-            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0)
+            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "")
         {   
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
@@ -68,6 +68,10 @@ namespace ClinicX.Meta
             cmd.Parameters.Add("@float3", SqlDbType.Float).Value = f3;
             cmd.Parameters.Add("@float4", SqlDbType.Float).Value = f4;
             cmd.Parameters.Add("@float5", SqlDbType.Float).Value = f5;
+            if(string7 != "")
+            {
+                cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;
+            }
             cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); //return success or not
             returnValue.Direction = ParameterDirection.ReturnValue;

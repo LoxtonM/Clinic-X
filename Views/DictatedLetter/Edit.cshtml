@@ -21,7 +21,7 @@
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
                 <input type="button" class="btn btn-default btn-success" value="Unapprove" id="btnUnapprove" hidden="true" />
             </form>
-        </div>    
+        </div>
         <div class="col-md-2">
             <form id="DictatedLetterDelete" asp-action="Delete">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
@@ -39,6 +39,22 @@
         <div class="col-md-2">
             <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
         </div>
+    </div>
+    <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden="true">
+        <div class="col-md-2"></div>
+        <div class="col-md-3">
+            <label>Do you want to close the referral?</label>
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-default btn-success" id="btnCloseReferral" onclick="ApproveLetter(1)">Yes</button>
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-default btn-danger" id="btnDontCloseReferral" onclick="ApproveLetter(0)">No</button>
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-default btn-primary" id="btnCancel" onclick="ApproveLetter(-1)">Cancel</button>
+        </div>
+        <div class="col-md-4"></div>
     </div>
     <hr />
     <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
@@ -200,7 +216,14 @@
                 <div class="col-md-10">
                     <textarea id="txtEnclosures" rows="8" cols="40" asp-for="dictatedLetters.Enclosures" name="enclosures"></textarea>
                 </div>
-            </div>       
+            </div>
+            <div class="row mb-5">
+                <div class="col-md-2" class="text-right">Comments:</div>
+                <div class="col-md-10">
+                    <textarea id="txtComments" rows="4" cols="80" asp-for="dictatedLetters.Comments" name="comments"></textarea>
+                </div>
+            </div>
+
         </form>
         @*<div class="row mb-5 g-5">*@
         <div class="d-grid mb-5">
@@ -269,6 +292,11 @@
             </div>
             <form id="frmAddCCToDOT" asp-action="AddCCToDOT">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true"/>
+                <div class="row">
+                    <div class="col-md-8">
+                        <label class="redtext">Note: adding a CC will cause the page to refresh, please be sure to save any changes first!</label>
+                    </div>
+                </div>
                 <div class="row mb-5 g-5">            
                     <div class="col-md-2">
                         <input type="button" id="btnAddCC" class="btn btn-default btn-success" value="Add CC" />
@@ -294,42 +322,7 @@
                                 }
                             </select>
 
-                            @*<select class="w-100" id="ddlCCCardio" hidden="true" onchange="SetCCAddress('Cardio')">
-                                @foreach(var item in Model.cardio)
-                                {
-                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
-                                }
-                            </select>
-                            <select class="w-100" id="ddlCCGenetics" hidden="true" onchange="SetCCAddress('Genetics')">
-                                @foreach (var item in Model.genetics)
-                                {
-                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
-                                }
-                            </select>
-                            <select class="w-100" id="ddlCCGynae" hidden="true" onchange="SetCCAddress('Gynae')">
-                                @foreach (var item in Model.gynae)
-                                {
-                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
-                                }
-                            </select>
-                            <select class="w-100" id="ddlCCHisto" hidden="true" onchange="SetCCAddress('Histo')">
-                                @foreach (var item in Model.histo)
-                                {
-                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
-                                }
-                            </select>
-                            <select class="w-100" id="ddlCCScreeningCo" hidden="true" onchange="SetCCAddress('ScreeningCo')">
-                                @foreach (var item in Model.screeningco)
-                                {
-                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
-                                }
-                            </select>
-                            <select class="w-100" id="ddlCCGPAll" hidden="true">
-                                @foreach (var item in Model.gps_all)
-                                {
-                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.FACILITY</option>
-                                }
-                            </select>*@
+                            
                             <select id="ddlCC" hidden="true">
                                 
                             </select>
@@ -354,7 +347,7 @@
 <script type="text/javascript">
     
     document.getElementById("btnSaveLetter").addEventListener("click", SaveLetter);
-    document.getElementById("btnApprove").addEventListener("click", ApproveLetter);
+    document.getElementById("btnApprove").addEventListener("click", CloseReferralShow);
     document.getElementById("btnUnapprove").addEventListener("click", UnapproveLetter);
     document.getElementById("btnDelete").addEventListener("click", DeleteLetter);
     document.getElementById("btnReqDelete").addEventListener("click", ShowDelete);
@@ -419,25 +412,41 @@
         //because the only way to refresh the page wipes everything!!
     }
 
-    function ApproveLetter()
+    function CloseReferralShow()
     {
-        if (window.confirm("Do you want to close the referral?")) 
+        document.getElementById("CloseReferralBox").hidden = false;
+    }
+
+    function ApproveLetter(closeReferral)
+    {
+        
+        if (closeReferral == 1) 
         {            
             document.getElementById("txtCloseReferral").value = "true";
         }
+        else
+        {            
+            document.getElementById("txtCloseReferral").value = "false";
+        }
         
-
-        document.getElementById("DictatedLetterApproval").submit();        
+        if (closeReferral == -1)
+        {
+            document.getElementById("CloseReferralBox").hidden = true;
+        }
+        else
+        {
+            document.getElementById("DictatedLetterApproval").submit();        
         
-        document.getElementById("btnApprove").hidden = true;
-        document.getElementById("btnUnapprove").hidden = false;
-        document.getElementById("ddlLetterStatus").disabled = false;
-        document.getElementById("optPrint").hidden = false;
-        document.getElementById("ddlLetterStatus").value = "For Printing";
-        document.getElementById("ddlLetterStatus").disabled = true;
-        document.getElementById("txtLetterTo").disabled = true;
-        document.getElementById("txtLetterFrom").disabled = true;
-        document.getElementById("txtLetterContentBold").disabled = true;        
+            document.getElementById("btnApprove").hidden = true;
+            document.getElementById("btnUnapprove").hidden = false;
+            document.getElementById("ddlLetterStatus").disabled = false;
+            document.getElementById("optPrint").hidden = false;
+            document.getElementById("ddlLetterStatus").value = "For Printing";
+            document.getElementById("ddlLetterStatus").disabled = true;
+            document.getElementById("txtLetterTo").disabled = true;
+            document.getElementById("txtLetterFrom").disabled = true;
+            document.getElementById("txtLetterContentBold").disabled = true;    
+        }
     }
 
     function UnapproveLetter() 

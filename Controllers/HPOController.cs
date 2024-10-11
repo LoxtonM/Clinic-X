@@ -105,8 +105,10 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> AddHPOTermFromText(int termID, int noteID)
         {
             try
-            {                
-                int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, termID, 0, "", "", "", "", User.Identity.Name);
+            {
+                string termCode = _hpoData.GetHPOTermByID(termID).TermCode;
+
+                int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, 0, 0, termCode, "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "HPO-addFromText(SQL)" }); }
 

@@ -109,26 +109,64 @@ namespace ClinicX.Controllers
             List<HPOTerm> hpoCodes = new List<HPOTerm>();
 
             searchTerm = searchTerm.Replace(" ", "%20");
+            int pageNo = 1;
+            int setSize = 10;
 
-            apiURL = $"https://ontology.jax.org/api/hp/search?q={searchTerm}&page=1&limit=50";  //I don't know what the page and limit actually means,
-                                                                                                //but anything more than 50 seems to result in no results
+            apiURL = $"https://ontology.jax.org/api/hp/search?q={searchTerm}&page={pageNo.ToString()}&limit={setSize.ToString()}";  //I don't know what the page and limit actually means!
+
             var options = new RestClientOptions(apiURL);
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
-            
+
             var response = await client.GetAsync(request);
 
-            
             dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
+            int totalCount = dynJson.totalCount;
+
             int i = 0;
-            foreach (var item in dynJson.terms)
+
+            if (totalCount > setSize) //because I can't just have a number that returns all results - that would be far too convenient!
             {
-                i += 1;                
-                hpoCodes.Add(new HPOTerm { TermCode = item.id, Term = item.name, ID = i });
+                var batch = BatchInteger(totalCount, setSize); 
+
+                foreach (var item in batch)
+                {
+                    foreach (var term in dynJson.terms)
+                    {
+                        i += 1; //the model needs an ID field, but as this is not supplied by ontology themselves, we need to fabricate it here
+                        string hpoID = term.id;
+                        if (hpoCodes.Where(t => t.TermCode == hpoID).Count() == 0) //because it's duplicating them all for some reason!!!
+                        {
+                            hpoCodes.Add(new HPOTerm { TermCode = term.id, Term = term.name, ID = i });
+                        }
+                    }
+                    pageNo++;
+                    apiURL = $"https://ontology.jax.org/api/hp/search?q={searchTerm}&page={pageNo.ToString()}&limit={item.ToString()}";
+                    options = new RestClientOptions(apiURL);
+                    client = new RestClient(options);
+                    request = new RestRequest("");
+                    request.AddHeader("accept", "application/json");
+
+                    response = await client.GetAsync(request);
+
+                    dynJson = JsonConvert.DeserializeObject(response.Content);
+                    
+
+                }
+            }
+            else
+            {
+                foreach (var term in dynJson.terms)
+                {
+                    i += 1;
+                    Console.WriteLine(term.id);
+                    hpoCodes.Add(new HPOTerm { TermCode = term.id, Term = term.name, ID = i });
+                }
             }
 
-            return hpoCodes.OrderBy(c => c.TermCode).ToList();
+
+             return hpoCodes.OrderBy(c => c.TermCode).ToList();
         }
 
         public async Task<HPOTerm> GetHPODataByTermCode(string hpoTermCode)
@@ -177,7 +215,6 @@ namespace ClinicX.Controllers
             return hpoSynonyms.ToList();
         }
 
-
         public async Task<IActionResult> GetAllHPOTerms()
         {
             apiURL = $"https://ontology.jax.org/api/hp/terms";
@@ -214,6 +251,39 @@ namespace ClinicX.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        
+        private IEnumerable<int> BatchInteger(int total, int batchSize)
+        { //this is supposed to split the total into batches of 10, so each one can be run as a separate page - but the API itself is a bit janky
+            if (batchSize == 0)
+            {
+                yield return 0;
+            }
+
+            if (batchSize >= total)
+            {
+                yield return total;
+            }
+            else
+            {
+                int rest = total % batchSize;
+                int divided = total / batchSize;
+                if (rest > 0)
+                {
+                    divided += 1;
+                }
+
+                for (int i = 0; i < divided; i++)
+                {
+                    if (rest > 0 && i == divided - 1)
+                    {
+                        yield return rest;
+                    }
+                    else
+                    {
+                        yield return batchSize;
+                    }
+                }
+            }
+        }
+
     }
 }

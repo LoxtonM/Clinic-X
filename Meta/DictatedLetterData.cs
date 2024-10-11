@@ -7,6 +7,7 @@ namespace ClinicX.Meta
     interface IDictatedLetterData
     {
         public List<DictatedLetter> GetDictatedLettersList(string staffcode);
+        public List<DictatedLetter> GetDictatedLettersForPatient(int mpi);
         public DictatedLetter GetDictatedLetterDetails(int dotID);
         public List<DictatedLettersPatient> GetDictatedLettersPatientsList(int dotID);
         public List<DictatedLettersCopy> GetDictatedLettersCopiesList(int dotID);
@@ -32,7 +33,17 @@ namespace ClinicX.Meta
 
             return letters.ToList();
         }
-        
+
+        public List<DictatedLetter> GetDictatedLettersForPatient(int mpi)
+        {
+            IQueryable<DictatedLetter> letters = from l in _clinContext.DictatedLetters
+                                                 where l.MPI == mpi && l.Status != "Printed"
+                                                 orderby l.DateDictated descending
+                                                 select l;
+
+            return letters.ToList();
+        }
+
         public DictatedLetter GetDictatedLetterDetails(int dotID) //Get details of DOT letter by its DotID
         {
             DictatedLetter letter = _clinContext.DictatedLetters.FirstOrDefault(l => l.DoTID == dotID);
