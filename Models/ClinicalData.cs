@@ -79,6 +79,12 @@ namespace ClinicX.Models
         public string? SiteCode { get; set; }
         public string? Relation { get; set; }
         public int? RelCode { get; set; }
+        public string? RelAdd1 { get; set; }
+        public string? RelAdd2 { get; set; }
+        public string? RelAdd3 { get; set; }
+        public string? RelAdd4 { get; set; }
+        public string? RelAdd5 { get; set; }
+        public string? RelPC1 { get; set; }
     }
 
     [Table("RelativesDiagnosis")]
@@ -688,6 +694,7 @@ namespace ClinicX.Models
         public int? SurvStopAge { get; set; }
         public string? Clinician { get; set; }
         public int ICPID { get; set; }
+        public int ICP_Cancer_ID { get; set; }
     }
 
     [Table("ViewPatientSurveillance", Schema = "dbo")] //Surveillance recommendations
@@ -701,10 +708,16 @@ namespace ClinicX.Models
         public string? FIRSTNAME { get; set; }
         public string? LASTNAME { get; set; }
         public string? SurvFreqCode { get; set; }
+        public string? SurvFreq { get; set; }
         public int? SurvStartAge { get; set; }
         public int? SurvStopAge { get; set; }
         public string? SurvSiteCode { get; set; }
+        public string? SurvSite { get; set; }
+        public string? SurvTypeCode { get; set; }
+        public string? SurvType { get; set; }
         public string? SurvRecHoCode { get; set; }
+        public int? GeneChangeID { get; set; }
+        public string? GeneChangeDescription { get; set; }
     }
 
     [Table("ViewTestingEligibility", Schema = "dbo")] //Testing eligibility
@@ -839,6 +852,18 @@ namespace ClinicX.Models
         public string CalculationToolCode { get; set; }
     }
 
+    [Table("ListICPCancerRequests", Schema = "dbo")]
+    public class CancerRequests
+    {
+        [Key]
+        public int ID { get; set; }
+        public string Action { get; set; }
+        public bool InUse { get; set; }
+        public int? DocContentID { get; set; }
+        public int? DocContentID2 { get; set; }
+        public int? DocContentID3 { get; set; }
+    }
+
     [Table("ListRelation", Schema = "dbo")]
     public class Relation
     {
@@ -872,6 +897,56 @@ namespace ClinicX.Models
         public string CLASS { get; set; }
         public string DESCRIPTION { get; set; }
         public bool IsActive { get; set; }
+    }
+
+    [Table("ListSurvRecGeneChange", Schema = "dbo")]
+    public class GeneChange
+    {
+        [Key]
+        public int GeneChangeID { get; set; }
+        public string GeneChangeDescription { get; set; }
+        public bool Inuse { get; set; }
+    }
+
+    [Table("ListScreeningServiceDetails", Schema = "dbo")]
+    public class ScreeningService
+    {
+        [Key]
+        public string ScreeningOfficeCode { get; set; }
+        public string BreastScreeningService { get; set; }
+        public string Contact {  get; set; }
+        public string Telephone { get; set; }
+        public string Add1 { get; set; }
+        public string Add2 { get; set; }
+        public string Add3 { get; set; }
+        public string Add4 { get; set; }
+        public string? Add5 { get; set; }
+        public string? Add6 { get; set; }
+        public string? Add7 { get; set; }
+        public string? Add8 { get; set; }
+        public string? Add9 { get; set; }
+        public string? Add10 { get; set; }
+    }
+
+    [Table("ListScreeningServiceGPCodes", Schema = "dbo")]
+    public class ScreeningServiceGPCode
+    {
+        [Key]
+        public string GPCode { get; set; }
+        public string ScreeningOfficeCode { get; set; }        
+    }
+
+    [Table("PatientBreastSurgeryImplantsHistory", Schema = "dbo")]
+    public class BreastSurgeryHistory
+    {
+        [Key]
+        public int ID { get; set; }
+        public int MPI { get; set; }
+        public int BreastCancerHistory { get; set; }
+        public int BreastTissueRight { get; set; }
+        public int BreastTissueLeft { get; set; }
+        public int ImplantsRight { get; set; }
+        public int ImplantsLeft { get; set; }
     }
 
     [Table("Notifications")]

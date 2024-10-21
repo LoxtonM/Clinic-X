@@ -1,0 +1,59 @@
+﻿@model ClinicX.ViewModels.ICPVM
+
+@{
+    ViewData["Title"] = "Clinic-X - VHR Proforma";
+}
+<div class="container card">
+
+    <div class="row mb-5 g-2 mt-2">
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@Model.icpCancer.ICP_Cancer_ID>Back to ICP Review</a>
+        </div>
+        <div class="col-md-2">
+            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.icpCancer.MPI>Patient Details</a>
+        </div>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <h1>Create VHRPro for @Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME</h1>
+    </div>
+        
+    <form id="VHRProForm" asp-action="VHRPro">
+        <div class="row mb-5 g-5" hidden="true">
+            <input asp-for=@Model.icpCancer.ICP_Cancer_ID name="id" />
+        </div>
+
+        <div class="d-grid">
+
+            <div class="col-md-1">
+                <label>Clinician:</label>
+            </div>
+            <select class="w-100" name="clinician">
+                <option value="">Select...</option>
+                @foreach (var item in Model.screeningCoordinators)
+                {
+                    <option value=@item.MasterClinicianCode>@item.FIRST_NAME @item.NAME - @item.POSITION, @item.FACILITY</option>
+                }
+            </select>
+        </div>
+
+
+        <div class="row mb-5 g-5">
+            
+            <div class="col-md-1">
+                <label>Free text:</label>
+            </div>
+            <div class="col-md-4">
+                <textarea class="w-100" name="freeText"></textarea>
+            </div>
+        </div>        
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Create VHR Proforma and Letter</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+

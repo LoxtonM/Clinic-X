@@ -1,0 +1,167 @@
+﻿@model ClinicX.ViewModels.ICPVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Cancer ICP Review Details";
+}
+<div class="container card">
+
+    <div class="row mb-5 g-2 mt-2">
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@Model.icpCancer.ICP_Cancer_ID>Back to ICP Review</a>
+        </div>
+        <div class="col-md-2">
+            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.icpCancer.MPI>Patient Details</a>
+        </div>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <h1>Cancer ICP Review for @Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <h2>Post-Clinic Patient Letter</h2>
+    </div>
+    <form id="FurtherRequestForm" asp-action="FurtherRequest">
+        <div class="row mb-5 g-5" hidden="true">
+            <input asp-for=@Model.icpCancer.ICP_Cancer_ID name="id" />
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Select letter:</label>
+            </div>
+            <div class="col-md-3">
+                <select id="ddlLetter" class="w-100" name="request">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.cancerRequestsList)
+                    {
+                        <option value=@item.ID>@item.Action</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select id="ddlRelative" class="w-100" name="relID">
+                    <option value=0>@Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME (Patient)</option>
+                    @foreach (var item in Model.relatives)
+                    {
+                        <option value=@item.relsid>@item.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-1">
+                <label>Free text:</label>
+            </div>
+            <div class="col-md-4">
+                <textarea class="w-100" name="freeText2"></textarea>
+            </div>
+        </div>
+        <div class="row mb-5 g-5" id="externalClinicians" hidden="true">
+            <div class="col-md-2">
+                <label>Select Recipient:</label>
+            </div>
+            <div class="col-md-6">
+                @*@<select id="ddlClinician" class="w-100" name="clinicianCode">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.clinicians)
+                    {
+                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.POSITION - @item.FACILITY</option>
+                    }
+                </select>*@
+
+                <select class="w-100" id="ddlLetterToType" >
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.specialities)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+
+
+                <select class="w-100" id="ddlLetterToClinician" hidden="true" name="clinicianCode">
+
+                </select>
+            </div>
+            <div class="col-md-1">
+                <label>Site:</label>
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="siteText" />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5" id="externalClinicians">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Create Letter</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    document.getElementById("ddlLetter").addEventListener("change", ShowClinicianDropdown)
+    document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
+
+    function ShowClinicianDropdown()
+    {
+        if (document.getElementById("ddlLetter").value != 1 && document.getElementById("ddlLetter").value != 7)
+        {
+            document.getElementById("externalClinicians").hidden = false;
+        }
+    }
+
+    function ShowLetterToClinician()
+    {
+        const ccType = document.getElementById("ddlLetterToType");
+        const ccList = document.getElementById("ddlLetterToClinician");
+
+        ccList.innerHTML = "";
+
+        var clinCodeArray = [];
+        var clinNameArray = [];
+        var clinPositionArray = [];
+        var clinSpecArray = [];
+
+        @foreach (var item in Model.clinicians)
+        {
+            @if (item.SPECIALITY != null && item.Is_Gp == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
+            { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
+                @:clinCodeArray.push("@item.MasterClinicianCode");
+                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.NAME");
+                @:clinPositionArray.push("@item.POSITION");
+                @:clinSpecArray.push("@item.SPECIALITY");
+                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
+            }
+        }
+
+        for (var i in clinSpecArray)
+        {
+            if (clinSpecArray[i] != ccType.value)
+            {
+                delete clinSpecArray[i];
+                delete clinCodeArray[i];
+                delete clinNameArray[i];
+                delete clinPositionArray[i];
+            }
+        }
+
+        var def = document.createElement('option');
+        def.value = "";
+        def.innerHTML = "Select...";
+        ccList.appendChild(def);
+
+        for (var i in clinSpecArray)
+        {
+            if (ccList.length < 1000)
+            {
+                var opt = document.createElement('option');
+                opt.value = clinCodeArray[i];
+                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i];
+                ccList.appendChild(opt);
+            }
+        }
+
+        ccList.hidden = false;
+    }
+
+
+</script>

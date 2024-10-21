@@ -43,9 +43,9 @@ namespace ClinicX.Meta
 
         
 
-        public Surveillance GetSurvDetails(int? riskID) //Get details of surveillance recommendation by RiskID
+        public Surveillance GetSurvDetails(int? survID) //Get details of surveillance recommendation by RiskID
         {
-            Surveillance surv = _clinContext.Surveillance.FirstOrDefault(c => c.RiskID == riskID);
+            Surveillance surv = _clinContext.Surveillance.FirstOrDefault(c => c.SurvRecID == survID);
             return surv;
         }
 

@@ -66,11 +66,16 @@ namespace ClinicX.Data
         public DbSet<SurvFreqCodes> SurvFreqCodes { get; set; }
         public DbSet<DiscontinuedReasonCodes> DiscontinuedReasonCodes { get; set; }
         public DbSet<CalculationTool> CalculationTools { get; set; }
+        public DbSet<CancerRequests> CancerRequests { get; set; }
         public DbSet<Relation> Relations { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Pathway> Pathways { get; set; }
         public DbSet<Priority> Priority { get; set; }
+        public DbSet<GeneChange> GeneChange { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<ScreeningService> ScreeningService { get; set; }
+        public DbSet<ScreeningServiceGPCode> ScreeningServiceGPCode { get; set; }
+        public DbSet<BreastSurgeryHistory> BreastSurgeryHistory { get; set; }
         public DbSet<Constant> Constants { get; set; }
     }
 }

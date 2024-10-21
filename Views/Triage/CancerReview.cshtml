@@ -9,7 +9,7 @@
             @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
             <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Triage Index</a>
         </div>
-        <div class="col-md-1">
+        <div class="col-md-2">
             <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.icpCancer.MPI>Patient Details</a>
         </div>
     </div>
@@ -45,7 +45,7 @@
                     @foreach (var item in Model.riskList)
                     {
                         <tr>
-                            <td><a asp-controller="RiskAndSurveillance" asp-action="RiskDetails" asp-route-id=@item.RiskID>Select</a></td>
+                            <td><a class="btn btn-success" asp-controller="RiskAndSurveillance" asp-action="RiskDetails" asp-route-id=@item.RiskID>Select</a></td>
                             <td>@item.RiskCode</td>
                             <td>@item.SurvSiteCode</td>
                             <td>@item.Clinician</td>
@@ -203,10 +203,76 @@
                     <label>Free text:</label>
                 </div>
                 <div class="col-md-4">
-                    <textarea class="w-100" name="freeText"></textarea>
+                    <textarea class="w-100" name="freeText1"></textarea>
                 </div>
             </div>
         </div>
+
+        
+
+
+        
+        @*
+        <div class="d-grid mt-3 mb-5">
+            <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePostClinicLetter" aria-expanded="false" aria-controls="collapseExample">Post-Clinic Letter/Requests (click to expand/hide)</button>
+        </div>
+
+        <div class="collapse" id="collapsePostClinicLetter">
+            <div class="row mb-5 g-5">
+                <h2>Pre-Clinic Patient Letter</h2>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label>Select letter:</label>
+                </div>
+                <div class="col-md-3">
+                    <select id="ddlLetter" class="w-100" name="request">                        
+                        <option value="">Select...</option>
+                        @foreach (var item in Model.cancerRequestsList)
+                        {
+                            <option value=@item.ID>@item.Action</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="ddlRelative" class="w-100" name="relID">
+                        <option value=0>@Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME (Patient)</option>
+                        @foreach (var item in Model.relatives)
+                        {
+                            <option value=@item.relsid>@item.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label>Free text:</label>
+                </div>
+                <div class="col-md-4">
+                    <textarea class="w-100" name="freeText2"></textarea>
+                </div>
+            </div>
+            <div class="row mb-5 g-5" id="externalClinicians">
+                <div class="col-md-2">
+                    <label>Select Recipient:</label>
+                </div>
+                <div class="col-md-6">
+                    <select id="ddlClinician" class="w-100" name="clinicianCode">
+                        <option value="">Select...</option>
+                        @foreach (var item in Model.clinicians)
+                        {
+                            <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME, @item.POSITION - @item.FACILITY</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label>Site:</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="siteText" />
+                </div>
+            </div>
+        </div>
+        *@
+
 
         <div class="row mb-5 g-5">
             <div class="col-md-2">
@@ -247,6 +313,15 @@
             </div>
         </div>
     </form>
+    <div class="row mb-5 g-5">
+        <div class="col-md-4">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="FurtherRequest" asp-route-id=@Model.icpCancer.ICP_Cancer_ID>Send Post Clinic Letter</a>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="VHRPro" asp-route-id=@Model.icpCancer.ICP_Cancer_ID>Send VHR Proforma</a>
+        </div>
+    </div>
 </div>
 
 <script>

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using System.Data;
 using ClinicX.Meta;
+using ClinicX.Models;
+using Azure.Core;
 
 namespace ClinicX.Controllers
 {
@@ -14,7 +16,7 @@ namespace ClinicX.Controllers
         private readonly DocumentContext _docContext;
         private readonly ICPVM _ivm;
         private readonly LetterController _lc;
-        private readonly IConfiguration _config;               
+        private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly IPathwayData _pathwayData;
         private readonly IPriorityData _priorityData;
@@ -25,6 +27,9 @@ namespace ClinicX.Controllers
         private readonly ISurveillanceData _survData;
         private readonly ITestEligibilityData _testEligibilityData;
         private readonly IDiaryData _diaryData;
+        private readonly IRelativeData _relativeData;
+        private readonly ICancerRequestData _cancerRequestData;
+        private readonly IExternalClinicianData _clinicianData;
         private readonly IDocumentsData _documentsData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
@@ -45,6 +50,9 @@ namespace ClinicX.Controllers
             _survData = new SurveillanceData(_clinContext);
             _testEligibilityData = new TestEligibilityData(_clinContext);
             _diaryData = new DiaryData(_clinContext);
+            _relativeData = new RelativeData(_clinContext);
+            _cancerRequestData = new CancerRequestData(_clinContext);
+            _clinicianData = new ExternalClinicianData(_clinContext);
             _documentsData = new DocumentsData(_docContext);
             _crud = new CRUD(_config);
             _lc = new LetterController(_clinContext, _docContext);
@@ -255,6 +263,7 @@ namespace ClinicX.Controllers
                 _ivm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_ivm.icpCancer.MPI);
                 _ivm.documentList = _documentsData.GetDocumentsList().Where(d => (d.DocCode.StartsWith("O") && d.DocGroup == "Outcome") || d.DocCode.Contains("PrC")).ToList();
                 _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
+                
                 return View(_ivm);
             }
             catch (Exception ex)
@@ -265,7 +274,8 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> CancerReview(int id, string finalReview, string? clinician = "", string? clinic = "", string? comments = "", 
-            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "", string? freeText="")
+            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "", string? freeText1="") //, 
+            //int? request = 0, string? freeText2 = "", int? relID = 0, string? clinicianCode = "", string? siteText = "")
         {
             string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             //bool isfinalReview = false;
@@ -304,13 +314,14 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferringClinician, "", "", 0, "", false, false, diaryID, freeText);
+                        _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "", false, false, 0, freeText1, "", 0);
                     }
 
                     if (successDiary == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canDiaryUpdate(SQL)" }); }
                 }
             }
-
+                        
+            
             if (toBeReviewedBy == null) { toBeReviewedBy = ""; }//because the default value isn't being assigned for some reason!            
 
             if(clinician != null && clinician != "")
@@ -333,8 +344,133 @@ namespace ClinicX.Controllers
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canReview" }); }
 
-            return RedirectToAction("Index");            
+            return RedirectToAction("CancerReview", new { id = id });
         }
+        [HttpGet]
+        public async Task<IActionResult> FurtherRequest(int id)
+        {
+            try
+            {
+                if (id == null) { return RedirectToAction("NotFound", "WIP"); }
+
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Post Clinic Letter", "ID=" + id.ToString());
+                _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
+                _ivm.cancerRequestsList = _cancerRequestData.GetCancerRequestsList();
+                _ivm.relatives = _relativeData.GetRelativesList(_ivm.icpCancer.MPI);
+                _ivm.clinicians = _clinicianData.GetClinicianList();
+                _ivm.specialities = _clinicianData.GetClinicianTypeList();
+
+                return View(_ivm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-postclinicletter" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FurtherRequest(int id, int request, string? freeText = "", int? relID = 0, string? clinicianCode = "", string? siteText = "")
+        {
+            try
+            {
+                if (id == null) { return RedirectToAction("NotFound", "WIP"); }
+
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _ivm.cancerRequest = _cancerRequestData.GetCancerRequestDetail(request);
+                _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
+                var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);               
+                //DateTime finalReviewDate = DateTime.Parse("1900-01-01");
+                int mpi = icpDetails.MPI;
+                int refID = icpDetails.REFID;                
+
+                int docID = _ivm.cancerRequest.DocContentID.GetValueOrDefault();
+                int docID2 = _ivm.cancerRequest.DocContentID2.GetValueOrDefault();
+                int docID3 = _ivm.cancerRequest.DocContentID3.GetValueOrDefault();
+
+                if (docID != null && docID != 0)
+                {
+                    _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "",
+                        false, false, 0, "", freeText, relID, clinicianCode, siteText);
+                }
+
+                if (docID2 != null && docID2 != 0)
+                {
+                    _lc.DoPDF(docID2, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "",
+                        false, false, 0, "", freeText, relID, clinicianCode, siteText);
+                }
+
+                if (docID3 != null && docID3 != 0)
+                {
+                    _lc.DoPDF(docID3, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "",
+                        false, false, 0, "", freeText, relID, clinicianCode, siteText);
+                }
+                return RedirectToAction("CancerReview", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-postclinicletter" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> VHRPro(int id)
+        {
+            try
+            {
+                if (id == null) { return RedirectToAction("NotFound", "WIP"); }
+
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Post Clinic Letter", "ID=" + id.ToString());
+
+                _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
+                var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
+                _ivm.screeningCoordinators = _clinicianData.GetClinicianList().Where(c => (c.NAME ?? "").ToLower().Contains("breast")
+                    || (c.POSITION ?? "").ToLower().Contains("breast")).ToList();
+                int fuck = _ivm.screeningCoordinators.Count();
+                int mpi = icpDetails.MPI;
+                int refID = icpDetails.REFID;
+
+                return View(_ivm);
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-vhrpro" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VHRPro(int id, string? freeText, string? clinician)
+        {
+            try
+            {
+                if (id == null) { return RedirectToAction("NotFound", "WIP"); }
+
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Post Clinic Letter", "ID=" + id.ToString());
+
+                _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
+                var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
+                //DateTime finalReviewDate = DateTime.Parse("1900-01-01");
+                int mpi = icpDetails.MPI;
+                int refID = icpDetails.REFID;
+
+                VHRController _vhrc = new VHRController(_clinContext, _docContext);
+
+                _vhrc.DoPDF(213, mpi, id, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, freeText);
+                _lc.DoPDF(214, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, freeText, "", 0
+                    , "", false, false, 0, "", "", 0, clinician);
+
+                return RedirectToAction("CancerReview", new { id = id });
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-vhrpro" });
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> RiskAndSurveillance(int id)

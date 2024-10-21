@@ -10,10 +10,10 @@
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">
         <div class="col-md-2">
-            <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Index</a>*@
+            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+            <a class="btn btn-default btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@Model.riskDetails.ICP_Cancer_ID>Back to Cancer ICP</a>
         </div>
-        <div class="col-md-1">
+        <div class="col-md-2">
             <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.riskDetails.MPI)>Patient Details</a>
         </div>
     </div>
@@ -118,10 +118,12 @@
     </div>
 
     <div class="row mb-5 g-5">
+        <div class="d-grid">
         <table class="table">
             <thead>
                 <tr>
                     <th></th>
+                    <th>Gene Change</th>
                     <th>Frequency</th>
                     <th>Start Age</th>
                     <th>End Age</th>
@@ -134,7 +136,8 @@
                 @foreach (var item in Model.surveillanceList)
                 {
                     <tr>
-                        <td><a asp-controller="WIP" asp-action="Index">@item.SurvRecID</a></td>
+                        <td><a class="btn btn-success" asp-controller="RiskAndSurveillance" asp-action="SurvDetails" asp-route-id=@item.SurvRecID>Select</a></td>
+                        <td>@item.GeneChangeDescription</td>
                         <td>@item.SurvFreqCode</td>
                         <td>@item.SurvStartAge</td>
                         <td>@item.SurvStopAge</td>
@@ -145,6 +148,7 @@
                 }
             </tbody>
         </table>
+        </div>
     </div>
     <div class="row mb-5 g-5">
         <div class="col-md-2">

@@ -1,5 +1,6 @@
 ﻿using ClinicX.Data;
 using ClinicX.Meta;
+using ClinicX.Models;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace ClinicX.Controllers
         private readonly ISurveillanceData _survData;
         private readonly ITestEligibilityData _testEligibilityData;
         private readonly IMiscData _misc;
+        private readonly IGeneChangeData _gene;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
@@ -32,6 +34,7 @@ namespace ClinicX.Controllers
             _survData = new SurveillanceData(_clinContext);
             _testEligibilityData = new TestEligibilityData(_clinContext);
             _misc = new MiscData(_config);
+            _gene = new GeneChangeData(_clinContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
         }
@@ -42,7 +45,7 @@ namespace ClinicX.Controllers
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString());
-
+                _rsvm.GeneChange = _gene.GetGeneChangeList();
                 _rsvm.riskDetails = _riskData.GetRiskDetails(id);
                 _rsvm.surveillanceList = _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
                 _rsvm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
@@ -53,6 +56,54 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv" });
             }
         }
+
+        [HttpGet]
+        public IActionResult SurvDetails(int id)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString());
+                _rsvm.GeneChange= _gene.GetGeneChangeList();
+                _rsvm.surveillanceDetails = _survData.GetSurvDetails(id);
+                int mpi = _rsvm.surveillanceDetails.MPI;
+
+                _rsvm.patient = _patientData.GetPatientDetails(mpi);
+                
+                return View(_rsvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv" });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult SurvDetails(int survID, int geneChange)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + survID.ToString());
+
+                int riskID = _survData.GetSurvDetails(survID).RiskID;
+                
+
+                int success = _crud.CallStoredProcedure("Surveillance", "Add Gene Change", survID, geneChange, 0, "", "", "", "",
+                    User.Identity.Name, null, null, false, false);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addRisk(QSL)" }); }
+                               
+                
+                return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = riskID });               
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "SurvDetails" });
+            }
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> AddNewRisk(int id)
