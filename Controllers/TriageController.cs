@@ -425,9 +425,11 @@ namespace ClinicX.Controllers
 
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
                 var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
-                _ivm.screeningCoordinators = _clinicianData.GetClinicianList().Where(c => (c.NAME ?? "").ToLower().Contains("breast")
-                    || (c.POSITION ?? "").ToLower().Contains("breast")).ToList();
-                int fuck = _ivm.screeningCoordinators.Count();
+                _ivm.screeningCoordinators = _clinicianData.GetClinicianList().Where(c => (c.LAST_NAME ?? "").ToLower().Contains("breast")
+                    || (c.POSITION ?? "").ToLower().Contains("breast"))
+                    .OrderBy(c => c.FACILITY)
+                    .ToList();
+                
                 int mpi = icpDetails.MPI;
                 int refID = icpDetails.REFID;
 

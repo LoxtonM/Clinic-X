@@ -21,7 +21,7 @@ namespace ClinicX.ViewModels
         public ExternalClinician referrer { get; set; }
         public ExternalFacility GPFacility { get; set; }
         public List<ExternalFacility> facilities { get; set; }
-        public List<ExternalClinician> clinicians { get; set; }        
+        public List<ExternalCliniciansAndFacilities> clinicians { get; set; }        
         public List<string> consultants { get; set; }
         public List<string> gcs { get; set; }
         public List<string> secteams { get; set; }

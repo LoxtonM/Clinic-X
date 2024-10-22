@@ -958,4 +958,24 @@ namespace ClinicX.Models
         public string Message { get; set; }
         public bool IsActive { get; set; }
     }
+
+    [Table("ViewExternalCliniciansAndFacilities", Schema = "dbo")]
+    public class ExternalCliniciansAndFacilities
+    {
+        [Key]
+        public string MasterClinicianCode { get; set; } 
+        public string? TITLE { get; set; }
+        public string? FIRST_NAME { get; set; }
+        public string? LAST_NAME { get; set; }
+        public string? POSITION { get; set; }
+        public string? SPECIALITY { get; set; }
+        public Int16 Is_GP { get; set; }
+        public Int16 NON_ACTIVE { get; set; }
+        public string MasterFacilityCode { get; set; }
+        public string? FACILITY { get; set; }
+        public string? ADDRESS { get; set; }
+        public string? DISTRICT { get; set; }
+        public string? CITY { get; set; }
+        public string? ZIP { get; set; }
+    }
 }

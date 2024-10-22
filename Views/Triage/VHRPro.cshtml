@@ -24,33 +24,35 @@
         </div>
 
         <div class="d-grid">
-
-            <div class="col-md-1">
-                <label>Clinician:</label>
+            <div class="row mb-5 g-5">
+                <div class="col-md-1">
+                    <label>Clinician:</label>
+                </div>
+                <div class="col-md-5">
+                    <select class="w-100" name="clinician">
+                        <option value="">Select...</option>
+                        @foreach (var item in Model.screeningCoordinators)
+                        {
+                            <option value=@item.MasterClinicianCode>@item.FIRST_NAME @item.LAST_NAME, @item.POSITION - @item.FACILITY</option>
+                        }
+                    </select>
+                </div>
             </div>
-            <select class="w-100" name="clinician">
-                <option value="">Select...</option>
-                @foreach (var item in Model.screeningCoordinators)
-                {
-                    <option value=@item.MasterClinicianCode>@item.FIRST_NAME @item.NAME - @item.POSITION, @item.FACILITY</option>
-                }
-            </select>
-        </div>
+        
 
+            <div class="row mb-5 g-5">            
+                <div class="col-md-1">
+                    <label>Free text:</label>
+                </div>
+                <div class="col-md-4">
+                    <textarea class="w-100" name="freeText"></textarea>
+                </div>
+            </div>        
 
-        <div class="row mb-5 g-5">
-            
-            <div class="col-md-1">
-                <label>Free text:</label>
-            </div>
-            <div class="col-md-4">
-                <textarea class="w-100" name="freeText"></textarea>
-            </div>
-        </div>        
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-success">Create VHR Proforma and Letter</button>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success">Create VHR Proforma and Letter</button>
+                </div>
             </div>
         </div>
 

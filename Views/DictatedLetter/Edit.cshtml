@@ -564,15 +564,17 @@
         var clinNameArray = [];
         var clinPositionArray = [];
         var clinSpecArray = [];
+        var clinFacilityArray = [];
         
         @foreach (var item in Model.clinicians)
         {
-        @if (item.SPECIALITY != null && item.Is_Gp == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null) 
+        @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null) 
             { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
                 @:clinCodeArray.push("@item.MasterClinicianCode");
-                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.NAME");
+                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
                 @:clinPositionArray.push("@item.POSITION");
                 @:clinSpecArray.push("@item.SPECIALITY");       
+                @:clinFacilityArray.push("@item.FACILITY");
                 //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
             }
         }
@@ -585,6 +587,7 @@
                 delete clinCodeArray[i];
                 delete clinNameArray[i];
                 delete clinPositionArray[i];
+                delete clinFacilityArray[i];
             }            
         }
         
@@ -599,7 +602,7 @@
             {
                 var opt = document.createElement('option');
                 opt.value = clinCodeArray[i];
-                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i];
+                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i] + " - " + clinFacilityArray[i];
                 ccList.appendChild(opt);
             }
         }
@@ -618,15 +621,17 @@
         var clinNameArray = [];
         var clinPositionArray = [];
         var clinSpecArray = [];
+        var clinFacilityArray = [];
 
        @foreach (var item in Model.clinicians)
         {
-            @if (item.SPECIALITY != null && item.Is_Gp == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
+            @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
             { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
                 @:clinCodeArray.push("@item.MasterClinicianCode");
-                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.NAME");
+                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
                 @:clinPositionArray.push("@item.POSITION");
                 @:clinSpecArray.push("@item.SPECIALITY");
+                @:clinFacilityArray.push("@item.FACILITY");
                 //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
             }
         }
@@ -639,6 +644,7 @@
                 delete clinCodeArray[i];
                 delete clinNameArray[i];
                 delete clinPositionArray[i];
+                delete clinFacilityArray[i];
             }
         }        
 
@@ -653,7 +659,7 @@
             {
                 var opt = document.createElement('option');
                 opt.value = clinCodeArray[i];
-                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i];
+                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i] + " - " + clinFacilityArray[i];
                 ccList.appendChild(opt);
             }
         }
@@ -677,7 +683,7 @@
         @foreach (var item in Model.clinicians)
         {
             @:sClinCodeArray.push("@item.MasterClinicianCode");
-            @:sNameArray.push("@item.TITLE @item.FIRST_NAME @item.NAME");
+            @:sNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME");
             @:sFacilityArray.push("@item.FACILITY");
         }
 

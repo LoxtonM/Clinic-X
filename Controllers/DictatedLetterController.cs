@@ -121,8 +121,8 @@ namespace ClinicX.Controllers
                 _lvm.referrer = _externalClinicianData.GetClinicianDetails(sRefPhysCode);                
                 _lvm.GPFacility = _externalFacilityData.GetFacilityDetails(sGPCode);
                 _lvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
-                _lvm.clinicians = _externalClinicianData.GetClinicianList().Where(c => c.Is_Gp == 0 && c.NAME != null && c.FACILITY != null).ToList();
-                List<ExternalClinician> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();                
+                _lvm.clinicians = _externalClinicianData.GetClinicianList().Where(c => c.Is_GP == 0 && c.LAST_NAME != null && c.FACILITY != null).ToList();
+                List<ExternalCliniciansAndFacilities> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();                
                 _lvm.consultants = _staffUser.GetConsultantsList().ToList();
                 _lvm.gcs = _staffUser.GetGCList().ToList();
                 _lvm.secteams = _staffUser.GetSecTeamsList();

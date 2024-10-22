@@ -77,5 +77,6 @@ namespace ClinicX.Data
         public DbSet<ScreeningServiceGPCode> ScreeningServiceGPCode { get; set; }
         public DbSet<BreastSurgeryHistory> BreastSurgeryHistory { get; set; }
         public DbSet<Constant> Constants { get; set; }
+        public DbSet<ExternalCliniciansAndFacilities> ExternalCliniciansAndFacilities { get; set; }
     }
 }
