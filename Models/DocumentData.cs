@@ -45,6 +45,7 @@ namespace ClinicX.Models
         public string? Para7 { get; set; }
         public string? Para8 { get; set; }
         public string? Para9 { get; set; }
+        public string? Para10 { get; set; }
         public string? OurAddress { get; set; }
         public string? DirectLine { get; set; }
         public string? OurEmailAddress { get; set; }

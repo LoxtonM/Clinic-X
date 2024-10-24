@@ -8,6 +8,7 @@ namespace ClinicX.Meta
     {
         public List<Relative> GetRelativesList(int id);
         public Relative GetRelativeDetails(int relID);
+        public List<Relative> GetRelativeDetailsByName(string forename, string surname);
         public List<Relation> GetRelationsList();
         public List<Gender> GetGenderList();
     }
@@ -38,6 +39,13 @@ namespace ClinicX.Meta
             Relative rel = _clinContext.Relatives.FirstOrDefault(r => r.relsid == relID);
 
             return rel;
+        }
+
+        public List<Relative> GetRelativeDetailsByName(string forename, string surname)
+        {
+            List<Relative> rels = _clinContext.Relatives.Where(r => r.RelForename1 == forename && r.RelSurname == surname).ToList();
+
+            return rels;
         }
 
         public List<Relation> GetRelationsList()

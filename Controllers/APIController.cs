@@ -16,6 +16,7 @@ namespace ClinicX.Controllers
         private readonly IPatientData _patientData;
         private readonly IConstantsData _constants;
         private readonly IHPOCodeData _hpo;
+        private string apiURLBase;
         private string apiURL;
         private string authKey;
         private string apiKey;
@@ -26,9 +27,11 @@ namespace ClinicX.Controllers
             _patientData = new PatientData(_clinContext);
             _constants = new ConstantsData(_clinContext);
             _hpo = new HPOCodeData(_clinContext);
-            apiURL = _constants.GetConstant("PhenotipsURL", 2).Trim();
-            authKey = "Basic bW5sbjpFZGVuUHJpbWUxOTg0";
-            apiKey = "T-Si8nmMjT8SxJGIxgZ2oMw0135TnPUQ0XeA8Nva";
+            apiURLBase = _constants.GetConstant("PhenotipsURL", 2).Trim();
+            //authKey = "QldDSEFQSVVzZXI6ZEh2SzJGVC05dVBmaFk1ekF7WFYlYmdSNyh+fUIpR18=";
+            authKey = _constants.GetConstant("PhenotipsAPIAuthKey", 1).Trim();
+            //apiKey = "xFuQBVpVWiCiiLdWkF70Aawko0IA2vp5NCemvLI4ZayzrrG3";
+            apiKey = _constants.GetConstant("PhenotipsAPIAuthKey", 2).Trim();
             _config = config;
         }
 
@@ -40,24 +43,26 @@ namespace ClinicX.Controllers
             int mob = DOB.Month;
             int dob = DOB.Day;
 
-            apiURL = apiURL + ":443/rest/patients";
+            apiURL = apiURLBase + ":443/rest/patients";
             var options = new RestClientOptions(apiURL);
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("authorization", $"Basic {authKey}");
             request.AddHeader("X-Gene42-Secret", apiKey);
-            string apiCall = "{\"patient_name\":{\"first_name\":\"" + $"{patient.FIRSTNAME}" + "\",\"last_name\":\"" + $"{patient.LASTNAME}";
-            apiCall = apiCall + "\"},\"date_of_birth\":{\"year\":" + yob.ToString() + ",\"month\":" + mob.ToString() + ",\"day\":" + dob.ToString();
-            apiCall = apiCall + "},\"sex\":\"" + $"{patient.SEX.Substring(0, 1)}" + "\",\"external_id\":\"" + $"{patient.CGU_No}" + "\"}";
-
+            string apiCall = "{\"patient_name\":{\"first_name\":\"" + $"{patient.FIRSTNAME}" + "\",\"last_name\":\"" + $"{patient.LASTNAME}" + "\"}";
+            apiCall = apiCall + ",\"date_of_birth\":{\"year\":" + yob.ToString() + ",\"month\":" + mob.ToString() + ",\"day\":" + dob.ToString() + "}";
+            apiCall = apiCall + ",\"sex\":\"" + $"{patient.SEX.Substring(0, 1)}" + "\",\"external_id\":\"" + $"{patient.CGU_No}" + "\"}";
+                        
             request.AddJsonBody(apiCall, false);
             var response = await client.PostAsync(request);
 
-            SetPhenotipsOwner(patient.CGU_No, User.Identity.Name);
-
+            //SetPhenotipsOwner(patient.CGU_No, User.Identity.Name); - not currently necessary
+            //dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
+            //Console.WriteLine("{0}", response.Content);
+            string confirm = response.Content;
             bool isSuccess = false;
 
-            if (response.ToString().Contains("StatusCode: OK"))
+            if (response.Content == "")
             {
                 isSuccess = true;
             }
@@ -65,41 +70,138 @@ namespace ClinicX.Controllers
             return RedirectToAction("PatientDetails", "Patient", new { id = patient.MPI, success = isSuccess });
         }
 
-        public async Task<IActionResult> ImportRelativesFromPhenotips(int id)
+        public async Task<List<Relative>> ImportRelativesFromPhenotips(int id)
         {
             var patient = _patientData.GetPatientDetails(id);
+            //get the Phenotips patient
+            apiURL = apiURLBase + $":443/rest/patients/eid/{patient.CGU_No}";
+            //var options = new RestClientOptions($"{apiURL}/eid/{externalID}");
+            var options = new RestClientOptions(apiURL);
+            var client = new RestClient(options);
+            var request = new RestRequest("");
+            request.AddHeader("accept", "application/json");
+            request.AddHeader("authorization", "Basic " + authKey);
+            request.AddHeader("X-Gene42-Secret", apiKey);
+            var response = await client.GetAsync(request);
 
-            //placeholder - cool stuff goes here
+            string phenotipsID;
 
-            return RedirectToAction("PatientDetails", "Patient", new { id = patient.MPI });
+            //var obj = JObject.Parse(response.ToString());
+            dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
+            //phenotipsID = (string)obj.SelectToken("id");
+            phenotipsID = dynJson.family_id;
+            phenotipsID = phenotipsID.Substring(phenotipsID.Length - 10);
+
+            List<Relative> relatives = new List<Relative>();
+            List<Relative> relListAll = new List<Relative>();
+
+            apiURL = apiURLBase + $":443/get/PhenoTips/FamilyPedigreeInterface?action=familyinfo&document_id={phenotipsID}";
+
+            var options2 = new RestClientOptions(apiURL);
+            var client2 = new RestClient(options2);
+            var request2 = new RestRequest("");
+            request2.AddHeader("accept", "application/json");
+            request2.AddHeader("authorization", "Basic " + authKey);
+            request2.AddHeader("X-Gene42-Secret", apiKey);
+            var response2 = await client2.GetAsync(request2);
+            dynamic dynJson2 = JsonConvert.DeserializeObject(response2.Content);
+            //http://localhost:7168/Patient/PatientDetails?id=227775
+
+            int relID = 0;
+            foreach (var item in dynJson2.pedigree.members)
+            {
+                if ((item.properties.patient_name.first_name != null && item.properties.patient_name.first_name != "")
+                    && (item.properties.patient_name.last_name != null && item.properties.patient_name.last_name != ""))
+                {
+                    relID += 1;
+                    DateTime dob = DateTime.Parse("1900-01-01");
+                    DateTime dod = DateTime.Parse("1900-01-01");
+                    string gender;
+                    if (item.properties.date_of_birth.year != null && item.properties.date_of_birth.month != null && item.properties.date_of_birth.day != null)
+                    {       
+                            dob = DateTime.Parse(item.properties.date_of_birth.year.ToString() + "-" +
+                                        item.properties.date_of_birth.month.ToString() + "-" +
+                                        item.properties.date_of_birth.day.ToString());
+                    }
+                    if (item.properties.date_of_death.year != null && item.properties.date_of_death.month != null && item.properties.date_of_death.day != null)
+                    {
+                        dod = DateTime.Parse(item.properties.date_of_death.year.ToString() + "-" +
+                                    item.properties.date_of_death.month.ToString() + "-" +
+                                    item.properties.date_of_death.day.ToString());
+                    }
+
+                    gender = item.properties.sex;
+
+                    if(gender != "M" && gender != "F")
+                    {
+                        gender = "U";
+                    }
+
+                    relListAll.Add(new Relative
+                    {
+                        RelForename1 = item.properties.patient_name.first_name,
+                        RelSurname = item.properties.patient_name.last_name,
+                        DOB = dob,
+                        DOD = dod,
+                        RelSex = gender,
+                        WMFACSID = patient.WMFACSID,
+                        relsid = relID
+                    });
+                    
+                }
+            }
+
+            
+
+            RelativeData relData = new RelativeData(_clinContext); //we have to do it here, we can't do it in the controller itself.
+            //To check all PT relatives and make sure they aren't already in Clinical_XP
+
+            //relListAll.Add(new Relative { RelForename1 = "Jana", RelSurname = "Hexenjaegar", DOB = DateTime.Parse("1986-01-01") });
+
+            foreach (var rel in relListAll)
+            { 
+                if (relData.GetRelativeDetailsByName(rel.RelForename1, rel.RelSurname).Count() == 0 && 
+                    rel.RelForename1 != patient.FIRSTNAME && rel.RelSurname != patient.LASTNAME)
+                {
+                    relatives.Add(new Relative { relsid = rel.relsid, WMFACSID = rel.WMFACSID, RelForename1 = rel.RelForename1, 
+                        RelSurname = rel.RelSurname, DOB = rel.DOB, DOD = rel.DOD, RelSex = rel.RelSex });
+                }
+            }
+
+            return relatives.ToList();
         }
 
 
-        public void SetPhenotipsOwner(string externalID, string userName)
+        public async Task SetPhenotipsOwner(string externalID, string userName) //might not be necessary anymore...
         {
             if (externalID != null && externalID != "")
             {
-                apiURL = apiURL + ":443/rest/patients";
-                var options = new RestClientOptions($"{apiURL}/eid/{externalID}");
+                apiURL = apiURLBase + $":443/rest/patients/eid/{externalID}";
+                //var options = new RestClientOptions($"{apiURL}/eid/{externalID}");
+                var options = new RestClientOptions(apiURL);
                 var client = new RestClient(options);
                 var request = new RestRequest("");
                 request.AddHeader("accept", "application/json");
                 request.AddHeader("authorization", authKey);
                 request.AddHeader("X-Gene42-Secret", apiKey);
-                var response = client.GetAsync(request);
+                var response = await client.GetAsync(request);
 
                 string phenotipsID;
 
-                var obj = JObject.Parse(response.ToString());
-                phenotipsID = (string)obj.SelectToken("id");
+                //var obj = JObject.Parse(response.ToString());
+                dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
+                //phenotipsID = (string)obj.SelectToken("id");
+                phenotipsID = dynJson.id;
 
-                var options2 = new RestClientOptions($"{apiURL}/{phenotipsID}/permissions");
+                apiURL = apiURLBase + $":443/rest/patients/{phenotipsID}/permissions";
+                //var options2 = new RestClientOptions($"{apiURL}/{phenotipsID}/permissions");
+                var options2 = new RestClientOptions(apiURL);
                 var client2 = new RestClient(options);
                 var request2 = new RestRequest("");
                 request2.AddHeader("content-type", "application/json");
                 request2.AddHeader("authorization", authKey);
                 request2.AddHeader("X-Gene42-Secret", apiKey);
-                request2.AddJsonBody("{\"owner\":{\"id\":\"" + userName + "\"}}", false);
+                request2.AddJsonBody("{\"owner\":{\"id\":\"xwiki:XWiki." + userName + "\"}}", false);
                 var response2 = client2.PutAsync(request2);
             }
         }

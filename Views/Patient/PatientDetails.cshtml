@@ -622,13 +622,14 @@
                         </tr>
                     }
                 </tbody>
-            </table>
+            </table>            
+
         }
         else
         {
             <h4>No relatives have been added.</h4>
         }
-        <a type="button" asp-controller="API" asp-action="ImportRelativesFromPhenotips" asp-route-id=@Model.patient.MPI class="btn btn-default btn-success">Import Relatives from Phenotips</a>
+        <a type="button" asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-default btn-success">Import Relatives from Phenotips</a>
 
         <div class="d-grid mt-2 mb-2">
             <div class="col-md-2">

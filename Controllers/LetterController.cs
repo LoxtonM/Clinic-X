@@ -477,6 +477,7 @@ public class LetterController : Controller
             
             int printCount = 1;
             int totalLength = 400; //used for spacing - so the paragraphs can dynamically resize
+            int totalLength2 = 40;
             int pageCount = 1;
 
             if (_lvm.documentsContent.LetterTo != "PTREL" && _lvm.documentsContent.LetterTo != "Other")
@@ -1054,13 +1055,43 @@ public class LetterController : Controller
 
             //DT11
             if (docCode == "DT11")
-            {
-                //PLACEHOLDER
+            {                
+                tf.DrawString("Re: " + patName, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content1.Length / 4));
+                totalLength = totalLength + 40;
+
+                ExternalClinician clin = _externalClinicianData.GetClinicianDetails(clinicianCode);
+
+                content1 = _lvm.documentsContent.Para1;
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, totalLength, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+                content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                totalLength = totalLength + content2.Length / 4;
+                content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
+                tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length));
+                totalLength = totalLength + content3.Length;
+                content4 = _lvm.documentsContent.Para4;
+                tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, content4.Length / 4));
+                totalLength = totalLength + content4.Length / 4;
+                content5 = _lvm.documentsContent.Para8;
+                tf.DrawString(content5, font, XBrushes.Black, new XRect(50, totalLength, 500, content5.Length / 2));
+                totalLength = totalLength + content5.Length / 2;
+
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                enclosures = "copy of completed consent form (Letter code CF04)";
+                pageCount += 1; //because it's impossible to force it to go to the next page otherwise!
+                ccs[0] = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME;
             }
 
             //DT11e
             if (docCode == "DT11e")
             {
+                string recipient = "Dr Raji Ganesan" + System.Environment.NewLine +
+                    "Cellular Pathology" + System.Environment.NewLine +
+                    "Birmingham Women’s Hospital" + System.Environment.NewLine +
+                    "Mindelsohn Way" + System.Environment.NewLine +
+                    "Birmingham" + System.Environment.NewLine +
+                    "B15 2TG"; //because of course it's hard-coded in CGU_DB
                 //PLACEHOLDER
             }
 
@@ -1091,13 +1122,42 @@ public class LetterController : Controller
             //PC01
             if (docCode == "PC01")
             {
-                //PLACEHOLDER
+                string relDets = "Re: Affected relative's details" + patName + "  Date of birth: " + patDOB.ToString("dd/MM/yyyy");
+                string patDets = "Our patient's details:" + _lvm.patient.Title + " " + _lvm.patient.FIRSTNAME + " " + _lvm.patient.LASTNAME + 
+                    " Date of birth: " + _lvm.patient.DOB.Value.ToString("dd/MM/yyyy");
+
+                tf.DrawString(relDets, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+                tf.DrawString(patDets, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 40;
+                content1 = _lvm.documentsContent.Para2;
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, totalLength, 500, content1.Length / 4));
+                totalLength = content1.Length / 4;
+                content2 = _lvm.documentsContent.Para10;
+                tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length));
+                totalLength = content2.Length;
+                content3 = _lvm.documentsContent.Para5;
+                tf.DrawString(content3, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
+                totalLength = content3.Length / 4;
+
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;                
             }
 
             //GR01
             if (docCode == "GR01")
             {
-                //PLACEHOLDER
+                tf.DrawString(patName + ", " + patDOB, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+
+                content1 = _lvm.documentsContent.Para1;
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(50, totalLength, 500, content1.Length / 4));
+                totalLength = content1.Length / 4;
+                content2 = _lvm.documentsContent.Para2;
+                tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
+                totalLength = content2.Length / 4;
+
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                enclosures = "Consent form (letter code CF01";
             }
 
             if (docCode == "VHRProC")
@@ -1114,6 +1174,7 @@ public class LetterController : Controller
                 ccs[1] = otherName;
             }
 
+            tf.DrawString("Letter code: " + docCode, font, XBrushes.Black, new XRect(500, 800, 500, 20));
 
             sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'","").Replace(" ", "") + ".jpg";
 
@@ -1144,33 +1205,39 @@ public class LetterController : Controller
                         totalLength = totalLength + hig + 20;
                     }
                     tf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                    if (enclosures != "")
+                    {
+                        totalLength = totalLength + 20;
+                        tf.DrawString("Enc: " + enclosures, font, XBrushes.Black, new XRect(50, totalLength, 500, 100));
+                    }
                 }
             }
             else
             {
-                tf2.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
+                tf2.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength2, 500, 20));
+                totalLength2 = totalLength2 + 20;
                 
                 if (signOff == "CGU Booking Centre")
                 {
-                    totalLength = totalLength + 50;
+                    totalLength2 = totalLength2 + 50;
                 }
                 else
                 {
                     if (sigFlename != "empty.jpg")
                     {
-                        gfx2.DrawImage(imageSig, 50, totalLength, len, hig);
+                        gfx2.DrawImage(imageSig, 50, totalLength2, len, hig);
                     }
-                    totalLength = totalLength + hig + 20;
+                    totalLength2 = totalLength2 + hig + 20;
                 }
-                tf2.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength, 500, 20));
+                tf2.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength2, 500, 20));
+                if (enclosures != "")
+                {
+                    totalLength2 = totalLength2 + 20;
+                    tf2.DrawString("Enc: " + enclosures, font, XBrushes.Black, new XRect(50, totalLength2, 500, 100));
+                }
             }
 
-            if(enclosures != "")
-            {
-                totalLength = totalLength + 20;
-                tf.DrawString("Enc: " + enclosures, font, XBrushes.Black, new XRect(50, totalLength, 500, 50));
-            }
+            
 
             if (ccs[0] != "")
             {
@@ -1186,8 +1253,7 @@ public class LetterController : Controller
                 {
                     string cc = "";
                     if (ccs[i] != null || ccs[i] != "")
-                    {
-                        string youabsolutefuckingcunt = ccs[i];
+                    {                        
                         if (ccs[i] == referrerName)
                         {
                             cc = referrerName + _externalClinicianData.GetCCDetails(_lvm.referrer);

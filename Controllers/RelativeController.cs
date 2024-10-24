@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ClinicX.Meta;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
+using ClinicX.Models;
 
 namespace ClinicX.Controllers
 {
@@ -10,10 +11,12 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly RelativeDiagnosisVM _rdvm;
+        private readonly RelativeVM _rvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
         private readonly IRelativeData _relativeData;
+        private readonly APIController _api;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
@@ -26,6 +29,8 @@ namespace ClinicX.Controllers
             _patientData = new PatientData(_clinContext);
             _relativeData = new RelativeData(_clinContext);
             _rdvm = new RelativeDiagnosisVM();
+            _rvm = new RelativeVM();
+            _api = new APIController(_clinContext, _config);
             _audit = new AuditService(_config);
         }
 
@@ -208,5 +213,46 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ImportRelatives(int id)
+        {
+            try
+            {
+                _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(id);
+                _rvm.cgudbRelativesList = _relativeData.GetRelativesList(_rvm.patient.MPI);
+                _rvm.phenotipsRelativesList = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
+                _rvm.relationslist = _relativeData.GetRelationsList();
+
+                return View(_rvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportRelatives(int wmfacsid, string firstname, string lastname, DateTime dob, 
+            DateTime dod, string sex, string relation)
+        {
+            try
+            {
+                
+
+                int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, 0, 0, "", firstname, "", lastname,
+                    User.Identity.Name, dob, dod, false, false, 0, 0, 0, relation, sex);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-add(SQL)" }); }
+
+                return RedirectToAction("ImportRelative", "Relative", new { id = wmfacsid });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
+            }
+        }
+
+
     }
 }

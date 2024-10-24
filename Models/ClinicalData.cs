@@ -73,6 +73,7 @@ namespace ClinicX.Models
         public DateTime? DOD { get; set; }
         public string? RelAffected { get; set; }
         public string? RelAlive { get; set; }
+        public string? RelSex { get; set; }
         public string? Sex { get; set; }
         public string? Diagnosis { get; set; }
         public string? Status { get; set; }
