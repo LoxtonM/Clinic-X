@@ -43,7 +43,7 @@ namespace ClinicX.Controllers
         
 
         [Authorize]
-        public async Task<IActionResult> PatientDetails(int id, bool? success)
+        public async Task<IActionResult> PatientDetails(int id, bool? success, string? message)
         {
             try
             {
@@ -66,14 +66,18 @@ namespace ClinicX.Controllers
                 if (success.HasValue)
                 {
                     _pvm.ptSuccess = success.GetValueOrDefault();
-                    
-                    if (success.GetValueOrDefault())
+
+                    /*if (success.GetValueOrDefault())
                     {
                         _pvm.message = "Patient successfully pushed to Phenotips.";
                     }
                     else
                     {
                         _pvm.message = "Push to Phenotips failed.";
+                    }*/
+                    if (message != null)
+                    {
+                        _pvm.message = message;
                     }
                 }
 
