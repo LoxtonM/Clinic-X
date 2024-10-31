@@ -48,10 +48,10 @@
                 </select>
             </div>
             <div class="col-md-1">
-                <label>Free text:</label>
+                <label id ="lblFreeText">Free text:</label>
             </div>
             <div class="col-md-4">
-                <textarea class="w-100" name="freeText2"></textarea>
+                <textarea id="freeText" class="w-100" name="freeText"></textarea>
             </div>
         </div>
         <div class="row mb-5 g-5" id="externalClinicians" hidden="true">
@@ -88,12 +88,33 @@
             </div>
         </div>
 
-        <div class="row mb-5 g-5" id="externalClinicians">
+        <div class="row mb-5 g-5" id="analysis">
+            <div class="col-md-2">
+                <label>Germline Analysis</label>
+            </div>
+            <div class="col-md-2">
+                <input name="additionalText" />
+            </div>
+            <div class="col-md-2">
+                <label>Somatic Analysis</label>
+            </div>
+            <div class="col-md-2">
+                <input name="freeText1" />
+            </div>
+            <div class="col-md-2">
+                <label>Further patient details</label>
+            </div>
+            <div class="col-md-2">
+                <input name="freeText2" />
+            </div>
+            
+        </div>
+
+        <div class="row mb-5 g-5">
             <div class="col-md-2">
                 <button type="submit" class="btn btn-success">Create Letter</button>
             </div>
         </div>
-
     </form>
 </div>
 
@@ -103,9 +124,20 @@
 
     function ShowClinicianDropdown()
     {
+        document.getElementById("freeText").hidden = false;
+        document.getElementById("lblFreeText").hidden = false;        
+        document.getElementById("analysis").hidden = true;
+
         if (document.getElementById("ddlLetter").value != 1 && document.getElementById("ddlLetter").value != 7)
         {
             document.getElementById("externalClinicians").hidden = false;
+        }
+
+        if (document.getElementById("ddlLetter").value == 9)
+        {
+            document.getElementById("freeText").hidden = true;
+            document.getElementById("lblFreeText").hidden = true;
+            document.getElementById("analysis").hidden = false;
         }
     }
 

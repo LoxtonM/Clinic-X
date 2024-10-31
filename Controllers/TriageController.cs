@@ -370,7 +370,8 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> FurtherRequest(int id, int request, string? freeText = "", int? relID = 0, string? clinicianCode = "", string? siteText = "")
+        public async Task<IActionResult> FurtherRequest(int id, int request, string? freeText = "", int? relID = 0, string? clinicianCode = "", string? siteText = "",
+            string? freeText1="", string? freeText2="", string? additionalText="")
         {
             try
             {
@@ -388,22 +389,27 @@ namespace ClinicX.Controllers
                 int docID2 = _ivm.cancerRequest.DocContentID2.GetValueOrDefault();
                 int docID3 = _ivm.cancerRequest.DocContentID3.GetValueOrDefault();
 
+                if(freeText != "")
+                {
+                    freeText1 = freeText;
+                }
+
                 if (docID != null && docID != 0)
                 {
-                    _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "",
-                        false, false, 0, "", freeText, relID, clinicianCode, siteText);
+                    _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText);
                 }
 
                 if (docID2 != null && docID2 != 0)
                 {
-                    _lc.DoPDF(docID2, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "",
-                        false, false, 0, "", freeText, relID, clinicianCode, siteText);
+                    _lc.DoPDF(docID2, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText);
                 }
 
                 if (docID3 != null && docID3 != 0)
                 {
-                    _lc.DoPDF(docID3, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "",
-                        false, false, 0, "", freeText, relID, clinicianCode, siteText);
+                    _lc.DoPDF(docID3, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText);
                 }
                 return RedirectToAction("CancerReview", new { id = id });
             }
