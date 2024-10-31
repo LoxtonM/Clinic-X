@@ -1153,32 +1153,32 @@ public class LetterController : Controller
                 totalLength = totalLength + content2.Length / 4;
 
                 content3 = _lvm.documentsContent.Para2 + siteText + _lvm.documentsContent.Para3;
-                tf.DrawString(content3, font, XBrushes.Black, new XRect(100, totalLength, 500, content3.Length / 4));
+                tf.DrawString(content3, font, XBrushes.Black, new XRect(80, totalLength, 400, content3.Length / 4));
                 totalLength = totalLength + content3.Length / 4;
 
                 tf.DrawString(_lvm.documentsContent.Para7, fontSmallBold, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 totalLength = totalLength + 20;
 
                 tf.DrawString("Slides containing tumour tissue.", fontSmallBold, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
+                totalLength = totalLength + 15;
 
                 tf.DrawString("Slide reference(s):", fontSmall, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
+                totalLength = totalLength + 15;
 
                 tf.DrawString("Cellularity:", fontSmall, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 tf.DrawString("Tumour Content:", fontSmall, XBrushes.Black, new XRect(300, totalLength, 500, 20));
-                totalLength = totalLength + 20;
+                totalLength = totalLength + 15;
 
                 tf.DrawString("Slides containing 'normal' tissue.", fontSmallBold, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
+                totalLength = totalLength + 15;
 
                 tf.DrawString("Slide reference(s):", fontSmall, XBrushes.Black, new XRect(50, totalLength, 500, 20));
-                totalLength = totalLength + 20;
+                totalLength = totalLength + 15;
 
                 tf.DrawString("Cellularity:", fontSmall, XBrushes.Black, new XRect(50, totalLength, 500, 20));
                 tf.DrawString("Tumour Content:", fontSmall, XBrushes.Black, new XRect(300, totalLength, 500, 20));
+                totalLength = totalLength + 15;
                 tf.DrawString("(if an area of solely 'normal' tissue is not available)", fontSmall, XBrushes.Black, new XRect(300, totalLength, 500, 20));
-                totalLength = totalLength + 20;
                 totalLength = totalLength + 20;
 
                 content4 = "Please ship the above samples, along with this form, to:" + System.Environment.NewLine + System.Environment.NewLine +
@@ -1188,8 +1188,8 @@ public class LetterController : Controller
                     "Mindelsohn Way" + System.Environment.NewLine +
                     "Birmingham B15 2TG";
 
-                tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, 80));
-                totalLength = totalLength + 80;
+                tf.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength, 500, 100));
+                totalLength = totalLength + 100;
 
                 tf.DrawString("Please ensure both sides of this form are included with the patient samples.", fontBold, XBrushes.Black, new XRect(50, totalLength, 500, 20));
 
@@ -1205,43 +1205,43 @@ public class LetterController : Controller
                 tf2.DrawString(content7, font, XBrushes.Black, new XRect(50, totalLength2, 500, content7.Length / 4));
                 totalLength2 = totalLength2 + content7.Length / 4;
 
-                tf.DrawString("Details of moledular genetic testing required", fontSmallBold, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
+                tf2.DrawString("Details of moledular genetic testing required", fontSmallBold, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
                 totalLength2 = totalLength2 + 10;
-                tf.DrawString("(Clinician please detail as appropriate, to direct testing to the West Midlands Regional Genetics Laboratory)", fontSmall, XBrushes.Black, new XRect(100, totalLength, 500, 20));
+                tf2.DrawString("(Clinician please detail as appropriate, to direct testing to the West Midlands Regional Genetics Laboratory)", fontSmall, XBrushes.Black, new XRect(100, totalLength2, 500, 20));
                 totalLength2 = totalLength2 + 20;
 
-                tf.DrawString("Germline analysis", fontSmallBold, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
+                tf2.DrawString("Germline analysis", fontSmallBold, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
                 totalLength2 = totalLength2 + 10;
-                tf.DrawString("(where blood or saliva is not available from the affected family member and indirect testing of other family members is not appropriate)", fontSmall, XBrushes.Black, new XRect(100, totalLength, 500, 20));
+                tf2.DrawString("(where blood or saliva is not available from the affected family member and indirect testing of other family members is not appropriate)", fontSmall, XBrushes.Black, new XRect(100, totalLength2, 500, 20));
                 totalLength2 = totalLength2 + 30;
-                tf.DrawString("Gene(s) to be analysed for germline variants:", fontSmall, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
+                tf2.DrawString("Gene(s) to be analysed for germline variants:", fontSmall, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
                 totalLength2 = totalLength2 + 20;
-                tf.DrawString(germLine, fontSmall, XBrushes.Black, new XRect(150, totalLength2, 500, 20));
+                tf2.DrawString(germLine, fontSmall, XBrushes.Black, new XRect(150, totalLength2, 500, 20));
                 totalLength2 = totalLength2 + 40;
 
-                tf.DrawString("Somatic analysis", fontSmallBold, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
+                tf2.DrawString("Somatic analysis", fontSmallBold, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
                 totalLength2 = totalLength2 + 10;
-                tf.DrawString("(following a negative germline screen of a gene(s) in which a molecular defect is indicated)", fontSmall, XBrushes.Black, new XRect(100, totalLength, 500, 20));
+                tf2.DrawString("(following a negative germline screen of a gene(s) in which a molecular defect is indicated)", fontSmall, XBrushes.Black, new XRect(100, totalLength2, 500, 20));
                 totalLength2 = totalLength2 + 30;
-                tf.DrawString("Gene(s) to be analysed for somatic variants:", fontSmall, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
+                tf2.DrawString("Gene(s) to be analysed for somatic variants:", fontSmall, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
                 totalLength2 = totalLength2 + 20;
-                tf.DrawString(somatic, fontSmall, XBrushes.Black, new XRect(150, totalLength2, 500, 20));
+                tf2.DrawString(somatic, fontSmall, XBrushes.Black, new XRect(150, totalLength2, 500, 20));
                 totalLength2 = totalLength2 + 40;
 
-                tf.DrawString("Further patient details and cancer history:", fontSmallBold, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
+                tf2.DrawString("Further patient details and cancer history:", fontSmallBold, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
                 totalLength2 = totalLength2 + 20;                
                 
-                tf.DrawString(additionalText, fontSmall, XBrushes.Black, new XRect(150, totalLength2, 500, 20));
+                tf2.DrawString(additionalText, fontSmall, XBrushes.Black, new XRect(150, totalLength2, 500, 20));
                 totalLength2 = totalLength2 + 50;
 
-                tf.DrawString("Section 5: Clinician details", fontSmallBold, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
-                totalLength2 = totalLength2 + 20;
-                tf.DrawString("Date: " + DateTime.Now.ToString("dd MMMM yyyy"), font, XBrushes.Black, new XRect(300, totalLength2, 500, 20));
+                tf2.DrawString("Section 5: Clinician details", fontBold, XBrushes.Black, new XRect(100, totalLength2, 300, 20));
+               
                 totalLength2 = totalLength2 + 80;
 
-                tf.DrawString("Name: " + _lvm.staffMember.NAME, font, XBrushes.Black, new XRect(50, totalLength2, 500, 20));
+                tf2.DrawString("Name: " + _lvm.staffMember.NAME, font, XBrushes.Black, new XRect(50, totalLength2, 500, 20));
+                tf2.DrawString("Date: " + DateTime.Now.ToString("dd MMMM yyyy"), font, XBrushes.Black, new XRect(300, totalLength2, 500, 20));
                 totalLength2 = totalLength2 + 20;
-                tf.DrawString(_lvm.staffMember.POSITION, font, XBrushes.Black, new XRect(50, totalLength2, 500, 60));
+                tf2.DrawString(_lvm.staffMember.POSITION, font, XBrushes.Black, new XRect(50, totalLength2, 500, 60));
 
             }
 
@@ -1414,7 +1414,7 @@ public class LetterController : Controller
                 ccs[1] = otherName;
             }
 
-            tf.DrawString("Letter code: " + docCode, font, XBrushes.Black, new XRect(500, 800, 500, 20));
+            tf.DrawString("Letter code: " + docCode, fontSmall, XBrushes.Black, new XRect(500, 800, 500, 20));
 
             sigFlename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'","").Replace(" ", "") + ".jpg";
 
@@ -1456,8 +1456,9 @@ public class LetterController : Controller
                 }
                 else
                 {
+                    tf2.DrawString("Letter code: " + docCode, fontSmall, XBrushes.Black, new XRect(500, 800, 500, 20));
                     tf2.DrawString("Yours sincerely", font, XBrushes.Black, new XRect(50, totalLength2, 500, 20));
-                    totalLength2 = totalLength2 + 20;
+                    totalLength2 = totalLength2 + 20;                    
 
                     if (signOff == "CGU Booking Centre")
                     {
