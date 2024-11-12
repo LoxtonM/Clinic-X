@@ -25,7 +25,7 @@ namespace ClinicX.Controllers
             _patientData = new PatientData(_clinContext);
             _constants = new ConstantsData(_clinContext);
             _hpo = new HPOCodeData(_clinContext);
-            apiURLBase = _constants.GetConstant("PhenotipsURL", 2).Trim();
+            apiURLBase = _constants.GetConstant("PhenotipsURL", 1).Trim();
             authKey = _constants.GetConstant("PhenotipsAPIAuthKey", 1).Trim();
             apiKey = _constants.GetConstant("PhenotipsAPIAuthKey", 2).Trim();
             _config = config;
@@ -106,7 +106,7 @@ namespace ClinicX.Controllers
 
             string phenotipsID = GetPhenotipsPatientID(id).Result;
             
-            if (phenotipsID != null)
+            if (phenotipsID != null && phenotipsID != "")
             {
                 phenotipsID = phenotipsID.Substring(phenotipsID.Length - 10);
 
