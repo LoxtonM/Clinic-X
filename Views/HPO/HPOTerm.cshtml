@@ -73,11 +73,11 @@
         <br /><br />
         <form id="AddHPOTermFromText" asp-action="AddHPOTermFromText">
             <input id="txtNoteID1" name="noteID" value=@Model.clinicalNote.ClinicalNoteID hidden="true" /> <input id="txtTermID" name="termID" hidden="true" />
-            @if(Model.hpoExtractVM.Count > 0)
+            @if(Model.hpoExtractedTerms.Count > 0)
             {
                 <h5>The following HPO terms have been found in the text:</h5>
-            
-                @foreach (var t in Model.hpoExtractVM)
+
+                @foreach (var t in Model.hpoExtractedTerms)
                 {
                     <div class="row mb-2 g-2">
                         <div class="col-sm-2">

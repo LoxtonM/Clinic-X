@@ -1,6 +1,6 @@
-﻿using ClinicX.Data;
-using ClinicX.Meta;
-using ClinicX.Models;
+﻿using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RestSharp;

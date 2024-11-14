@@ -1,5 +1,5 @@
-﻿using ClinicX.Meta;
-using ClinicX.Models;
+﻿using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicX.ViewModels
@@ -22,8 +22,8 @@ namespace ClinicX.ViewModels
         public ExternalFacility GPFacility { get; set; }
         public List<ExternalFacility> facilities { get; set; }
         public List<ExternalCliniciansAndFacilities> clinicians { get; set; }        
-        public List<string> consultants { get; set; }
-        public List<string> gcs { get; set; }
+        public List<StaffMember> consultants { get; set; }
+        public List<StaffMember> gcs { get; set; }
         public List<string> secteams { get; set; }
         public List<string> specialities { get; set; }
         public List<ActivityItem> activities { get; set; }

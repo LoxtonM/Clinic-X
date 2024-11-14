@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ClinicX.Data;
+using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using ClinicX.Meta;
+using ClinicalXPDataConnections.Meta;
 
 namespace ClinicX.Controllers
 {

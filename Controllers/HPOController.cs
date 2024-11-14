@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ClinicX.Data;
+using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
-using ClinicX.Meta;
-using ClinicX.Models;
+using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 
 namespace ClinicX.Controllers
 {
@@ -45,7 +45,7 @@ namespace ClinicX.Controllers
                 _hpo.clinicalNote = _clinicaNoteData.GetClinicalNoteDetails(id);
                 _hpo.hpoTermDetails = _hpoData.GetExistingHPOTermsList(id);
                 //_hpo.hpoTerms = _hpoData.GetHPOTermsList();
-                _hpo.hpoExtractVM = _hpoData.GetExtractedTermsList(id, _config);
+                _hpo.hpoExtractedTerms = _hpoData.GetExtractedTermsList(id, _config);
 
                 if(searchTerm != null) 
                 {

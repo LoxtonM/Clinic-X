@@ -1,5 +1,5 @@
-﻿using ClinicX.Data;
-using ClinicX.Meta;
+﻿using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
