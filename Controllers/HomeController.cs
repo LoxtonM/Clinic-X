@@ -14,6 +14,7 @@ namespace ClinicX.Controllers
         private readonly IConfiguration _config;        
         private readonly ICaseloadData _caseload;
         private readonly IStaffUserData _staffUser;
+        private readonly IVersionData _version;
         private readonly INotificationData _notificationData;
         private readonly IAuditService _audit;
 
@@ -24,6 +25,7 @@ namespace ClinicX.Controllers
             _cvm = new CaseloadVM();
             _caseload = new CaseloadData(_clinContext);
             _staffUser = new StaffUserData(_clinContext);
+            _version = new VersionData();
             _notificationData = new NotificationData(_clinContext);
             _audit = new AuditService(_config);
         }
@@ -49,6 +51,8 @@ namespace ClinicX.Controllers
                     _cvm.countTests = _cvm.caseLoad.Where(c => c.Type.Contains("Test")).Count();
                     _cvm.countReviews = _cvm.caseLoad.Where(c => c.Type.Contains("Review")).Count();
                     _cvm.countLetters = _cvm.caseLoad.Where(c => c.Type.Contains("Letter")).Count();
+                    _cvm.dllVersion = _version.GetDLLVersion();
+                    _cvm.appVersion = _config.GetValue("AppVersion", "");
                     if (_cvm.caseLoad.Count > 0)
                     {
                         _cvm.name = _cvm.caseLoad.FirstOrDefault().Clinician;
