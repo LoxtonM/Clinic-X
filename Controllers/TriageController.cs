@@ -48,9 +48,9 @@ namespace ClinicX.Controllers
             _priorityData = new PriorityData(_clinContext);
             _referralData = new ReferralData(_clinContext);
             _triageData = new TriageData(_clinContext);
-            _icpActionData = new ICPActionData(_cXContext);
-            _riskData = new RiskData(_clinContext, _cXContext);
-            _survData = new SurveillanceData(_cXContext);
+            _icpActionData = new ICPActionData(_clinContext, _cXContext);
+            _riskData = new RiskData(_clinContext);
+            _survData = new SurveillanceData(_clinContext);
             _testEligibilityData = new TestEligibilityData(_cXContext);
             _diaryData = new DiaryData(_clinContext);
             _relativeData = new RelativeData(_clinContext);

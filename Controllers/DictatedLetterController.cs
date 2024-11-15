@@ -37,7 +37,7 @@ namespace ClinicX.Controllers
             _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
             _activityData = new ActivityData(_clinContext);
-            _dictatedLetterData = new DictatedLetterData(_clinContext, _cXContext);
+            _dictatedLetterData = new DictatedLetterData(_clinContext);
             _externalClinicianData = new ExternalClinicianData(_clinContext);
             _externalFacilityData = new ExternalFacilityData(_clinContext);
             _crud = new CRUD(_config);
@@ -176,7 +176,7 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
 
-                var dot = await _cXContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
+                var dot = await _clinContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
                 int dID = dot.DoTID;
 
                 return RedirectToAction("Edit", new { id = dID });

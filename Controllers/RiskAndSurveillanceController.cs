@@ -18,6 +18,8 @@ namespace ClinicX.Controllers
         private readonly ITriageData _triageData;
         private readonly IRiskData _riskData;
         private readonly ISurveillanceData _survData;
+        private readonly IRiskCodesData _riskCodesData;
+        private readonly ISurveillanceCodesData _survCodesData;
         private readonly ITestEligibilityData _testEligibilityData;
         private readonly IMiscData _misc;
         private readonly IGeneChangeData _gene;
@@ -33,8 +35,10 @@ namespace ClinicX.Controllers
             _patientData = new PatientData(_clinContext);
             _staffUser = new StaffUserData(_clinContext);
             _triageData = new TriageData(_clinContext);
-            _riskData = new RiskData(_clinContext, _cXContext);
-            _survData = new SurveillanceData(_cXContext);
+            _riskData = new RiskData(_clinContext);
+            _survData = new SurveillanceData(_clinContext);
+            _riskCodesData = new RiskCodesData(_cXContext);
+            _survCodesData = new SurveillanceCodesData(_cXContext);
             _testEligibilityData = new TestEligibilityData(_cXContext);
             _misc = new MiscData(_config);
             _gene = new GeneChangeData(_cXContext);
@@ -119,11 +123,11 @@ namespace ClinicX.Controllers
                 _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(id);
                 _rsvm.patient = _patientData.GetPatientDetails(_rsvm.icpCancer.MPI);
                 _rsvm.refID = _triageData.GetICPDetails(id).REFID;
-                _rsvm.riskCodes = _riskData.GetRiskCodesList();
-                _rsvm.survSiteCodes = _survData.GetSurvSiteCodesList();
+                _rsvm.riskCodes = _riskCodesData.GetRiskCodesList();
+                _rsvm.survSiteCodes = _survCodesData.GetSurvSiteCodesList();
                 _rsvm.staffMembersList = _staffUser.GetClinicalStaffList();
                 _rsvm.staffCode = staffCode;
-                _rsvm.calculationTools = _riskData.GetCalculationToolsList();
+                _rsvm.calculationTools = _riskCodesData.GetCalculationToolsList();
                 return View(_rsvm);
             }
             catch (Exception ex)
@@ -168,10 +172,10 @@ namespace ClinicX.Controllers
                 _rsvm.riskID = id;
                 _rsvm.riskDetails = _riskData.GetRiskDetails(id);
                 _rsvm.patient = _patientData.GetPatientDetails(_rsvm.riskDetails.MPI);
-                _rsvm.survSiteCodes = _survData.GetSurvSiteCodesList();
-                _rsvm.survTypeCodes = _survData.GetSurvTypeCodesList();
-                _rsvm.survFreqCodes = _survData.GetSurvFreqCodesList();
-                _rsvm.discontinuedReasonCodes = _survData.GetDiscReasonCodesList();
+                _rsvm.survSiteCodes = _survCodesData.GetSurvSiteCodesList();
+                _rsvm.survTypeCodes = _survCodesData.GetSurvTypeCodesList();
+                _rsvm.survFreqCodes = _survCodesData.GetSurvFreqCodesList();
+                _rsvm.discontinuedReasonCodes = _survCodesData.GetDiscReasonCodesList();
                 _rsvm.staffMembersList = _staffUser.GetClinicalStaffList();
                 
                 return View(_rsvm);

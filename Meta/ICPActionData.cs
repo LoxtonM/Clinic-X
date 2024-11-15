@@ -1,6 +1,8 @@
 ﻿using ClinicX.Data;
 using ClinicX.Models;
 using System.Data;
+using ClinicalXPDataConnections.Models;
+using ClinicalXPDataConnections.Data;
 
 namespace ClinicX.Meta
 {
@@ -15,16 +17,18 @@ namespace ClinicX.Meta
     }
     public class ICPActionData : IICPActionData
     {
-        private readonly ClinicXContext _clinContext;
+        private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
         
-        public ICPActionData(ClinicXContext context)
+        public ICPActionData(ClinicalContext context, ClinicXContext cXContext)
         {
-            _clinContext = context;           
+            _clinContext = context;
+            _cXContext = cXContext;
         }
         
         public List<ICPAction> GetICPCancerActionsList() //Get list of all triage actions for Cancer ICPs
         {
-            IQueryable<ICPAction> actions = from a in _clinContext.ICPCancerActionsList
+            IQueryable<ICPAction> actions = from a in _cXContext.ICPCancerActionsList
                          where a.InUse == true
                          orderby a.ID
                          select a;
@@ -34,7 +38,7 @@ namespace ClinicX.Meta
 
         public List<ICPGeneralAction> GetICPGeneralActionsList() //Get list of all "treatpath" items for General ICPs
         {
-            IQueryable<ICPGeneralAction> actions = from a in _clinContext.ICPGeneralActionsList
+            IQueryable<ICPGeneralAction> actions = from a in _cXContext.ICPGeneralActionsList
                          where a.InUse == true
                          orderby a.ID
                          select a;
@@ -44,7 +48,7 @@ namespace ClinicX.Meta
 
         public List<ICPGeneralAction2> GetICPGeneralActionsList2() //Get list of all "treatpath2" items for General ICPs
         {
-            IQueryable<ICPGeneralAction2> actions = from a in _clinContext.ICPGeneralActionsList2
+            IQueryable<ICPGeneralAction2> actions = from a in _cXContext.ICPGeneralActionsList2
                          where a.InUse == true
                          orderby a.ID
                          select a;

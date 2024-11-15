@@ -14,17 +14,10 @@ namespace ClinicX.Data
         public DbSet<HPOTerm> HPOTerms { get; set; }
         public DbSet<ClinicalNoteHPOTerms> ClinicalNoteHPOTerms { get; set; }
         public DbSet<HPOTermDetails> HPOTermDetails { get; set; }        
-        public DbSet<TestType> Tests { get; set; }        
-        public DbSet<DictatedLetter> DictatedLetters { get; set; }
-        public DbSet<DictatedLettersPatient> DictatedLettersPatients { get; set; }
-        public DbSet<DictatedLettersCopy> DictatedLettersCopies { get; set; }        
-        public DbSet<Caseload> Caseload { get; set; }        
+        public DbSet<TestType> Tests { get; set; }                  
         public DbSet<ICPAction> ICPCancerActionsList { get; set; }
         public DbSet<ICPGeneralAction> ICPGeneralActionsList { get; set; }
-        public DbSet<ICPGeneralAction2> ICPGeneralActionsList2 { get; set; }
-        public DbSet <ICPCancerReviewAction> ICPCancerReviewActionsList { get; set; }
-        public DbSet<Risk> Risk { get; set; }
-        public DbSet<Surveillance> Surveillance { get; set; }
+        public DbSet<ICPGeneralAction2> ICPGeneralActionsList2 { get; set; }        
         public DbSet<Eligibility> Eligibility { get; set; }        
         public DbSet<CancerReg> CancerReg { get; set; }
         public DbSet<RequestStatus> RequestStatus { get; set; }

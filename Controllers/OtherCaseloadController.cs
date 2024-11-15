@@ -11,7 +11,7 @@ namespace ClinicX.Controllers
     public class OtherCaseloadController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
+        //private readonly ClinicXContext _cXContext;
         private readonly CaseloadVM _cvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
@@ -21,11 +21,11 @@ namespace ClinicX.Controllers
         public OtherCaseloadController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
         {
             _clinContext = context;
-            _cXContext = cXContext;
+            //_cXContext = cXContext;
             _config = config;
             _cvm = new CaseloadVM();            
             _staffUser = new StaffUserData(_clinContext);
-            _caseloadData = new CaseloadData(_cXContext);
+            _caseloadData = new CaseloadData(_clinContext);
             _audit = new AuditService(_config);
         }
 

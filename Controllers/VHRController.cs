@@ -9,6 +9,7 @@ using PdfSharpCore.Drawing.Layout;
 using System.Text.RegularExpressions;
 using ClinicX.Data;
 using ClinicX.Models;
+using ClinicalXPDataConnections.Models;
 
 
 namespace ClinicX.Controllers;
@@ -43,8 +44,8 @@ public class VHRController : Controller
         _externalFacilityData = new ExternalFacilityData(_clinContext);
         _screenData = new ScreeningServiceData(_cXContext);
         _triageData = new TriageData(_clinContext);
-        _riskData = new RiskData(_clinContext, _cXContext);
-        _survData = new SurveillanceData(_cXContext);
+        _riskData = new RiskData(_clinContext);
+        _survData = new SurveillanceData(_clinContext);
         _bhsData = new BreastHistoryData(_cXContext);
     }
 

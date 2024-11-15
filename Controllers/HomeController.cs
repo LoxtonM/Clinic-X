@@ -27,7 +27,7 @@ namespace ClinicX.Controllers
             _cXContext = cXContext;
             _config = config;
             _cvm = new CaseloadVM();
-            _caseload = new CaseloadData(_cXContext);
+            _caseload = new CaseloadData(_clinContext);
             _staffUser = new StaffUserData(_clinContext);
             _version = new VersionData();
             _notificationData = new NotificationData(_clinContext);

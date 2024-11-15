@@ -40,7 +40,7 @@ public class LetterController : Controller
         _relativeData = new RelativeData(_clinContext);
         _referralData = new ReferralData(_clinContext);
         _staffUser = new StaffUserData(_clinContext);
-        _dictatedLetterData = new DictatedLetterData(_clinContext, _cXContext);
+        _dictatedLetterData = new DictatedLetterData(_clinContext);
         _documentsData = new DocumentsData(_docContext);
         _externalClinicianData = new ExternalClinicianData(_clinContext);
         _externalFacilityData = new ExternalFacilityData(_clinContext);
@@ -796,9 +796,9 @@ public class LetterController : Controller
             if (docCode == "O3")
             {
                 List<Risk> _riskList = new List<Risk>();
-                RiskData _rData = new RiskData(_clinContext, _cXContext);
+                RiskData _rData = new RiskData(_clinContext);
                 Surveillance _surv = new Surveillance();
-                SurveillanceData _survData = new SurveillanceData(_cXContext);
+                SurveillanceData _survData = new SurveillanceData(_clinContext);
                 _riskList = _rData.GetRiskListByRefID(refID);
                 
                 content1 = _lvm.documentsContent.Para1;
