@@ -4,12 +4,15 @@ using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
 using System.Data;
 using ClinicalXPDataConnections.Meta;
+using ClinicX.Meta;
+using ClinicX.Data;
 
 namespace ClinicX.Controllers
 {
     public class TestController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
         private readonly TestDiseaseVM _tvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
@@ -18,14 +21,15 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public TestController(ClinicalContext context, IConfiguration config)
+        public TestController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
         {
             _clinContext = context;
+            _cXContext = cXContext;
             _config = config;
             _tvm = new TestDiseaseVM();
             _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
-            _testData = new TestData(_clinContext);
+            _testData = new TestData(_clinContext, _cXContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
         }

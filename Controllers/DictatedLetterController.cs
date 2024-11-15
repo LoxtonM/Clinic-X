@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
+using ClinicX.Meta;
+using ClinicX.Data;
 
 namespace ClinicX.Controllers
 {
@@ -12,6 +14,7 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
+        private readonly ClinicXContext _cXContext;
         private readonly LetterController _lc;
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;        
@@ -24,20 +27,21 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext)
+        public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext, ClinicXContext cXContext)
         {
             _clinContext = clinContext;
             _docContext = docContext;
+            _cXContext = cXContext;
             _config = config;
             _lvm = new DictatedLetterVM();
             _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
             _activityData = new ActivityData(_clinContext);
-            _dictatedLetterData = new DictatedLetterData(_clinContext);
+            _dictatedLetterData = new DictatedLetterData(_clinContext, _cXContext);
             _externalClinicianData = new ExternalClinicianData(_clinContext);
             _externalFacilityData = new ExternalFacilityData(_clinContext);
             _crud = new CRUD(_config);
-            _lc = new LetterController(_clinContext, _docContext);
+            _lc = new LetterController(_clinContext, _cXContext, _docContext);
             _audit = new AuditService(_config);
         }
 
@@ -172,7 +176,7 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
 
-                var dot = await _clinContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
+                var dot = await _cXContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
                 int dID = dot.DoTID;
 
                 return RedirectToAction("Edit", new { id = dID });

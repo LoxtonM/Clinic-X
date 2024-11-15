@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ClinicalXPDataConnections.Models;
+using ClinicX.Models;
 
 namespace ClinicX.ViewModels
 {
@@ -16,7 +16,7 @@ namespace ClinicX.ViewModels
         public Triage triage { get; set; }
         public ICPGeneral? icpGeneral { get; set; }
         public ICPCancer? icpCancer { get; set; }
-        public List<ClinicalFacility> clinicalFacilityList { get; set; }
+        public List<ClinicVenue> clinicalFacilityList { get; set; }
         public List<ICPAction> cancerActionsList { get; set; }
         public List<ICPGeneralAction> generalActionsList { get; set; }
         public List<ICPGeneralAction2> generalActionsList2 { get; set; }

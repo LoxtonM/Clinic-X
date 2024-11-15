@@ -1,6 +1,9 @@
 ﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
+using ClinicX.Data;
+using ClinicX.Meta;
+using ClinicX.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RestSharp;
@@ -10,6 +13,8 @@ namespace ClinicX.Controllers
     public class APIController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
+        private readonly DocumentContext _docContext;
         private readonly IConfiguration _config;
         private readonly IPatientData _patientData;
         private readonly IConstantsData _constants;
@@ -19,12 +24,14 @@ namespace ClinicX.Controllers
         private string authKey;
         private string apiKey;
 
-        public APIController(ClinicalContext clinContext, IConfiguration config)
+        public APIController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
-            _clinContext = clinContext;            
+            _clinContext = clinContext;
+            _cXContext = cXContext;
+            _docContext = docContext;
             _patientData = new PatientData(_clinContext);
-            _constants = new ConstantsData(_clinContext);
-            _hpo = new HPOCodeData(_clinContext);
+            _constants = new ConstantsData(_docContext);
+            _hpo = new HPOCodeData(_cXContext);
             apiURLBase = _constants.GetConstant("PhenotipsURL", 1).Trim();
             authKey = _constants.GetConstant("PhenotipsAPIAuthKey", 1).Trim();
             apiKey = _constants.GetConstant("PhenotipsAPIAuthKey", 2).Trim();

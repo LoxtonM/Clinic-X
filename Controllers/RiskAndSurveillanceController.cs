@@ -1,6 +1,7 @@
 ﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
-using ClinicalXPDataConnections.Models;
+using ClinicX.Data;
+using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace ClinicX.Controllers
     public class RiskAndSurveillanceController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
         private readonly RiskSurveillanceVM _rsvm;
         private readonly IConfiguration _config;        
         private readonly IPatientData _patientData;
@@ -22,19 +24,20 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public RiskAndSurveillanceController(ClinicalContext context, IConfiguration config)
+        public RiskAndSurveillanceController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
         {
             _clinContext = context;
+            _cXContext = cXContext;
             _config = config;
             _rsvm = new RiskSurveillanceVM();
             _patientData = new PatientData(_clinContext);
             _staffUser = new StaffUserData(_clinContext);
             _triageData = new TriageData(_clinContext);
-            _riskData = new RiskData(_clinContext);
-            _survData = new SurveillanceData(_clinContext);
-            _testEligibilityData = new TestEligibilityData(_clinContext);
+            _riskData = new RiskData(_clinContext, _cXContext);
+            _survData = new SurveillanceData(_cXContext);
+            _testEligibilityData = new TestEligibilityData(_cXContext);
             _misc = new MiscData(_config);
-            _gene = new GeneChangeData(_clinContext);
+            _gene = new GeneChangeData(_cXContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
         }

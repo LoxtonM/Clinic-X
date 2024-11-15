@@ -1,5 +1,7 @@
 ﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
+using ClinicX.Data;
+using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +10,7 @@ namespace ClinicX.Controllers
     public class RelativeDiagnosisController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
         private readonly RelativeDiagnosisVM _rdvm;
         private readonly IConfiguration _config;
         private readonly IRelativeData _relativeData;
@@ -16,12 +19,13 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         
-        public RelativeDiagnosisController(ClinicalContext context, IConfiguration config) 
+        public RelativeDiagnosisController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config) 
         {
             _clinContext = context;
+            _cXContext = cXContext;
             _config = config;                        
             _relativeData = new RelativeData(_clinContext);
-            _relativeDiagnosisData = new RelativeDiagnosisData(_clinContext);
+            _relativeDiagnosisData = new RelativeDiagnosisData(_clinContext, _cXContext);
             _staffUser = new StaffUserData(_clinContext);
             _crud = new CRUD(_config);
             _rdvm = new RelativeDiagnosisVM();

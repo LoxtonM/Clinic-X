@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ClinicalXPDataConnections.Models;
+using ClinicX.Models;
 
 namespace ClinicX.ViewModels
 {

@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
+using ClinicX.Meta;
+using ClinicX.Data;
 
 namespace ClinicX.Controllers
 {
     public class HomeController : Controller
     {        
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
         private readonly CaseloadVM _cvm;
         private readonly IConfiguration _config;        
         private readonly ICaseloadData _caseload;
@@ -18,12 +21,13 @@ namespace ClinicX.Controllers
         private readonly INotificationData _notificationData;
         private readonly IAuditService _audit;
 
-        public HomeController(ClinicalContext context, IConfiguration config)
+        public HomeController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
         {
             _clinContext = context;
+            _cXContext = cXContext;
             _config = config;
             _cvm = new CaseloadVM();
-            _caseload = new CaseloadData(_clinContext);
+            _caseload = new CaseloadData(_cXContext);
             _staffUser = new StaffUserData(_clinContext);
             _version = new VersionData();
             _notificationData = new NotificationData(_clinContext);

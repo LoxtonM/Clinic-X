@@ -1,4 +1,4 @@
-﻿using ClinicalXPDataConnections.Meta;
+﻿using ClinicX.Models;
 using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
 

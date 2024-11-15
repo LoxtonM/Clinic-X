@@ -2,17 +2,21 @@
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
+using ClinicX.Meta;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using ClinicalXPDataConnections.Models;
 using System.Text.RegularExpressions;
+using ClinicX.Data;
+using ClinicX.Models;
 
 namespace ClinicX.Controllers;
 
 public class LetterController : Controller
 {
     private readonly ClinicalContext _clinContext;
+    private readonly ClinicXContext _cXContext;
     private readonly DocumentContext _docContext;
     private readonly LetterVM _lvm;
     private readonly IPatientData _patientData;
@@ -26,21 +30,22 @@ public class LetterController : Controller
     private readonly IScreeningServiceData _screenData;    
     private readonly IConstantsData _constantsData;
     
-    public LetterController(ClinicalContext clinContext, DocumentContext docContext)
+    public LetterController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext)
     {
         _clinContext = clinContext;
+        _cXContext = cXContext;
         _docContext = docContext;
         _lvm = new LetterVM();        
         _patientData = new PatientData(_clinContext);
         _relativeData = new RelativeData(_clinContext);
         _referralData = new ReferralData(_clinContext);
         _staffUser = new StaffUserData(_clinContext);
-        _dictatedLetterData = new DictatedLetterData(_clinContext);
+        _dictatedLetterData = new DictatedLetterData(_clinContext, _cXContext);
         _documentsData = new DocumentsData(_docContext);
         _externalClinicianData = new ExternalClinicianData(_clinContext);
         _externalFacilityData = new ExternalFacilityData(_clinContext);
-        _screenData = new ScreeningServiceData(_clinContext);
-        _constantsData = new ConstantsData(_clinContext);
+        _screenData = new ScreeningServiceData(_cXContext);
+        _constantsData = new ConstantsData(_docContext);
     }
 
     public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)
@@ -791,9 +796,9 @@ public class LetterController : Controller
             if (docCode == "O3")
             {
                 List<Risk> _riskList = new List<Risk>();
-                RiskData _rData = new RiskData(_clinContext);
+                RiskData _rData = new RiskData(_clinContext, _cXContext);
                 Surveillance _surv = new Surveillance();
-                SurveillanceData _survData = new SurveillanceData(_clinContext);
+                SurveillanceData _survData = new SurveillanceData(_cXContext);
                 _riskList = _rData.GetRiskListByRefID(refID);
                 
                 content1 = _lvm.documentsContent.Para1;

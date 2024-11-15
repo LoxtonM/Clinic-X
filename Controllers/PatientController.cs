@@ -3,14 +3,16 @@ using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
-using RestSharp;
-using Newtonsoft.Json.Linq;
+using ClinicX.Meta;
+using ClinicX.Data;
 
 namespace ClinicX.Controllers
 {
     public class PatientController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
+        private readonly DocumentContext _docContext;
         private readonly PatientVM _pvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;        
@@ -24,9 +26,11 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         private readonly IConstantsData _constants;
 
-        public PatientController(ClinicalContext context, IConfiguration config)
+        public PatientController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
             _clinContext = context;
+            _cXContext = cXContext;
+            _docContext = docContext;
             _config = config;
             _pvm = new PatientVM();
             _staffUser = new StaffUserData(_clinContext);
@@ -36,9 +40,9 @@ namespace ClinicX.Controllers
             _alertData = new AlertData(_clinContext);
             _referralData = new ReferralData(_clinContext);
             _diaryData = new DiaryData(_clinContext);
-            _hpoData = new HPOCodeData(_clinContext);
+            _hpoData = new HPOCodeData(_cXContext);
             _audit = new AuditService(_config);
-            _constants = new ConstantsData(_clinContext);
+            _constants = new ConstantsData(_docContext);
         }
         
 

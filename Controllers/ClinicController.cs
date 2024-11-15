@@ -4,6 +4,7 @@ using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using ClinicalXPDataConnections.Meta;
+using ClinicX.Meta;
 
 namespace ClinicX.Controllers
 {

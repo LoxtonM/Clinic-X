@@ -2,13 +2,17 @@
 using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
-using ClinicalXPDataConnections.Models;
+using ClinicX.Meta;
+using ClinicX.Data;
+using ClinicX.Models;
 
 namespace ClinicX.Controllers
 {
     public class HPOController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
+        private readonly DocumentContext _docContext;
         private readonly HPOVM _hpo;
         private readonly IStaffUserData _staffUser;
         private readonly IConfiguration _config;        
@@ -19,18 +23,20 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         private readonly APIController _api;
 
-        public HPOController(ClinicalContext context, IConfiguration config)
+        public HPOController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
             _clinContext = context;
+            _cXContext = cXContext;
+            _docContext = docContext;
             _config = config;
             _staffUser = new StaffUserData(_clinContext);
             _hpo = new HPOVM();
-            _hpoData = new HPOCodeData(_clinContext);
-            _clinicaNoteData = new ClinicalNoteData(_clinContext);
+            _hpoData = new HPOCodeData(_cXContext);
+            _clinicaNoteData = new ClinicalNoteData(_cXContext);
             _crud = new CRUD(_config);
             _misc = new MiscData(_config);
             _audit = new AuditService(_config);
-            _api = new APIController(_clinContext, _config);
+            _api = new APIController(_clinContext, _cXContext, _docContext, _config);
         }
 
         [HttpGet]

@@ -2,19 +2,21 @@
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
+using ClinicX.Meta;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
-using ClinicalXPDataConnections.Models;
 using System.Text.RegularExpressions;
-using System.Numerics;
-using System.Reflection.Metadata;
+using ClinicX.Data;
+using ClinicX.Models;
+
 
 namespace ClinicX.Controllers;
 
 public class VHRController : Controller
 {
     private readonly ClinicalContext _clinContext;
+    private readonly ClinicXContext _cXContext;
     private readonly DocumentContext _docContext;
     private readonly LetterVM _lvm;
     private readonly IPatientData _patientData;
@@ -28,9 +30,10 @@ public class VHRController : Controller
     private readonly ISurveillanceData _survData;
     private readonly IBreastHistoryData _bhsData;
 
-    public VHRController(ClinicalContext clinContext, DocumentContext docContext)
+    public VHRController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext)
     {
         _clinContext = clinContext;
+        _cXContext = cXContext;
         _docContext = docContext;
         _lvm = new LetterVM();        
         _patientData = new PatientData(_clinContext);
@@ -38,11 +41,11 @@ public class VHRController : Controller
         _documentsData = new DocumentsData(_docContext);
         _externalClinicianData = new ExternalClinicianData(_clinContext);
         _externalFacilityData = new ExternalFacilityData(_clinContext);
-        _screenData = new ScreeningServiceData(_clinContext);
+        _screenData = new ScreeningServiceData(_cXContext);
         _triageData = new TriageData(_clinContext);
-        _riskData = new RiskData(_clinContext);
-        _survData = new SurveillanceData(_clinContext);
-        _bhsData = new BreastHistoryData(_clinContext);
+        _riskData = new RiskData(_clinContext, _cXContext);
+        _survData = new SurveillanceData(_cXContext);
+        _bhsData = new BreastHistoryData(_cXContext);
     }
 
     public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)

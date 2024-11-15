@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using System.Data;
 using ClinicalXPDataConnections.Meta;
+using ClinicX.Meta;
+using ClinicX.Data;
 
 
 namespace ClinicX.Controllers
@@ -12,6 +14,7 @@ namespace ClinicX.Controllers
     public class TriageController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
         private readonly DocumentContext _docContext;
         private readonly ICPVM _ivm;
         private readonly LetterController _lc;
@@ -33,9 +36,10 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public TriageController(ClinicalContext clinContext, DocumentContext docContext, IConfiguration config)
+        public TriageController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
             _clinContext = clinContext;
+            _cXContext = cXContext;
             _docContext = docContext;
             _config = config;
             _ivm = new ICPVM();
@@ -44,17 +48,17 @@ namespace ClinicX.Controllers
             _priorityData = new PriorityData(_clinContext);
             _referralData = new ReferralData(_clinContext);
             _triageData = new TriageData(_clinContext);
-            _icpActionData = new ICPActionData(_clinContext);
-            _riskData = new RiskData(_clinContext);
-            _survData = new SurveillanceData(_clinContext);
-            _testEligibilityData = new TestEligibilityData(_clinContext);
+            _icpActionData = new ICPActionData(_cXContext);
+            _riskData = new RiskData(_clinContext, _cXContext);
+            _survData = new SurveillanceData(_cXContext);
+            _testEligibilityData = new TestEligibilityData(_cXContext);
             _diaryData = new DiaryData(_clinContext);
             _relativeData = new RelativeData(_clinContext);
-            _cancerRequestData = new CancerRequestData(_clinContext);
+            _cancerRequestData = new CancerRequestData(_cXContext);
             _clinicianData = new ExternalClinicianData(_clinContext);
             _documentsData = new DocumentsData(_docContext);
             _crud = new CRUD(_config);
-            _lc = new LetterController(_clinContext, _docContext);
+            _lc = new LetterController(_clinContext, _cXContext, _docContext);
             _audit = new AuditService(_config);
         }
 
@@ -232,7 +236,7 @@ namespace ClinicX.Controllers
 
                 if (action == 5)
                 {
-                    LetterController _lc = new LetterController(_clinContext, _docContext);
+                    LetterController _lc = new LetterController(_clinContext, _cXContext, _docContext);
                     _lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer);
                 }
 
@@ -463,7 +467,7 @@ namespace ClinicX.Controllers
                 int mpi = icpDetails.MPI;
                 int refID = icpDetails.REFID;
 
-                VHRController _vhrc = new VHRController(_clinContext, _docContext);
+                VHRController _vhrc = new VHRController(_clinContext, _cXContext, _docContext);
 
                 _vhrc.DoPDF(213, mpi, id, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, freeText);
                 _lc.DoPDF(214, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, freeText, "", 0

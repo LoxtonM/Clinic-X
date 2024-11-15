@@ -3,25 +3,29 @@ using ClinicalXPDataConnections.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using ClinicX.Meta;
+using ClinicX.Data;
 
 namespace ClinicX.Controllers
 {
     public class OtherCaseloadController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
         private readonly CaseloadVM _cvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly ICaseloadData _caseloadData;
         private IAuditService _audit;
 
-        public OtherCaseloadController(ClinicalContext context, IConfiguration config)
+        public OtherCaseloadController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
         {
             _clinContext = context;
+            _cXContext = cXContext;
             _config = config;
             _cvm = new CaseloadVM();            
             _staffUser = new StaffUserData(_clinContext);
-            _caseloadData = new CaseloadData(_clinContext);
+            _caseloadData = new CaseloadData(_cXContext);
             _audit = new AuditService(_config);
         }
 

@@ -4,12 +4,15 @@ using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using ClinicalXPDataConnections.Meta;
+using ClinicX.Meta;
+using ClinicX.Data;
 
 namespace ClinicX.Controllers
 {
     public class ClinicalNoteController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
         private readonly ClinicalNoteVM _cvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
@@ -21,14 +24,15 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public ClinicalNoteController(ClinicalContext context, IConfiguration config)
+        public ClinicalNoteController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
         {
             _clinContext = context;
+            _cXContext = cXContext;
             _config = config;
             _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
             _activityData = new ActivityData(_clinContext);
-            _clinicalNoteData = new ClinicalNoteData(_clinContext);
+            _clinicalNoteData = new ClinicalNoteData(_cXContext);
             _clinicData = new ClinicData(_clinContext);
             _crud = new CRUD(_config);
             _cvm = new ClinicalNoteVM();
@@ -168,7 +172,7 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
-                var note = await _clinContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
+                var note = await _cXContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
 
                 return RedirectToAction("Index", new { id = note.MPI });
             }

@@ -1,15 +1,19 @@
 ﻿using ClinicalXPDataConnections.Data;
+using ClinicX.Data;
 using Microsoft.AspNetCore.Mvc;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
-using ClinicalXPDataConnections.Models;
+using ClinicX.Meta;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace ClinicX.Controllers
 {
     public class RelativeController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _cXContext;
+        private readonly DocumentContext _docContext;
         private readonly RelativeDiagnosisVM _rdvm;
         private readonly RelativeVM _rvm;
         private readonly IConfiguration _config;
@@ -20,9 +24,11 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public RelativeController(ClinicalContext context, IConfiguration config)
+        public RelativeController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
             _clinContext = context;
+            _cXContext = cXContext;
+            _docContext = docContext;
             _config = config;
             _crud = new CRUD(_config);
             _staffUser = new StaffUserData(_clinContext);
@@ -30,7 +36,7 @@ namespace ClinicX.Controllers
             _relativeData = new RelativeData(_clinContext);
             _rdvm = new RelativeDiagnosisVM();
             _rvm = new RelativeVM();
-            _api = new APIController(_clinContext, _config);
+            _api = new APIController(_clinContext, _cXContext, _docContext, _config);
             _audit = new AuditService(_config);
         }
 
