@@ -1,0 +1,80 @@
+﻿@model ClinicX.ViewModels.ProfileVM
+
+@{
+}
+
+<div class="container">
+    
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
+    <div class="row mb-5 g-5">
+        <h1 class="text-center">Profile details for @Model.staffMember.EMPLOYEE_NUMBER (@Model.staffMember.NAME)</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            <label>Name:</label>
+        </div>
+        <div class="col-md-8">
+            <p>@Model.staffMember.StaffTitle @Model.staffMember.StaffForename @Model.staffMember.StaffSurname</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            <label>Job Title:</label>
+        </div>
+        <div class="col-md-8">
+            <p>@Model.staffMember.POSITION</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            <label>Contact number:</label>
+        </div>
+        <div class="col-md-8">
+            <p>@Model.staffMember.TELEPHONE</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            <label>Email address:</label>
+        </div>
+        <div class="col-md-8">
+            <p>@Model.staffMember.EMAIL</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            <label>Start date:</label>
+        </div>
+        <div class="col-md-8">
+            <p>@Model.staffMember.EMPLOYMENT_START_DATE.Value.ToString("dd/MM/yyyy")</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-10"></div>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-success" asp-controller="UserProfile" asp-action="Edit">Update Password</a>
+        </div>
+    </div>
+
+</div>
