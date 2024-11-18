@@ -8,6 +8,7 @@ namespace ClinicX.ViewModels
     {
         public StaffMember staffMember { get; set; }
         public string message { get; set; }
+        public List<PatientTitle> titles { get; set; }
         public bool success { get; set; }
     }
 }

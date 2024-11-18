@@ -1,76 +1,90 @@
 ﻿@model ClinicX.ViewModels.ProfileVM
 
 @{
+    ViewData["Title"] = "Clinic-X - Update Details";
 }
 
 <div class="container">
+
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
     <div class="row mb-5 g-5">
-        <h1 class="text-center">Change Password for @Model.staffMember.EMPLOYEE_NUMBER (@Model.staffMember.NAME)</h1>
+        <h1 class="text-center">Profile details for @Model.staffMember.EMPLOYEE_NUMBER (@Model.staffMember.NAME)</h1>
     </div>
 
-    <form id="frmChangePassword" asp-action="Edit">
-        <div class="row mb-2 g-2">
+    <form asp-action="Edit">
+        <div class="row mb-5 g-5">
             <div class="col-md-2">
-                <label>Current password:</label>
+                <label>Name:</label>
             </div>
-            <div class="col-md-8">
-                <input type="password" id="txtCurPassword" name="curPassword" />
-            </div>
-        </div>
-
-        <div class="row mb-2 g-2">
             <div class="col-md-2">
-                <label>New password:</label>
+                <select name="title" asp-for=@Model.staffMember.StaffTitle>
+                    <option value="" selected>Select...</option>
+                    @foreach(var item in Model.titles)
+                    {
+                        <option value="@item.Title">@item.Title</option>
+                    }
+                </select>
             </div>
-            <div class="col-md-8">
-                <input type="password" id="txtNewPassword" name="newPassword" />
-            </div>
-        </div>
-
-        <div class="row mb-2 g-2">
             <div class="col-md-2">
-                <label>Confirm password:</label>
+                <input name="forename" asp-for=@Model.staffMember.StaffForename />
             </div>
-            <div class="col-md-8">
-                <input type="password" id="txtNewPasswordConf" name="newPasswordConf" />
+            <div class="col-md-2">
+                <input name="surname" asp-for=@Model.staffMember.StaffSurname />
             </div>
-        </div>
 
-    
+        </div>
 
         <div class="row mb-5 g-5">
-            <div class="col-md-10"></div>
             <div class="col-md-2">
-                <button type="button" class="btn btn-success" id="btnSavePassword">Save</button>
+                <label>Job Title:</label>
+            </div>
+            <div class="col-md-8">
+                <input name="position" asp-for=@Model.staffMember.POSITION />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Contact number:</label>
+            </div>
+            <div class="col-md-8">
+                <input name="telephone" asp-for=@Model.staffMember.TELEPHONE />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Email address:</label>
+            </div>
+            <div class="col-md-8">
+                <input name="email" asp-for=@Model.staffMember.EMAIL />
+            </div>
+        </div>
+        
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <a type="button" class="btn btn-success" asp-controller="UserProfile" asp-action="ProfileDetails">Back</a>
+            </div>
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Save Details</button>
             </div>
         </div>
     </form>
 
 </div>
-
-<script>
-    document.getElementById("btnSavePassword").addEventListener("click", UpdatePassword);
-
-    function UpdatePassword()
-    {
-        var curPW = document.getElementById("txtCurPassword").value;
-        var newPW = document.getElementById("txtNewPassword").value;
-        var newPWConf = document.getElementById("txtNewPasswordConf").value;              
-
-        if ("@Model.staffMember.PASSWORD" != curPW)
-        {
-            window.alert("Your current password does not match.");
-        }
-        else
-        {
-            if (newPW != newPWConf)
-            {
-                window.alert("The passwords you have entered do not match.");
-            }
-            else
-            {
-                document.getElementById("frmChangePassword").submit();
-            }
-        }
-    }
-</script>

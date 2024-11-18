@@ -1,6 +1,7 @@
 ﻿@model ClinicX.ViewModels.ProfileVM
 
 @{
+    ViewData["Title"] = "Clinic-X - Profile Details";
 }
 
 <div class="container">
@@ -71,9 +72,12 @@
     </div>
 
     <div class="row">
-        <div class="col-md-10"></div>
         <div class="col-md-2">
-            <a type="button" class="btn btn-success" asp-controller="UserProfile" asp-action="Edit">Update Password</a>
+            <a type="button" class="btn btn-success" asp-controller="UserProfile" asp-action="Edit">Update Your Details</a>
+        </div>
+        <div class="col-md-8"></div>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-success" asp-controller="UserProfile" asp-action="ChangePassword">Update Password</a>
         </div>
     </div>
 
