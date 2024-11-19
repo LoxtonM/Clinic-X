@@ -49,9 +49,7 @@ namespace ClinicX.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ProfileDetails" });
-            }
-
-           
+            }           
         }
 
         [HttpGet]
@@ -74,8 +72,6 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ChangePassword" });
             }
-
-
         }
 
         [HttpPost]
@@ -103,8 +99,6 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ChangePassword" });
             }
-
-
         }
 
         [HttpGet]
@@ -131,7 +125,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(string title, string forename, string surname, string position, string telephone, string email)
+        public IActionResult Edit(string title, string forename, string surname, string position, string telephone, string email, string gmcnumber)
         {
             try
             {
@@ -143,17 +137,22 @@ namespace ClinicX.Controllers
                 {
                     _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
 
-                    _crud.CallStoredProcedure("StaffMember", "Edit", 0, 0, 0, title, forename, surname, position, User.Identity.Name, null, null, false, false, 0, 0, 0, email, telephone);
+                    if (!email.Contains("@")) //we simply can NOT validate the email address in the front end, because there is no way to escape the @, so it has to be done here.
+                    {
+                        return RedirectToAction("ProfileDetails", "UserProfile", new { message = "Email verification failed.", isSuccess = false });
+                    }
+                    else
+                    {
+                        _crud.CallStoredProcedure("StaffMember", "Edit", 0, 0, 0, title, forename, surname, position, User.Identity.Name, null, null, false, false, 0, 0, 0, email, telephone, gmcnumber);
 
-                    return RedirectToAction("ProfileDetails", "UserProfile", new { message = "Success - details have been updated", isSuccess = true });
+                        return RedirectToAction("ProfileDetails", "UserProfile", new { message = "Success - details have been updated", isSuccess = true });
+                    }
                 }
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ChangePassword" });
             }
-
-
         }
     }
 }

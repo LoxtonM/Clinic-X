@@ -62,6 +62,18 @@
         </div>
     </div>
 
+    @if (Model.staffMember.GMCNumber != null)
+    {
+        <div class="row">
+            <div class="col-md-2">
+                <label>Start date:</label>
+            </div>
+            <div class="col-md-8">
+                <p>@Model.staffMember.EMPLOYMENT_START_DATE.Value.ToString("dd/MM/yyyy")</p>
+            </div>
+        </div>
+    }
+
     <div class="row">
         <div class="col-md-2">
             <label>Start date:</label>

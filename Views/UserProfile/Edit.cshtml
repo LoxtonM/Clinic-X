@@ -26,7 +26,7 @@
         <h1 class="text-center">Profile details for @Model.staffMember.EMPLOYEE_NUMBER (@Model.staffMember.NAME)</h1>
     </div>
 
-    <form asp-action="Edit">
+    <form id="frmEdit" asp-action="Edit">
         <div class="row mb-5 g-5">
             <div class="col-md-2">
                 <label>Name:</label>
@@ -41,10 +41,10 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <input name="forename" asp-for=@Model.staffMember.StaffForename />
+                <input id="txtForename" name="forename" asp-for=@Model.staffMember.StaffForename />
             </div>
             <div class="col-md-2">
-                <input name="surname" asp-for=@Model.staffMember.StaffSurname />
+                <input id="txtSurname" name="surname" asp-for=@Model.staffMember.StaffSurname />
             </div>
 
         </div>
@@ -54,7 +54,7 @@
                 <label>Job Title:</label>
             </div>
             <div class="col-md-8">
-                <input name="position" asp-for=@Model.staffMember.POSITION />
+                <textarea id="txtPosition" name="position" asp-for=@Model.staffMember.POSITION></textarea>
             </div>
         </div>
 
@@ -72,9 +72,24 @@
                 <label>Email address:</label>
             </div>
             <div class="col-md-8">
-                <input name="email" asp-for=@Model.staffMember.EMAIL />
+                <input type="email" id="txtEmail" name="email" asp-for=@Model.staffMember.EMAIL />
             </div>
         </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>GMC Number (if applicable):</label>
+            </div>
+            <div class="col-md-2">
+                <input name="gmcnumber" id="txtGMCNumber" asp-for=@Model.staffMember.GMCNumber />
+            </div>
+            <div class="col-md-8">
+                <label class="redtext">Note: Only the GMC number goes here, GCRB or HCPC numbers should go in the "job title" field.</label>
+            </div>
+        </div>
+        
+            
+        
         
         <div class="row mb-5 g-5">
             <div class="col-md-2">
@@ -82,9 +97,48 @@
             </div>
             <div class="col-md-8"></div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-success">Save Details</button>
+                <button type="button" id="btnSubmit" class="btn btn-success">Save Details</button>
             </div>
         </div>
     </form>
 
 </div>
+
+<script>
+    document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
+
+    function DoSubmit()
+    {        
+        if (CheckFormValid() == 1)
+        {            
+            document.getElementById("frmEdit").submit();
+        }
+    }
+
+    function CheckFormValid()
+    {
+        var gmcNumber = document.getElementById("txtGMCNumber").value;
+        var forename = document.getElementById("txtForename").value;
+        var surname = document.getElementById("txtSurname").value;
+        var position = document.getElementById("txtPosition").value;
+        
+        if (!gmcNumber.match(/GMC*/) && gmcNumber != "")
+        {
+            window.alert("That is not a valid GMC number, it needs to start with 'GMC'.");
+            return 0;
+        }
+        if (forename == "" || surname == "")
+        {
+            window.alert("Please enter a name, the department does not employ ghosts.");
+            return 0;
+        }       
+        if (position == "")
+        {
+            window.alert("Please enter a job title, you're not employed to do nothing.");
+            return 0;
+        }
+
+        return 1;
+    }
+
+</script>
