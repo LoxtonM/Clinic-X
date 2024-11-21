@@ -289,7 +289,7 @@ public class LetterController : Controller
     //Prints standard letter templates from the menu
     public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
         string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1="", string? freeText2 = "", 
-        int? relID = 0, string? clinicianCode = "", string? siteText = "")
+        int? relID = 0, string? clinicianCode = "", string? siteText = "", bool? isPreview = false)
     {
         try
         {
@@ -1061,7 +1061,8 @@ public class LetterController : Controller
                 content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
                 tf.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
                 totalLength = totalLength + content2.Length / 4;
-                content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
+                //content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
+                content3 = _lvm.documentsContent.Para10;
                 tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length));
                 totalLength = totalLength + content3.Length;
                 content4 = _lvm.documentsContent.Para4;
@@ -1544,7 +1545,14 @@ public class LetterController : Controller
             //document.Save(letterFileName + ".pdf"); - the server can't save it to the watchfolder due to permission issues.
             //So we have to create it locally and have a scheduled job to move it instead.
 
-            document.Save($@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
+            if (!isPreview.GetValueOrDefault())
+            {
+                document.Save($@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
+            }
+            else
+            {
+                document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf"));
+            }
             
         }
         catch (Exception ex)

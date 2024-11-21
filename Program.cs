@@ -13,6 +13,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ClinicalContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<ClinicXContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<DocumentContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
+builder.Services.AddDbContext<LabContext>(options => options.UseSqlServer(config.GetConnectionString("ConStringLab")));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
    .AddCookie(options =>
    {

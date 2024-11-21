@@ -25,7 +25,7 @@ body {
 
 
 .redtext {
-    color:red;
+    color:red !important;
 }
 
 .greybg {

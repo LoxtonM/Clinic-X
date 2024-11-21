@@ -4,6 +4,23 @@
     ViewData["Title"] = "Clinic-X - Cancer ICP Review Details";
 }
 <div class="container card">
+
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
     <div class="row mb-5 g-2 mt-2">
         <div class="col-md-2">
             @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
@@ -53,7 +70,7 @@
                             <td>@item.LifetimeRiskPercentage</td>
                             <td>@item.R25_29</td>
                             <td>@item.R30_40</td>
-                            <td>@item.R30_40</td>
+                            <td>@item.R40_50</td>
                             <td>@item.R50_60</td>                                                                 
                             <td>
                                 @if(Model.surveillanceList != null)

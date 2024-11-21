@@ -14,7 +14,8 @@ namespace ClinicX.Controllers
         private readonly IStaffUserData _staffUserData;
         private readonly ITitleData _titleData;
         private readonly ICRUD _crud;
-        private readonly ProfileVM _pvm;        
+        private readonly IAuditService _auditService;
+        private readonly ProfileVM _pvm;
 
         public UserProfileController(ClinicalContext context, IConfiguration config)
         {
@@ -24,6 +25,7 @@ namespace ClinicX.Controllers
             _titleData = new TitleData(_context);
             _pvm = new ProfileVM();
             _crud = new CRUD(_config);
+            _auditService = new AuditService(_config);
         }
 
         public IActionResult ProfileDetails(string? message, bool? isSuccess)
@@ -37,6 +39,7 @@ namespace ClinicX.Controllers
                 else
                 {
                     _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Staff Profile", "Staffcode=" + _pvm.staffMember.STAFF_CODE);
                     if (message != null)
                     {
                         _pvm.message = message;
@@ -64,6 +67,7 @@ namespace ClinicX.Controllers
                 else
                 {
                     _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Change Password", "");
 
                     return View(_pvm);
                 }
@@ -86,10 +90,13 @@ namespace ClinicX.Controllers
                 else
                 {
                     _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Change Password", "Staffcode=" + _pvm.staffMember.STAFF_CODE);
 
-                    if(curPassword == _pvm.staffMember.PASSWORD && newPassword == newPasswordConf)
+                    if (curPassword == _pvm.staffMember.PASSWORD && newPassword == newPasswordConf)
                     {
-                        _crud.CallStoredProcedure("Password", "Change", 0,0,0,curPassword, newPassword, newPasswordConf, "", User.Identity.Name);
+                        int success = _crud.CallStoredProcedure("Password", "Change", 0,0,0,curPassword, newPassword, newPasswordConf, "", User.Identity.Name);
+
+                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Profile-ChangePassword(SQL)" }); }
                     }
 
                     return RedirectToAction("ProfileDetails", "UserProfile", new { message = "Success - password has been changed", isSuccess = true });
@@ -113,6 +120,7 @@ namespace ClinicX.Controllers
                 else
                 {
                     _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Update Details", "");
                     _pvm.titles = _titleData.GetTitlesList();
 
                     return View(_pvm);
@@ -136,6 +144,7 @@ namespace ClinicX.Controllers
                 else
                 {
                     _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Update Details", "Staffcode=" + _pvm.staffMember.STAFF_CODE);
 
                     if (!email.Contains("@")) //we simply can NOT validate the email address in the front end, because there is no way to escape the @, so it has to be done here.
                     {
@@ -143,8 +152,10 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        _crud.CallStoredProcedure("StaffMember", "Edit", 0, 0, 0, title, forename, surname, position, User.Identity.Name, null, null, false, false, 0, 0, 0, email, telephone, gmcnumber);
-
+                        int success = _crud.CallStoredProcedure("StaffMember", "Edit", 0, 0, 0, title, forename, surname, position, User.Identity.Name, null, null, false, false, 0, 0, 0, email, telephone, gmcnumber);
+                        
+                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Profile-UpdateDetails(SQL)" }); }
+                        
                         return RedirectToAction("ProfileDetails", "UserProfile", new { message = "Success - details have been updated", isSuccess = true });
                     }
                 }

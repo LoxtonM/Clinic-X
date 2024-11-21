@@ -249,7 +249,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> CancerReview(int id)
+        public async Task<IActionResult> CancerReview(int id, string? message, bool? success)
         {
             try
             {
@@ -266,7 +266,10 @@ namespace ClinicX.Controllers
                 _ivm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_ivm.icpCancer.MPI);
                 _ivm.documentList = _documentsData.GetDocumentsList().Where(d => (d.DocCode.StartsWith("O") && d.DocGroup == "Outcome") || d.DocCode.Contains("PrC")).ToList();
                 _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
-                
+
+                _ivm.message = message;
+                _ivm.success = success.GetValueOrDefault();
+
                 return View(_ivm);
             }
             catch (Exception ex)
@@ -374,7 +377,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> FurtherRequest(int id, int request, string? freeText = "", int? relID = 0, string? clinicianCode = "", string? siteText = "",
-            string? freeText1="", string? freeText2="", string? additionalText="")
+            string? freeText1="", string? freeText2="", string? additionalText="", bool? isPreview=false)
         {
             try
             {
@@ -400,21 +403,28 @@ namespace ClinicX.Controllers
                 if (docID != null && docID != 0)
                 {
                     _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
-                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText);
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, isPreview);
                 }
 
                 if (docID2 != null && docID2 != 0)
                 {
                     _lc.DoPDF(docID2, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
-                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText);
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, isPreview);
                 }
 
                 if (docID3 != null && docID3 != 0)
                 {
                     _lc.DoPDF(docID3, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
-                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText);
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, isPreview);
                 }
-                return RedirectToAction("CancerReview", new { id = id });
+                if (!isPreview.GetValueOrDefault())
+                {
+                    return RedirectToAction("CancerReview", new { id = id, message="Letter submitted for filing/printing in EDMS", success=true });
+                }
+                else
+                {
+                    return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
+                }
             }
             catch (Exception ex)
             {

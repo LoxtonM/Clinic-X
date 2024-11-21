@@ -88,14 +88,14 @@
             </div>
         </div>
 
-        <div class="row mb-5 g-5" id="analysis">
-            <div class="col-md-2">
+        <div class="row mb-5 g-5" id="analysis" hidden="true">
+            <div class="col-md-1">
                 <label>Germline Analysis</label>
             </div>
             <div class="col-md-2">
                 <input name="additionalText" />
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <label>Somatic Analysis</label>
             </div>
             <div class="col-md-2">
@@ -112,7 +112,14 @@
 
         <div class="row mb-5 g-5">
             <div class="col-md-2">
-                <button type="submit" class="btn btn-success">Create Letter</button>
+                <button type="button" class="btn btn-success" id="btnSubmit">Create Letter</button>
+            </div>
+            <div class="col-md-8">
+                <input id="isPreview" name="isPreview" hidden="true" />
+            </div>
+
+            <div class="col-md-2">
+                <button type="button" class="btn btn-success" id="btnPreview">Preview Letter</button>
             </div>
         </div>
     </form>
@@ -121,6 +128,8 @@
 <script>
     document.getElementById("ddlLetter").addEventListener("change", ShowClinicianDropdown)
     document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
+    document.getElementById("btnPreview").addEventListener("click", PreviewLetter);
+    document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
 
     function ShowClinicianDropdown()
     {
@@ -149,33 +158,36 @@
         ccList.innerHTML = "";
 
         var clinCodeArray = [];
-        var clinNameArray = [];
-        var clinPositionArray = [];
+        //var clinNameArray = [];
+        //var clinPositionArray = [];
         var clinSpecArray = [];
+        var clinicianArray = [];
 
         @foreach (var item in Model.clinicians)
         {
             @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
             { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
                 @:clinCodeArray.push("@item.MasterClinicianCode");
-                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
-                @:clinPositionArray.push("@item.POSITION");
+                //@:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME" + ", " + "@item.FACILITY");
+                //@:clinPositionArray.push("@item.POSITION");
                 @:clinSpecArray.push("@item.SPECIALITY");
+                @:clinicianArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME" + ", " + "@item.FACILITY")
                 //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
             }
         }
-
+        
         for (var i in clinSpecArray)
         {
             if (clinSpecArray[i] != ccType.value)
             {
                 delete clinSpecArray[i];
                 delete clinCodeArray[i];
-                delete clinNameArray[i];
-                delete clinPositionArray[i];
+                //delete clinNameArray[i];
+                //delete clinPositionArray[i];
+                delete clinicianArray[i];
             }
         }
-
+        
         var def = document.createElement('option');
         def.value = "";
         def.innerHTML = "Select...";
@@ -187,12 +199,25 @@
             {
                 var opt = document.createElement('option');
                 opt.value = clinCodeArray[i];
-                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i];
+                //opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i];
+                opt.innerHTML = clinicianArray[i];
                 ccList.appendChild(opt);
             }
         }
 
         ccList.hidden = false;
+    }
+
+    function PreviewLetter()
+    {
+        document.getElementById("isPreview").value = true;
+        document.getElementById("FurtherRequestForm").submit();
+    }
+
+    function DoSubmit()
+    {
+        document.getElementById("isPreview").value = false;
+        document.getElementById("FurtherRequestForm").submit();
     }
 
 

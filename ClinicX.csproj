@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\NewFolder\**" />
-    <Content Remove="wwwroot\NewFolder\**" />
-    <EmbeddedResource Remove="wwwroot\NewFolder\**" />
-    <None Remove="wwwroot\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\WebServerDeploy.pubxml" />
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\WebStagingFolderDeploy.pubxml" />
   </ItemGroup>
@@ -31,6 +24,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\DOTLetterPreviews\" />
     <Folder Include="wwwroot\Errorlogs\" />
+    <Folder Include="wwwroot\StandardLetterPreviews\" />
     <Folder Include="wwwroot\Signatures\" />
   </ItemGroup>
 

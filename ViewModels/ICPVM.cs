@@ -41,5 +41,7 @@ namespace ClinicX.ViewModels
         public string staffCode { get; set; }
         public string loggedOnUserType { get; set; }
         public bool isICPTriageStarted { get; set; }
+        public string message { get; set; }
+        public bool success {  get; set; }
     }
 }
