@@ -1,13 +1,13 @@
 ﻿@model ClinicX.ViewModels.LabReportVM
 
 @{
-
+    ViewData["Title"] = "Clinic-X - Lab Sample Details";
 }
 
 <div class="container">
     @if(Model.cytoReport != null)
     {
-        <h1>Cytogenetic report details for @Model.cytoReport.LABNO</h1>
+        <h1>Cytogenetic sample details for @Model.cytoReport.LABNO</h1>
 
         <div>
             <dl>
@@ -26,7 +26,7 @@
     }
     @if (Model.dnaReport != null)
     {
-        <h1>Molecular report details for @Model.dnaReport.LABNO</h1>
+        <h1>Molecular sample details for @Model.dnaReport.LABNO</h1>
 
         <div>
             <dl>
