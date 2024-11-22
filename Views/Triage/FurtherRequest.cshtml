@@ -27,6 +27,22 @@
         </div>
         <div class="row mb-5 g-5">
             <div class="col-md-2">
+                <Label>Select patient/relative</Label>
+            </div>
+            <div class="col-md-2">
+                <select id="ddlRelative" class="w-100" name="relID">
+                    <option value="" selected>Select...</option>
+                    <option value=0>@Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME (Patient)</option>
+                    @foreach (var item in Model.relatives)
+                    {
+                        <option value=@item.relsid>@item.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5" id="letterDetails" hidden="true">
+            <div class="col-md-2">
                 <label>Select letter:</label>
             </div>
             <div class="col-md-3">
@@ -38,15 +54,7 @@
                     }
                 </select>
             </div>
-            <div class="col-md-2">
-                <select id="ddlRelative" class="w-100" name="relID">
-                    <option value=0>@Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME (Patient)</option>
-                    @foreach (var item in Model.relatives)
-                    {
-                        <option value=@item.relsid>@item.Name</option>
-                    }
-                </select>
-            </div>
+            
             <div class="col-md-1">
                 <label id ="lblFreeText">Free text:</label>
             </div>
@@ -88,6 +96,18 @@
             </div>
         </div>
 
+        <div class="row mb-5 g-5" id="CancerDiag" hidden="true">
+            <div class="col-md-2">
+                <label>Site diagnosis</label>
+            </div>
+            <div class="col-md-4">
+                <select id="ddlCancerDiag" name="diagDate">
+                    
+                </select>
+            </div>
+
+        </div>
+
         <div class="row mb-5 g-5" id="analysis" hidden="true">
             <div class="col-md-1">
                 <label>Germline Analysis</label>
@@ -126,23 +146,81 @@
 </div>
 
 <script>
+    document.getElementById("ddlRelative").addEventListener("change", ShowLetterDetails)
     document.getElementById("ddlLetter").addEventListener("change", ShowClinicianDropdown)
     document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
     document.getElementById("btnPreview").addEventListener("click", PreviewLetter);
     document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
 
-    function ShowClinicianDropdown()
+    function ShowLetterDetails()
     {
+        if(document.getElementById("ddlRelative").value == "")
+        {
+            document.getElementById("letterDetails").hidden = true;
+        }
+        else
+        {
+            document.getElementById("letterDetails").hidden = false;
+        }
+    }
+
+    function ShowClinicianDropdown()
+    {        
         document.getElementById("freeText").hidden = false;
         document.getElementById("lblFreeText").hidden = false;        
         document.getElementById("analysis").hidden = true;
+        document.getElementById("CancerDiag").hidden = true;
+        document.getElementById("externalClinicians").hidden = true;
 
         if (document.getElementById("ddlLetter").value != 1 && document.getElementById("ddlLetter").value != 7)
         {
             document.getElementById("externalClinicians").hidden = false;
         }
 
-        if (document.getElementById("ddlLetter").value == 9)
+        if (document.getElementById("ddlLetter").value == 4) //DT13
+        {
+            const diagList = document.getElementById("ddlCancerDiag");
+            diagList.innerHTML = "";
+            var relIDArray = [];
+            var relDiagArray = [];
+            var relDiagDateArray = [];
+            var rel = document.getElementById("ddlRelative").value;
+                     
+            @if (Model.relativesDiagnoses != null)
+            {
+                @foreach (var item in Model.relativesDiagnoses)
+                {
+                    @:relIDArray.push("@item.RelsID")
+                    @:relDiagArray.push("@item.Diagnosis");
+                    @:relDiagDateArray.push("@item.ConfDiagDate".toLocaleString('en-GB'));
+                }
+            }
+
+            for (var i in relIDArray)
+            {
+                if (relIDArray[i] != rel || rel == 0)
+                {                    
+                    relIDArray.splice(i, 1);
+                    relDiagArray.splice(i, 1);
+                    relDiagDateArray.splice(i, 1);
+                }                
+            }
+
+            for (var j in relIDArray)
+            {
+                var opt = document.createElement('option');
+                opt.value = relDiagDateArray[i];
+                opt.innerHTML = relDiagArray[i] + " - confirmed " + relDiagDateArray[i]; //unfortunately we can't have it in any other format, for some reason.
+                diagList.appendChild(opt);
+            }
+            
+            if (relIDArray.length > 0)
+            {                
+                document.getElementById("CancerDiag").hidden = false;
+            }
+        }
+
+        if (document.getElementById("ddlLetter").value == 9) //DT15
         {
             document.getElementById("freeText").hidden = true;
             document.getElementById("lblFreeText").hidden = true;
@@ -210,15 +288,50 @@
 
     function PreviewLetter()
     {
-        document.getElementById("isPreview").value = true;
-        document.getElementById("FurtherRequestForm").submit();
+        if(CheckFormValid())
+        {
+            document.getElementById("isPreview").value = true;
+            document.getElementById("FurtherRequestForm").submit();
+        }
     }
 
     function DoSubmit()
     {
-        document.getElementById("isPreview").value = false;
-        document.getElementById("FurtherRequestForm").submit();
+        if(CheckFormValid())
+        {
+            document.getElementById("isPreview").value = false;
+            document.getElementById("FurtherRequestForm").submit();
+        }
     }
+
+    function CheckFormValid()
+    {
+        const pat = document.getElementById("ddlRelative");
+        const letter = document.getElementById("ddlLetter");
+        const clinician = document.getElementById("ddlLetterToClinician");
+        const clinicians = document.getElementById("externalClinicians");
+
+        if(pat.value == "")
+        {
+            window.alert("Please select a patient/relative.");
+            return false;
+        }
+
+        if(letter.value == "")
+        {
+            window.alert("Please select a letter/action.");
+            return false;
+        }
+
+        if(clinician.value == "" && clinicians.hidden == false)
+        {            
+            window.alert("Please select a clinician.");
+            return false;
+        }        
+        
+        return true;
+    }
+    
 
 
 </script>

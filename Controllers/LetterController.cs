@@ -289,7 +289,7 @@ public class LetterController : Controller
     //Prints standard letter templates from the menu
     public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
         string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1="", string? freeText2 = "", 
-        int? relID = 0, string? clinicianCode = "", string? siteText = "", bool? isPreview = false)
+        int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false)
     {
         try
         {
@@ -1117,24 +1117,39 @@ public class LetterController : Controller
             //DT13
             if (docCode == "DT13")
             {
-                tf.DrawString("Re: " + patName, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, content1.Length / 4));
-                totalLength = totalLength + 40;
+                string patDetails = patName + System.Environment.NewLine +
+                    _lvm.patient.ADDRESS1 + System.Environment.NewLine +
+                    _lvm.patient.ADDRESS3 + System.Environment.NewLine +
+                    _lvm.patient.POSTCODE + System.Environment.NewLine + 
+                    "Date of birth: " + _lvm.patient.DOB.Value.ToString("dd/MM/yyyy") + System.Environment.NewLine;
 
-                content1 = _lvm.documentsContent.Para1;
+                if(_lvm.patient.DECEASED_DATE != null)
+                {
+                    patDetails = patDetails + "Date of death: " + _lvm.patient.DECEASED_DATE.Value.ToString("dd/MM/yyyy") + System.Environment.NewLine;
+                }
+
+                patDetails = patDetails + "NHS Number: " + _lvm.patient.SOCIAL_SECURITY;
+
+                tf.DrawString("Re: " + patDetails, fontBold, XBrushes.Black, new XRect(50, totalLength, 500, 120));
+
+                if (diagDate != null)
+                {
+                    tf.DrawString("Date Diagnosed: " + diagDate.Value.ToString("dd/MM/yyyy"), fontBold, XBrushes.Black, new XRect(400, totalLength, 500, 20));
+                    totalLength = totalLength + 20;
+                }
+                tf.DrawString("Cancer Site: " + siteText, fontBold, XBrushes.Black, new XRect(400, totalLength, 500, 20));
+                totalLength = totalLength + 120;
+
+                content1 = _lvm.documentsContent.Para1 + System.Environment.NewLine + System.Environment.NewLine +
+                    _lvm.documentsContent.Para2 + System.Environment.NewLine + System.Environment.NewLine +
+                    _lvm.documentsContent.Para3 + System.Environment.NewLine + System.Environment.NewLine +
+                    _lvm.documentsContent.Para4 + System.Environment.NewLine;
+
+
                 tf.DrawString(content1, font, XBrushes.Black, new XRect(50, totalLength, 500, content1.Length / 4));
-                totalLength = totalLength + content1.Length / 4;
-
-                content2 = _lvm.documentsContent.Para2;
-                tf2.DrawString(content2, font, XBrushes.Black, new XRect(50, totalLength, 500, content2.Length / 4));
-                totalLength = totalLength + content2.Length / 4;
-
-                content3 = _lvm.documentsContent.Para3;
-                tf.DrawString(content3, font, XBrushes.Black, new XRect(50, totalLength, 500, content3.Length / 4));
-                totalLength = totalLength + content3.Length / 4;
-
-                content4 = _lvm.documentsContent.Para4;
-                tf2.DrawString(content4, font, XBrushes.Black, new XRect(50, totalLength2, 500, content4.Length / 4));
-                totalLength2 = totalLength2 + content4.Length / 4;
+                
+                pageCount += 1;
+                signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
             }
 
             //DT15
@@ -1476,10 +1491,10 @@ public class LetterController : Controller
                         }
                         totalLength2 = totalLength2 + hig + 20;
                     }
-                    tf2.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength2, 500, 20));
+                    tf2.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLength2, 500, 40));
                     if (enclosures != "")
                     {
-                        totalLength2 = totalLength2 + 20;
+                        totalLength2 = totalLength2 + 40;
                         tf2.DrawString("Enc: " + enclosures, font, XBrushes.Black, new XRect(50, totalLength2, 500, 100));
                     }
                 }

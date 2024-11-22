@@ -7,6 +7,7 @@ using System.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 using ClinicX.Data;
+using ClinicalXPDataConnections.Models;
 
 
 namespace ClinicX.Controllers
@@ -32,6 +33,7 @@ namespace ClinicX.Controllers
         private readonly IRelativeData _relativeData;
         private readonly ICancerRequestData _cancerRequestData;
         private readonly IExternalClinicianData _clinicianData;
+        private readonly IRelativeDiagnosisData _relDiagData;
         private readonly IDocumentsData _documentsData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
@@ -56,6 +58,7 @@ namespace ClinicX.Controllers
             _relativeData = new RelativeData(_clinContext);
             _cancerRequestData = new CancerRequestData(_cXContext);
             _clinicianData = new ExternalClinicianData(_clinContext);
+            _relDiagData = new RelativeDiagnosisData(_clinContext, _cXContext);
             _documentsData = new DocumentsData(_docContext);
             _crud = new CRUD(_config);
             _lc = new LetterController(_clinContext, _cXContext, _docContext);
@@ -366,18 +369,29 @@ namespace ClinicX.Controllers
                 _ivm.relatives = _relativeData.GetRelativesList(_ivm.icpCancer.MPI);
                 _ivm.clinicians = _clinicianData.GetClinicianList();
                 _ivm.specialities = _clinicianData.GetClinicianTypeList();
-
+                _ivm.relativesDiagnoses = new List<RelativesDiagnosis>();
+                
+                if (_ivm.relatives.Count > 0)
+                {
+                    foreach (var rel in _ivm.relatives)
+                    {
+                        foreach (var diag in _relDiagData.GetRelativeDiagnosisList(rel.relsid))
+                        {
+                            _ivm.relativesDiagnoses.Add(diag);
+                        }
+                    }
+                }
                 return View(_ivm);
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-postclinicletter" });
             }
-        }
+        }//http://localhost:7168/Triage/CancerReview?id=40624
 
         [HttpPost]
         public async Task<IActionResult> FurtherRequest(int id, int request, string? freeText = "", int? relID = 0, string? clinicianCode = "", string? siteText = "",
-            string? freeText1="", string? freeText2="", string? additionalText="", bool? isPreview=false)
+            string? freeText1="", string? freeText2="", string? additionalText="", DateTime? diagDate = null, bool? isPreview=false)
         {
             try
             {
@@ -389,7 +403,9 @@ namespace ClinicX.Controllers
                 var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);               
                 //DateTime finalReviewDate = DateTime.Parse("1900-01-01");
                 int mpi = icpDetails.MPI;
-                int refID = icpDetails.REFID;                
+                int refID = icpDetails.REFID;     
+               
+
 
                 int docID = _ivm.cancerRequest.DocContentID.GetValueOrDefault();
                 int docID2 = _ivm.cancerRequest.DocContentID2.GetValueOrDefault();
@@ -403,19 +419,19 @@ namespace ClinicX.Controllers
                 if (docID != null && docID != 0)
                 {
                     _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
-                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, isPreview);
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview);
                 }
 
                 if (docID2 != null && docID2 != 0)
                 {
                     _lc.DoPDF(docID2, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
-                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, isPreview);
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview);
                 }
 
                 if (docID3 != null && docID3 != 0)
                 {
                     _lc.DoPDF(docID3, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
-                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, isPreview);
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview);
                 }
                 if (!isPreview.GetValueOrDefault())
                 {

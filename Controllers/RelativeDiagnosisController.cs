@@ -76,7 +76,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Create", id, 0, 0, diagnosis, age, hospital, cRegCode, User.Identity.Name,
+                if (cRegCode == null) { cRegCode = ""; }
+                int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Create", id, 0, 0, diagnosis, age, cRegCode, hospital, User.Identity.Name,
                     dateRequested, DateTime.Parse("1900-01-01"), false, false, 0, 0, 0, status, consent, consultant);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiagnosis-add(SQL)" }); }

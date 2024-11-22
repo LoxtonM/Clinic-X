@@ -37,6 +37,7 @@ namespace ClinicX.ViewModels
         public CancerRequests cancerRequest { get; set; }
         public List<ExternalCliniciansAndFacilities> clinicians { get; set; }
         public List<ExternalCliniciansAndFacilities> screeningCoordinators { get; set; }
+        public List<RelativesDiagnosis> relativesDiagnoses { get; set; }
         public List<string> specialities { get; set; }
         public string staffCode { get; set; }
         public string loggedOnUserType { get; set; }

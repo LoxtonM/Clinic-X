@@ -27,7 +27,7 @@
                     <label>Reported Diagnosis:</label>
                 </div>
                 <div class="col-md-2">
-                    <input class="w-100" type="text" name="diagnosis" />
+                    <input class="w-100" type="text" id="txtDiag" name="diagnosis" />
                 </div>
                 <div class="col-md-1">
                     <label>Age:</label>
@@ -51,7 +51,7 @@
                     <label>Source:</label>
                 </div>
                 <div class="col-md-2">
-                    <select class="w-100" id="ddlStatus" name="cRegCode">
+                    <select class="w-100" id="ddlCRegCode" name="cRegCode">
                         <option value="">select...</option>
                         @foreach (var c in Model.cancerRegList )
                         {
@@ -143,7 +143,7 @@
 
 
             <div id="metadata" hidden="true">
-                <input name="relID" value="@Html.DisplayFor(model => model.relativeDetails.relsid)" />
+                <input name="id" value="@Html.DisplayFor(model => model.relativeDetails.relsid)" />
             </div>
         </form>
 
@@ -159,7 +159,7 @@
     <script type="text/javascript">
 
         document.getElementById("btnSave").addEventListener("click", AddDiag);
-        document.getElementById("btnBack").addEventListener("click", GoBack);
+        //document.getElementById("btnBack").addEventListener("click", GoBack);
 
         function GoBack() {
             window.history.back();
@@ -169,27 +169,21 @@
         function AddDiag() 
         {
 
-            if (CheckFormValid() == 1) {
+            if (CheckFormValid() == 1) 
+            {
                 document.getElementById("frmAddNew").submit();
             }
         }
 
-        function CheckFormValid() { //validation to ensure all required data is entered
+        function CheckFormValid() 
+        { //validation to ensure all required data is entered
 
-            if (document.getElementById("ddlDiag").value == null || document.getElementById("ddlDiag").value == "") {
-                window.alert("Please select a diagnosis.");
+            if (document.getElementById("txtDiag").value == null || document.getElementById("txtDiag").value == "")
+            {
+                window.alert("Please enter a diagnosis.");
                 return 0;
             }
-
-            if (document.getElementById("ddlStatus").value == null || document.getElementById("ddlStatus").value == "") {
-                window.alert("Please select a disease status.");
-                return 0;
-            }
-
-            if (document.getElementById("txtComments").value.match(/};.*/)) {
-                window.alert("Oi! Stop trying to inject SQL code into my form!");
-                return 0;
-            }
+                        
             return 1;
         }
 
