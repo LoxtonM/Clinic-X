@@ -5,7 +5,6 @@ using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace ClinicX.Controllers
 {

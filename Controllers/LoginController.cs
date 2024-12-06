@@ -17,9 +17,7 @@ namespace ClinicX.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UserLogin([Bind] UserDetails user)
-        {
-            //ModelState.Remove("FIRSTNAME");
-            //ModelState.Remove("LASTNAME");
+        {            
            
             if (ModelState.IsValid)
             {

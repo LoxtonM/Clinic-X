@@ -38,6 +38,16 @@ namespace ClinicX.Controllers
             _config = config;
         }
 
+        public bool CheckResponseValid(string response)
+        {
+            if (response.Contains("<html>")) //this seems to be the only way to check - if no results, it will return "<html>"
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<string> GetPhenotipsPatientID(int id)
         {
             //bool isExists = false;
@@ -50,9 +60,9 @@ namespace ClinicX.Controllers
             request.AddHeader("accept", "application/json");
             request.AddHeader("authorization", "Basic " + authKey);
             request.AddHeader("X-Gene42-Secret", apiKey);
-            var response = await client.GetAsync(request);
+            var response = await client.GetAsync(request); //secret key is broken so we can't currently get past this line
 
-            if (!response.Content.Contains("<html>")) //this seems to be the only way to check - if no results, it will return "<html>"
+            if (CheckResponseValid(response.Content)) 
             {
                 dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
                 phenotipsID = dynJson.family_id;

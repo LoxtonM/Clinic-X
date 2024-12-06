@@ -12,7 +12,6 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly ClinicXContext _cXContext;
-        private readonly DocumentContext _docContext;
         private readonly PatientVM _pvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;        
@@ -24,13 +23,11 @@ namespace ClinicX.Controllers
         private readonly IDiaryData _diaryData;
         private readonly IHPOCodeData _hpoData;
         private readonly IAuditService _audit;
-        private readonly IConstantsData _constants;
 
-        public PatientController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
+        public PatientController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
         {
             _clinContext = context;
             _cXContext = cXContext;
-            _docContext = docContext;
             _config = config;
             _pvm = new PatientVM();
             _staffUser = new StaffUserData(_clinContext);
@@ -42,7 +39,6 @@ namespace ClinicX.Controllers
             _diaryData = new DiaryData(_clinContext);
             _hpoData = new HPOCodeData(_cXContext);
             _audit = new AuditService(_config);
-            _constants = new ConstantsData(_docContext);
         }
         
 
@@ -70,15 +66,7 @@ namespace ClinicX.Controllers
                 if (success.HasValue)
                 {
                     _pvm.ptSuccess = success.GetValueOrDefault();
-
-                    /*if (success.GetValueOrDefault())
-                    {
-                        _pvm.message = "Patient successfully pushed to Phenotips.";
-                    }
-                    else
-                    {
-                        _pvm.message = "Push to Phenotips failed.";
-                    }*/
+                                        
                     if (message != null)
                     {
                         _pvm.message = message;

@@ -161,6 +161,8 @@ public class LetterController : Controller
             var tf3 = new XTextFormatter(gfx3);
             XGraphics gfx4 = XGraphics.FromPdfPage(page4);
             var tf4 = new XTextFormatter(gfx4);
+            int firstPageLength = 500;
+            int pageLength = 3000;
 
             if (summary == null) { summary = ""; }
 
@@ -201,9 +203,57 @@ public class LetterController : Controller
                 tf4 = new XTextFormatter(gfx4);
                 totalLength4 = 20;
 
+                string content1 = "";
+                string content2 = "";
+                string content3 = "";
+                string content4 = "";
+
+                
+
                 foreach (var line in lines)
-                {
-                    if(totalLength < 800)
+                {                    
+                    int pageIndex = 1;
+                    
+                    if (content1.Length < firstPageLength)
+                    {
+                        content1 = content1 + line + System.Environment.NewLine;
+                    }
+                    else
+                    {
+                        pageIndex += 1;
+                    }
+
+                    if (pageIndex == 2 && content2.Length < pageLength)
+                    {
+                        content2 = content2 + line + System.Environment.NewLine;                        
+                        Console.WriteLine(content2);
+                    }
+                    else
+                    {
+                        pageIndex += 1;
+                    }
+
+                    if (pageIndex == 3 && content3.Length < pageLength)
+                    {
+                        content3 = content3 + line + System.Environment.NewLine;
+                    }
+                    else
+                    {
+                        pageIndex += 1;
+                    }
+
+                    if (pageIndex == 4 && content4.Length < pageLength)
+                    {
+                        content4 = content4 + line + System.Environment.NewLine;
+                    }
+                    else
+                    {
+                        pageIndex += 1;
+                    }
+
+
+                    /*
+                    if (totalLength < 800)
                     {
                         tf.DrawString(line, font, XBrushes.Black, new XRect(20, totalLength, 500, lines[0].Length));
                         totalLength = totalLength + (lines[0].Length / 4) + 10;
@@ -222,9 +272,34 @@ public class LetterController : Controller
                     {
                         tf4.DrawString(line, font, XBrushes.Black, new XRect(20, totalLength4, 500, line.Length));
                         totalLength4 = totalLength4 + (line.Length / 4) + 10;
-                    }
+                    }*/
+
+                    
+
+
                 }
-                totalLength2 = totalLength2 + 20;                             
+                //totalLength2 = totalLength2 + 20;
+                //
+                tf.DrawString(content1, font, XBrushes.Black, new XRect(20, totalLength, 500, content1.Length));
+                totalLength = totalLength + content1.Length / 2;
+
+                if (content2.Length > 0)
+                {
+                    tf2.DrawString(content2, font, XBrushes.Black, new XRect(20, totalLength2, 500, content2.Length));
+                    totalLength2 = totalLength2 + content2.Length / 4;
+                }
+
+                if (content3.Length > 0)
+                {
+                    tf3.DrawString(content3, font, XBrushes.Black, new XRect(20, totalLength3, 500, content3.Length));
+                    totalLength3 = totalLength3 + content3.Length/4;
+                }
+
+                if (content4.Length > 0)
+                {
+                    tf4.DrawString(content4, font, XBrushes.Black, new XRect(20, totalLength4, 500, content4.Length));
+                    totalLength4 = totalLength4 + content4.Length / 4;
+                }
             }
 
             if (System.IO.File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
@@ -234,7 +309,8 @@ public class LetterController : Controller
                 int len = imageSig.PixelWidth;
                 int hig = imageSig.PixelHeight;
 
-                if (totalLength < 800)
+
+                if (totalLength < firstPageLength)
                 {
                     document.Pages.Remove(page2);
                     document.Pages.Remove(page3);
@@ -245,21 +321,19 @@ public class LetterController : Controller
                     totalLength = totalLength + hig + 20;
                     tf.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength, 500, 20));
                 }
-                else if (totalLength2 < 800)
+                else if (totalLength2 < pageLength)
                 {
                     document.Pages.Remove(page3);
                     document.Pages.Remove(page4);
-                    totalLength2 = totalLength2 + 20;
                     tf2.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength2, 500, 20));
                     totalLength2 = totalLength2 + 20;
                     gfx2.DrawImage(imageSig, 50, totalLength2, len, hig);
                     totalLength2 = totalLength2 + hig + 20;
                     tf2.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength2, 500, 20));
                 }
-                else if(totalLength3 < 800)
+                else if(totalLength3 < pageLength)
                 {
                     document.Pages.Remove(page4);
-                    totalLength3 = totalLength3 + 20;
                     tf3.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength3, 500, 20));
                     totalLength3 = totalLength3 + 20;
                     gfx3.DrawImage(imageSig, 50, totalLength3, len, hig);
@@ -268,7 +342,6 @@ public class LetterController : Controller
                 }
                 else
                 {
-                    totalLength4 = totalLength4 + 20;
                     tf4.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength4, 500, 20));
                     totalLength4 = totalLength4 + 20;
                     gfx4.DrawImage(imageSig, 50, totalLength4, len, hig);

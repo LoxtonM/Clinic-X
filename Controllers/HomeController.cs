@@ -4,15 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
-using ClinicX.Meta;
-using ClinicX.Data;
 
 namespace ClinicX.Controllers
 {
     public class HomeController : Controller
     {        
         private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
         private readonly CaseloadVM _cvm;
         private readonly IConfiguration _config;        
         private readonly ICaseloadData _caseload;
@@ -21,10 +18,9 @@ namespace ClinicX.Controllers
         private readonly INotificationData _notificationData;
         private readonly IAuditService _audit;
 
-        public HomeController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
+        public HomeController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
-            _cXContext = cXContext;
             _config = config;
             _cvm = new CaseloadVM();
             _caseload = new CaseloadData(_clinContext);
@@ -45,7 +41,7 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    _cvm.notificationMessage = _notificationData.GetMessage();
+                    _cvm.notificationMessage = _notificationData.GetMessage("ClinicXOutage");
                     var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                     _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Home");
                     _cvm.caseLoad = _caseload.GetCaseloadList(user.STAFF_CODE).OrderBy(c => c.BookedDate).ToList();
