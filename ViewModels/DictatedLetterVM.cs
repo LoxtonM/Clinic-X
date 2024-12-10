@@ -1,5 +1,4 @@
-﻿using ClinicX.Models;
-using ClinicalXPDataConnections.Models;
+﻿using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicX.ViewModels

@@ -1,6 +1,5 @@
 ﻿using ClinicX.Data;
 using ClinicX.Models;
-using ClinicX.ViewModels;
 using Microsoft.Data.SqlClient;
 using System.Data;
 

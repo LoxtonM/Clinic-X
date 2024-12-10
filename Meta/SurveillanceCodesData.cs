@@ -1,6 +1,5 @@
 ﻿using ClinicX.Data;
 using ClinicX.Models;
-
 using System.Data;
 
 namespace ClinicX.Meta
