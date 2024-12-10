@@ -17,5 +17,6 @@ namespace ClinicX.ViewModels
         public StaffMember staffMember { get; set; }
         public bool ptSuccess { get; set; }
         public string message { get; set; }
+        public bool isPhenotipsAvailable { get; set; }
     }
 }

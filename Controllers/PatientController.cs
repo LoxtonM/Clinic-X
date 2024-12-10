@@ -12,6 +12,7 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly ClinicXContext _cXContext;
+        private readonly DocumentContext _docContext;
         private readonly PatientVM _pvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;        
@@ -23,11 +24,13 @@ namespace ClinicX.Controllers
         private readonly IDiaryData _diaryData;
         private readonly IHPOCodeData _hpoData;
         private readonly IAuditService _audit;
+        private readonly IConstantsData _constantsData;
 
-        public PatientController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
+        public PatientController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
             _clinContext = context;
             _cXContext = cXContext;
+            _docContext = docContext;
             _config = config;
             _pvm = new PatientVM();
             _staffUser = new StaffUserData(_clinContext);
@@ -39,6 +42,7 @@ namespace ClinicX.Controllers
             _diaryData = new DiaryData(_clinContext);
             _hpoData = new HPOCodeData(_cXContext);
             _audit = new AuditService(_config);
+            _constantsData = new ConstantsData(_docContext);
         }
         
 
@@ -62,6 +66,11 @@ namespace ClinicX.Controllers
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
+
+                if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
+                {
+                    _pvm.isPhenotipsAvailable = true;
+                }
 
                 if (success.HasValue)
                 {
