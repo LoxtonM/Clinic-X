@@ -28,6 +28,11 @@ namespace ClinicX.Controllers
             if (firstname != null || lastname != null || nhsno != null || postcode != null || dob != null)
             {
                 _lvm.patientsList = _labData.GetPatients(firstname, lastname, nhsno, postcode, dob);
+                _lvm.searchTerms = "Firstname:" + firstname + ",Lastname:" + lastname + ",NHSNo:" + nhsno + ",Postcode:" + postcode;
+                if(dob != null)
+                {
+                    _lvm.searchTerms = _lvm.searchTerms + dob.Value.ToString("yyyy-MM-dd");
+                }
             }
 
             return View(_lvm);
