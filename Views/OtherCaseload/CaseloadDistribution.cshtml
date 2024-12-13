@@ -1,0 +1,138 @@
+﻿@model ClinicX.ViewModels.CaseloadVM
+@{
+    ViewData["Title"] = "ClinicX - Other Clinicians' Caseloads";
+}
+
+<div class="container card">    
+
+    <div class="row mb-5 g-5">
+        <h1>Active Referral Distribution</h1>
+    </div>
+
+    <form asp-action="CaseloadDistribution">
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Year of Referral:</label>
+            </div>
+            <div class="col-md-1">
+                <select name="year" asp-for=@Model.yearSelected>
+                    <option selected value="">All</option>
+                    @foreach(var item in Model.years)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Set Year</button>
+            </div>
+        </div>
+    </form>
+
+
+    <div class="d-grid">
+        <div class="row mb-5 g-5">
+            <h2 class="text-center">Referrals by Consultant</h2>
+        </div>
+        <canvas id="consReferrals" width="100" height="100"></canvas>
+    </div>
+
+    <div class="d-grid">
+        <div class="row mb-5 g-5">
+            <h2 class="text-center">Referrals by GC</h2>
+        </div>
+        <canvas id="gcReferrals" width="100" height="100"></canvas>
+    </div>
+
+    <div class="d-grid">
+        <div class="row mb-5 g-5">
+            <h2 class="text-center">Referrals by Area</h2>
+        </div>
+        <canvas id="areaReferrals" width="200" height="200"></canvas>
+    </div>
+</div>
+
+
+<script>
+    const barColors ="blue";        
+    const consChartLabels = [];
+    @foreach(var item in Model.TotalConsReferralCount.Keys)
+    {
+        @:consChartLabels.push("@item".replace("&#x27;", "'"));
+    }
+    const consChartValues = [];
+    @foreach (var item in Model.TotalConsReferralCount.Values)
+    {
+        @:consChartValues.push("@item");
+    }
+
+    const gcChartLabels = [];
+    @foreach (var item in Model.TotalGCReferralCount.Keys)
+    {
+        @:gcChartLabels.push("@item".replace("&#x27;", "'"));
+    }
+    const gcChartValues = [];
+    @foreach (var item in Model.TotalGCReferralCount.Values)
+    {
+        @:gcChartValues.push("@item");
+    }
+
+    const areaChartLabels = [];
+    @foreach (var item in Model.TotalAreaReferralCount.Keys)
+    {
+        @:areaChartLabels.push("@item");
+    }
+    const areaChartValues = [];
+    @foreach (var item in Model.TotalAreaReferralCount.Values)
+    {
+        @:areaChartValues.push("@item");
+    }
+    
+    
+    const consReferrals = new Chart("consReferrals",
+    {
+        type: "horizontalBar",
+        data: 
+        {
+            labels: consChartLabels,
+            datasets:[{ backgroundColor: barColors, data: consChartValues }]
+        },
+        options: 
+        {                
+            legend: { display: false },
+            responsive: true
+        }
+    });
+
+    const gcReferrals = new Chart("gcReferrals",
+    {
+        type: "horizontalBar",
+        data:
+        {
+            labels: gcChartLabels,
+            datasets:[{ backgroundColor: barColors, data: gcChartValues }]
+        },
+        options:
+        {                    
+            legend: { display: false },
+            responsive: true
+        }
+    });
+
+    const areaReferrals = new Chart("areaReferrals",
+    {
+        type: "horizontalBar",
+        data:
+        {
+            labels: areaChartLabels,
+            datasets:[{ backgroundColor: barColors, data: areaChartValues }]
+        },
+        options:
+        {            
+            legend: { display: false },
+            responsive: true
+        }
+    });
+            
+
+</script>

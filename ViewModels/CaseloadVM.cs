@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ClinicalXPDataConnections.Models;
+using System.Security.Cryptography.Xml;
 
 namespace ClinicX.ViewModels
 {
@@ -8,6 +9,8 @@ namespace ClinicX.ViewModels
     {
         public List<Caseload> caseLoad { get; set; }
         public List<StaffMember> clinicians { get; set; }
+        public List<Referral> referralList { get; set; } //I don't actually want it here, but apparently we can't have it in the controller for some reason!!!!!
+        public List<AreaNames> areaNamesList { get; set; }
         public int countClinics { get; set; }
         public int countTriages { get; set; }
         public int countCancerICPs { get; set; }
@@ -16,9 +19,15 @@ namespace ClinicX.ViewModels
         public int countLetters { get; set; }
         public string name { get; set; }
         public string staffCode { get; set; }
+        public bool isSupervisor { get; set; }
         public bool isLive { get; set; }
         public string notificationMessage { get; set; }
         public string dllVersion { get; set; }
         public string appVersion { get; set; }
+        public Dictionary<string, int> TotalConsReferralCount { get; set; }
+        public Dictionary<string, int> TotalGCReferralCount { get; set; }
+        public Dictionary<string, int> TotalAreaReferralCount { get; set; }
+        public int yearSelected { get; set; }
+        public List<int> years { get; set; }
     }
 }

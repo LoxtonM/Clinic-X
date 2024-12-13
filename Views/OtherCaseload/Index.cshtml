@@ -9,16 +9,24 @@
 }
 
 <div class="container card">
-    @if(Model.caseLoad.Count() > 0)
-    {
-        <div class="row mb-5 g-5">
-            <h1>Caseload for @Model.name</h1>
+    <div class="row mb-5 g-5">
+        <div class="col-md-8">
+            @if(Model.caseLoad.Count() > 0)
+            {
+                <h1>Caseload for @Model.name</h1>        
+            }
+            else
+            {
+                <h1>There is no caseload for this staff member.</h1>
+            }
         </div>
-    }
-    else
-    {
-        <h1>There is no caseload for this staff member.</h1>
-    }
+        <div class="col-md-4">
+            @if(Model.isSupervisor)
+            {
+                <a type="button" class="btn btn-success" asp-controller="OtherCaseload" asp-action="CaseloadDistribution">View Caseload Distribution</a>
+            }
+        </div>
+    </div>
 
     <div class="d-grid">
         <form asp-action="Index">
