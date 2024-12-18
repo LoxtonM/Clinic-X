@@ -296,7 +296,7 @@
             <dd class="col-sm-4">
                 @if (Model.patient.DOB != null)
                 {
-                    @Html.DisplayFor(model => model.patient.DOB)
+                    @Html.DisplayFor(model => model.patient.DOB) <span>(current age: @Model.currentAge)</span>
                 }
                 else
                 {

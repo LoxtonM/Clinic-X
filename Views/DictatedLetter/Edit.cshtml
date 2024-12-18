@@ -182,7 +182,7 @@
                     <select class="w-100" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="consultant">
                         @foreach(var item in Model.consultants)
                         {
-                            <option value=@item>@item</option>
+                            <option value=@item>@item.NAME</option>
                         }
                     </select>
                 </div>
@@ -191,7 +191,7 @@
                     <select class="w-100" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="gc">
                         @foreach (var item in Model.gcs)
                         {
-                            <option value=@item>@item</option>
+                            <option value=@item>@item.NAME</option>
                         }
                     </select>
                 </div>

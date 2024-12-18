@@ -18,5 +18,6 @@ namespace ClinicX.ViewModels
         public bool ptSuccess { get; set; }
         public string message { get; set; }
         public bool isPhenotipsAvailable { get; set; }
+        public int currentAge { get; set; }
     }
 }

@@ -19,6 +19,7 @@ public class LetterController : Controller
     private readonly ClinicXContext _cXContext;
     private readonly DocumentContext _docContext;
     private readonly LetterVM _lvm;
+    private readonly IConfiguration _config;
     private readonly IPatientData _patientData;
     private readonly IRelativeData _relativeData;
     private readonly IReferralData _referralData;
@@ -29,12 +30,14 @@ public class LetterController : Controller
     private readonly IExternalFacilityData _externalFacilityData;
     private readonly IScreeningServiceData _screenData;    
     private readonly IConstantsData _constantsData;
-    
-    public LetterController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext)
+    private readonly ICRUD _crud;
+
+    public LetterController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
     {
         _clinContext = clinContext;
         _cXContext = cXContext;
         _docContext = docContext;
+        _config = config;
         _lvm = new LetterVM();        
         _patientData = new PatientData(_clinContext);
         _relativeData = new RelativeData(_clinContext);
@@ -46,13 +49,13 @@ public class LetterController : Controller
         _externalFacilityData = new ExternalFacilityData(_clinContext);
         _screenData = new ScreeningServiceData(_cXContext);
         _constantsData = new ConstantsData(_docContext);
+        _crud = new CRUD(_config);
     }
 
     public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)
     {
         try
-        {
-            
+        {            
             _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
             _lvm.patient = _patientData.GetPatientDetails(mpi);
             _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
@@ -64,6 +67,14 @@ public class LetterController : Controller
         {
             return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Letter" });
         }
+    }
+
+    public int UpdateDiary(int mpi, int refID, string staffCode, string diaryText, string docCode)
+    {
+
+        int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, staffCode);
+
+        return success;
     }
 
     //Creates a preview of the DOT letter
@@ -1641,7 +1652,13 @@ public class LetterController : Controller
             {
                 document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf"));
             }
-            
+
+            string diaryText = "";
+
+            if(UpdateDiary(mpi, refID, user, diaryText, docCode) == 0)
+            {
+                RedirectToAction("ErrorHome", "Error", new { error = "Automatic diary update failed", formName = "StdLetter" });
+            }
         }
         catch (Exception ex)
         {

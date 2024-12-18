@@ -31,7 +31,14 @@
                 @Html.DisplayNameFor(model => model.review.Planned_Date):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.review.Planned_Date)
+                @Html.DisplayFor(model => model.review.Planned_Date) @if(Model.daysToReview > 0)
+                {
+                    <span>(due in @Model.daysToReview days)</span>
+                }
+                else
+                {
+                    <span>(@Model.daysOverdue days overdue)</span>
+                }
             </dd>
             <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.review.Category):

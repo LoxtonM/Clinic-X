@@ -9,8 +9,6 @@ namespace ClinicX.ViewModels
     {
         public List<Caseload> caseLoad { get; set; }
         public List<StaffMember> clinicians { get; set; }
-        public List<Referral> referralList { get; set; } //I don't actually want it here, but apparently we can't have it in the controller for some reason!!!!!
-        public List<AreaNames> areaNamesList { get; set; }
         public int countClinics { get; set; }
         public int countTriages { get; set; }
         public int countCancerICPs { get; set; }
@@ -28,6 +26,8 @@ namespace ClinicX.ViewModels
         public Dictionary<string, int> TotalGCReferralCount { get; set; }
         public Dictionary<string, int> TotalAreaReferralCount { get; set; }
         public int yearSelected { get; set; }
+        public string pathwaySelected { get; set; }
         public List<int> years { get; set; }
+        public List<string> pathways { get; set; }
     }
 }

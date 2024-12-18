@@ -24,7 +24,21 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-success">Set Year</button>
+                <label>Pathway:</label>
+            </div>
+            <div class="col-md-1">
+                <select name="pathway" asp-for=@Model.pathwaySelected>
+                    <option selected value="">All</option>
+                    @foreach (var item in Model.pathways)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+            </div>
+
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Select</button>
             </div>
         </div>
     </form>

@@ -25,6 +25,7 @@ namespace ClinicX.Controllers
         private readonly IHPOCodeData _hpoData;
         private readonly IAuditService _audit;
         private readonly IConstantsData _constantsData;
+        private readonly IAgeCalculator _ageCalculator;
 
         public PatientController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
@@ -43,6 +44,7 @@ namespace ClinicX.Controllers
             _hpoData = new HPOCodeData(_cXContext);
             _audit = new AuditService(_config);
             _constantsData = new ConstantsData(_docContext);
+            _ageCalculator = new AgeCalculator();
         }
         
 
@@ -66,6 +68,18 @@ namespace ClinicX.Controllers
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
+
+                if (_pvm.patient.DOB != null)
+                {                    
+                    if (_pvm.patient.DECEASED != 0)
+                    {
+                        _pvm.currentAge = _ageCalculator.DateDifferenceYear(_pvm.patient.DOB.GetValueOrDefault(), _pvm.patient.DECEASED_DATE.GetValueOrDefault());
+                    }
+                    else
+                    {
+                        _pvm.currentAge = _ageCalculator.DateDifferenceYear(_pvm.patient.DOB.GetValueOrDefault(), DateTime.Today);
+                    }
+                }
 
                 if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
                 {

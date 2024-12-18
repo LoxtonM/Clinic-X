@@ -43,6 +43,8 @@ namespace ClinicX.ViewModels
         public string loggedOnUserType { get; set; }
         public bool isICPTriageStarted { get; set; }
         public string message { get; set; }
-        public bool success {  get; set; }
+        public bool success { get; set; }
+        public int? referralAgeDays { get; set; }
+        public int? referralAgeWeeks { get; set; }
     }
 }

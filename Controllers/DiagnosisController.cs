@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
+using ClinicalXPDataConnections.Models;
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 
@@ -30,7 +30,6 @@ namespace ClinicX.Controllers
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
         }
-
 
         [Authorize]
         public async Task <IActionResult> Index(int id)
@@ -132,8 +131,9 @@ namespace ClinicX.Controllers
                     comments = "";
                 }
 
-                var patient = await _clinContext.Diagnosis.FirstOrDefaultAsync(d => d.ID == diagID);
-                int mpi = patient.MPI;
+                //var patient = await _clinContext.Diagnosis.FirstOrDefaultAsync(d => d.ID == diagID);
+                Diagnosis diag = _diseaseData.GetDiagnosisDetails(diagID);
+                int mpi = diag.MPI;
                                 
                 int success = _crud.CallStoredProcedure("Diagnosis", "Update", diagID, 0, 0, status, "", "", comments, User.Identity.Name);
 

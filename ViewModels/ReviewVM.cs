@@ -11,5 +11,7 @@ namespace ClinicX.ViewModels
         public List<StaffMember> staffMembers { get; set; }
         public Review review { get; set; }
         public List<Review> reviewList { get; set; }
+        public int daysToReview { get; set; }
+        public int daysOverdue { get; set; }
     }
 }

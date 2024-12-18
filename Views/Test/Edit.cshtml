@@ -30,7 +30,17 @@
                 @Html.DisplayNameFor(model => model.test.DATE_REQUESTED):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.test.DATE_REQUESTED)
+                @Html.DisplayFor(model => model.test.DATE_REQUESTED) @if(Model.ageOfTest != null) 
+                {
+                    @if(Model.test.DATE_RECEIVED == null)
+                    {
+                        <span>(@Model.ageOfTest days old - outstanding)</span>
+                    }
+                    else
+                    {
+                        <span>(@Model.ageOfTest days old - received on @Model.test.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</span>
+                    }
+                }
             </dd>
             <dt class="col-sm-2">
                 Requested by:

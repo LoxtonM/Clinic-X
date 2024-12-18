@@ -20,6 +20,7 @@ namespace ClinicX.Controllers
         private readonly ITestData _testData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly IAgeCalculator _ageCalculator;
 
         public TestController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
         {
@@ -32,6 +33,7 @@ namespace ClinicX.Controllers
             _testData = new TestData(_clinContext, _cXContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
+            _ageCalculator = new AgeCalculator();
         }
 
         [Authorize]
@@ -115,12 +117,25 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Test", "ID=" + id.ToString());
 
                 _tvm.test = _testData.GetTestDetails(id);
-                _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);
                 if (_tvm.test == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-
+                else
+                {
+                    _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);
+                    if (_tvm.test.DATE_REQUESTED != null)
+                    {
+                        if (_tvm.test.DATE_RECEIVED == null)
+                        {
+                            _tvm.ageOfTest = _ageCalculator.DateDifferenceDay(_tvm.test.DATE_REQUESTED.GetValueOrDefault(), DateTime.Now);
+                        }
+                        else
+                        {
+                            _tvm.ageOfTest = _ageCalculator.DateDifferenceDay(_tvm.test.DATE_REQUESTED.GetValueOrDefault(), _tvm.test.DATE_RECEIVED.GetValueOrDefault());
+                        }
+                    }
+                }
                 return View(_tvm);
             }
             catch (Exception ex)

@@ -23,6 +23,7 @@ namespace ClinicX.Controllers
         private string apiURL;
         private string authKey;
         private string apiKey;
+        private readonly ICRUD _crud;
 
         public APIController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
@@ -36,6 +37,7 @@ namespace ClinicX.Controllers
             authKey = _constants.GetConstant("PhenotipsAPIAuthKey", 1).Trim();
             apiKey = _constants.GetConstant("PhenotipsAPIAuthKey", 2).Trim();
             _config = config;
+            _crud = new CRUD(_config);
         }
 
         public bool CheckResponseValid(string response)
@@ -103,6 +105,9 @@ namespace ClinicX.Controllers
                 {
                     isSuccess = true;
                     sMessage = "Push to Phenotips successful";
+
+                    string ptID = await GetPhenotipsPatientID(patient.MPI);
+                    _crud.AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault());
                 }
                 else
                 {

@@ -18,6 +18,7 @@ namespace ClinicX.Controllers
         private readonly IReviewData _reviewData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly IAgeCalculator _ageCalculator;
 
         public ReviewController(ClinicalContext context, IConfiguration config)
         {
@@ -30,6 +31,7 @@ namespace ClinicX.Controllers
             _reviewData = new ReviewData(_clinContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
+            _ageCalculator = new AgeCalculator();
         }
 
         [Authorize]
@@ -146,6 +148,14 @@ namespace ClinicX.Controllers
 
                 _rvm.review = _reviewData.GetReviewDetails(id);
                 _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);
+                if (_rvm.review.Planned_Date != null)
+                {
+                    _rvm.daysToReview = _ageCalculator.DateDifferenceDay(DateTime.Now, _rvm.review.Planned_Date.GetValueOrDefault());
+                    if(_rvm.daysToReview < 0)
+                    {
+                        _rvm.daysOverdue = _rvm.daysToReview * -1;
+                    }
+                }
 
                 if (_rvm.review == null)
                 {

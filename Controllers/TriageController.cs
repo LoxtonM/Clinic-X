@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
@@ -37,6 +36,7 @@ namespace ClinicX.Controllers
         private readonly IDocumentsData _documentsData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly IAgeCalculator _ageCalculator;
 
         public TriageController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
@@ -61,8 +61,9 @@ namespace ClinicX.Controllers
             _relDiagData = new RelativeDiagnosisData(_clinContext, _cXContext);
             _documentsData = new DocumentsData(_docContext);
             _crud = new CRUD(_config);
-            _lc = new LetterController(_clinContext, _cXContext, _docContext);
+            _lc = new LetterController(_clinContext, _cXContext, _docContext, _config);
             _audit = new AuditService(_config);
+            _ageCalculator = new AgeCalculator();
         }
 
         [Authorize]
@@ -91,7 +92,6 @@ namespace ClinicX.Controllers
         {
             try
             {
-                //var triages = await _clinContext.Triages.FirstOrDefaultAsync(t => t.ICPID == id);
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - ICP Details", "ID=" + id.ToString());
 
@@ -111,6 +111,11 @@ namespace ClinicX.Controllers
                 _ivm.generalActionsList2 = _icpActionData.GetICPGeneralActionsList2();
                 _ivm.loggedOnUserType = _staffUser.GetStaffMemberDetails(User.Identity.Name).CLINIC_SCHEDULER_GROUPS;
                 _ivm.priorityList = _priorityData.GetPriorityList();
+                if (_ivm.referralDetails.RefDate != null)
+                {
+                    _ivm.referralAgeDays = _ageCalculator.DateDifferenceDay(_ivm.referralDetails.RefDate.GetValueOrDefault(), DateTime.Today);
+                    _ivm.referralAgeWeeks = _ageCalculator.DateDifferenceWeek(_ivm.referralDetails.RefDate.GetValueOrDefault(), DateTime.Today);
+                }
                 return View(_ivm);
             }
             catch (Exception ex)
@@ -125,11 +130,11 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var icp = await _clinContext.Triages.FirstOrDefaultAsync(i => i.ICPID == icpID);
-                var referral = await _clinContext.Referrals.FirstOrDefaultAsync(r => r.refid == icp.RefID);
-                var staffmember = await _clinContext.StaffMembers.FirstOrDefaultAsync(s => s.EMPLOYEE_NUMBER == User.Identity.Name);
+                ICP icp = _triageData.GetICPDetails(icpID);
+                Referral referral = _referralData.GetReferralDetails(icp.REFID);
+                StaffMember staffmember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 int mpi = icp.MPI;
-                int refID = icp.RefID;
+                int refID = icp.REFID;
                 int tp2;
                 string referrer = referral.ReferrerCode;
                 string sApptIntent = "";
@@ -193,7 +198,6 @@ namespace ClinicX.Controllers
 
                 if (tp2 == 2) //CTB letter
                 {
-                    //LetterController _lc = new LetterController(_docContext);
                     int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genDiaryUpdate(SQL)" }); }
                     int diaryID = _diaryData.GetLatestDiaryByRefID(refID, "CTBAck").DiaryID;
@@ -209,7 +213,6 @@ namespace ClinicX.Controllers
 
                 if (tp2 == 7) //Reject letter
                 {
-                    //LetterController _lc = new LetterController(_docContext);
                     _lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer);
                 }
 
@@ -226,10 +229,10 @@ namespace ClinicX.Controllers
         {
             try
             {
-                var icp = await _clinContext.Triages.FirstOrDefaultAsync(i => i.ICPID == icpID);
+                ICP icp = _triageData.GetICPDetails(icpID);
                 int mpi = icp.MPI;
-                int refID = icp.RefID;
-                var referral = await _clinContext.Referrals.FirstOrDefaultAsync(r => r.refid == icp.RefID);
+                int refID = icp.REFID;
+                Referral referral = _referralData.GetReferralDetails(refID);
                 string referrer = referral.ReferrerCode;
 
                 CRUD _crud = new CRUD(_config);
@@ -239,7 +242,7 @@ namespace ClinicX.Controllers
 
                 if (action == 5)
                 {
-                    LetterController _lc = new LetterController(_clinContext, _cXContext, _docContext);
+                    LetterController _lc = new LetterController(_clinContext, _cXContext, _docContext, _config);
                     _lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer);
                 }
 

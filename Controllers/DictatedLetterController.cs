@@ -1,6 +1,5 @@
 ﻿using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
@@ -41,7 +40,7 @@ namespace ClinicX.Controllers
             _externalClinicianData = new ExternalClinicianData(_clinContext);
             _externalFacilityData = new ExternalFacilityData(_clinContext);
             _crud = new CRUD(_config);
-            _lc = new LetterController(_clinContext, _cXContext, _docContext);
+            _lc = new LetterController(_clinContext, _cXContext, _docContext, _config);
             _audit = new AuditService(_config);
         }
 
@@ -176,7 +175,9 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
 
-                var dot = await _clinContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
+                //var dot = await _clinContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
+                List<DictatedLetter> dotList = _dictatedLetterData.GetDictatedLettersList(staffCode).Where(l => l.RefID == id).OrderByDescending(l => l.CreatedDate).ToList();
+                DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
                 int dID = dot.DoTID;
 
                 return RedirectToAction("Edit", new { id = dID });

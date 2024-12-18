@@ -50,7 +50,10 @@
                 Referral Date:
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.triage.RefDate)
+                @Html.DisplayFor(model => model.triage.RefDate) @if (Model.referralAgeDays != null)
+                {
+                    <span>&emsp;&emsp;<b>Age:</b> @Model.referralAgeDays days (@Model.referralAgeWeeks weeks)</span>
+                }
             </dd>
             <dt class="col-sm-2">
                 Pathway:

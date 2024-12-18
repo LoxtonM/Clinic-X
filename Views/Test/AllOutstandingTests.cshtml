@@ -27,6 +27,7 @@
                         <th>Ordered for</th>                         
                         <th>@Html.DisplayNameFor(model => model.test.DATE_REQUESTED)</th>
                         <th>@Html.DisplayNameFor(model => model.test.ExpectedDate)</th>
+                        <th>@Html.DisplayNameFor(model => model.test.DATE_RECEIVED)</th>
                         <th>Comments</th>
                     </tr>
                 </thead>
@@ -52,7 +53,15 @@
                             else
                             {
                                 <td>Unknown</td>
-                            }                           
+                            }
+                            @if (@item.DATE_RECEIVED.HasValue)
+                            {
+                                <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>Awaiting</td>
+                            }
                             <td>@item.COMMENTS</td>
                         </tr>
                     }

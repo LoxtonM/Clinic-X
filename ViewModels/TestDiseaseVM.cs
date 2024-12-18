@@ -16,5 +16,6 @@ namespace ClinicX.ViewModels
         public List<Disease> diseaseList { get; set; }
         public List<DiseaseStatus> statusList { get; set; }
         public string? searchTerm { get; set; }
+        public int? ageOfTest { get; set; }
     }
 }
