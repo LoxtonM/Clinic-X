@@ -45,7 +45,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relatives");
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relatives", "", _ip.GetIPAddress());
 
                 return View();
             }
@@ -62,7 +63,9 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - View Relative", "ID=" + id.ToString());
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - View Relative", "ID=" + id.ToString(), _ip.GetIPAddress());
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
                 _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
                 
@@ -80,7 +83,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Relative", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Relative", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
                 _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
@@ -156,7 +160,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative", "WMFACSID=" + wmfacsid.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative", "WMFACSID=" + wmfacsid.ToString(), _ip.GetIPAddress());
 
                 _rdvm.WMFACSID = wmfacsid;
                 _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
@@ -224,6 +229,9 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Import Relatives", "WMFACSID=" + id.ToString(), _ip.GetIPAddress());
                 _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(id);
                 _rvm.cgudbRelativesList = _relativeData.GetRelativesList(_rvm.patient.MPI);
                 _rvm.phenotipsRelativesList = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);

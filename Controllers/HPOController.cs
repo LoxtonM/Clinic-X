@@ -46,7 +46,8 @@ namespace ClinicX.Controllers
             {
                 _hpo.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _hpo.staffMember.STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - HPO", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - HPO", "ID=" + id.ToString(), _ip.GetIPAddress());
                 
                 _hpo.clinicalNote = _clinicaNoteData.GetClinicalNoteDetails(id);
                 _hpo.hpoTermDetails = _hpoData.GetExistingHPOTermsList(id);
@@ -69,13 +70,13 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        //public async Task<IActionResult> AddHPOTerm(int noteID, int termID)
         public async Task<IActionResult> AddHPOTerm(int noteID, string termCode)
         {
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - HPO", "NoteID=" + noteID.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - HPO", "NoteID=" + noteID.ToString(), _ip.GetIPAddress());
                 //check if code exists, add it if it doesn't
                 if (_hpoData.GetHPOTermByTermCode(termCode) == null)
                 {                    

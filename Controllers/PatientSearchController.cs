@@ -97,7 +97,9 @@ namespace ClinicX.Controllers
 
                     _pvm.patientsList = _pvm.patientsList.OrderBy(p => p.LASTNAME).ThenBy(p => p.FIRSTNAME).ToList();
                 }
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient Search", searchTerm);
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient Search", searchTerm, _ip.GetIPAddress());
 
                 return View(_pvm);
             }

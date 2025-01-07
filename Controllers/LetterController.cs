@@ -10,6 +10,7 @@ using ClinicalXPDataConnections.Models;
 using System.Text.RegularExpressions;
 using ClinicX.Data;
 using ClinicX.Models;
+using System.IO;
 
 namespace ClinicX.Controllers;
 
@@ -191,7 +192,7 @@ public class LetterController : Controller
             totalLength = totalLength + (summary.Length / 2) + 20;
             
             signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-            sigFilename = $"{_lvm.staffMember.StaffForename}{_lvm.staffMember.StaffSurname}.jpg";
+            sigFilename = $"{_lvm.staffMember.StaffForename.Replace(" ","")}{_lvm.staffMember.StaffSurname.Replace("'","").Replace(" ","")}.jpg";
             totalLength = totalLength + 20;
 
             if (content.Length < 200) //split the content so it goes over multiple pages if more than one page
@@ -375,6 +376,8 @@ public class LetterController : Controller
         string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1="", string? freeText2 = "", 
         int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false)
     {
+        
+
         try
         {
             _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
@@ -403,6 +406,7 @@ public class LetterController : Controller
             XFont fontSmallBold = new XFont("Arial", 10, XFontStyle.Bold);
             XFont fontSmallItalic = new XFont("Arial", 10, XFontStyle.Italic);
             //Load the image for the letter head
+                        
             XImage image = XImage.FromFile(@"wwwroot\Letterhead.jpg");
             gfx.DrawImage(image, 350, 20, image.PixelWidth / 2, image.PixelHeight / 2);
             //Create the stuff that's common to all letters

@@ -45,7 +45,8 @@ namespace ClinicX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Reviews");
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Reviews", "", _ip.GetIPAddress());
 
                 _rvm.reviewList = _reviewData.GetReviewsList(User.Identity.Name);
 
@@ -67,7 +68,8 @@ namespace ClinicX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Reviews");
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Reviews", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.reviewList = _reviewData.GetReviewsListForPatient(id);
                 _rvm.patient = _patientData.GetPatientDetails(id);
@@ -87,7 +89,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Review", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.referrals = _activityData.GetActivityDetails(id);
                 _rvm.staffMembers = _staffUser.GetClinicalStaffList();
@@ -144,7 +147,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Review", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.review = _reviewData.GetReviewDetails(id);
                 _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);

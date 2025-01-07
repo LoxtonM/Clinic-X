@@ -43,7 +43,8 @@ namespace ClinicX.Controllers
                 {
                     _cvm.notificationMessage = _notificationData.GetMessage("ClinicXOutage");
                     var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                    _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Home");
+                    IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                    _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Home", "", _ip.GetIPAddress());
                     _cvm.caseLoad = _caseload.GetCaseloadList(user.STAFF_CODE).OrderBy(c => c.BookedDate).ToList();
                     _cvm.countClinics = _cvm.caseLoad.Where(c => c.Type.Contains("App")).Count();
                     _cvm.countTriages = _cvm.caseLoad.Where(c => c.Type.Contains("Triage")).Count();

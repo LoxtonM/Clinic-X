@@ -39,7 +39,8 @@ namespace ClinicX.Controllers
                 else
                 {
                     _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
-                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Staff Profile", "Staffcode=" + _pvm.staffMember.STAFF_CODE);
+                    IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Staff Profile", "Staffcode=" + _pvm.staffMember.STAFF_CODE, _ip.GetIPAddress());
                     if (message != null)
                     {
                         _pvm.message = message;
@@ -67,7 +68,8 @@ namespace ClinicX.Controllers
                 else
                 {
                     _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
-                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Change Password", "");
+                    IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Change Password", "", _ip.GetIPAddress());
 
                     return View(_pvm);
                 }
@@ -120,7 +122,8 @@ namespace ClinicX.Controllers
                 else
                 {
                     _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
-                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Update Details", "");
+                    IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                    _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Update Details", "", _ip.GetIPAddress());
                     _pvm.titles = _titleData.GetTitlesList();
 
                     return View(_pvm);

@@ -1,6 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Microsoft.AspNetCore.Mvc;
+using ClinicalXPDataConnections.Meta;
+using System.Net;
 
 namespace ClinicX.Meta
 {
@@ -12,9 +15,10 @@ namespace ClinicX.Meta
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
             float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "");
 
-        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB);
+        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, 
+            string postCode, string nhsNo);
     }
-    public class CRUD : ICRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
+    public class CRUD : Controller, ICRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
                        //data modifications - creation, updates, and deletions. It does not retrieve any data, but uses a generic
                        //list of integers, strings, dates, and booleans that are passed to it.
     {
@@ -74,7 +78,15 @@ namespace ClinicX.Meta
             {
                 cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;
             }
-            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
+            if (HttpContext != null)
+            {
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = Dns.GetHostEntry(_ip.GetIPAddress()).HostName.Substring(0, 10);
+            }
+            else
+            {
+                cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
+            }
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); //return success or not
             returnValue.Direction = ParameterDirection.ReturnValue;
             cmd.ExecuteNonQuery();
@@ -84,15 +96,16 @@ namespace ClinicX.Meta
             return iReturnValue;
         }
 
-        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB)
+        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
         {
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
-            SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, CGUNumber, MPI, FirstName, Lastname, DOB) values('"
-                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM_dd") + "')", conn);
+            SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
+                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM_dd") + "', '" + postCode +
+                "', '" + nhsNo + "')", conn);
             cmd.ExecuteNonQuery();
             conn.Close();
         }
-        
+
     }
 }

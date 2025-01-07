@@ -36,7 +36,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relative Diagnoses", "ID=" + relID.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relative Diagnoses", "ID=" + relID.ToString(), _ip.GetIPAddress());
 
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(relID);
                 _rdvm.relativesDiagnosisList = _relativeDiagnosisData.GetRelativeDiagnosisList(relID);                
@@ -54,7 +55,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative Diagnosis", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative Diagnosis", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
                 _rdvm.cancerRegList = _relativeDiagnosisData.GetCancerRegList();

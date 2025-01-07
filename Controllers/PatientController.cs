@@ -54,8 +54,9 @@ namespace ClinicX.Controllers
             try
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                string staffCode = _pvm.staffMember.STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient", "MPI=" + id.ToString());
+                string staffCode = _pvm.staffMember.STAFF_CODE;                
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);                
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
                 _pvm.patient = _patientData.GetPatientDetails(id);
                 if (_pvm.patient == null)

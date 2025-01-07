@@ -42,8 +42,9 @@ namespace ClinicX.Controllers
                     staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 }
                 _cvm.isSupervisor = false;
-                string userStaffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "ClinicX - Caseloads", "StaffCode=" + staffCode);
+                string userStaffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;                
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);                
+                _audit.CreateUsageAuditEntry(userStaffCode, "ClinicX - Caseloads", "StaffCode=" + staffCode, _ip.GetIPAddress());
 
                 _cvm.staffCode = staffCode;
                 _cvm.caseLoad = _caseloadData.GetCaseloadList(staffCode).OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();
@@ -71,6 +72,10 @@ namespace ClinicX.Controllers
         {
             try
             {
+                string userStaffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(userStaffCode, "ClinicX - CaseloadDistribution", "", _ip.GetIPAddress());
+
                 List<Referral> referralList = _referralData.GetActiveReferralsList();
                 _cvm.years = new List<int>();
                 _cvm.pathways = new List<string>();

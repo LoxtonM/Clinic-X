@@ -51,7 +51,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
                 _rsvm.GeneChange = _gene.GetGeneChangeList();
                 _rsvm.riskDetails = _riskData.GetRiskDetails(id);
                 _rsvm.surveillanceList = _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
@@ -70,7 +71,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
                 _rsvm.GeneChange= _gene.GetGeneChangeList();
                 _rsvm.surveillanceDetails = _survData.GetSurvDetails(id);
                 int mpi = _rsvm.surveillanceDetails.MPI;
@@ -91,7 +93,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + survID.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + survID.ToString(), _ip.GetIPAddress());
 
                 int riskID = _survData.GetSurvDetails(survID).RiskID;
                 
@@ -118,7 +121,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Risk", "ICPID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Risk", "ICPID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(id);
                 _rsvm.patient = _patientData.GetPatientDetails(_rsvm.icpCancer.MPI);
@@ -167,7 +171,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Surveillance", "RiskID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Surveillance", "RiskID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rsvm.riskID = id;
                 _rsvm.riskDetails = _riskData.GetRiskDetails(id);

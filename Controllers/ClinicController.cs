@@ -20,7 +20,8 @@ namespace ClinicX.Controllers
         private readonly IClinicData _clinicData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
-        
+
+
         public ClinicController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
@@ -49,9 +50,10 @@ namespace ClinicX.Controllers
                 else
                 {
                     string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                    _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinics");
+                    IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                    _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinics", "", _ip.GetIPAddress());
 
-                if (filterDate == null) //set default date to 30 days before today
+                    if (filterDate == null) //set default date to 30 days before today
                     {
                         filterDate = DateTime.Parse(DateTime.Now.AddDays(-90).ToString());
                     }
@@ -93,7 +95,8 @@ namespace ClinicX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinic Details", "RefID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinic Details", "RefID=" + id.ToString(), _ip.GetIPAddress());
 
                 _cvm.Clinic = _clinicData.GetClinicDetails(id);
                 _cvm.linkedReferral = _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
@@ -123,7 +126,8 @@ namespace ClinicX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinic", "RefID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinic", "RefID=" + id.ToString(), _ip.GetIPAddress());
 
                 _cvm.staffMembers = _staffUser.GetClinicalStaffList();
                 _cvm.activityItems = _activityData.GetClinicDetailsList(id);

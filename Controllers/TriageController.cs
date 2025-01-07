@@ -72,7 +72,8 @@ namespace ClinicX.Controllers
             try
             {       
                 _ivm.staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(_ivm.staffCode, "ClinicX - Triage");
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(_ivm.staffCode, "ClinicX - Triage", "", _ip.GetIPAddress());
 
                 _ivm.triages = _triageData.GetTriageList(User.Identity.Name);
                 _ivm.icpCancerListOwn = _triageData.GetCancerICPList(User.Identity.Name).Where(r => r.GC_CODE == _ivm.staffCode).ToList();
@@ -93,7 +94,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - ICP Details", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - ICP Details", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.triage = _triageData.GetTriageDetails(id);
 
@@ -262,7 +264,8 @@ namespace ClinicX.Controllers
                 if (id == null) { return RedirectToAction("NotFound", "WIP");}
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Review", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList();
                 _ivm.staffMembers = _staffUser.GetClinicalStaffList();
@@ -366,6 +369,7 @@ namespace ClinicX.Controllers
                 if (id == null) { return RedirectToAction("NotFound", "WIP"); }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Post Clinic Letter", "ID=" + id.ToString());
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
                 _ivm.cancerRequestsList = _cancerRequestData.GetCancerRequestsList();
@@ -459,8 +463,8 @@ namespace ClinicX.Controllers
                 if (id == null) { return RedirectToAction("NotFound", "WIP"); }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Post Clinic Letter", "ID=" + id.ToString());
-
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Post Clinic Letter", "ID=" + id.ToString(), _ip.GetIPAddress());                
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
                 var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
                 _ivm.screeningCoordinators = _clinicianData.GetClinicianList().Where(c => (c.LAST_NAME ?? "").ToLower().Contains("breast")
@@ -488,7 +492,8 @@ namespace ClinicX.Controllers
                 if (id == null) { return RedirectToAction("NotFound", "WIP"); }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Post Clinic Letter", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Post Clinic Letter", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
                 var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
@@ -520,7 +525,8 @@ namespace ClinicX.Controllers
                 if (id == null) { return RedirectToAction("NotFound", "WIP"); }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk and Surveillance", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk and Surveillance", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.riskDetails = _riskData.GetRiskDetails(id);
                 int mpi = _referralData.GetReferralDetails(_ivm.riskDetails.RefID).MPI;               
@@ -540,7 +546,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change General Triage", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change General Triage", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.icpGeneral = _triageData.GetGeneralICPDetails(id);
                 _ivm.consultants = _staffUser.GetClinicalStaffList().Where(s => s.CLINIC_SCHEDULER_GROUPS == "Consultant").ToList();
@@ -577,7 +584,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change Triage Pathway", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change Triage Pathway", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.triage = _triageData.GetTriageDetails(id);
                 _ivm.pathways = _pathwayData.GetPathwayList();                

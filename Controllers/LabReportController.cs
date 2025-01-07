@@ -9,20 +9,32 @@ namespace ClinicX.Controllers
     public class LabReportController : Controller
     {
         private readonly LabContext _context;
+        private readonly ClinicalContext _clinContext;
+        private readonly IConfiguration _config;
         private readonly ILabData _labData;
         private readonly LabReportVM _lvm;
+        private readonly StaffUserData _staff;
+        private readonly AuditService _audit;
 
-        public LabReportController(LabContext context)
+        public LabReportController(LabContext context, ClinicalContext clinContext, IConfiguration config)
         {
             _context = context;
+            _clinContext = clinContext;
+            _config = config;
             _labData = new LabReportData(_context);
             _lvm = new LabReportVM();
+            _staff = new StaffUserData(_clinContext);
+            _audit = new AuditService(_config);
         }
 
         
 
         public IActionResult LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob)
         {
+            string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "ClinicX - LabReports", "", _ip.GetIPAddress());
+
             _lvm.patientsList = new List<LabPatient>();
 
             if (firstname != null || lastname != null || nhsno != null || postcode != null || dob != null)

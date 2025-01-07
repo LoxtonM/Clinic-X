@@ -62,7 +62,7 @@ namespace ClinicX.Controllers
             request.AddHeader("accept", "application/json");
             request.AddHeader("authorization", "Basic " + authKey);
             request.AddHeader("X-Gene42-Secret", apiKey);
-            var response = await client.GetAsync(request); //secret key is broken so we can't currently get past this line
+            var response = await client.GetAsync(request);
 
             if (CheckResponseValid(response.Content)) 
             {
@@ -94,6 +94,7 @@ namespace ClinicX.Controllers
                 request.AddHeader("X-Gene42-Secret", apiKey);
                 string apiCall = "{\"patient_name\":{\"first_name\":\"" + $"{patient.FIRSTNAME}" + "\",\"last_name\":\"" + $"{patient.LASTNAME}" + "\"}";
                 apiCall = apiCall + ",\"date_of_birth\":{\"year\":" + yob.ToString() + ",\"month\":" + mob.ToString() + ",\"day\":" + dob.ToString() + "}";
+                apiCall = apiCall + ",\"labeled_eids\":[{\"label\":\"NHS Number\",\"value\":\"" + $"{patient.SOCIAL_SECURITY}" + "\"},{\"label\":\"MPI\",\"value\":\"" + $"{patient.MPI}" + "\"}]";
                 apiCall = apiCall + ",\"sex\":\"" + $"{patient.SEX.Substring(0, 1)}" + "\",\"external_id\":\"" + $"{patient.CGU_No}" + "\"}";
 
                 request.AddJsonBody(apiCall, false);
@@ -107,7 +108,8 @@ namespace ClinicX.Controllers
                     sMessage = "Push to Phenotips successful";
 
                     string ptID = await GetPhenotipsPatientID(patient.MPI);
-                    _crud.AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault());
+                    _crud.AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), 
+                        patient.POSTCODE, patient.SOCIAL_SECURITY);
                 }
                 else
                 {
@@ -144,7 +146,6 @@ namespace ClinicX.Controllers
                 request.AddHeader("X-Gene42-Secret", apiKey);
                 var response = await client.GetAsync(request);
                 dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
-                //http://localhost:7168/Patient/PatientDetails?id=227775
 
                 int relID = 0;
                 

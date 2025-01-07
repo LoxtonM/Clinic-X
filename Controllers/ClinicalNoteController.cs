@@ -46,7 +46,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinical Notes");
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinical Notes", "", _ip.GetIPAddress());
 
                 _cvm.clinicalNotesList = _clinicalNoteData.GetClinicalNoteList(id);
                 _cvm.patient = _patientData.GetPatientDetails(id);
@@ -66,7 +67,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Clinical Note", "ClinicalNoteID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Clinical Note", "ClinicalNoteID=" + id.ToString(), _ip.GetIPAddress());
 
                 _cvm.activityItem = _activityData.GetActivityDetails(id);
                 _cvm.noteTypeList = _clinicalNoteData.GetNoteTypesList();
@@ -108,7 +110,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinical Note", "ClinicalNoteID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinical Note", "ClinicalNoteID=" + id.ToString(), _ip.GetIPAddress());
 
                 _cvm.clinicalNote = _clinicalNoteData.GetClinicalNoteDetails(id);
                 _cvm.patient = _patientData.GetPatientDetails(_cvm.clinicalNote.MPI.GetValueOrDefault());
@@ -151,7 +154,8 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinical Notes Choose Appt", id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinical Notes Choose Appt", id.ToString(), _ip.GetIPAddress());
 
                 _cvm.patient = _patientData.GetPatientDetails(id);
                 _cvm.Clinics = _clinicData.GetClinicByPatientsList(id);

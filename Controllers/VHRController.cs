@@ -467,23 +467,7 @@ public class VHRController : Controller
         {
             RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "StdLetter" });
         }
-    }
-
-    string RemoveHTML(string text)
-    {
-        
-        text = text.Replace("&nbsp;", System.Environment.NewLine);
-        text = text.Replace(System.Environment.NewLine, "newline");
-        text = Regex.Replace(text, @"<[^>]+>", "").Trim();
-        //text = Regex.Replace(text, @"\n{2,}", " ");
-        text = text.Replace("&lt;", "<");
-        text = text.Replace("&gt;", ">"); //because sometimes clinicians like to actually use those symbols
-        text = text.Replace("newlinenewline", System.Environment.NewLine);
-        text = text.Replace("newline", "");
-        //this is the ONLY way to strip out the excessive new lines!! (and still can't remove all of them)
-
-        return text;
-    }
+    }    
 }
 
     
