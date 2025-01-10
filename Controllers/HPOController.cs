@@ -4,7 +4,7 @@ using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 using ClinicX.Data;
-using ClinicX.Models;
+using ClinicalXPDataConnections.Models;
 
 namespace ClinicX.Controllers
 {
@@ -31,12 +31,12 @@ namespace ClinicX.Controllers
             _config = config;
             _staffUser = new StaffUserData(_clinContext);
             _hpo = new HPOVM();
-            _hpoData = new HPOCodeData(_cXContext);
+            _hpoData = new HPOCodeData(_clinContext);
             _clinicaNoteData = new ClinicalNoteData(_cXContext);
             _crud = new CRUD(_config);
             _misc = new MiscData(_config);
             _audit = new AuditService(_config);
-            _api = new APIController(_clinContext, _cXContext, _docContext, _config);
+            _api = new APIController(_clinContext, _docContext, _config);
         }
 
         [HttpGet]

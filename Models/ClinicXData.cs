@@ -78,43 +78,7 @@ namespace ClinicX.Models
         public string NoteType { get; set; }
         public bool NoteInUse { get; set; }
     }
-
-    [Table("HPOTerm", Schema = "dbo")] //List of all HPO codes
-    public class HPOTerm
-    {
-        [Key]
-        public int ID { get; set; }
-        public string Term { get; set; }
-        public string TermCode { get; set; }
-    }
-
-    [Table("ClinicalNotesHPOTerm", Schema = "dbo")] //HPO codes applied to a clinical note (just the IDs)
-    public class ClinicalNoteHPOTerms
-    {
-        [Key]
-        public int ID { get; set; }
-        public int ClinicalNoteID { get; set; }
-        public int HPOTermID { get; set; }
-    }
-    public class HPOExtractedTerms
-    {
-        public int HPOTermID { get; set; }
-        public string TermCode { get; set; }
-        public String Term { get; set; }
-    }
-
-    [Table("ViewClinicalNoteHPOTermDetails", Schema = "dbo")] //HPO codes applied to a clinical note (including MPI and HPO data)
-    public class HPOTermDetails
-    {
-        [Key]
-        public int ID { get; set; }
-        public int ClinicalNoteID { get; set; }  
-        public int MPI { get;set; }
-        public string? Term { get; set; }
-        public string? TermCode { get; set; }
-    }
-
-    
+        
 
     [Table("PAT_TESTTYPE", Schema = "dbo")] //List of all tests
     public class TestType

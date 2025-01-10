@@ -14,7 +14,7 @@ using System.IO;
 
 namespace ClinicX.Controllers;
 
-public class LetterController : Controller
+public class CancerLetterController : Controller
 {
     private readonly ClinicalContext _clinContext;
     private readonly ClinicXContext _cXContext;
@@ -33,7 +33,7 @@ public class LetterController : Controller
     private readonly IConstantsData _constantsData;
     private readonly ICRUD _crud;
 
-    public LetterController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
+    public CancerLetterController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
     {
         _clinContext = clinContext;
         _cXContext = cXContext;
@@ -133,10 +133,10 @@ public class LetterController : Controller
                 datesInfo = $"Dictated Date: {_lvm.dictatedLetter.DateDictated.Value.ToString("dd/MM/yyyy")}" + System.Environment.NewLine +
                                    $"Date Typed: {_lvm.dictatedLetter.CreatedDate.Value.ToString("dd/MM/yyyy")}";
             }         
-            _lvm.patient = _patientData.GetPatientDetails(_lvm.dictatedLetter.MPI);
-            tf.DrawString($"Please quote our reference on all correspondence: {_lvm.patient.CGU_No}", fontItalic, XBrushes.Black, new XRect(20, 270, page.Width, 200));
+            _lvm.patient = _patientData.GetPatientDetails(_lvm.dictatedLetter.MPI.GetValueOrDefault());
+            tf.DrawString($"Please quote our reference on all correspondence: {_lvm.patient.CGU_No}", fontItalic, XBrushes.Black, new XRect(20, 300, page.Width, 200));
 
-            tf.DrawString(datesInfo, font, XBrushes.Black, new XRect(20, 290, page.Width / 2, 200));
+            tf.DrawString(datesInfo, font, XBrushes.Black, new XRect(20, 320, page.Width / 2, 200));
 
             //recipient's address
                        
@@ -154,7 +154,12 @@ public class LetterController : Controller
             //Content containers for all of the paragraphs, as well as other data required
             string letterRe = _lvm.dictatedLetter.LetterRe;
             string summary = _lvm.dictatedLetter.LetterContentBold;
-            string content = _lvm.dictatedLetter.LetterContent;
+            string letterContent = _lvm.dictatedLetter.LetterContent;
+            string content = "";
+            string content2 = "";
+            string content3 = "";
+            string content4 = "";
+            string content5 = "";
             string quoteRef = "";
             string signOff = "";
             string sigFilename = "";
@@ -173,14 +178,15 @@ public class LetterController : Controller
             var tf3 = new XTextFormatter(gfx3);
             XGraphics gfx4 = XGraphics.FromPdfPage(page4);
             var tf4 = new XTextFormatter(gfx4);
-            int firstPageLength = 500;
-            int pageLength = 3000;
+            int pageLength = 3500;
+            int firstPageLength = 1000;
+            int pageIndex = 1;
 
             if (summary == null) { summary = ""; }
 
             if (letterRe == null) { letterRe = ""; }
 
-            if (content.Contains("</")) { content = RemoveHTML(content); }
+            if (letterContent.Contains("</")) { letterContent = RemoveHTML(letterContent); }
 
             if (_lvm.dictatedLetter.LetterRe != null)
             {
@@ -195,173 +201,170 @@ public class LetterController : Controller
             sigFilename = $"{_lvm.staffMember.StaffForename.Replace(" ","")}{_lvm.staffMember.StaffSurname.Replace("'","").Replace(" ","")}.jpg";
             totalLength = totalLength + 20;
 
-            if (content.Length < 200) //split the content so it goes over multiple pages if more than one page
-            {                
-                tf.DrawString(content, font, XBrushes.Black, new XRect(20, totalLength, 500, content.Length));
-                totalLength = totalLength + content.Length + 20;                               
+            if (letterContent.Length < firstPageLength) //split the content so it goes over multiple pages if more than one page
+            {
+                tf.DrawString(letterContent, font, XBrushes.Black, new XRect(20, totalLength, 500, letterContent.Length));
+                totalLength = totalLength + _lvm.dictatedLetter.LetterContent.Length + 20;
             }
             else
-            {                
-                string[] lines = content.Split(
+            {
+                string[] lines = letterContent.Split(
                 new string[] { Environment.NewLine },
-                StringSplitOptions.None);                                
-                                
+                StringSplitOptions.None);
+
                 tf2 = new XTextFormatter(gfx2);
                 totalLength2 = 20;
-                                
+
                 tf3 = new XTextFormatter(gfx3);
                 totalLength3 = 20;
 
                 tf4 = new XTextFormatter(gfx4);
                 totalLength4 = 20;
 
-                string content1 = "";
-                string content2 = "";
-                string content3 = "";
-                string content4 = "";
 
-                
+                foreach (var line in lines) //all of this is necessary because PDFSharp has no way to dynamically add pages as required.
+                {
+                    if (line.Length > 0)
+                    {
 
-                foreach (var line in lines)
-                {                    
-                    int pageIndex = 1;
-                    
-                    if (content1.Length < firstPageLength)
-                    {
-                        content1 = content1 + line + System.Environment.NewLine;
-                    }
-                    else
-                    {
-                        pageIndex += 1;
-                    }
+                        if (pageIndex == 1)
+                        {
 
-                    if (pageIndex == 2 && content2.Length < pageLength)
-                    {
-                        content2 = content2 + line + System.Environment.NewLine;                        
-                        Console.WriteLine(content2);
-                    }
-                    else
-                    {
-                        pageIndex += 1;
-                    }
+                            if (content.Length + line.Length < firstPageLength)
+                            {
+                                content = content + line + System.Environment.NewLine + System.Environment.NewLine;
+                            }
+                            else
+                            {
+                                pageIndex += 1;
+                            }
+                        }
 
-                    if (pageIndex == 3 && content3.Length < pageLength)
-                    {
-                        content3 = content3 + line + System.Environment.NewLine;
-                    }
-                    else
-                    {
-                        pageIndex += 1;
-                    }
+                        if (pageIndex == 2)
+                        {
+                            if (content2.Length + line.Length < pageLength)
 
-                    if (pageIndex == 4 && content4.Length < pageLength)
-                    {
-                        content4 = content4 + line + System.Environment.NewLine;
-                    }
-                    else
-                    {
-                        pageIndex += 1;
-                    }
+                            {
+                                content2 = content2 + line + System.Environment.NewLine + System.Environment.NewLine;
+                            }
+                            else
+                            {
+                                pageIndex += 1;
+                            }
+                        }
 
+                        if (pageIndex == 3)
+                        {
 
-                    /*
-                    if (totalLength < 800)
-                    {
-                        tf.DrawString(line, font, XBrushes.Black, new XRect(20, totalLength, 500, lines[0].Length));
-                        totalLength = totalLength + (lines[0].Length / 4) + 10;
-                    }
-                    else if (totalLength2 < 800)
-                    {
-                        tf2.DrawString(line, font, XBrushes.Black, new XRect(20, totalLength2, 500, line.Length));
-                        totalLength2 = totalLength2 + (line.Length / 4) + 10;
-                    }
-                    else if (totalLength3 < 800)
-                    {
-                        tf3.DrawString(line, font, XBrushes.Black, new XRect(20, totalLength3, 500, line.Length));
-                        totalLength3 = totalLength3 + (line.Length / 4) + 10;
-                    }
-                    else if (totalLength4 < 800)
-                    {
-                        tf4.DrawString(line, font, XBrushes.Black, new XRect(20, totalLength4, 500, line.Length));
-                        totalLength4 = totalLength4 + (line.Length / 4) + 10;
-                    }*/
+                            if (content3.Length + line.Length < pageLength)
+                            {
+                                content3 = content3 + line + System.Environment.NewLine + System.Environment.NewLine;
+                            }
+                            else
+                            {
+                                pageIndex += 1;
+                            }
+                        }
 
-                    
+                        if (pageIndex == 4)
+                        {
+                            if (content4.Length + line.Length < pageLength)
+                            {
+                                content4 = content4 + line + System.Environment.NewLine + System.Environment.NewLine;
+                            }
+                            else
+                            {
+                                pageIndex += 1;
+                            }
+                        }
+
+                        if (pageIndex == 5 && content5.Length + line.Length < pageLength)
+                        {
+                            content5 = content5 + line + System.Environment.NewLine + System.Environment.NewLine;
+                        }
 
 
+                    }
                 }
-                //totalLength2 = totalLength2 + 20;
-                //
-                tf.DrawString(content1, font, XBrushes.Black, new XRect(20, totalLength, 500, content1.Length));
-                totalLength = totalLength + content1.Length / 2;
 
+
+                if (content.Length > 0)
+                {
+                    tf.DrawString(content, font, XBrushes.Black, new XRect(20, totalLength, 500, content.Length));
+                    totalLength = totalLength + (content.Length / 4) + 10;
+                }
                 if (content2.Length > 0)
                 {
                     tf2.DrawString(content2, font, XBrushes.Black, new XRect(20, totalLength2, 500, content2.Length));
-                    totalLength2 = totalLength2 + content2.Length / 4;
+                    totalLength2 = totalLength2 + (content2.Length / 4) + 10;
                 }
-
                 if (content3.Length > 0)
                 {
                     tf3.DrawString(content3, font, XBrushes.Black, new XRect(20, totalLength3, 500, content3.Length));
-                    totalLength3 = totalLength3 + content3.Length/4;
+                    totalLength3 = totalLength3 + (content3.Length / 4) + 10;
                 }
-
                 if (content4.Length > 0)
                 {
                     tf4.DrawString(content4, font, XBrushes.Black, new XRect(20, totalLength4, 500, content4.Length));
-                    totalLength4 = totalLength4 + content4.Length / 4;
+                    totalLength4 = totalLength4 + (content4.Length / 4) + 10;
                 }
+
+
+
             }
+
+            XImage imageSig = XImage.FromFile(@$"wwwroot\Signatures\Default.jpg"); //we have to initialise it to be able to use it outside of the loop, so we have to give it something.
 
             if (System.IO.File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
             {
-                XImage imageSig = XImage.FromFile(@$"wwwroot\Signatures\{sigFilename}");
-
-                int len = imageSig.PixelWidth;
-                int hig = imageSig.PixelHeight;
-
-
-                if (totalLength < firstPageLength)
-                {
-                    document.Pages.Remove(page2);
-                    document.Pages.Remove(page3);
-                    document.Pages.Remove(page4);
-                    tf.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength, 500, 20));
-                    totalLength = totalLength + 20;
-                    gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                    totalLength = totalLength + hig + 20;
-                    tf.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength, 500, 20));
-                }
-                else if (totalLength2 < pageLength)
-                {
-                    document.Pages.Remove(page3);
-                    document.Pages.Remove(page4);
-                    tf2.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength2, 500, 20));
-                    totalLength2 = totalLength2 + 20;
-                    gfx2.DrawImage(imageSig, 50, totalLength2, len, hig);
-                    totalLength2 = totalLength2 + hig + 20;
-                    tf2.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength2, 500, 20));
-                }
-                else if(totalLength3 < pageLength)
-                {
-                    document.Pages.Remove(page4);
-                    tf3.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength3, 500, 20));
-                    totalLength3 = totalLength3 + 20;
-                    gfx3.DrawImage(imageSig, 50, totalLength3, len, hig);
-                    totalLength3 = totalLength3 + hig + 20;
-                    tf3.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength3, 500, 20));
-                }
-                else
-                {
-                    tf4.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength4, 500, 20));
-                    totalLength4 = totalLength4 + 20;
-                    gfx4.DrawImage(imageSig, 50, totalLength4, len, hig);
-                    totalLength4 = totalLength4 + hig + 20;
-                    tf4.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength4, 500, 20));
-                }                
+                imageSig = XImage.FromFile(@$"wwwroot\Signatures\{sigFilename}");
             }
-            //document.Save($"c:\\projects\\VS Test\\ClinicX\\wwwroot\\DOTLetterPreviews\\preview-{user}.pdf");
+
+            int len = imageSig.PixelWidth;
+            int hig = imageSig.PixelHeight;
+
+            if (pageIndex == 1)
+            {
+                document.Pages.Remove(page2);
+                document.Pages.Remove(page3);
+                document.Pages.Remove(page4);
+                tf.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
+                totalLength = totalLength + hig + 20;
+                tf.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength, 500, 20));
+            }
+            else if (pageIndex == 2)
+            {
+                document.Pages.Remove(page3);
+                document.Pages.Remove(page4);
+                totalLength2 = totalLength2 + 20;
+                tf2.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength2, 500, 20));
+                totalLength2 = totalLength2 + 20;
+                gfx2.DrawImage(imageSig, 50, totalLength2, len, hig);
+                totalLength2 = totalLength2 + hig + 20;
+                tf2.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength2, 500, 20));
+            }
+            else if (pageIndex == 3)
+            {
+                document.Pages.Remove(page4);
+                totalLength3 = totalLength3 + 20;
+                tf3.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength3, 500, 20));
+                totalLength3 = totalLength3 + 20;
+                gfx3.DrawImage(imageSig, 50, totalLength3, len, hig);
+                totalLength3 = totalLength3 + hig + 20;
+                tf3.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength3, 500, 20));
+            }
+            else
+            {
+                totalLength4 = totalLength4 + 20;
+                tf4.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength4, 500, 20));
+                totalLength4 = totalLength4 + 20;
+                gfx4.DrawImage(imageSig, 50, totalLength4, len, hig);
+                totalLength4 = totalLength4 + hig + 20;
+                tf4.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength4, 500, 20));
+            }
+
             document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf"));
         }
 

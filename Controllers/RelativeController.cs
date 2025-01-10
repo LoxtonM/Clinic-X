@@ -35,7 +35,7 @@ namespace ClinicX.Controllers
             _relativeData = new RelativeData(_clinContext);
             _rdvm = new RelativeDiagnosisVM();
             _rvm = new RelativeVM();
-            _api = new APIController(_clinContext, _cXContext, _docContext, _config);
+            _api = new APIController(_clinContext, _docContext, _config);
             _audit = new AuditService(_config);
         }
 

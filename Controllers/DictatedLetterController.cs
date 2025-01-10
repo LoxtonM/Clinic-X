@@ -40,7 +40,7 @@ namespace ClinicX.Controllers
             _externalClinicianData = new ExternalClinicianData(_clinContext);
             _externalFacilityData = new ExternalFacilityData(_clinContext);
             _crud = new CRUD(_config);
-            _lc = new LetterController(_clinContext, _cXContext, _docContext, _config);
+            _lc = new LetterController(_clinContext, _docContext);
             _audit = new AuditService(_config);
         }
 
@@ -304,7 +304,7 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                _lc.PreviewDOTPDF(dID, User.Identity.Name);
+                _lc.PrintDOTPDF(dID, User.Identity.Name, false);
                 //return RedirectToAction("Edit", new { id = dID });
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }

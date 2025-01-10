@@ -41,7 +41,7 @@ namespace ClinicX.Controllers
             _alertData = new AlertData(_clinContext);
             _referralData = new ReferralData(_clinContext);
             _diaryData = new DiaryData(_clinContext);
-            _hpoData = new HPOCodeData(_cXContext);
+            _hpoData = new HPOCodeData(_clinContext);
             _audit = new AuditService(_config);
             _constantsData = new ConstantsData(_docContext);
             _ageCalculator = new AgeCalculator();

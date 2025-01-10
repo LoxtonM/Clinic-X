@@ -10,10 +10,7 @@ namespace ClinicX.Data
         public DbSet<Note> ClinicalNotes { get; set; }
         public DbSet<NoteItem> NoteItems { get; set; }
         public DbSet<Test> Test { get; set; }        
-        public DbSet<ClinicalNoteType> NoteTypes { get; set; }        
-        public DbSet<HPOTerm> HPOTerms { get; set; }
-        public DbSet<ClinicalNoteHPOTerms> ClinicalNoteHPOTerms { get; set; }
-        public DbSet<HPOTermDetails> HPOTermDetails { get; set; }        
+        public DbSet<ClinicalNoteType> NoteTypes { get; set; }              
         public DbSet<TestType> Tests { get; set; }                  
         public DbSet<ICPAction> ICPCancerActionsList { get; set; }
         public DbSet<ICPGeneralAction> ICPGeneralActionsList { get; set; }
