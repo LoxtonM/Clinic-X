@@ -3,15 +3,12 @@ using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
-using ClinicX.Meta;
-using ClinicX.Data;
 
 namespace ClinicX.Controllers
 {
     public class PatientController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
         private readonly DocumentContext _docContext;
         private readonly PatientVM _pvm;
         private readonly IConfiguration _config;
@@ -27,10 +24,9 @@ namespace ClinicX.Controllers
         private readonly IConstantsData _constantsData;
         private readonly IAgeCalculator _ageCalculator;
 
-        public PatientController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
+        public PatientController(ClinicalContext context, DocumentContext docContext, IConfiguration config)
         {
             _clinContext = context;
-            _cXContext = cXContext;
             _docContext = docContext;
             _config = config;
             _pvm = new PatientVM();

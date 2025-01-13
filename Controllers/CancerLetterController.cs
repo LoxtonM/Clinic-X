@@ -10,7 +10,6 @@ using ClinicalXPDataConnections.Models;
 using System.Text.RegularExpressions;
 using ClinicX.Data;
 using ClinicX.Models;
-using System.IO;
 
 namespace ClinicX.Controllers;
 

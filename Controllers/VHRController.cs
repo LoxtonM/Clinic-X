@@ -6,7 +6,6 @@ using ClinicX.Meta;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
-using System.Text.RegularExpressions;
 using ClinicX.Data;
 using ClinicX.Models;
 using ClinicalXPDataConnections.Models;

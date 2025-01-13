@@ -55,19 +55,7 @@ namespace ClinicX.Controllers
                         searchTerm = searchTerm + "," + "NHSNo=" + nhsNo;
                         _pvm.nhsNoSearch = nhsNo;
                     }
-                    if (firstname != null)
-                    {
-                        if (searchTerm == "")
-                        {
-                            _pvm.patientsList = _patientSearchData.GetPatientsListByName(firstname, null);
-                        }
-                        else
-                        {
-                            _pvm.patientsList = _pvm.patientsList.Where(p => p.FIRSTNAME.ToUpper().Contains(firstname.ToUpper())).ToList();
-                        }
-                        searchTerm = searchTerm + "," + "Forename=" + firstname;
-                        _pvm.forenameSearch = firstname;
-                    }
+                    
                     if (lastname != null)
                     {
                         if (searchTerm == "")
@@ -81,6 +69,21 @@ namespace ClinicX.Controllers
                         searchTerm = searchTerm + "," + "Surname=" + lastname;
                         _pvm.surnameSearch = lastname;
                     }
+
+                    if (firstname != null)
+                    {
+                        if (searchTerm == "")
+                        {
+                            _pvm.patientsList = _patientSearchData.GetPatientsListByName(firstname, null);
+                        }
+                        else
+                        {
+                            _pvm.patientsList = _pvm.patientsList.Where(p => p.FIRSTNAME.ToUpper().Contains(firstname.ToUpper())).ToList();
+                        }
+                        searchTerm = searchTerm + "," + "Forename=" + firstname;
+                        _pvm.forenameSearch = firstname;
+                    }
+
                     if (dob != null && dob != DateTime.Parse("0001-01-01"))
                     {
                         if (searchTerm == "")
