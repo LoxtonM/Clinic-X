@@ -11,10 +11,7 @@ namespace ClinicX.Data
         public DbSet<NoteItem> NoteItems { get; set; }
         public DbSet<Test> Test { get; set; }        
         public DbSet<ClinicalNoteType> NoteTypes { get; set; }              
-        public DbSet<TestType> Tests { get; set; }                  
-        public DbSet<ICPAction> ICPCancerActionsList { get; set; }
-        public DbSet<ICPGeneralAction> ICPGeneralActionsList { get; set; }
-        public DbSet<ICPGeneralAction2> ICPGeneralActionsList2 { get; set; }        
+        public DbSet<TestType> Tests { get; set; }                         
         public DbSet<Eligibility> Eligibility { get; set; }        
         public DbSet<CancerReg> CancerReg { get; set; }
         public DbSet<RequestStatus> RequestStatus { get; set; }

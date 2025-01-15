@@ -86,38 +86,7 @@ namespace ClinicX.Models
         [Key]
         public string TEST { get; set; }
         public Int16? T_O { get; set; }
-    }
-
-    
-
-    [Table("ListICPActions", Schema = "dbo")] //List of ICP actions (duh!)
-    public class ICPAction
-    {
-        [Key]
-        public int ID { get; set; }
-        public string Action { get; set; }
-        public bool InUse { get; set; }
-    }
-
-    [Table("ListICPGeneralActions", Schema = "dbo")] //List of treatpath actions
-    public class ICPGeneralAction
-    {
-        [Key]
-        public int ID { get; set; }
-        public string Action { get; set; }
-        public bool InUse { get; set; }
-    }
-
-    [Table("ListICPGeneralActions2", Schema = "dbo")] //List of trheatpath2 actions
-    public class ICPGeneralAction2
-    {
-        [Key]
-        public int ID { get; set; }
-        public string Action { get; set; }
-        public bool InUse { get; set; }
-        public bool Clinic { get; set; }
-        public bool NoClinic { get; set; }
-    }      
+    }        
     
     [Table("ViewTestingEligibility", Schema = "dbo")] //Testing eligibility
     public class Eligibility

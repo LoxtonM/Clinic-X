@@ -146,5 +146,20 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "HPO-delete" });
             }
         }  
+
+        public async Task<IActionResult> GetAllHPOTerms()
+        {
+            string hpoTermGet = await _api.GetAllHPOTerms(User.Identity.Name);
+
+            if (hpoTermGet == "success")
+            {
+
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = "Failed to get HPO terms", formName = "HPO-getall" });
+            }
+        }
     }
 }
