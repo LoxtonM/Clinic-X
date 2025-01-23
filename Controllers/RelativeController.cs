@@ -5,6 +5,8 @@ using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
+using APIControllers.Controllers;
+using APIControllers.Data;
 
 namespace ClinicX.Controllers
 {
@@ -13,6 +15,7 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly ClinicXContext _cXContext;
         private readonly DocumentContext _docContext;
+        private readonly APIContext _apiContext;
         private readonly RelativeDiagnosisVM _rdvm;
         private readonly RelativeVM _rvm;
         private readonly IConfiguration _config;
@@ -23,11 +26,12 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public RelativeController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
+        public RelativeController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, APIContext apiContext, IConfiguration config)
         {
             _clinContext = context;
             _cXContext = cXContext;
             _docContext = docContext;
+            _apiContext = apiContext;
             _config = config;
             _crud = new CRUD(_config);
             _staffUser = new StaffUserData(_clinContext);
@@ -35,7 +39,7 @@ namespace ClinicX.Controllers
             _relativeData = new RelativeData(_clinContext);
             _rdvm = new RelativeDiagnosisVM();
             _rvm = new RelativeVM();
-            _api = new APIController(_clinContext, _docContext, _config);
+            _api = new APIController(_apiContext, _config);
             _audit = new AuditService(_config);
         }
 
@@ -234,7 +238,19 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Import Relatives", "WMFACSID=" + id.ToString(), _ip.GetIPAddress());
                 _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(id);
                 _rvm.cgudbRelativesList = _relativeData.GetRelativesList(_rvm.patient.MPI);
-                _rvm.phenotipsRelativesList = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
+
+                List<APIControllers.Models.Relative> ptRels = new List<APIControllers.Models.Relative>();
+                ptRels = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
+
+                //_rvm.phenotipsRelativesList = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
+
+                _rvm.phenotipsRelativesList = new List<ClinicalXPDataConnections.Models.Relative>();
+                foreach(var r in ptRels)
+                {
+                    _rvm.phenotipsRelativesList.Add(new ClinicalXPDataConnections.Models.Relative { DOB = r.DOB, RelTitle = r.RelTitle, 
+                        RelForename1 = r.RelForename1, RelSurname = r.RelSurname, DOD = r.DOD, RelSex = r.RelSex, WMFACSID = r.WMFACSID });
+                }
+
                 _rvm.relationslist = _relativeData.GetRelationsList();
 
                 return View(_rvm);

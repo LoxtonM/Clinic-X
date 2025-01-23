@@ -17,7 +17,7 @@ namespace ClinicX.Controllers
         private readonly ClinicXContext _cXContext;
         private readonly DocumentContext _docContext;
         private readonly ICPVM _ivm;
-        private readonly CancerLetterController _lc;
+        private readonly LetterController _lc;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly IPathwayData _pathwayData;
@@ -61,7 +61,7 @@ namespace ClinicX.Controllers
             _relDiagData = new RelativeDiagnosisData(_clinContext, _cXContext);
             _documentsData = new DocumentsData(_docContext);
             _crud = new CRUD(_config);
-            _lc = new CancerLetterController(_clinContext, _cXContext, _docContext, _config);
+            _lc = new LetterController(_clinContext, _docContext);
             _audit = new AuditService(_config);
             _ageCalculator = new AgeCalculator();
         }
@@ -361,6 +361,7 @@ namespace ClinicX.Controllers
 
             return RedirectToAction("CancerReview", new { id = id });
         }
+
         [HttpGet]
         public async Task<IActionResult> FurtherRequest(int id)
         {
@@ -394,7 +395,7 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-postclinicletter" });
             }
-        }//http://localhost:7168/Triage/CancerReview?id=40624
+        }
 
         [HttpPost]
         public async Task<IActionResult> FurtherRequest(int id, int request, string? freeText = "", int? relID = 0, string? clinicianCode = "", string? siteText = "",

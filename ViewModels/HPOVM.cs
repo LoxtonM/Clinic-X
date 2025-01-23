@@ -11,6 +11,7 @@ namespace ClinicX.ViewModels
         public Note clinicalNote { get; set; }
         public List<HPOTermDetails> hpoTermDetails { get; set; }
         public List<HPOTerm> hpoTerms { get; set; }
+
         public List<HPOExtractedTerms> hpoExtractedTerms { get; set;}
         public StaffMember staffMember { get; set; }
         public string searchTerm { get; set; }

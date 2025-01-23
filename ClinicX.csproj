@@ -13,9 +13,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="PDFsharp-MigraDoc" Version="6.1.1" />
     <PackageReference Include="PdfSharpCore" Version="1.2.0" />
     <PackageReference Include="RestSharp" Version="112.1.0" /> <!-- I don't actually want RestSharp in here but I have to have it, the app throws a fit otherwise!!-->
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.1" />
@@ -30,10 +31,10 @@
 
   <ItemGroup>
     <Reference Include="APIControllers">
-      <HintPath>..\..\..\Websites\Libraries\APIControllers.dll</HintPath>
+      <HintPath>G:\Technical Improvements Group\C# Libraries\APIControllers.dll</HintPath>
     </Reference>
     <Reference Include="ClinicalXPDataConnections">
-      <HintPath>..\..\..\Websites\Libraries\ClinicalXPDataConnections.dll</HintPath>
+      <HintPath>G:\Technical Improvements Group\C# Libraries\ClinicalXPDataConnections.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -5,6 +5,9 @@ using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 using ClinicX.Data;
 using ClinicalXPDataConnections.Models;
+using APIControllers.Controllers;
+using APIControllers.Data;
+using APIControllers.Models;
 
 namespace ClinicX.Controllers
 {
@@ -13,6 +16,7 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly ClinicXContext _cXContext;
         private readonly DocumentContext _docContext;
+        private readonly APIContext _apiContext;
         private readonly HPOVM _hpo;
         private readonly IStaffUserData _staffUser;
         private readonly IConfiguration _config;        
@@ -23,11 +27,12 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         private readonly APIController _api;
 
-        public HPOController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
+        public HPOController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, APIContext apiContext, IConfiguration config)
         {
             _clinContext = context;
             _cXContext = cXContext;
             _docContext = docContext;
+            _apiContext = apiContext;
             _config = config;
             _staffUser = new StaffUserData(_clinContext);
             _hpo = new HPOVM();
@@ -36,7 +41,7 @@ namespace ClinicX.Controllers
             _crud = new CRUD(_config);
             _misc = new MiscData(_config);
             _audit = new AuditService(_config);
-            _api = new APIController(_clinContext, _docContext, _config);
+            _api = new APIController(_apiContext, _config);
         }
 
         [HttpGet]
@@ -56,7 +61,15 @@ namespace ClinicX.Controllers
 
                 if(searchTerm != null) 
                 {
-                    _hpo.hpoTerms = await _api.GetHPOCodes(searchTerm);
+                    List<APIControllers.Models.HPOTerm> termList = new List<APIControllers.Models.HPOTerm>();
+                    termList = await _api.GetHPOCodes(searchTerm);
+                    _hpo.hpoTerms = new List<ClinicalXPDataConnections.Models.HPOTerm>();
+                    foreach (var item in termList)
+                    {
+                        _hpo.hpoTerms.Add(new ClinicalXPDataConnections.Models.HPOTerm { ID = item.ID, Term = item.Term, TermCode = item.TermCode });
+                    }
+
+                    //_hpo.hpoTerms = await _api.GetHPOCodes(searchTerm);
 
                     _hpo.searchTerm = searchTerm;
                 }
@@ -80,11 +93,11 @@ namespace ClinicX.Controllers
                 //check if code exists, add it if it doesn't
                 if (_hpoData.GetHPOTermByTermCode(termCode) == null)
                 {                    
-                    HPOTerm term = await _api.GetHPODataByTermCode(termCode);
+                    APIControllers.Models.HPOTerm term = await _api.GetHPODataByTermCode(termCode);
                     _hpoData.AddHPOTermToDatabase(termCode, term.Term, staffCode, _config);
 
                     //and add its synonyms as well
-                    HPOTerm termAdded = _hpoData.GetHPOTermByTermCode(termCode);
+                    ClinicalXPDataConnections.Models.HPOTerm termAdded = _hpoData.GetHPOTermByTermCode(termCode);
                     int hpoTermID = termAdded.ID;
 
                     List<string> synonymsToAdd = new List<string>();

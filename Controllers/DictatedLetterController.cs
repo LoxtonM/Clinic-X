@@ -14,7 +14,7 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
         private readonly ClinicXContext _cXContext;
-        private readonly LetterController _lc;
+        private readonly ClinicX.Controllers.LetterController _lc;
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;        
         private readonly IPatientData _patientData;
@@ -304,7 +304,7 @@ namespace ClinicX.Controllers
         {
             try
             {                
-                _lc.PrintDOTPDF(dID, User.Identity.Name, false);
+                _lc.PrintDOTPDF(dID, User.Identity.Name, true);
                 //return RedirectToAction("Edit", new { id = dID });
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
