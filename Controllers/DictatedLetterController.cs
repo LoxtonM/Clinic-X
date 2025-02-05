@@ -14,7 +14,7 @@ namespace ClinicX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
         private readonly ClinicXContext _cXContext;
-        private readonly ClinicX.Controllers.LetterController _lc;
+        private readonly LetterController _lc;
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;        
         private readonly IPatientData _patientData;

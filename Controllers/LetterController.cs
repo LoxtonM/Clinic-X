@@ -63,6 +63,8 @@ namespace ClinicX.Controllers
         }*/
 
         //Creates a preview of the DOT letter
+
+        
         public void PrintDOTPDF(int dID, string user, bool isPreview)
         {
 
@@ -244,6 +246,7 @@ namespace ClinicX.Controllers
 
             /*try
             {*/
+
             _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
             _lvm.patient = _patientData.GetPatientDetails(mpi);
             _lvm.documentsContent = _documentsData.GetDocumentDetails(id);

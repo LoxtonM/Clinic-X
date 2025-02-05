@@ -249,7 +249,41 @@
 
 
     <div class="collapse show" id="collapsePatientDetails">
-        <h1 class="text-center">Patient Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+        <div class="row">
+            <div class="col-md-2">
+                @if(Model.previousPatient != null)
+                {
+                    <a asp-action="PatientDetails" asp-route-id=@Model.previousPatient.MPI>
+                        <h4> @*Arrow comes from www.iconpacks.net*@
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="50" height="50" viewBox="0 0 256 256" xml:space="preserve"><defs></defs>
+                                <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+                                    <path d="M 0.053 44.915 l 33.782 -19.553 v 13.353 h 56.029 c 0.075 0 0.136 0.061 0.136 0.136 v 12.298 c 0 0.075 -0.061 0.136 -0.136 0.136 H 33.835 v 13.353 L 0.053 45.085 C -0.018 45.05 -0.018 44.95 0.053 44.915 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                </g>
+                            </svg> 
+                            @Model.previousPatient.FIRSTNAME @Model.previousPatient.LASTNAME
+                        </h4>
+                    </a>
+                }
+            </div>
+            <div class="col-md-8">
+                <h1 class="text-center">Patient Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+            </div>
+            <div class="col-md-2">
+                @if (Model.nextPatient != null)
+                {
+                    <a asp-action="PatientDetails" asp-route-id=@Model.nextPatient.MPI>
+                        <h4>
+                            @Model.nextPatient.FIRSTNAME @Model.nextPatient.LASTNAME 
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="50" height="50" viewBox="0 0 256 256" xml:space="preserve"><defs></defs>
+                                <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)" >
+	                                <path d="M 89.947 44.915 L 56.165 25.362 v 13.353 H 0.136 C 0.061 38.715 0 38.776 0 38.851 v 12.298 c 0 0.075 0.061 0.136 0.136 0.136 h 56.029 v 13.353 l 33.782 -19.553 C 90.018 45.05 90.018 44.95 89.947 44.915 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                </g>
+                            </svg>
+                        </h4>
+                    </a>
+                }
+            </div>
+        </div>
         @if(Model.patient.DECEASED == -1)
         {
             <h1 class="redtext text-center">PATIENT IS DECEASED</h1>

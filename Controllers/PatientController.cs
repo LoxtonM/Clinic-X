@@ -3,6 +3,7 @@ using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 
 namespace ClinicX.Controllers
 {
@@ -55,6 +56,26 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
                 _pvm.patient = _patientData.GetPatientDetails(id);
+                
+                List<Patient> patients = new List<Patient>();
+                patients = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
+
+                if (patients.Count > 0)
+                {
+                    int regNo;
+                    string cguno = _pvm.patient.CGU_No;
+
+                    if (Int32.TryParse(cguno.Substring(cguno.LastIndexOf('.') + 1), out regNo))
+                    {
+                        int prevRegNo = regNo - 1;
+                        int nextRegNo = regNo + 1;
+
+                        _pvm.previousPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + prevRegNo.ToString());
+                        _pvm.nextPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + nextRegNo.ToString());
+                    }
+                    
+                }
+
                 if (_pvm.patient == null)
                 {
                     return RedirectToAction("NotFound", "WIP");

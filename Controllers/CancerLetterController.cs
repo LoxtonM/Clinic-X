@@ -13,7 +13,7 @@ using ClinicX.Models;
 
 namespace ClinicX.Controllers;
 
-public class CancerLetterController : Controller
+public class CancerLetterControllerOLD : Controller
 {
     private readonly ClinicalContext _clinContext;
     private readonly ClinicXContext _cXContext;
@@ -32,7 +32,7 @@ public class CancerLetterController : Controller
     private readonly IConstantsData _constantsData;
     private readonly ICRUD _crud;
 
-    public CancerLetterController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
+    public CancerLetterControllerOLD(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
     {
         _clinContext = clinContext;
         _cXContext = cXContext;
@@ -52,6 +52,7 @@ public class CancerLetterController : Controller
         _crud = new CRUD(_config);
     }
 
+    
     public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)
     {
         try
@@ -1649,7 +1650,7 @@ public class CancerLetterController : Controller
             */
             //document.Save(letterFileName + ".pdf"); - the server can't save it to the watchfolder due to permission issues.
             //So we have to create it locally and have a scheduled job to move it instead.
-
+            
             if (!isPreview.GetValueOrDefault())
             {
                 document.Save($@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
@@ -1688,6 +1689,7 @@ public class CancerLetterController : Controller
 
         return text;
     }
+
 }
 
     

@@ -8,6 +8,8 @@ namespace ClinicX.ViewModels
     public class PatientVM
     {
         public Patient patient { get; set; }
+        public Patient nextPatient { get; set; }
+        public Patient previousPatient { get; set; }
         public List<Relative> relatives { get; set; }
         public List<HPOTermDetails> hpoTermDetails { get; set; }        
         public List<Referral> referrals { get; set; }
