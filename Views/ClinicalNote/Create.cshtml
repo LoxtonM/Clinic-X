@@ -1,16 +1,25 @@
 ﻿@model ClinicX.ViewModels.ClinicalNoteVM
+
 @{
     ViewData["Title"] = "Clinic-X - Create Clinical Note";
+    ViewData["Page"] = "/ Clinical Note / New Clinical Note";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.activityItem.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Clinical Notes Index", "Index", "ClinicalNote", new { id = Model.activityItem.MPI }, new { @class = "btn btn-success m-1" })
+    };
 }
 
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">       
-        <div class="col-md-2">
+        @*<div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.activityItem.MPI>Back to Index</a>
-        </div>
-        <div class="col-md-2">
-            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveNote" />
-        </div>    
+        </div>*@
+           
     </div>
 
     <hr />
@@ -48,6 +57,12 @@
                     <textarea id="txtClinicalNote" rows="20" cols="120" name="clinicalNote"></textarea>
                 </div>
                 <div class="col-md-2"></div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-md-2">
+                    <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveNote" />
+                </div>
             </div>
         </form>
     </div>

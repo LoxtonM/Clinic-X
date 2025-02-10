@@ -1,11 +1,13 @@
 ﻿@model ClinicX.ViewModels.CaseloadVM
+
 @{
     ViewData["Title"] = "ClinicX - Other Clinicians' Caseloads";
+    ViewData["Page"] = "/ Clinic / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+
 @{
+    
 }
 
 <div class="container card">
@@ -24,6 +26,7 @@
             @if(Model.isSupervisor)
             {
                 <a type="button" class="btn btn-success" asp-controller="OtherCaseload" asp-action="CaseloadDistribution">View Caseload Distribution</a>
+                @*apparently we can't conditionally hide things in the ViewBag so this button HAS to go here.*@
             }
         </div>
     </div>
@@ -130,6 +133,7 @@
         let table = new DataTable('#myTable',
             {
                 "order": []
-            });
+            });        
+
     }
 </script>

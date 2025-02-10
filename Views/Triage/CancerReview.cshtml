@@ -1,8 +1,19 @@
 ﻿@model ClinicX.ViewModels.ICPVM
 
 @{
-    ViewData["Title"] = "Clinic-X - Cancer ICP Review Details";
+    ViewData["Title"] = "ClinicX - Cancer ICP Review Details";
+    ViewData["Page"] = "/ Test / Edit";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.icpCancer.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Triage Index", "Index", "Triage", new { }, new { @class = "btn btn-success m-1" }),        
+    };
+}
+
 <div class="container card">
 
     @if (Model.message != null)
@@ -22,13 +33,13 @@
     }
 
     <div class="row mb-5 g-2 mt-2">
-        <div class="col-md-2">
-            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        @*<div class="col-md-2">
+            
             <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Triage Index</a>
         </div>
         <div class="col-md-2">
             <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.icpCancer.MPI>Patient Details</a>
-        </div>
+        </div>*@
     </div>
 
     <div class="row mb-5 g-5">

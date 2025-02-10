@@ -1,13 +1,24 @@
 ﻿@model ClinicX.ViewModels.RelativeDiagnosisVM
+
+
 @{
-    ViewData["Title"] = "Clinic-X - Relative Details";
+    ViewData["Title"] = "ClinicX - Relative Details";
+    ViewData["Page"] = "/ Relative / Relative Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id=Model.MPI }, new { @class = "btn btn-success m-1" }),        
+    };
 }
 
 <div class="container">
     <div class="row mb-5 g-5">
-        <div class="col-md-2">            
+        @*<div class="col-md-2">            
             <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to Patient</a>
-        </div>    
+        </div>    *@
     
         <div class="col-md-6"></div>        
     </div>

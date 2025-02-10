@@ -1,5 +1,20 @@
 ﻿@model ClinicX.ViewModels.RiskSurveillanceVM
 
+@{
+    ViewData["Title"] = "ClinicX - Surveillance Details";
+    ViewData["Page"] = "/ Surveillance / Surveillance Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.surveillanceDetails.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Risk Details", "RiskDetails", "RiskAndSurveillance", new { id=Model.surveillanceDetails.RiskID }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Cancer ICP", "CancerReview", "Triage", new { id=Model.riskDetails.ICP_Cancer_ID }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
 <div class="container">
     <div class="row mb-5 g-2 mt-2">
         <div class="col-md-2">

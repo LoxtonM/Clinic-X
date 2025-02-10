@@ -12,12 +12,7 @@ namespace ClinicX.Data
         public DbSet<Test> Test { get; set; }        
         public DbSet<ClinicalNoteType> NoteTypes { get; set; }              
         public DbSet<TestType> Tests { get; set; }                         
-        public DbSet<Eligibility> Eligibility { get; set; }        
-        public DbSet<CancerReg> CancerReg { get; set; }
-        public DbSet<RequestStatus> RequestStatus { get; set; }
-        public DbSet<TumourSite> TumourSite { get; set; }
-        public DbSet<TumourLat> TumourLat { get; set; }
-        public DbSet<TumourMorph> TumourMorph { get; set; }
+        public DbSet<Eligibility> Eligibility { get; set; }               
         public DbSet<RiskCodes> RiskCodes { get; set; }
         public DbSet<SurvSiteCodes> SurvSiteCodes { get; set ; }
         public DbSet<SurvTypeCodes> SurvTypeCodes { get; set; }

@@ -1,7 +1,17 @@
 ﻿@model ClinicX.ViewModels.ProfileVM
 
 @{
-    ViewData["Title"] = "Clinic-X - Profile Details";
+    ViewData["Title"] = "ClinicX - Profile Details";
+    ViewData["Page"] = "/ Profile / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Update Your Details", "Edit", "UserProfile", new { id=Model.staffMember.STAFF_CODE }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Change Your Password", "ChangePassword", "UserProfile", new { id=Model.staffMember.STAFF_CODE }, new { @class = "btn btn-success m-1" }),
+    };
 }
 
 <div class="container">
@@ -83,6 +93,7 @@
         </div>
     </div>
 
+    @*
     <div class="row">
         <div class="col-md-2">
             <a type="button" class="btn btn-success" asp-controller="UserProfile" asp-action="Edit">Update Your Details</a>
@@ -92,5 +103,6 @@
             <a type="button" class="btn btn-success" asp-controller="UserProfile" asp-action="ChangePassword">Update Password</a>
         </div>
     </div>
+    *@
 
 </div>

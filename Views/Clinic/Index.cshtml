@@ -3,6 +3,27 @@
     ViewData["Title"] = "Clinic-X - Clinics";
 }
 
+@{
+    ViewData["Title"] = "Clinic-X - Appointment Details";
+    ViewData["Page"] = "/ Clinic / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@*@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Clinics Index", "Index", "Clinic", new {  }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Record Outcome", "Edit", "Clinic", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Record Diagnoses", "Index", "Diagnosis", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Record Tests", "Index", "Test", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Clinical Notes", "Index", "ClinicalNote", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Dictate Letter", "Create", "DictatedLetter", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Schedule Review", "Create", "Review", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" })
+    };
+}*@
+
+
 <div class="container card">
     <div class="row g-2 mb-5 mt-2">
         

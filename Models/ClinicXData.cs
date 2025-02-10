@@ -100,48 +100,7 @@ namespace ClinicX.Models
         public int? Gene { get; set; }
         public string? Score { get; set; }
         public string? OfferTesting { get; set; }
-    }       
-
-    [Table("ListCReg", Schema = "dbo")]
-    public class CancerReg
-    {
-        [Key]
-        public string CRegCode { get; set; }
-        public string Registry {  get; set; }
-        public bool Creg_InUse { get; set; }
-    }
-
-    [Table("ListRequestStatus", Schema = "dbo")]
-    public class RequestStatus
-    {
-        [Key]
-        public string RelStatusCode { get; set;}
-        public string RelStatus { get; set; }
-    }
-
-    [Table("ListTumourSite", Schema = "dbo")]
-    public class  TumourSite
-    {
-        [Key]
-        public string SiteCode { get; set; }
-        public string Site { get; set; }
-    }
-
-    [Table("ListTumourLat", Schema = "dbo")]
-    public class TumourLat
-    {
-        [Key]
-        public string LatCode { get; set; }
-        public string Lat { get; set; }
-    }
-
-    [Table("ListTumourMorph", Schema = "dbo")]
-    public class TumourMorph
-    {
-        [Key]
-        public string MorphCode { get; set; }
-        public string? Morph { get; set; }
-    }
+    }    
 
     [Table("ListRisk", Schema = "dbo")]
     public class RiskCodes

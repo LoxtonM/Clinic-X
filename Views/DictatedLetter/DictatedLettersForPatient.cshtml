@@ -2,6 +2,15 @@
 
 @{
     ViewData["Title"] = "Clinic-X - Dictated Letters";
+    ViewData["Page"] = "/ Dictated Letter / Dictated Letters for Patient";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),        
+    };
 }
 
 <div class="container card">
@@ -9,12 +18,12 @@
     <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
     </div>*@
     <div class="row mb-5 g-2 mt-2">
-        <div class="col-md-2">
+        @*<div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home Page</a>
         </div>
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>Patient Details</a>
-        </div>
+        </div>*@
     </div>
 
 

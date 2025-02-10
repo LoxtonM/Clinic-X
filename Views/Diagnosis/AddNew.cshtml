@@ -2,12 +2,24 @@
 
 @{
     ViewData["Title"] = "Clinic-X - Add New Diagnosis";
+    ViewData["Page"] = "/ Diagnosis / Add New";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Diagnosis List", "Index", "Diagnosis", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
+    };
 }
 
 <div class="container card">
     <div class ="row g-2 mb-5 mt-2">
         <div class="col-md-2">
+            @*
             <a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Diagnosis List</a>
+            *@
         </div>
     </div>
 
@@ -73,7 +85,7 @@
 
     <div class="row g-5 mb-5">
         <div class="col-md-2">
-            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+            <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSave" />
         </div>
     </div>
 </div>

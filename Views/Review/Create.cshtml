@@ -1,18 +1,30 @@
 ﻿@model ClinicX.ViewModels.ReviewVM
+
 @{
-    ViewData["Title"] = "Clinic-X - New Review";
+    ViewData["Title"] = "ClinicX - New Review";
+    ViewData["Page"] = "/ Review / Add New";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Reviews Index", "Index", "Review", new {  }, new { @class = "btn btn-success m-1" }),
+        
+    };
 }
 
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        @*
         <div class="col-md-2">
             <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Index">Back to Reviews Index</a>
         </div>
         <div class="col-md-1">
             <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>Patient Details</a>
         </div>
-        <div class="col-md-9"></div>
+        <div class="col-md-9"></div>*@
     </div>
 
     <div class="row mb-5 g-5">

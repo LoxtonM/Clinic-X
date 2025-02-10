@@ -1,6 +1,16 @@
 ﻿@model ClinicX.ViewModels.CaseloadVM
+
 @{
     ViewData["Title"] = "ClinicX - Other Clinicians' Caseloads";
+    ViewData["Page"] = "/ Clinic / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back To Caseload Overview", "Index", "OtherCaseload", new {  }, new { @class = "btn btn-success m-1" }),
+    };
 }
 
 <div class="container card">    

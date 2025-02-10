@@ -1,23 +1,32 @@
 ﻿@model ClinicX.ViewModels.ClinicalNoteVM
+
 @{
     ViewData["Title"] = "Clinic-X - Edit Clinical Note";
+    ViewData["Page"] = "/ Clinical Note / Edit Clinical Note";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Clinical Notes Index", "Index", "ClinicalNote", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Extract HPO Codes", "HPOTerm", "HPO", new { id = Model.clinicalNote.ClinicalNoteID }, new { @class = "btn btn-success m-1" })
+    };
 }
 
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        @*
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Clinical Notes Index</a>
         </div>
-        <div class="col-md-2">
-            <input type="submit" class="btn btn-default btn-success" value="Save" id="btnSaveNote" />
-        </div>
+        
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" id="btnHPO" asp-controller="HPO" asp-action="HPOTerm" asp-route-id=@Model.clinicalNote.ClinicalNoteID>Extract HPO Codes</a>
         </div>
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" id="btnFinalise" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Model.clinicalNote.ClinicalNoteID>Finalise</a>
-        </div>
+        *@
     </div>
     <hr />
 
@@ -51,6 +60,16 @@
                 <p>Enter your note and save. Click "Finalise" when done editing.</p>
             </div>        
         </form>
+
+        <div class="row">
+            <div class="col-md-2">
+                <input type="submit" class="btn btn-default btn-outline-success" value="Save" id="btnSaveNote" />
+            </div>
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+                <a type="button" class="btn btn-default btn-outline-success" id="btnFinalise" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Model.clinicalNote.ClinicalNoteID>Finalise</a>
+            </div>
+        </div>
     </div>
 </div>
 

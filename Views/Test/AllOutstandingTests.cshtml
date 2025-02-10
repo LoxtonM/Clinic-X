@@ -1,8 +1,11 @@
 @model ClinicX.ViewModels.TestDiseaseVM
 
 @{
-    ViewData["Title"] = "Clinic-X - All Outstanding Tests";
+    ViewData["Title"] = "ClinicX - All Outstanding Tests";
+    ViewData["Page"] = "/ Test / Add new";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
+
 
 <div class="container card">
     <div>

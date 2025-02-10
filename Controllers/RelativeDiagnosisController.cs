@@ -25,7 +25,7 @@ namespace ClinicX.Controllers
             _cXContext = cXContext;
             _config = config;                        
             _relativeData = new RelativeData(_clinContext);
-            _relativeDiagnosisData = new RelativeDiagnosisData(_clinContext, _cXContext);
+            _relativeDiagnosisData = new RelativeDiagnosisData(_clinContext);
             _staffUser = new StaffUserData(_clinContext);
             _crud = new CRUD(_config);
             _rdvm = new RelativeDiagnosisVM();
@@ -103,7 +103,7 @@ namespace ClinicX.Controllers
                 _rdvm.relativesDiagnosis = _relativeDiagnosisData.GetRelativeDiagnosisDetails(id);               
                 _rdvm.tumourSiteList = _relativeDiagnosisData.GetTumourSiteList();
                 _rdvm.tumourLatList = _relativeDiagnosisData.GetTumourLatList();
-                _rdvm.tumourMorphList = _relativeDiagnosisData.GetTumourMorphList();
+                _rdvm.tumourMorphList = _relativeDiagnosisData.GetTumourMorphList();                
 
                 return View(_rdvm);
             }

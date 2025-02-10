@@ -2,11 +2,21 @@
 
 @{
     ViewData["Title"] = "Clinic-X - Diagnosis Details";
+    ViewData["Page"] = "/ Diagnosis / Add New";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Diagnosis List", "Index", "Diagnosis", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+    };
 }
 
 <div class="container card">
     <div class="mb-5 mt-2 g-2">
-        <a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Diagnosis List</a>
+        @*<a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Diagnosis List</a>*@
     </div>
 
     <h1>Diagnosis details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME </h1>
@@ -47,11 +57,11 @@
                 <div class="col-md-6"><input class="w-100" asp-for=@Model.diagnosis.MAIN_SUB type="text" id="txtComments" name="comments" /></div>
             </div>
             <div class="row mb-5">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
-                    <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveDiag" />
+                
+                <div class="col-md-2">
+                    <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveDiag" />
                 </div>
-                <div class="col-md-2"></div>
+                <div class="col-md-10"></div>
             </div>
         </form>
     </div>

@@ -1,11 +1,29 @@
 ﻿@model ClinicX.ViewModels.ClinicVM
+
 @{
     ViewData["Title"] = "Clinic-X - Appointment Details";
+    ViewData["Page"] = "/ Clinic / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Clinics Index", "Index", "Clinic", new {  }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Record Outcome", "Edit", "Clinic", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Record Diagnoses", "Index", "Diagnosis", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Record Tests", "Index", "Test", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Clinical Notes", "Index", "ClinicalNote", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Dictate Letter", "Create", "DictatedLetter", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Schedule Review", "Create", "Review", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" })
+    };
 }
 
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        @*
         <div class="col-md-2">
             <a class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Clinics Index</a>
         </div>
@@ -30,6 +48,7 @@
         <div class="col-md-1">
             <a id="btnReview" class="btn btn-default btn-success" asp-controller="Review" asp-action="Create" asp-route-id=@Model.Clinic.RefID>Schedule Review</a>
         </div>
+        *@
     </div>
     <hr />
 

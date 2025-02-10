@@ -1,14 +1,24 @@
 ﻿@model ClinicX.ViewModels.ClinicalNoteVM
+
 @{
     ViewData["Title"] = "Clinic-X - Choose Appointment";
+    ViewData["Page"] = "/ Clinical Note / Activity List";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Clinical Notes Index", "Index", "ClinicalNote", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+    };
 }
 
 <div class="container card">
     <div class="row g-2 mb-5 mt-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        <div class="col-md-2">
+        @*<div class="col-md-2">
             <a type="button" id="btnBack" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Clinical Notes Index</a>
-        </div>
+        </div>*@
     </div>
 
     <div class ="row g-5 mb-5">

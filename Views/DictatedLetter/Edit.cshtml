@@ -1,25 +1,36 @@
 ﻿@model ClinicX.ViewModels.DictatedLetterVM
+
 @{
     ViewData["Title"] = "Clinic-X - Edit Dictated Letter";
+    ViewData["Page"] = "/ Dictated Letter / Edit";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Dictated Letters List", "Index", "DictatedLetter", new {  }, new { @class = "btn btn-success m-1" }),
+        Html.RouteLink("", "EDMS (GEMR)", new { id = "btnEDMS" })
+        @*<a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS(GEMR)</a>*@
+    };
 }
 
 <div class="container card">    
     <div class="row mb-2 mt-2 g-2">
-        <div class="col-md-2">
+        @*<div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Index">Back to Dictated Letters Index</a>
-        </div>
-        <div class="col-md-2">
-            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveLetter" />
-        </div>    
+        </div>*@
+          
         <div class="col-md-2">
             <form id="DictatedLetterApproval" asp-action="Approve">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
                 <input id="txtCloseReferral" name="isCloseReferral" hidden="true" />
-                <input type="button" class="btn btn-default btn-success" value="Approve" id="btnApprove" hidden="true" />
+                <input type="button" class="btn btn-default btn-outline-success" value="Approve" id="btnApprove" hidden="true" />
             </form>
             <form id="DictatedLetterUnapproval" asp-action="Unapprove">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
-                <input type="button" class="btn btn-default btn-success" value="Unapprove" id="btnUnapprove" hidden="true" />
+                <input type="button" class="btn btn-default btn-outline-success" value="Unapprove" id="btnUnapprove" hidden="true" />
             </form>
         </div>
         <div class="col-md-2">
@@ -32,9 +43,6 @@
                     <input type="button" class="btn btn-default btn-success" value="No" id="btnNoDelete"  />
                 </div>
             </form>
-        </div>
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>Patient Details</a>
         </div>
         <div class="col-md-2">
             <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
@@ -339,6 +347,11 @@
                 </div>
                 
             </form>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveLetter" />
+            </div>
         </div>
     </div>
 </div>

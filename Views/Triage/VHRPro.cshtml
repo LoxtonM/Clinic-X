@@ -3,6 +3,22 @@
 @{
     ViewData["Title"] = "Clinic-X - VHR Proforma";
 }
+
+@{
+    ViewData["Title"] = "ClinicX - VHR Proforma";
+    ViewData["Page"] = "/ Triage / VHRPro";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.icpCancer.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Cancer ICP Review", "CancerReview", "Triage", new { id=Model.icpCancer.ICP_Cancer_ID }, new { @class = "btn btn-success m-1"}),
+        Html.ActionLink("Back to Triage Index", "Index", "Triage", new { }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
 <div class="container card">
 
     <div class="row mb-5 g-2 mt-2">

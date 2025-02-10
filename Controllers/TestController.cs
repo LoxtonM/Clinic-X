@@ -202,7 +202,8 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-edit(SQL)" }); }
 
-                return RedirectToAction("Index", new { id = mpi });
+                //return RedirectToAction("Index", new { id = mpi });
+                return RedirectToAction("AllOutstandingTests");
             }
             catch (Exception ex)
             {

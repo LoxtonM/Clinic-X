@@ -58,7 +58,7 @@ namespace ClinicX.Controllers
             _relativeData = new RelativeData(_clinContext);
             _cancerRequestData = new CancerRequestData(_cXContext);
             _clinicianData = new ExternalClinicianData(_clinContext);
-            _relDiagData = new RelativeDiagnosisData(_clinContext, _cXContext);
+            _relDiagData = new RelativeDiagnosisData(_clinContext);
             _documentsData = new DocumentsData(_docContext);
             _crud = new CRUD(_config);
             _lc = new LetterController(_clinContext, _docContext);
@@ -270,9 +270,12 @@ namespace ClinicX.Controllers
                 _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList();
                 _ivm.staffMembers = _staffUser.GetClinicalStaffList();
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
-                _ivm.riskList = _riskData.GetRiskList(id);
-                _ivm.surveillanceList = _survData.GetSurveillanceList(_ivm.icpCancer.MPI);
-                _ivm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_ivm.icpCancer.MPI);
+                if (_ivm.icpCancer != null)
+                {
+                    _ivm.riskList = _riskData.GetRiskList(id);
+                    _ivm.surveillanceList = _survData.GetSurveillanceList(_ivm.icpCancer.MPI);
+                    _ivm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_ivm.icpCancer.MPI);
+                }
                 _ivm.documentList = _documentsData.GetDocumentsList().Where(d => (d.DocCode.StartsWith("O") && d.DocGroup == "Outcome") || d.DocCode.Contains("PrC")).ToList();
                 _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
 

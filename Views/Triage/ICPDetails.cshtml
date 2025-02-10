@@ -3,16 +3,30 @@
     ViewData["Title"] = "Clinic-X - ICP Details";
 }
 
+@{
+    ViewData["Title"] = "ClinicX - ICP Details";
+    ViewData["Page"] = "/ Triage / ICP Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),        
+        Html.ActionLink("Back to Triage Index", "Index", "Triage", new { }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
 <div class="container card">
-    <div class="row mb-5 g-2 mt-2">
+    @*<div class="row mb-5 g-2 mt-2">
         <div class="col-md-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        
             <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Triage Index</a>
         </div>
         <div class="col-md-1">
             <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.triage.MPI>Patient Details</a>
         </div>    
-    </div>
+    </div>*@
 
     <h1>ICP Details</h1>
 
@@ -91,7 +105,7 @@
                     <input class="w-100" name="indicationNotes" asp-for=@Model.referralDetails.REASON_FOR_REFERRAL />
                 </div>
                 <div class="col-md-2">
-                    <button id="btnIndicationNotes" class="btn btn-default btn-success">Save Indication Notes</button>
+                    <button id="btnIndicationNotes" class="btn btn-default btn-outline-success">Save Indication Notes</button>
                 </div>
             </div>
         </form>        
@@ -251,7 +265,7 @@
             <div class="row mb-5 g-5">
             <div class="col-md-2"></div>
             <div class="col-md-8">
-                <button id="btnCancerTriage" class="btn btn-default btn-success">Complete Triage</button>
+                <button id="btnCancerTriage" class="btn btn-default btn-outline-success">Complete Triage</button>
             </div>
             <div class="col-md-2"></div>
         </div>

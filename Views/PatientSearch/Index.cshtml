@@ -1,7 +1,10 @@
 ﻿@model ClinicX.ViewModels.PatientSearchVM
 @{
-    ViewData["Title"] = "Clinic-X - Patient Search";
+    ViewData["Title"] = "ClinicX - Patient Search";
+    ViewData["Page"] = "/ Clinic / Patient Search";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
+
 
 <div class="container card">
     <div class="row mb-5 mt-2 g-2">

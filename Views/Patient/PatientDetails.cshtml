@@ -1,6 +1,22 @@
 ﻿@model ClinicX.ViewModels.PatientVM
+
 @{
-    ViewData["Title"] = "Clinic-X - Patient Details";
+    ViewData["Title"] = "ClinicX - Patient Details";
+    ViewData["Page"] = "/ Clinic / Patient Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Record Diagnoses", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Record Tests", "Index", "Test", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Clinical Notes", "Index", "ClinicalNote", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Patient Reviews", "ReviewsForPatient", "Review", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Dictate New Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("All Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        @*Html.ActionLink("Record Cancer Risk/Surveillance", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
+    };
 }
 
 <div class="container card">
@@ -21,9 +37,8 @@
         }
     }
 
-    <div class="row mb-5 g-2 mt-2">
-        <div class="col-md-2">
-            @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
+    <div class="row mb-5 g-2 mt-2">        
+        @*<div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home Page</a>
         </div>
         <div class="col-md-1">
@@ -41,21 +56,34 @@
         <div class="col-md-1">
             <a id="btnLetter" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="ActivityItems" asp-route-id=@Model.patient.MPI>Dictate New Letter</a>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-1">
             <a id="btnLetterList" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="DictatedLettersForPatient" asp-route-id=@Model.patient.MPI>All Dictated Letters</a>
-        </div>        
+        </div>
+        *@
         <div class="col-md-1">
             @if (Model.staffMember.BILL_ID == "Technical")
             {
                 @if (Model.isPhenotipsAvailable)
                 {
-                    <a id="btnPhenotips" class="btn btn-default btn-success" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
+                    <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
                 }                
             }
         </div>
-
         <div class="col-md-1">
-            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
+            @if (Model.staffMember.BILL_ID == "Technical")
+            {
+                @if (Model.isPhenotipsAvailable)
+                {
+                    <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
+                }
+            }
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <a id="btnEDMS" class="btn btn-default btn-outline-primary w-100" href="" target="_blank">View EDMS Record (GEMR)</a>
+            </div>
+            <div class="col-md-2"></div>
         </div>
     </div>
 
@@ -642,7 +670,7 @@
                     @foreach (var item in Model.relatives)
                     {
                         <tr>                    
-                            <td><a asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@item.relsid>Details</a></td>
+                            <td><a type="button" class="btn btn-success" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@item.relsid>Details</a></td>
                             <td>@item.Name</td>
                             @if (@item.DOB.HasValue)
                             {

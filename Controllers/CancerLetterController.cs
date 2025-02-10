@@ -13,7 +13,7 @@ using ClinicX.Models;
 
 namespace ClinicX.Controllers;
 
-public class CancerLetterControllerOLD : Controller
+public class CancerLetterController : Controller
 {
     private readonly ClinicalContext _clinContext;
     private readonly ClinicXContext _cXContext;
@@ -32,7 +32,7 @@ public class CancerLetterControllerOLD : Controller
     private readonly IConstantsData _constantsData;
     private readonly ICRUD _crud;
 
-    public CancerLetterControllerOLD(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
+    public CancerLetterController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
     {
         _clinContext = clinContext;
         _cXContext = cXContext;

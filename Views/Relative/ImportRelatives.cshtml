@@ -1,6 +1,16 @@
 ﻿@model ClinicX.ViewModels.RelativeVM
+
 @{
-    ViewData["Title"] = "Clinic-X - Relatives Available in Phenotips";
+    ViewData["Title"] = "ClinicX - Relatives Available in Phenotips";
+    ViewData["Page"] = "/ Relative / Relative Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
+    };
 }
 
 <div class="container">
@@ -26,7 +36,7 @@
                         <form asp-action="ImportRelatives">
                             <td>                            
                                 <input name="wmfacsid" value=@item.WMFACSID hidden="true" />                                                          
-                                <button class="btn btn-success">Import Relative</button>
+                                <button class="btn btn-outline-success">Import Relative</button>
                                 <input name="dob" value=@item.DOB hidden="true" />
                                 <input name="dod" value=@item.DOD hidden="true" />
                             </td>
@@ -67,13 +77,7 @@
     {
         <h2 class="text-center">No relatives on Phenotips to be imported.</h2>
     }
-
-
-    <div class="row mb-5 g-5">
-        <div class="col-md-2">
-            <a class="btn btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Return to patient details</a>
-        </div>
-    </div>
+      
 
 
 

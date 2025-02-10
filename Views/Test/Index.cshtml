@@ -1,15 +1,26 @@
 ﻿@model ClinicX.ViewModels.TestDiseaseVM
 
 @{
-    ViewData["Title"] = "Clinic-X - Tests";
+    ViewData["Title"] = "ClinicX - Tests";
+    ViewData["Page"] = "/ Test / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
+    };
+}
+
+
 
 <div class="container card">
     <div class="mb-5 mt-2 g-2">
-        @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@        
+        @*
         <div col-md-2>
             <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>
-        </div>
+        </div>*@
     </div>
 
 

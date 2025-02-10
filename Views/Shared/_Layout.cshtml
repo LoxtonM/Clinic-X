@@ -78,6 +78,23 @@
     <div class="container">
         <main role="main" class="pb-3">
             <br /><br /><br />@*<br /><br /><br /><br /><br />*@
+            <div class="row mb-2 mb-xl-3">
+                <div class="col-auto d-none d-sm-block">
+                    @*@await Html.PartialAsync("_Breadcrumb", ViewBag.Breadcrumbs as List<ClinicX.Models.BreadcrumbItem>)*@
+                </div>
+
+                <div class="col-auto ms-auto text-end mt-n1">
+                    @if (ViewBag.HomeButton != null)
+                    {
+                        @foreach (var button in ViewBag.HomeButton)
+                        {
+                            @button
+                        }
+                    }
+                    @ViewData["HomeBtn"]
+
+                </div>
+            </div>
             @RenderBody()
         </main>
     </div>

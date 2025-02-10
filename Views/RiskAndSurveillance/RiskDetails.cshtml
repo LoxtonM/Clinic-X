@@ -1,21 +1,28 @@
 ﻿@model ClinicX.ViewModels.RiskSurveillanceVM
 
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
 @{
-    ViewData["Title"] = "Clinic-X - Risk and Surveillance Details";
+    ViewData["Title"] = "ClinicX - Risk Details";
+    ViewData["Page"] = "/ Risk / Risk Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.riskDetails.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Cancer ICP", "CancerReview", "Triage", new { id=Model.riskDetails.ICP_Cancer_ID }, new { @class = "btn btn-success m-1" }),        
+    };
 }
 
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">
-        <div class="col-md-2">
-            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        @*<div class="col-md-2">
+            
             <a class="btn btn-default btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@Model.riskDetails.ICP_Cancer_ID>Back to Cancer ICP</a>
         </div>
         <div class="col-md-2">
             <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.riskDetails.MPI)>Patient Details</a>
-        </div>
+        </div>*@
     </div>
     <hr />
 

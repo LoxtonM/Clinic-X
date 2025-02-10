@@ -21,7 +21,7 @@ namespace ClinicX.Controllers
             _config = config;
         }
 
-        public async Task<IActionResult> Confirm(int mpi)
+        public async Task<IActionResult> PushPatientToPt(int mpi)
         {
             string sMessage = "";
             bool isSuccess = false;
@@ -42,6 +42,32 @@ namespace ClinicX.Controllers
             else
             {
                 sMessage = "Push to Phenotips failed :(";
+            }
+
+            return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
+        }
+
+        public async Task<IActionResult> CreatePPQ(int mpi, string? pathway)
+        {
+            string sMessage = "";
+            bool isSuccess = false;            
+
+            APIController api = new APIController(_apiContext, _config);
+
+            Int16 result = await api.SchedulePPQ(mpi, pathway);
+
+            if (result == 1)
+            {
+                isSuccess = true;
+                sMessage = $"{pathway} PPQ created successfully";
+            }
+            else if (result == 0)
+            {
+                sMessage = $"{pathway} PPQ is already scheduled";
+            }
+            else
+            {
+                sMessage = "PPQ creation failed :(";
             }
 
             return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });

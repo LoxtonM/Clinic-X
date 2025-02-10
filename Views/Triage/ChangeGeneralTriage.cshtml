@@ -1,6 +1,16 @@
 ﻿@model ClinicX.ViewModels.ICPVM
+
 @{
-    ViewData["Title"] = "Clinic-X - ICP Change Triaging Clinician(s)";
+    ViewData["Title"] = "ClinicX - Change Triaging Clinician(s)";
+    ViewData["Page"] = "/ Triage / Change General Triage";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {        
+        Html.ActionLink("Back to Triage Details", "ICPDetails", "Triage", new { id=Model.icpGeneral.ICPID }, new { @class = "btn btn-success m-1" }),
+    };
 }
 
 <div class="container card">
@@ -40,7 +50,7 @@
 
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
-                    <button class="btn btn-success">Confirm</button>
+                    <button class="btn btn-outline-success">Confirm</button>
                 </div>
             </div>
         </form>
@@ -48,7 +58,7 @@
         <form asp-action="ReturnToConsultant">
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-success">Return Case to Consultant</button>
+                    <button type="submit" class="btn btn-outline-success">Return Case to Consultant</button>
                 </div>
                 <div class="col-md-2">
                     <input asp-for=@Model.icpGeneral.ICPID name="icpId" hidden="true" />
@@ -56,11 +66,11 @@
             </div>
         </form>
 
-        <div class="row mb-5 g-5">
+       @* <div class="row mb-5 g-5">
             <div class="col-md-2">
                 <button type="button" class="btn btn-success" onclick="GoBack()">Back</button>
             </div>
-        </div>
+        </div>*@
     </div>
 </div>
 
@@ -74,11 +84,12 @@
             document.getElementById("ddlCons").disabled = true;
         }
     }
-    function GoBack() 
-    {
+    
+    //function GoBack() 
+    //{
         
-        window.history.back();
-        //window.close();
-    }
+     //   window.history.back();
+     //   //window.close();
+   // }
 
 </script>

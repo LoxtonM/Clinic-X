@@ -46,7 +46,7 @@
 
         <div class="row mb-5 g-5">
             <div class="col-md-2">
-                <button type="submit" class="btn btn-success">Search</button>
+                <button type="submit" class="btn btn-primary">Search</button>
             </div>
         </div>
     </form>
@@ -56,9 +56,9 @@
     {
         @foreach(var item in Model.patientsList)
         {
-            <div class="row">
+            <div class="row mb-1 g-1">
                 <div class="col-md-2">
-                    <a asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@item.INTID>View Reports</a>
+                    <a type="button" class="btn btn-outline-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@item.INTID>View Reports</a>
                 </div>
                 <div class="col-md-2">
                     @item.FIRSTNAME @item.LASTNAME

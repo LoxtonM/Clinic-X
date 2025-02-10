@@ -1,19 +1,35 @@
 ﻿@model ClinicX.ViewModels.HPOVM
+
 @{
     ViewData["Title"] = "Clinic-X - HPO Term Extraction";
+}
+
+@{
+    ViewData["Title"] = "Clinic-X - HPO Term Extraction";
+    ViewData["Page"] = "/ Clinical Note / HPO Term Extraction";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.clinicalNote.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Clinical Note", "Edit", "ClinicalNote", new { id = Model.clinicalNote.ClinicalNoteID}, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Clinical Notes Index", "Index", "ClinicalNote", new { id = Model.clinicalNote.MPI }, new { @class = "btn btn-success m-1" }),
+    };
 }
 
 <div class="container card">
     <div class="mb-5 mt-2 g-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Edit" asp-route-id=@Html.ValueFor(Model => Model.clinicalNote.ClinicalNoteID)>Back to Note</a>
+        @*<a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Edit" asp-route-id=@Html.ValueFor(Model => Model.clinicalNote.ClinicalNoteID)>Back to Note</a>*@
     </div>
 
     <div class="mb-5 mt-2 g-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
         @if (Model.staffMember.BILL_ID == "Technical")
         {
-            <a type="button" class="btn btn-default btn-success" asp-controller="HPO" asp-action="GetAllHPOTerms">Get all HPO codes</a>
+            <a type="button" class="btn btn-default btn-danger" asp-controller="HPO" asp-action="GetAllHPOTerms">Get all HPO codes</a>
         }
     </div>
 
@@ -54,7 +70,7 @@
         {
             <div class="row mb-2 g-2">
                 <div class="col-sm-2">
-                        <input type="button" ID=@e.ID value="Delete" class="btn btn-default btn-sm btn-success" onclick="DeleteTermFromText(@e.ID)" />
+                        <input type="button" ID=@e.ID value="Delete" class="btn btn-default btn-sm btn-outline-success" onclick="DeleteTermFromText(@e.ID)" />
                 </div>            
                 <div class="col-sm-10">
                     @e.TermCode - @e.Term
@@ -81,7 +97,7 @@
                 {
                     <div class="row mb-2 g-2">
                         <div class="col-sm-2">
-                            <input type="button" id=@t.HPOTermID value="Add HPO Term" class="btn btn-default btn-sm btn-success" onclick="AddTermFromText(@t.HPOTermID)"  />
+                            <input type="button" id=@t.HPOTermID value="Add HPO Term" class="btn btn-default btn-sm btn-outline-success" onclick="AddTermFromText(@t.HPOTermID)"  />
                         </div>                
                         <div class="col-sm-10">
                             @t.TermCode - @t.Term
@@ -133,7 +149,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <input type="button" value="Add HPO Code" id="btnAdd" class="btn btn-default btn-success" asp-controller="HPO" asp-action="AddHPOTerm" disabled="true" />
+                    <input type="button" value="Add HPO Code" id="btnAdd" class="btn btn-default btn-outline-success" asp-controller="HPO" asp-action="AddHPOTerm" disabled="true" />
                 </div>    
             </div>
     

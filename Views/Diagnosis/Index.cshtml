@@ -2,11 +2,20 @@
 
 @{
     ViewData["Title"] = "Clinic-X - Diagnoses";
+    ViewData["Page"] = "/ Diagnoses / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
+    };
 }
 
 <div class="container card">
     <div class="mb-5 mt-2 g-2">
-        <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to Patient</a>
+        @*<a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to Patient</a>*@
     </div>
 
     @if (Model.diagnosisList.Count() > 0)

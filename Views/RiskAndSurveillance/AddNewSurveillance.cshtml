@@ -1,7 +1,18 @@
 ﻿@model ClinicX.ViewModels.RiskSurveillanceVM
 
 @{
-    ViewData["Title"] = "Clinic-X - New Surveillance Recommendation";
+    ViewData["Title"] = "ClinicX - New Surveillance Recommendation";
+    ViewData["Page"] = "/ Surveillance / Add new";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Risk Details", "RiskDetails", "RiskAndSurveillance", new { id=Model.riskDetails.RiskID }, new { @class = "btn btn-success m-1" }),        
+        Html.ActionLink("Back to Cancer ICP", "CancerReview", "Triage", new { id=Model.riskDetails.ICP_Cancer_ID }, new { @class = "btn btn-success m-1" }),
+    };
 }
 
 <div class="container card">

@@ -1,15 +1,25 @@
 ﻿@model ClinicX.ViewModels.TestDiseaseVM
 
 @{
-    ViewData["Title"] = "Clinic-X - Add New Test";
+    ViewData["Title"] = "ClinicX - Add New Test";
+    ViewData["Page"] = "/ Test / Add new";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Test List", "Index", "Test", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+    };
 }
 
 <div class="container card">
     <div class ="row g-2 mb-5 mt-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        @*
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Test List</a>
-        </div>
+        </div>*@
     </div>
 
     <h1>Add new test for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME)</h1>

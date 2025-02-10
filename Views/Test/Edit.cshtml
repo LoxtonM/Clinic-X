@@ -1,19 +1,30 @@
 ﻿@model ClinicX.ViewModels.TestDiseaseVM
 
 @{
-    ViewData["Title"] = "Clinic-X - Test Details";
+    ViewData["Title"] = "ClinicX - Test Details";
+    ViewData["Page"] = "/ Test / Edit";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Full Test List for " + Model.patient.CGU_No, "Index", "Test", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("All Outstanding Tests", "AllOutstandingTests", "Test", new {  }, new { @class = "btn btn-success m-1" }),
+    };
 }
 
 <div class="container card">
     <div class="row mb-5 mt-2 g-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        @*
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AllOutstandingTests">Back to Test Index</a>
         </div>
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.patient.MPI>Full Test List for @Model.patient.CGU_No</a>
         </div>
-        
+        *@
     </div>
     <hr />
 

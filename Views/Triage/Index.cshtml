@@ -3,6 +3,12 @@
     ViewData["Title"] = "Clinic-X - Triages";
 }
 
+@{
+    ViewData["Title"] = "ClinicX - Triages";
+    ViewData["Page"] = "/ Triage / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
 
 <div class="container card">
     @*<div>

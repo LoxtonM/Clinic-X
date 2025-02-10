@@ -75,6 +75,7 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
                 _rsvm.GeneChange= _gene.GetGeneChangeList();
                 _rsvm.surveillanceDetails = _survData.GetSurvDetails(id);
+                _rsvm.riskDetails = _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
                 int mpi = _rsvm.surveillanceDetails.MPI;
 
                 _rsvm.patient = _patientData.GetPatientDetails(mpi);
@@ -125,6 +126,7 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Risk", "ICPID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(id);
+                _rsvm.riskDetails = _riskData.GetRiskDetails(id);
                 _rsvm.patient = _patientData.GetPatientDetails(_rsvm.icpCancer.MPI);
                 _rsvm.refID = _triageData.GetICPDetails(id).REFID;
                 _rsvm.riskCodes = _riskCodesData.GetRiskCodesList();
