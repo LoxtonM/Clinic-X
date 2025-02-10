@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
+using APIControllers.Controllers;
+using APIControllers.Data;
 
 namespace ClinicX.Controllers
 {
@@ -11,6 +13,7 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
+        private readonly APIContext _apiContext;
         private readonly PatientVM _pvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;        
@@ -24,11 +27,13 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         private readonly IConstantsData _constantsData;
         private readonly IAgeCalculator _ageCalculator;
+        private readonly APIController _api;
 
-        public PatientController(ClinicalContext context, DocumentContext docContext, IConfiguration config)
+        public PatientController(ClinicalContext context, DocumentContext docContext, APIContext apiContext, IConfiguration config)
         {
             _clinContext = context;
             _docContext = docContext;
+            _apiContext = apiContext;
             _config = config;
             _pvm = new PatientVM();
             _staffUser = new StaffUserData(_clinContext);
@@ -41,7 +46,8 @@ namespace ClinicX.Controllers
             _hpoData = new HPOCodeData(_clinContext);
             _audit = new AuditService(_config);
             _constantsData = new ConstantsData(_docContext);
-            _ageCalculator = new AgeCalculator();
+            _ageCalculator = new AgeCalculator();            
+            _api = new APIController(_apiContext, _config);
         }
         
 
@@ -86,6 +92,13 @@ namespace ClinicX.Controllers
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
+
+                if (_api.GetPhenotipsPatientID(id).Result != "")
+                {                    
+                    _pvm.isPatientInPhenotips = true;
+                    _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result;
+                    _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
+                }
 
                 if (_pvm.patient.DOB != null)
                 {                    

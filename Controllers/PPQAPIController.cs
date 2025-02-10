@@ -324,8 +324,8 @@ namespace APIControllers.Controllers
                 var request = new RestRequest("");
                 request.AddHeader("authorization", $"Basic {authKey}");
                 request.AddHeader("X-Gene42-Secret", apiKey);
-                string apiCall = "{\"search\":{\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
-
+                string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
+                
                 request.AddJsonBody(apiCall, false);
                 var response = await client.PostAsync(request);
                 
@@ -375,7 +375,8 @@ namespace APIControllers.Controllers
                     var request = new RestRequest("");
                     request.AddHeader("authorization", $"Basic {authKey}");
                     request.AddHeader("X-Gene42-Secret", apiKey);
-                    string apiCall = "{\"search\":{\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
+                    string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
+                    
 
                     request.AddJsonBody(apiCall, false);
                     var response = await client.PostAsync(request);
@@ -427,7 +428,7 @@ namespace APIControllers.Controllers
                     var request = new RestRequest("");
                     request.AddHeader("authorization", $"Basic {authKey}");
                     request.AddHeader("X-Gene42-Secret", apiKey);
-                    string apiCall = "{\"search\":{\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
+                    string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
 
                     request.AddJsonBody(apiCall, false);
                     var response = await client.PostAsync(request);

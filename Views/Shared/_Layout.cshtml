@@ -82,7 +82,6 @@
                 <div class="col-auto d-none d-sm-block">
                     @*@await Html.PartialAsync("_Breadcrumb", ViewBag.Breadcrumbs as List<ClinicX.Models.BreadcrumbItem>)*@
                 </div>
-
                 <div class="col-auto ms-auto text-end mt-n1">
                     @if (ViewBag.HomeButton != null)
                     {
@@ -99,38 +98,39 @@
         </main>
     </div>
 
-    @*<footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - Clinic-X - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>*@
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js" integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="~/js/app.js" asp-append-version="true"></script>
+    @*<script src="~/js/app.js" asp-append-version="true"></script> - this line appears to be blocking the collapse bars from collapsing!*@ 
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script src="https://cdn.datatables.net/v/dt/dt-2.1.8/datatables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+
+        document.addEventListener('DOMContentLoaded', function () 
+        {
             $('.defaultTable').DataTable({
                 info: true,
                 order: false,
                 paging: true,
                 autoWidth: false,
                 width: "100%"
-
             });
 
             // choice js
             const elements = document.querySelectorAll('.js-choice');
-            elements.forEach(function(element) {
-            new Choices(element);
-          });
+            elements.forEach(function(element) 
+            {
+                new Choices(element);
+            });
 
           // toastr js
-            toastr.options = {
+            toastr.options = 
+            {
                 "closeButton": true,
                 "debug": false,
                 "newestOnTop": false,

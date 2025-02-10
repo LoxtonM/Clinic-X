@@ -21,5 +21,8 @@ namespace ClinicX.ViewModels
         public string message { get; set; }
         public bool isPhenotipsAvailable { get; set; }
         public int currentAge { get; set; }
+        public bool isCancerPPQScheduled { get; set; }
+        public bool isGeneralPPQScheduled { get; set; }
+        public bool isPatientInPhenotips { get; set; }
     }
 }

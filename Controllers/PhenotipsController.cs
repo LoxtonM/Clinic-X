@@ -72,5 +72,17 @@ namespace ClinicX.Controllers
 
             return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
         }
+
+        public async Task<String> GetPPQURL(int mpi, string? pathway)
+        {
+            string sMessage = "";
+            bool isSuccess = false;
+
+            APIController api = new APIController(_apiContext, _config);
+
+            string result = api.GetPPQUrl(mpi, pathway).Result;
+
+            return result.ToString();
+        }
     }
 }

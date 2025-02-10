@@ -59,25 +59,41 @@
         <div class="col-md-1">
             <a id="btnLetterList" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="DictatedLettersForPatient" asp-route-id=@Model.patient.MPI>All Dictated Letters</a>
         </div>
-        *@
-        <div class="col-md-1">
+        *@        
+        <div class="col-md-4">
             @if (Model.staffMember.BILL_ID == "Technical")
             {
                 @if (Model.isPhenotipsAvailable)
                 {
-                    <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
-                }                
-            }
-        </div>
-        <div class="col-md-1">
-            @if (Model.staffMember.BILL_ID == "Technical")
-            {
-                @if (Model.isPhenotipsAvailable)
-                {
-                    <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
+                    if(Model.isPatientInPhenotips)
+                    {
+                        if (!Model.isGeneralPPQScheduled && !Model.isCancerPPQScheduled)
+                        {
+                            <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
+
+                            <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Schedule General PPQ</a>
+                        }
+                        else
+                        {
+                            if (Model.isCancerPPQScheduled)
+                            {
+                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Get Cancer PPQ URL</a>
+                            }
+
+                            if (Model.isGeneralPPQScheduled)
+                            {
+                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Get General PPQ URL</a>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
+                    }
                 }
             }
         </div>
+
         <div class="row">
             <div class="col-md-2"></div>
             <div class="col-md-8">
@@ -85,14 +101,13 @@
             </div>
             <div class="col-md-2"></div>
         </div>
+
     </div>
 
     @if (Model.patient.DCTM_Folder_ID == null)
     {
         <h3 class="text-center">Patient not yet made electronic - no EDMS record exists</h3>
     }
-
-
 
     <div class="row mb-5">
         <hr />
