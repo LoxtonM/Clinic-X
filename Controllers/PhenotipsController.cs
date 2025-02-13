@@ -8,17 +8,19 @@ namespace ClinicX.Controllers
 {
     public class PhenotipsController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly DocumentContext _docContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly DocumentContext _docContext;
         private readonly APIContext _apiContext;
         private readonly IConfiguration _config;
+        private readonly APIController _api;
 
-        public PhenotipsController(ClinicalContext clinContext, DocumentContext docContext, APIContext apiContext, IConfiguration config)
+        public PhenotipsController(APIContext apiContext, IConfiguration config)
         {
-            _clinContext = clinContext;
-            _docContext = docContext;
+            //_clinContext = clinContext;
+           // _docContext = docContext;
             _apiContext = apiContext;
             _config = config;
+            _api = new APIController(_apiContext, _config);
         }
 
         public async Task<IActionResult> PushPatientToPt(int mpi)
@@ -26,9 +28,7 @@ namespace ClinicX.Controllers
             string sMessage = "";
             bool isSuccess = false;
 
-            APIController api = new APIController(_apiContext, _config);
-
-            Int16 result = await api.PushPtToPhenotips(mpi);
+            Int16 result = await _api.PushPtToPhenotips(mpi);
 
             if(result==1)
             {
@@ -52,9 +52,7 @@ namespace ClinicX.Controllers
             string sMessage = "";
             bool isSuccess = false;            
 
-            APIController api = new APIController(_apiContext, _config);
-
-            Int16 result = await api.SchedulePPQ(mpi, pathway);
+            Int16 result = await _api.SchedulePPQ(mpi, pathway);
 
             if (result == 1)
             {
@@ -78,9 +76,7 @@ namespace ClinicX.Controllers
             string sMessage = "";
             bool isSuccess = false;
 
-            APIController api = new APIController(_apiContext, _config);
-
-            string result = api.GetPPQUrl(mpi, pathway).Result;
+            string result = _api.GetPPQUrl(mpi, pathway).Result;
 
             return result.ToString();
         }

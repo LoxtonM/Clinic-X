@@ -12,7 +12,7 @@ using PdfSharpCore.Drawing.Layout;
 
 namespace ClinicX.Controllers
 {
-    public class LetterController
+    public class LetterControllerLOCAL
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
@@ -27,7 +27,7 @@ namespace ClinicX.Controllers
         private readonly IExternalFacilityData _externalFacilityData;
         private readonly IConstantsData _constantsData;
 
-        public LetterController(ClinicalContext clinContext, DocumentContext docContext)
+        public LetterControllerLOCAL(ClinicalContext clinContext, DocumentContext docContext)
         {
             _clinContext = clinContext;
             _docContext = docContext;

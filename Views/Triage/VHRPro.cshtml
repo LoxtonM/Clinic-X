@@ -45,11 +45,11 @@
                     <label>Clinician:</label>
                 </div>
                 <div class="col-md-5">
-                    <select class="w-100" name="clinician">
+                    <select class="w-100" name="screeningService" asp-for=@Model.defaultScreeningCo>
                         <option value="">Select...</option>
                         @foreach (var item in Model.screeningCoordinators)
                         {
-                            <option value=@item.MasterClinicianCode>@item.FIRST_NAME @item.LAST_NAME, @item.POSITION - @item.FACILITY</option>
+                            <option value=@item.ScreeningOfficeCode>@item.Contact, @item.BreastScreeningService</option>
                         }
                     </select>
                 </div>

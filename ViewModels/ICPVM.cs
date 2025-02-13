@@ -36,7 +36,7 @@ namespace ClinicX.ViewModels
         public List<CancerRequests> cancerRequestsList { get; set; }
         public CancerRequests cancerRequest { get; set; }
         public List<ExternalCliniciansAndFacilities> clinicians { get; set; }
-        public List<ExternalCliniciansAndFacilities> screeningCoordinators { get; set; }
+        public List<ScreeningService> screeningCoordinators { get; set; }
         public List<RelativesDiagnosis> relativesDiagnoses { get; set; }
         public List<string> specialities { get; set; }
         public string staffCode { get; set; }
@@ -46,5 +46,6 @@ namespace ClinicX.ViewModels
         public bool success { get; set; }
         public int? referralAgeDays { get; set; }
         public int? referralAgeWeeks { get; set; }
+        public string? defaultScreeningCo {  get; set; }
     }
 }

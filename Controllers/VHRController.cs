@@ -69,7 +69,7 @@ public class VHRController : Controller
     
 
     //Prints standard letter templates from the menu
-    public void DoPDF(int id, int mpi, int icpCancerID, string user, string referrer, string? additionalText = "")
+    public void DoVHRPro(int id, int mpi, int icpCancerID, string user, string referrer, string screeningService, string? additionalText = "", int? diaryID = 0)
     {
         try
         {
@@ -81,6 +81,7 @@ public class VHRController : Controller
             int icpID = _triageData.GetCancerICPDetails(icpCancerID).ICPID;
             int refID = _triageData.GetICPDetails(icpID).REFID;
 
+            //string docCode = _lvm.documentsContent.DocCode;
             string docCode = _lvm.documentsContent.DocCode;
             //creates a new PDF document            
             //set the fonts used for the letters
@@ -119,8 +120,7 @@ public class VHRController : Controller
             string fileCGU = _lvm.patient.CGU_No.Replace(".", "-");
             string mpiString = _lvm.patient.MPI.ToString();
             string refIDString = refID.ToString();
-            string dateTimeString = DateTime.Now.ToString("yyyyMMddHHmmss");
-            int diaryID = 0;
+            string dateTimeString = DateTime.Now.ToString("yyyyMMddHHmmss");            
             string diaryIDString = diaryID.ToString();
                         
             PdfDocument vhrDocument = new PdfDocument();
@@ -135,21 +135,43 @@ public class VHRController : Controller
             XGraphics vhrGfx3 = XGraphics.FromPdfPage(vhrPage3);
             var vhrTf3 = new XTextFormatter(vhrGfx3);
             vhrGfx.DrawImage(image, 350, 20, image.PixelWidth / 2, image.PixelHeight / 2);
-            int totalLengthVHR = 150;
+            int totalLengthVHR = 140;
             int totalLengthVHR2 = 50;
             int totalLengthVHR3 = 50;
             int rotation = 90;
+
+            
+            //PdfSharpCore.Drawing.XRect rect1 = new PdfSharpCore.Drawing.XRect(15, totalLengthVHR, 25, 680);
+            XPen pen = new XPen(XColors.Black, 1);
+            XPen penLight = new XPen(XColors.Black, 0.5);
+
+            vhrGfx.DrawRectangle(pen, new XRect(15, totalLengthVHR, 25, 680));
 
             vhrTf.DrawString("Referral to the NHSBSP for very high-risk screening", fontBold, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 20));
             vhrGfx.RotateTransform(rotation);
             vhrTf.DrawString("Section A: To be completed by the Referrer", fontBold, XBrushes.Black, new XRect(150, -30, 500, 500));
             vhrGfx.RotateTransform(-rotation);
             totalLengthVHR += 20;
-            vhrTf.DrawString("Patient Details", fontSmallBold, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 20));
-            totalLengthVHR += 20;
+
+            
+            vhrTf.DrawString("Patient Details", fontSmallBold, XBrushes.Black, new XRect(50, totalLengthVHR, 550, 20));
+            totalLengthVHR += 15;
+            //PdfSharpCore.Drawing.XRect rect2 = new PdfSharpCore.Drawing.XRect(45, totalLengthVHR, 250, 120);
+            vhrGfx.DrawRectangle(pen, new XRect(45, totalLengthVHR, 250, 120));
+
+            patName = _lvm.patient.FIRSTNAME + " " + _lvm.patient.LASTNAME;
+            patAddress = _lvm.patient.ADDRESS1 + System.Environment.NewLine;
+            if (_lvm.patient.ADDRESS2 != null) { patAddress = patAddress + _lvm.patient.ADDRESS2 + Environment.NewLine; }
+            if (_lvm.patient.ADDRESS3 != null) { patAddress = patAddress + _lvm.patient.ADDRESS3 + Environment.NewLine; }
+            if (_lvm.patient.ADDRESS4 != null) { patAddress = patAddress + _lvm.patient.ADDRESS4 + Environment.NewLine; }
+            patAddress = patAddress + _lvm.patient.POSTCODE;
+
             content1 = patName + System.Environment.NewLine + System.Environment.NewLine + patAddress + System.Environment.NewLine + System.Environment.NewLine +
                 "Tel Home: " + _lvm.patient.TEL + System.Environment.NewLine +                     
                 "Mobile: " + _lvm.patient.PtTelMobile;
+
+            //PdfSharpCore.Drawing.XRect rect3 = new PdfSharpCore.Drawing.XRect(305, totalLengthVHR, 245, 120);
+            vhrGfx.DrawRectangle(pen, new XRect(305, totalLengthVHR, 245, 120));
 
             vhrTf.DrawString(content1, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 150));
             content2 = "NHS Number: " + _lvm.patient.SOCIAL_SECURITY + System.Environment.NewLine +
@@ -165,10 +187,11 @@ public class VHRController : Controller
                     gpFac.ZIP + Environment.NewLine;
 
             content2 = content2 + gpAddress;
-            vhrTf.DrawString(content2, fontSmall, XBrushes.Black, new XRect(300, totalLengthVHR, 500, 150));
+            vhrTf.DrawString(content2, fontSmall, XBrushes.Black, new XRect(310, totalLengthVHR, 500, 150));
+            totalLengthVHR += 125;
+            //PdfSharpCore.Drawing.XRect rect4 = new PdfSharpCore.Drawing.XRect(45, totalLengthVHR, 500, 125);
+            vhrGfx.DrawRectangle(pen, new XRect(45, totalLengthVHR, 500, 125));
 
-
-            totalLengthVHR += 120;
             vhrTf.DrawString("Referrer Details", fontSmallBold, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 20));
             totalLengthVHR += 10;
             content3 = "Referrer Name: " + _lvm.staffMember.NAME + System.Environment.NewLine +
@@ -180,6 +203,9 @@ public class VHRController : Controller
             totalLengthVHR += 120;
 
             ScreeningService sServ = _screenData.GetScreeningServiceDetails(_lvm.patient.GP_Facility_Code);
+
+            //PdfSharpCore.Drawing.XRect rect5 = new PdfSharpCore.Drawing.XRect(45, totalLengthVHR, 500, 125);
+            vhrGfx.DrawRectangle(pen, new XRect(45, totalLengthVHR, 500, 125));
 
             vhrTf.DrawString("Referee Details", fontSmallBold, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 20));
             totalLengthVHR += 10;
@@ -202,19 +228,29 @@ public class VHRController : Controller
             vhrTf.DrawString("Please indicate relevant family history members with age of diagnosis, " +
                     "relationship and attach copy of genetics letter indicating " +
                     "level of risk", fontSmallItalic, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 120));
-            totalLengthVHR += 20;
+            totalLengthVHR += 25;
+
+            //PdfSharpCore.Drawing.XRect rect6 = new PdfSharpCore.Drawing.XRect(45, totalLengthVHR, 500, 30);
+            vhrGfx.DrawRectangle(pen, new XRect(45, totalLengthVHR, 500, 30));
             if (additionalText != null)
             {
                 vhrTf.DrawString(additionalText, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 120));
             }
             totalLengthVHR += 40;
+
+            //PdfSharpCore.Drawing.XRect rect7 = new PdfSharpCore.Drawing.XRect(45, totalLengthVHR, 500, 60);
+            vhrGfx.DrawRectangle(pen, new XRect(45, totalLengthVHR, 500, 60));
+            
             content5 = "Please attach a copy of the genetics letter indicating levels of risk to this form in support of the information below." +
                     System.Environment.NewLine + "1.IBIS risk print out (report pts 10yr risk if they are aged between 25 - 29 - calculate at their " +
                     "current age, or if no mutation identified, or no genetic testing undertaken)" +
                     System.Environment.NewLine + "2.Lab report(if testing has been completed and pathogenic mutation identified)";
 
-            vhrTf.DrawString(content5, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 120));
-            totalLengthVHR += 50;
+            vhrTf.DrawString(content5, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR, 490, 120));
+            totalLengthVHR += 60;
+
+            //PdfSharpCore.Drawing.XRect rect8 = new PdfSharpCore.Drawing.XRect(45, totalLengthVHR, 500, 105);
+            vhrGfx.DrawRectangle(penLight, new XRect(45, totalLengthVHR, 500, 105));
 
             BreastSurgeryHistory bhd = _bhsData.GetBreastSurgeryHistory(mpi);
             
@@ -302,13 +338,21 @@ public class VHRController : Controller
                     break;
             }
 
+            //PdfSharpCore.Drawing.XRect rect9 = new PdfSharpCore.Drawing.XRect(15, totalLengthVHR2, 25, 720);
+            vhrGfx2.DrawRectangle(pen, new XRect(15, totalLengthVHR2, 25, 720));
+
             vhrGfx2.RotateTransform(rotation);
             vhrTf2.DrawString("Section B: To be completed by Genetics/Oncology", fontBold, XBrushes.Black, new XRect(50, -30, 500, 500));
             vhrGfx2.RotateTransform(-rotation);
 
+            //PdfSharpCore.Drawing.XRect rect10 = new PdfSharpCore.Drawing.XRect(45, totalLengthVHR2, 500, 100);
+            vhrGfx2.DrawRectangle(penLight, new XRect(45, totalLengthVHR2, 500, 100));
             vhrTf2.DrawString("Risk", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50));
             vhrTf2.DrawString("Age", fontSmall, XBrushes.Black, new XRect(300, totalLengthVHR2, 500, 50));
             vhrTf2.DrawString("Surveillance Protocol", fontSmall, XBrushes.Black, new XRect(400, totalLengthVHR2, 500, 50));
+            totalLengthVHR2 += 15;
+
+            vhrGfx2.DrawLine(pen, 50, totalLengthVHR2, 490, totalLengthVHR2);
 
             List<Surveillance> surv = _survData.GetSurveillanceList(mpi);
 
@@ -324,15 +368,18 @@ public class VHRController : Controller
             }
             totalLengthVHR2 += 50;
 
-            vhrTf2.DrawString("Please give 10 year risk using the most appropriate age range", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50));
-            totalLengthVHR2 += 40;
-            vhrTf2.DrawString("Age Category for Patient (years)", fontSmall, XBrushes.Black, new XRect(300, totalLengthVHR2, 500, 50));
-            vhrTf2.DrawString("10 Year Risk", fontSmall, XBrushes.Black, new XRect(500, totalLengthVHR2, 500, 50));
+            //PdfSharpCore.Drawing.XRect rect11 = new PdfSharpCore.Drawing.XRect(45, totalLengthVHR2, 500, 180);
+            vhrGfx2.DrawRectangle(penLight, new XRect(45, totalLengthVHR2, 500, 180));
 
-            vhrTf2.DrawString("25-29", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR2 + 15, 500, 50));
-            vhrTf2.DrawString("30-39", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR2 + 30, 500, 50));
-            vhrTf2.DrawString("40-49", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR2 + 45, 500, 50));
-            vhrTf2.DrawString("50-60", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR2 + 60, 500, 50));
+            vhrTf2.DrawString("Please give 10 year risk using the most appropriate age range", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50));
+            totalLengthVHR2 += 20;
+            vhrTf2.DrawString("Age Category for Patient (years)", fontSmall, XBrushes.Black, new XRect(200, totalLengthVHR2, 500, 50));
+            vhrTf2.DrawString("10 Year Risk", fontSmall, XBrushes.Black, new XRect(400, totalLengthVHR2, 500, 50));
+
+            vhrTf2.DrawString("25-29", fontSmall, XBrushes.Black, new XRect(250, totalLengthVHR2 + 15, 500, 50));
+            vhrTf2.DrawString("30-39", fontSmall, XBrushes.Black, new XRect(250, totalLengthVHR2 + 30, 500, 50));
+            vhrTf2.DrawString("40-49", fontSmall, XBrushes.Black, new XRect(250, totalLengthVHR2 + 45, 500, 50));
+            vhrTf2.DrawString("50-60", fontSmall, XBrushes.Black, new XRect(250, totalLengthVHR2 + 60, 500, 50));
 
             List<Risk> risk = _riskData.GetRiskList(icpCancerID);
 
@@ -340,19 +387,23 @@ public class VHRController : Controller
             {
                 foreach (var item in risk)
                 {
-                    vhrTf2.DrawString(item.R25_29.ToString(), fontSmall, XBrushes.Black, new XRect(550, totalLengthVHR2 + 15, 500, 50));
-                    vhrTf2.DrawString(item.R30_40.ToString(), fontSmall, XBrushes.Black, new XRect(550, totalLengthVHR2 + 30, 500, 50));
-                    vhrTf2.DrawString(item.R40_50.ToString(), fontSmall, XBrushes.Black, new XRect(550, totalLengthVHR2 + 45, 500, 50));
-                    vhrTf2.DrawString(item.R50_60.ToString(), fontSmall, XBrushes.Black, new XRect(550, totalLengthVHR2 + 60, 500, 50));
+                    vhrTf2.DrawString(item.R25_29.ToString(), fontSmall, XBrushes.Black, new XRect(425, totalLengthVHR2 + 15, 500, 50));
+                    vhrTf2.DrawString(item.R30_40.ToString(), fontSmall, XBrushes.Black, new XRect(425, totalLengthVHR2 + 30, 500, 50));
+                    vhrTf2.DrawString(item.R40_50.ToString(), fontSmall, XBrushes.Black, new XRect(425, totalLengthVHR2 + 45, 500, 50));
+                    vhrTf2.DrawString(item.R50_60.ToString(), fontSmall, XBrushes.Black, new XRect(425, totalLengthVHR2 + 60, 500, 50));
 
                     totalLengthVHR2 += 20;
                     vhrTf2.DrawString("Risk Date: " + item.RiskDate.Value.ToString("dd/MM/yyyy"), fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50));
                     totalLengthVHR2 += 15;
                     vhrTf2.DrawString("Calculation Tool: " + item.CalculationToolUsed, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50));
-                    totalLengthVHR2 += 20;
+                    totalLengthVHR2 += 40;
                 }
             }
             totalLengthVHR2 += 40;
+
+            //PdfSharpCore.Drawing.XRect rect12 = new PdfSharpCore.Drawing.XRect(45, totalLengthVHR2, 500, 100);
+            vhrGfx2.DrawRectangle(penLight, new XRect(45, totalLengthVHR2, 500, 100));
+
             vhrTf2.DrawString("Risk equivalent, not tested:", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50));            
             totalLengthVHR2 += 20;
             vhrTf2.DrawString("First degree relative (BRCA1/2, PALB2) aged <30 (evidence of 10 year risk required)", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50));
@@ -372,12 +423,14 @@ public class VHRController : Controller
             vhrTf2.DrawString("MRI", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR2, 500, 50));            
             vhrGfx2.DrawRectangle(XBrushes.Black, new XRect(500, totalLengthVHR2, 10, 10));
             vhrGfx2.DrawRectangle(XBrushes.White, new XRect(501, totalLengthVHR2 + 1, 8, 8));
-            totalLengthVHR2 += 50;
+            totalLengthVHR2 += 25;
+            vhrGfx2.DrawLine(penLight, 50, totalLengthVHR2, 550, totalLengthVHR2);
+            totalLengthVHR2 += 10;
             vhrTf2.DrawString("Radiotherapy to breast tissue - irradiated between 20-29", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 200, 50));
             vhrTf2.DrawString("30 to 39", fontSmall, XBrushes.Black, new XRect(300, totalLengthVHR2, 500, 50));
             vhrTf2.DrawString("MRI", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR2, 500, 50));
             vhrGfx2.DrawRectangle(XBrushes.Black, new XRect(500, totalLengthVHR2, 10, 10));
-            vhrGfx2.DrawRectangle(XBrushes.White, new XRect(501, totalLengthVHR2 + 1, 8, 8));
+            vhrGfx2.DrawRectangle(XBrushes.White, new XRect(501, totalLengthVHR2 + 1, 8, 8)); //black rectangle with white rectangle, to simulate box (because PDF sharp is shit)
             totalLengthVHR2 += 20;
             vhrTf2.DrawString("40 to 50", fontSmall, XBrushes.Black, new XRect(300, totalLengthVHR2, 500, 50));
             vhrTf2.DrawString("MRI +/- mammography", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR2, 500, 50));
@@ -388,7 +441,9 @@ public class VHRController : Controller
             vhrTf2.DrawString("mammography +/- MRI", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR2, 500, 50));
             vhrGfx2.DrawRectangle(XBrushes.Black, new XRect(500, totalLengthVHR2, 10, 10));
             vhrGfx2.DrawRectangle(XBrushes.White, new XRect(501, totalLengthVHR2 + 1, 8, 8));
-            totalLengthVHR2 += 20;
+            totalLengthVHR2 += 15;
+            vhrGfx2.DrawLine(penLight, 50, totalLengthVHR2, 550, totalLengthVHR2);
+            totalLengthVHR2 += 15;
             vhrTf2.DrawString("If radiotherapy to breast was this for...", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50));
             vhrTf2.DrawString("Hodgkins Lymphoma", fontSmall, XBrushes.Black, new XRect(300, totalLengthVHR2, 500, 50));            
             vhrGfx2.DrawRectangle(XBrushes.Black, new XRect(500, totalLengthVHR2, 10, 10));
@@ -397,13 +452,15 @@ public class VHRController : Controller
             vhrTf2.DrawString("Non-Hodgkins Lymphoma", fontSmall, XBrushes.Black, new XRect(300, totalLengthVHR2, 500, 50));
             vhrGfx2.DrawRectangle(XBrushes.Black, new XRect(500, totalLengthVHR2, 10, 10));
             vhrGfx2.DrawRectangle(XBrushes.White, new XRect(501, totalLengthVHR2 + 1, 8, 8));
-            totalLengthVHR2 += 20;
+            totalLengthVHR2 += 15;
+            vhrGfx2.DrawLine(penLight, 50, totalLengthVHR2, 550, totalLengthVHR2);
+            totalLengthVHR2 += 15;
 
             content5 = "I can confirm that the woman has been informed that her details will be shared with the NHS Breast Screening Programme for the purpose of screening invitations when she becomes eligible.";
 
             vhrTf2.DrawString(content5, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50));
 
-            totalLengthVHR2 += 80;
+            totalLengthVHR2 += 40;
 
             sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'","").Replace(" ", "") + ".jpg";
 
@@ -418,25 +475,32 @@ public class VHRController : Controller
                 vhrGfx2.DrawImage(imageSig, 50, totalLengthVHR2, len, hig);
             }
             signOff = _lvm.staffMember.NAME + System.Environment.NewLine + _lvm.staffMember.POSITION;
-            vhrTf2.DrawString(signOff, font, XBrushes.Black, new XRect(400, totalLengthVHR2+20, 250, 50));
+            vhrTf2.DrawString(signOff, font, XBrushes.Black, new XRect(300, totalLengthVHR2+20, 250, 50));
             totalLengthVHR2 = totalLengthVHR2 + hig + 20;
+
+            vhrGfx3.DrawRectangle(penLight, new XRect(40, totalLengthVHR3, 520, 650));
 
             vhrTf3.DrawString("Section C: To be completed by Breast Screening Service", fontBold, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
             totalLengthVHR3 += 30;
             vhrTf3.DrawString("Please tick the relevant box", fontTinyItalic, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
             totalLengthVHR3 += 30;
+            vhrGfx3.DrawRectangle(penLight, new XRect(45, totalLengthVHR3 - 10, 400, 30));
+            vhrGfx3.DrawRectangle(penLight, new XRect(450, totalLengthVHR3 - 10, 50, 30));
             vhrTf3.DrawString("Referral accepted for high risk screening", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
-            vhrGfx3.DrawRectangle(XBrushes.Black, new XRect(500, totalLengthVHR3, 10, 10));
-            vhrGfx3.DrawRectangle(XBrushes.White, new XRect(501, totalLengthVHR3 + 1, 8, 8));
+            //vhrGfx3.DrawRectangle(XBrushes.Black, new XRect(500, totalLengthVHR3, 10, 10));
+            //vhrGfx3.DrawRectangle(XBrushes.White, new XRect(501, totalLengthVHR3 + 1, 8, 8));
             totalLengthVHR3 += 40;
+            vhrGfx3.DrawRectangle(penLight, new XRect(45, totalLengthVHR3 - 10, 400, 30));
+            vhrGfx3.DrawRectangle(penLight, new XRect(450, totalLengthVHR3 - 10, 50, 30));
             vhrTf3.DrawString("Referral rejected for high risk screening", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
-            vhrGfx3.DrawRectangle(XBrushes.Black, new XRect(500, totalLengthVHR3, 10, 10));
-            vhrGfx3.DrawRectangle(XBrushes.White, new XRect(501, totalLengthVHR3 + 1, 8, 8));
+            //vhrGfx3.DrawRectangle(XBrushes.Black, new XRect(500, totalLengthVHR3, 10, 10));
+            //vhrGfx3.DrawRectangle(XBrushes.White, new XRect(501, totalLengthVHR3 + 1, 8, 8));
             totalLengthVHR3 += 40;
             vhrTf3.DrawString("If referral rejected please specify reason for rejection:", fontTinyItalic, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
             totalLengthVHR3 += 100;
             vhrTf3.DrawString("Section Radiologist Signature", fontTiny, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
-            totalLengthVHR3 += 40;            
+            totalLengthVHR3 += 40;
+            vhrGfx3.DrawLine(penLight, 40, totalLengthVHR3-5, 560, totalLengthVHR3-5);
             vhrTf3.DrawString("Please complete details below and copy form to the referrer as receipt of referral.", fontSmallBold, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
             totalLengthVHR3 += 40;
             vhrTf3.DrawString("Radiotherapy referrals: chn-bard@nhs.net", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
@@ -450,6 +514,7 @@ public class VHRController : Controller
             vhrTf3.DrawString("Woman Screened", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR3, 250, 50));
             vhrTf3.DrawString("Yes / No", fontSmall, XBrushes.Black, new XRect(500, totalLengthVHR3, 250, 50));
             totalLengthVHR3 += 40;
+            vhrGfx3.DrawLine(penLight, 40, totalLengthVHR3 - 5, 560, totalLengthVHR3 - 5);
             vhrTf3.DrawString("Authoriser's name:", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
             totalLengthVHR3 += 40;
             vhrTf3.DrawString("Authoriser's signature:", fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
@@ -458,7 +523,165 @@ public class VHRController : Controller
             totalLengthVHR3 += 40;
             vhrTf3.DrawString("(Referral forms can be authorised by a consultant radiologist, consultant practitioner or breast clinician.)", fontTiny, XBrushes.Black, new XRect(50, totalLengthVHR3, 250, 50));
 
+            vhrDocument.Save($@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
+        }
+        catch (Exception ex)
+        {
+            RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "StdLetter" });
+        }
+    }
 
+    public void DoVHRProCoverLetter(int id, int mpi, int icpCancerID, string user, string referrer, string screeningService, string? additionalText = "", int? diaryID = 0)
+    {
+        try
+        {
+            _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
+            _lvm.patient = _patientData.GetPatientDetails(mpi);
+            _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
+            _lvm.gp = _externalClinicianData.GetClinicianDetails(_lvm.patient.GP_Code);
+            _lvm.facility = _externalFacilityData.GetFacilityDetails(_lvm.gp.FACILITY);
+
+            int icpID = _triageData.GetCancerICPDetails(icpCancerID).ICPID;
+            int refID = _triageData.GetICPDetails(icpID).REFID;
+
+            //string docCode = _lvm.documentsContent.DocCode;
+            string docCode = _lvm.documentsContent.DocCode;
+            //creates a new PDF document            
+            //set the fonts used for the letters
+            XFont font = new XFont("Arial", 12, XFontStyle.Regular);
+            XFont fontBold = new XFont("Arial", 12, XFontStyle.Bold);
+            XFont fontItalic = new XFont("Arial", 12, XFontStyle.Italic);
+            XFont fontSmall = new XFont("Arial", 10, XFontStyle.Regular);
+            XFont fontSmallBold = new XFont("Arial", 10, XFontStyle.Bold);
+            XFont fontSmallItalic = new XFont("Arial", 10, XFontStyle.Italic);
+            XFont fontTiny = new XFont("Arial", 8, XFontStyle.Regular);
+            XFont fontTinyBold = new XFont("Arial", 8, XFontStyle.Bold);
+            XFont fontTinyItalic = new XFont("Arial", 8, XFontStyle.Italic);
+            //Load the image for the letter head
+            XImage image = XImage.FromFile(@"wwwroot\Letterhead.jpg");
+
+            string name = "";
+            string patName = "";
+            string address = "";
+            string patAddress = "";
+            string salutation = "";
+            DateTime patDOB = DateTime.Now;
+
+            string content = "";
+            string quoteRef = "";
+            string signOff = "";
+            string sigFilename = "";
+            int printCount = 1;
+
+            string fileCGU = _lvm.patient.CGU_No.Replace(".", "-");
+            string mpiString = _lvm.patient.MPI.ToString();
+            string refIDString = refID.ToString();
+            string dateTimeString = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string diaryIDString = diaryID.ToString();
+
+            PdfDocument vhrDocument = new PdfDocument();
+            vhrDocument.Info.Title = "VHRProC";
+            PdfPage vhrPage = vhrDocument.AddPage();            
+            XGraphics vhrGfx = XGraphics.FromPdfPage(vhrPage);
+            var vhrTf = new XTextFormatter(vhrGfx);           
+            vhrGfx.DrawImage(image, 350, 20, image.PixelWidth / 2, image.PixelHeight / 2);
+            int totalLengthVHR = 150;
+            int totalLengthVHR2 = 50;
+            int totalLengthVHR3 = 50;
+
+            vhrTf.Alignment = XParagraphAlignment.Right;
+            //Our address and contact details
+            vhrTf.DrawString(_lvm.documentsContent.OurAddress, font, XBrushes.Black, new XRect(-20, 150, vhrPage.Width, 200));
+            if (_lvm.documentsContent.DirectLine != null) //because we have to trap them nulls!
+            {
+                vhrTf.DrawString(_lvm.documentsContent.DirectLine, fontBold, XBrushes.Black, new XRect(-20, 250, vhrPage.Width, 10));
+            }
+            if (_lvm.documentsContent.OurEmailAddress != null) //because obviously there's a null.
+            {
+                vhrTf.DrawString(_lvm.documentsContent.OurEmailAddress, font, XBrushes.Black, new XRect(-20, 270, vhrPage.Width, 10));
+            }
+            vhrTf.Alignment = XParagraphAlignment.Left;
+
+            ScreeningService ss = _screenData.GetScreeningServiceDetailsByCode(screeningService);
+
+            name = ss.Contact;
+            address = ss.Add1 + Environment.NewLine;
+            address = address + ss.Add2 + Environment.NewLine;
+            address = address + ss.Add3 + Environment.NewLine;
+            address = address + ss.Add4 + Environment.NewLine;
+            if (ss.Add5 != null) { address = address + ss.Add5 + Environment.NewLine; }
+            if (ss.Add6 != null) { address = address + ss.Add6 + Environment.NewLine; }
+            if (ss.Add7 != null) { address = address + ss.Add7 + Environment.NewLine; }
+            if (ss.Add8 != null) { address = address + ss.Add8 + Environment.NewLine; }
+
+            string gpName = _lvm.gp.TITLE + " " + _lvm.gp.FIRST_NAME + " " + _lvm.gp.NAME;
+
+            string gpAddress = _lvm.facility.NAME + Environment.NewLine;
+            gpAddress = gpAddress + _lvm.facility.ADDRESS + Environment.NewLine;
+            gpAddress = gpAddress + _lvm.facility.CITY + Environment.NewLine;
+            gpAddress = gpAddress + _lvm.facility.ZIP + Environment.NewLine;
+
+            totalLengthVHR += 100;
+            vhrTf.DrawString(name, font, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 15));
+            totalLengthVHR += 15;
+            vhrTf.DrawString(address, font, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 100));
+            totalLengthVHR += 120;
+            vhrTf.DrawString("Dear " + name, font, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 20));
+            totalLengthVHR += 20;
+
+            patName = _lvm.patient.FIRSTNAME + " " + _lvm.patient.LASTNAME;
+            patAddress = _lvm.patient.ADDRESS1 + System.Environment.NewLine;
+            if (_lvm.patient.ADDRESS2 != null) { patAddress = patAddress + _lvm.patient.ADDRESS2 + Environment.NewLine; }
+            if (_lvm.patient.ADDRESS3 != null) { patAddress = patAddress + _lvm.patient.ADDRESS3 + Environment.NewLine; }
+            if (_lvm.patient.ADDRESS4 != null) { patAddress = patAddress + _lvm.patient.ADDRESS4 + Environment.NewLine; }            
+            patAddress = patAddress + _lvm.patient.POSTCODE;
+
+            vhrTf.DrawString("Re: " + patName, fontBold, XBrushes.Black, new XRect(60, totalLengthVHR, 500, 15));
+            vhrTf.DrawString(_lvm.patient.DOB.Value.ToString("dd/MM/yyyy"), fontBold, XBrushes.Black, new XRect(200, totalLengthVHR, 500, 15));
+            vhrTf.DrawString("NHS number: " + _lvm.patient.SOCIAL_SECURITY, fontBold, XBrushes.Black, new XRect(350, totalLengthVHR, 500, 15));
+            totalLengthVHR += 15;
+            vhrTf.DrawString(patAddress, fontBold, XBrushes.Black, new XRect(80, totalLengthVHR, 500, 100));
+            totalLengthVHR += 100;
+
+            content = _lvm.documentsContent.Para1 + System.Environment.NewLine + System.Environment.NewLine;
+
+            if (additionalText != null)
+            {
+                content = content + additionalText + System.Environment.NewLine + System.Environment.NewLine;
+            }
+
+            content = content + _lvm.documentsContent.Para2;
+
+            vhrTf.DrawString(content, font, XBrushes.Black, new XRect(50, totalLengthVHR, 500, content.Length / 4));
+            totalLengthVHR = totalLengthVHR + content.Length / 4 + 40;
+
+            sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+
+            if (!System.IO.File.Exists(@"wwwroot\Signatures\" + sigFilename)) { sigFilename = "empty.jpg"; } //this only exists because we can't define the image if it's null.
+
+            XImage imageSig = XImage.FromFile(@"wwwroot\Signatures\" + sigFilename);
+            int len = imageSig.PixelWidth;
+            int hig = imageSig.PixelHeight;
+
+            if (sigFilename != "empty.jpg")
+            {
+                vhrGfx.DrawImage(imageSig, 50, totalLengthVHR, len, hig);
+            }
+            totalLengthVHR += hig;
+
+            signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+            vhrTf.DrawString(signOff, font, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 100));
+
+            PdfPage pageCC = vhrDocument.AddPage();
+            printCount = printCount += 1;
+            XGraphics gfxcc = XGraphics.FromPdfPage(pageCC);
+            var tfcc = new XTextFormatter(gfxcc);
+
+            int ccLength = 50;
+            tfcc.DrawString("cc:", font, XBrushes.Black, new XRect(50, ccLength, 500, 100));
+            //Add a page for all of the CC addresses (must be declared here or we can't use it)            
+            tfcc.DrawString(gpName + System.Environment.NewLine + gpAddress, font, XBrushes.Black, new XRect(100, ccLength, 500, 100));            
+            printCount = printCount += 1;
 
             vhrDocument.Save($@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
         }
@@ -466,7 +689,5 @@ public class VHRController : Controller
         {
             RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "StdLetter" });
         }
-    }    
+    }
 }
-
-    

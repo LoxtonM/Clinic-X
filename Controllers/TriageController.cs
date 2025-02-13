@@ -7,6 +7,7 @@ using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 using ClinicX.Data;
 using ClinicalXPDataConnections.Models;
+using ClinicX.Models;
 
 
 namespace ClinicX.Controllers
@@ -332,7 +333,7 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "", false, false, 0, freeText1, "", 0);
+                        _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0);
                     }
 
                     if (successDiary == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canDiaryUpdate(SQL)" }); }
@@ -471,12 +472,20 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Post Clinic Letter", "ID=" + id.ToString(), _ip.GetIPAddress());                
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
                 var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
-                _ivm.screeningCoordinators = _clinicianData.GetClinicianList().Where(c => (c.LAST_NAME ?? "").ToLower().Contains("breast")
-                    || (c.POSITION ?? "").ToLower().Contains("breast"))
-                    .OrderBy(c => c.FACILITY)
-                    .ToList();
-                
+                //_ivm.screeningCoordinators = _clinicianData.GetClinicianList().Where(c => (c.LAST_NAME ?? "").ToLower().Contains("breast")
+                //    || (c.POSITION ?? "").ToLower().Contains("breast"))
+                //    .OrderBy(c => c.FACILITY)
+                //    .ToList();
+
+                ScreeningServiceData _ssData = new ScreeningServiceData(_cXContext);
+                _ivm.screeningCoordinators = _ssData.GetScreeningServiceList();
+
                 int mpi = icpDetails.MPI;
+                PatientData patientData = new PatientData(_clinContext);
+                
+                ScreeningService ss = _ssData.GetScreeningServiceDetails(patientData.GetPatientDetails(mpi).GP_Facility_Code);
+                _ivm.defaultScreeningCo = ss.ScreeningOfficeCode;              
+                
                 int refID = icpDetails.REFID;
 
                 return View(_ivm);
@@ -489,7 +498,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> VHRPro(int id, string? freeText, string? clinician)
+        public async Task<IActionResult> VHRPro(int id, string? freeText, string? screeningService)
         {
             try
             {
@@ -507,9 +516,23 @@ namespace ClinicX.Controllers
 
                 VHRController _vhrc = new VHRController(_clinContext, _cXContext, _docContext);
 
-                _vhrc.DoPDF(213, mpi, id, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, freeText);
-                _lc.DoPDF(214, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, freeText, "", 0
-                    , "", false, false, 0, "", "", 0, clinician);
+                string docCode = "VHRPro";
+                string diaryText = "";
+
+                int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+                int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
+                _vhrc.DoVHRPro(213, mpi, id, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, screeningService, freeText, diaryID);
+                
+                docCode = "VHRProC";
+                diaryText = "";
+                successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+                diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
+
+                _vhrc.DoVHRProCoverLetter(214, mpi, id, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, screeningService, freeText, diaryID);
+                //_lc.DoPDF(214, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, freeText, "", 0
+                //    , "", false, false, 0, "", "", 0, screeningService);
+
+
 
                 return RedirectToAction("CancerReview", new { id = id });
 
