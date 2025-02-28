@@ -15,6 +15,7 @@
         Html.ActionLink("Patient Reviews", "ReviewsForPatient", "Review", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Dictate New Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("All Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
         @*Html.ActionLink("Record Cancer Risk/Surveillance", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
     };
 }
@@ -77,12 +78,17 @@
                         {
                             if (Model.isCancerPPQScheduled)
                             {
-                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Get Cancer PPQ URL</a>
+                                @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Get Cancer PPQ URL</a>*@
+                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="true" >Email Cancer PPQ URL</a>
+                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="false">View PPQ URL</a>
+                                @*<a class="btn btn-default btn-outline-danger" href="mailto:@Model.patient.EmailAddress?subject=boo&body=blah blah">Send email</a>*@
                             }
 
                             if (Model.isGeneralPPQScheduled)
                             {
-                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Get General PPQ URL</a>
+                                @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General"asp-route-isEmail="true">Get General PPQ URL</a>*@
+                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="true">Email General PPQ URL</a>
+                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="false">Email General PPQ URL</a>
                             }
                         }
                     }
@@ -94,13 +100,13 @@
             }
         </div>
 
-        <div class="row">
+        @*<div class="row">
             <div class="col-md-2"></div>
             <div class="col-md-8">
                 <a id="btnEDMS" class="btn btn-default btn-outline-primary w-100" href="" target="_blank">View EDMS Record (GEMR)</a>
             </div>
             <div class="col-md-2"></div>
-        </div>
+        </div>*@
 
     </div>
 

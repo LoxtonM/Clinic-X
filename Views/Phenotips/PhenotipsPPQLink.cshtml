@@ -1,0 +1,26 @@
+﻿@model ClinicX.ViewModels.PhenotipsVM
+
+@{
+    ViewData["Title"] = "ClinicX - Patient Details";
+    ViewData["Page"] = "/ Clinic / Patient Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to patient", "PatientDetails", "Patient", new { id=Model.mpi }, new { @class = "btn btn-success m-1" }),       
+    };
+}
+
+<div class="container">
+    <h1 class="text-center">Phenotips PPQ URL</h1>
+
+    <div class="row">
+        <h2 class="text-center">Please copy the below link into your email to the patient.</h2>
+    </div>
+
+    <div class="row">
+        <h4 class="text-center">@Model.ppqURL</h4>
+    </div>
+</div>

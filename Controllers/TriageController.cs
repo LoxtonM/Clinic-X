@@ -532,9 +532,10 @@ namespace ClinicX.Controllers
                 //_lc.DoPDF(214, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, freeText, "", 0
                 //    , "", false, false, 0, "", "", 0, screeningService);
 
+                bool iSuccess = true;
+                string sMessage = "VHRPro created for filing in EDMS";
 
-
-                return RedirectToAction("CancerReview", new { id = id });
+                return RedirectToAction("CancerReview", new { id = id, success=iSuccess, message=sMessage });
 
             }
             catch (Exception ex)
