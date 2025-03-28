@@ -89,6 +89,8 @@ namespace ClinicX.Controllers
                 _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
                 _pvm.hpoTermDetails = _hpoData.GetHPOTermsAddedList(id);
                 _pvm.referrals = _referralData.GetReferralsList(id);
+                _pvm.referralsActiveGeneral = _pvm.referrals.Where(r => r.COMPLETE == "Active" && r.PATHWAY.Contains("General")).ToList();
+                _pvm.referralsActiveCancer = _pvm.referrals.Where(r => r.COMPLETE == "Active" && r.PATHWAY == "Cancer").ToList();
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);

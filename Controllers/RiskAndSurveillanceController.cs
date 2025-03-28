@@ -46,6 +46,25 @@ namespace ClinicX.Controllers
             _audit = new AuditService(_config);
         }
 
+        public async Task<IActionResult> Index(int mpi)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk List", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
+
+                _rsvm.patient = _patientData.GetPatientDetails(mpi);
+                _rsvm.riskList = _riskData.GetRiskListForPatient(mpi);                
+
+                return View(_rsvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv" });
+            }
+        }
+
         public IActionResult RiskDetails(int id)
         {
             try
@@ -114,8 +133,6 @@ namespace ClinicX.Controllers
             }
         }
 
-
-
         [HttpGet]
         public async Task<IActionResult> AddNewRisk(int id)
         {
@@ -165,7 +182,7 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv-addRisk" });
             }
-        }
+        }        
 
         [HttpGet]
         public async Task<IActionResult> AddNewSurveillance(int id)
@@ -215,6 +232,70 @@ namespace ClinicX.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv-addSurv" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditRisk(int id)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
+                _rsvm.GeneChange = _gene.GetGeneChangeList();
+                _rsvm.riskDetails = _riskData.GetRiskDetails(id);
+                _rsvm.surveillanceList = _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
+                _rsvm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
+                return View(_rsvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditRisk(int id, string riskCode, string siteCode, string clinCode,
+            DateTime riskDate, float lifetimePercent, string comments, float f2529, float f3040, float f4050,
+            float f5060, bool isUseLetter, string tool)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
+                
+                //crud etc
+
+                return View(_rsvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv" });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult EditSurveillance(int id)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
+                _rsvm.GeneChange = _gene.GetGeneChangeList();
+                _rsvm.surveillanceDetails = _survData.GetSurvDetails(id);
+                _rsvm.riskDetails = _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
+                int mpi = _rsvm.surveillanceDetails.MPI;
+
+                _rsvm.patient = _patientData.GetPatientDetails(mpi);
+
+                return View(_rsvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv" });
             }
         }
     }

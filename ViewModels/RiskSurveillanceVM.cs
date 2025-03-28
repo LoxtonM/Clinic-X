@@ -10,6 +10,7 @@ namespace ClinicX.ViewModels
         public Patient patient { get; set; }
         public ICPCancer icpCancer { get; set; }
         public Risk riskDetails { get; set; }
+        public List<Risk> riskList { get; set; }
         public Surveillance surveillanceDetails { get; set; }
         public List<Surveillance> surveillanceList { get; set; }
         public List<Eligibility> eligibilityList { get; set; }

@@ -1,0 +1,73 @@
+﻿@model ClinicX.ViewModels.RiskSurveillanceVM
+
+@{
+    ViewData["Title"] = "ClinicX - Risk Details";
+    ViewData["Page"] = "/ Risk / Risk Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
+    };
+}
+
+
+<div class="container">
+    @if (Model.riskList.Count() > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <td></td>
+                    <td>Risk</td>
+                    <td>Site</td>
+                    <td>Clinician</td>
+                    <td>Date</td>
+                    <td>Lifetime</td>
+                    <td>25-29 (%)</td>
+                    <td>30-40 (%)</td>
+                    <td>40-50 (%)</td>
+                    <td>50-60 (%)</td>
+                    <td>Surveillance Recommendations</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.riskList)
+                {
+                    <tr>
+                        <td><a class="btn btn-success" asp-controller="RiskAndSurveillance" asp-action="RiskDetails" asp-route-id=@item.RiskID>Select</a></td>
+                        <td>@item.RiskCode</td>
+                        <td>@item.SurvSiteCode</td>
+                        <td>@item.Clinician</td>
+                        <td>@item.RiskDate.Value.ToString("dd/MM/yyyy")</td>
+                        <td>@item.LifetimeRiskPercentage</td>
+                        <td>@item.R25_29</td>
+                        <td>@item.R30_40</td>
+                        <td>@item.R40_50</td>
+                        <td>@item.R50_60</td>
+                        <td>
+                            @if (Model.surveillanceList != null)
+                            {
+                                @foreach (var surv in Model.surveillanceList)
+                                {
+                                    @if (surv.RiskID == item.RiskID)
+                                    {
+                                        <span>@surv.SurvFreqCode - age @surv.SurvStartAge to @surv.SurvStopAge</span>
+
+                                        <br />
+                                    }
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h2>There are no risk items added</h2>
+    }
+</div>

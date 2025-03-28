@@ -8,11 +8,13 @@ using MigraDoc.Rendering;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
+using System.Drawing;
+
 
 
 namespace ClinicX.Controllers
 {
-    public class LetterControllerLOCAL
+    public class LetterControllerLOCAL //this is for testing, to be added to the DLL 
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
@@ -41,26 +43,7 @@ namespace ClinicX.Controllers
             _externalClinicianData = new ExternalClinicianData(_clinContext);
             _externalFacilityData = new ExternalFacilityData(_clinContext);
             _constantsData = new ConstantsData(_docContext);
-        }
-
-        /*
-        public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)
-        {
-            try
-            {
-
-                _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
-                _lvm.patient = _patientData.GetPatientDetails(mpi);
-                _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
-                _lvm.referrer = _externalClinicianData.GetClinicianDetails(referrer);
-
-                return View(_lvm);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Letter" });
-            }
-        }*/
+        }        
 
         //Creates a preview of the DOT letter
 
@@ -228,7 +211,6 @@ namespace ClinicX.Controllers
                 string refIDString = _lvm.dictatedLetter.RefID.ToString();
                 string dateTimeString = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-
                 System.IO.File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{dID.ToString()}.pdf");
 
                 /*                 
@@ -237,11 +219,9 @@ namespace ClinicX.Controllers
             }
         }
 
-        //http://localhost:7168/Triage/FurtherRequest?id=40624
-
         public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
             string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
-            int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false)
+            int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false, string? qrCodeText = "")
         {
 
             /*try
@@ -327,17 +307,6 @@ namespace ClinicX.Controllers
                     contentOurAddress.Format.Font.Size = 12;
                     contentOurAddress.Format.Alignment = ParagraphAlignment.Right;
                 }
-
-
-
-                /*
-                if (_lvm.documentsContent.DirectLine != null) //because we have to trap them nulls!
-                {
-                    spacer = section.AddParagraph();
-                    Paragraph contentDirectLine = section.AddParagraph(_lvm.documentsContent.DirectLine);
-                    contentDirectLine.Format.Font.Size = 12;
-                }*/
-
 
                 if (relID == 0)
                 {
@@ -514,7 +483,7 @@ namespace ClinicX.Controllers
                 //KC letter
                 if (docCode == "Kc")
                 {
-                    pageCount = 2; //because this can't happen automatically, obviously, so we have to hard code it! Oh PDFSharp you are so wonderful.
+                    pageCount = 2;
 
                     content1 = _lvm.documentsContent.Para1 + " " + referrerName + " " + _lvm.documentsContent.Para2 +
                         Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para3 +
@@ -525,6 +494,15 @@ namespace ClinicX.Controllers
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     letterContent2.Format.Font.Size = 12;
+
+                    CreateQRImageFile(qrCodeText, user);
+
+                    Paragraph contentQR = section.AddParagraph();
+                    MigraDoc.DocumentObjectModel.Shapes.Image imgQRCode = contentQR.AddImage($"wwwroot\\Images\\qrCode-{user}.jpg");
+                    imgQRCode.ScaleWidth = new Unit(1.5, UnitType.Point);
+                    imgQRCode.ScaleHeight = new Unit(1.5, UnitType.Point);
+                    contentQR.Format.Alignment = ParagraphAlignment.Center;
+
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
@@ -1245,6 +1223,37 @@ namespace ClinicX.Controllers
                     ccs[0] = gpName;
                     ccs[1] = otherName;
                 }
+                
+                if (docCode == "ClicsFHF")
+                {
+                    content1 = _lvm.documentsContent.Para1;
+                    content2 = _lvm.documentsContent.Para2;
+                    content1 = _lvm.documentsContent.Para3;
+                    content2 = _lvm.documentsContent.Para4;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    letterContent1.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    letterContent2.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph(content3);
+                    letterContent1.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent4 = section.AddParagraph(content4);
+                    letterContent2.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+
+                    CreateQRImageFile(qrCodeText, user);
+
+                    Paragraph contentQR = section.AddParagraph();
+                    MigraDoc.DocumentObjectModel.Shapes.Image imgQRCode = contentQR.AddImage($"wwwroot\\Images\\qrCode-{user}.jpg");
+                    imgQRCode.ScaleWidth = new Unit(1.5, UnitType.Point);
+                    imgQRCode.ScaleHeight = new Unit(1.5, UnitType.Point);
+                    contentQR.Format.Alignment = ParagraphAlignment.Center;
+                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                    //File.Delete($"wwwroot\\Images\\qrCode-{user}.jpg");
+
+                }
 
                 //tf.DrawString("Letter code: " + docCode, font, XBrushes.Black, new XRect(400, 800, 500, 20));
                 spacer = section.AddParagraph();
@@ -1715,8 +1724,39 @@ namespace ClinicX.Controllers
             }*/
         }
 
+        public void SendPhenotipsLetter(int mpi, string user, string qrCode)
+        {
+            CreateQRImageFile(qrCode, user);
+            
+            MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
+            Section section = document.AddSection();
 
+            Paragraph contentLogo = section.AddParagraph();
+            MigraDoc.DocumentObjectModel.Shapes.Image imgLogo = contentLogo.AddImage($"wwwroot\\Images\\qrCode-{user}.jpg");
+            imgLogo.ScaleWidth = new Unit(2, UnitType.Point);
+            imgLogo.ScaleHeight = new Unit(2, UnitType.Point);
+            contentLogo.Format.Alignment = ParagraphAlignment.Right;
+            Paragraph spacer = section.AddParagraph();
+            Paragraph para1 = section.AddParagraph("Stuff goes here...");
 
+            PdfDocumentRenderer pdf = new PdfDocumentRenderer();
+            pdf.Document = document;
+            pdf.RenderDocument();
+
+            pdf.PdfDocument.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf"));
+
+            File.Delete($"wwwroot\\Images\\qrCode-{user}.jpg");
+        }
+        
+        void CreateQRImageFile(string qrCode, string user)
+        {            
+            byte[] imageBytes = Convert.FromBase64String(qrCode);
+            using (MemoryStream ms = new MemoryStream(imageBytes))
+            {
+                Bitmap image =  new Bitmap(ms);
+                image.Save($"wwwroot\\Images\\qrCode-{user}.jpg");
+            }            
+        }
 
 
         string RemoveHTML(string text)

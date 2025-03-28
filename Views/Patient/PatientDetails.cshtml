@@ -9,12 +9,13 @@
 @{
     ViewBag.HomeButton = new[]
     {
-        Html.ActionLink("Record Diagnoses", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Record Tests", "Index", "Test", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Diagnoses", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Tests", "Index", "Test", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
         Html.ActionLink("Clinical Notes", "Index", "ClinicalNote", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Patient Reviews", "ReviewsForPatient", "Review", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Dictate New Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("All Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Reviews", "ReviewsForPatient", "Review", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
+        Html.ActionLink("Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("New Dictated Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Cancer Risks", "Index", "RiskAndSurveillance", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
         @*Html.ActionLink("Record Cancer Risk/Surveillance", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
     };
@@ -37,30 +38,7 @@
             </div>
         }
     }
-
-    <div class="row mb-5 g-2 mt-2">        
-        @*<div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home Page</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>Record Diagnoses</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnTest" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.patient.MPI>Record Tests</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnClinicalNote" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Clinical Notes</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnReviewList" class="btn btn-default btn-success" asp-controller="Review" asp-action="ReviewsForPatient" asp-route-id=@Model.patient.MPI>Patient Reviews</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnLetter" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="ActivityItems" asp-route-id=@Model.patient.MPI>Dictate New Letter</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnLetterList" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="DictatedLettersForPatient" asp-route-id=@Model.patient.MPI>All Dictated Letters</a>
-        </div>
-        *@        
+    <div class="row mb-5 g-2 mt-2">
         <div class="col-md-4">
             @if (Model.staffMember.BILL_ID == "Technical")
             {
@@ -70,9 +48,14 @@
                     {
                         if (!Model.isGeneralPPQScheduled && !Model.isCancerPPQScheduled)
                         {
-                            <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
-
-                            <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Schedule General PPQ</a>
+                            if (Model.referralsActiveCancer.Count > 0)
+                            {
+                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
+                            }
+                            if (Model.referralsActiveGeneral.Count > 0)
+                            {
+                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Schedule General PPQ</a>
+                            }
                         }
                         else
                         {
@@ -80,8 +63,9 @@
                             {
                                 @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Get Cancer PPQ URL</a>*@
                                 <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="true" >Email Cancer PPQ URL</a>
-                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="false">View PPQ URL</a>
-                                @*<a class="btn btn-default btn-outline-danger" href="mailto:@Model.patient.EmailAddress?subject=boo&body=blah blah">Send email</a>*@
+                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="false">View Cancer PPQ URL</a>
+                                @*<a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PhenotipsQRLink" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">View PPQ QR Code</a>*@
+                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="SendPhenotipsLetter" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Send Phenotips Letter (Cancer)</a>
                             }
 
                             if (Model.isGeneralPPQScheduled)
@@ -89,25 +73,17 @@
                                 @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General"asp-route-isEmail="true">Get General PPQ URL</a>*@
                                 <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="true">Email General PPQ URL</a>
                                 <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="false">Email General PPQ URL</a>
+                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="SendPhenotipsLetter" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Send Phenotips Letter (General)</a>
                             }
                         }
                     }
                     else
                     {
-                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
+                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
                     }
                 }
             }
-        </div>
-
-        @*<div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-                <a id="btnEDMS" class="btn btn-default btn-outline-primary w-100" href="" target="_blank">View EDMS Record (GEMR)</a>
-            </div>
-            <div class="col-md-2"></div>
-        </div>*@
-
+        </div>        
     </div>
 
     @if (Model.patient.DCTM_Folder_ID == null)
@@ -715,9 +691,12 @@
         {
             <h4>No relatives have been added.</h4>
         }
-        @if (Model.isPhenotipsAvailable)
+        @if (Model.isPhenotipsAvailable)        
         {
-            <a type="button" asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-default btn-success">Import Relatives from Phenotips</a>
+            if (Model.isPatientInPhenotips)
+            {
+                <a type="button" asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-default btn-success">Import Relatives from Phenotips</a>
+            }
         }
         else
         {

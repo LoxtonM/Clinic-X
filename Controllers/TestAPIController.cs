@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace APIControllers.Controllers
 {
-    public class PPQAPIController
+    public class TestAPIController
     {
         private readonly APIContext _context;
 
@@ -21,7 +21,7 @@ namespace APIControllers.Controllers
         private string authKey;
         private string apiKey;
 
-        public PPQAPIController(APIContext context, IConfiguration config)
+        public TestAPIController(APIContext context, IConfiguration config)
         {
             _context = context;
             _APIPatientData = new APIPatientData(_context);
@@ -214,8 +214,15 @@ namespace APIControllers.Controllers
 
                 foreach (var rel in relListAll)
                 {
-                    if (relData.GetRelativeDetailsByName(rel.RelForename1, rel.RelSurname).Count() == 0 &&
-                            rel.RelForename1 != patient.FIRSTNAME && rel.RelSurname != patient.LASTNAME)
+                    List<Relative> relsToTest = new List<Relative>();
+                    relsToTest = relData.GetRelativeDetailsByName(rel.RelForename1, rel.RelSurname);
+
+                    if (relsToTest.Count() > 0)
+                    {
+                        relsToTest = relsToTest.Where(r => r.WMFACSID == rel.WMFACSID).ToList();
+                    }
+
+                    if (relsToTest.Count() == 0 && rel.RelForename1 != patient.FIRSTNAME && rel.RelSurname != patient.LASTNAME)
                     {
                         relatives.Add(new Relative
                         {
@@ -324,7 +331,7 @@ namespace APIControllers.Controllers
                 var request = new RestRequest("");
                 request.AddHeader("authorization", $"Basic {authKey}");
                 request.AddHeader("X-Gene42-Secret", apiKey);
-                string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
+                string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"status\":\"active\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
                 
                 request.AddJsonBody(apiCall, false);
                 var response = await client.PostAsync(request);
@@ -414,7 +421,7 @@ namespace APIControllers.Controllers
 
             if (pID != "" && pID != null)
             {
-                if (!CheckPPQExists(id, ppqType).Result)
+                if (CheckPPQExists(id, ppqType).Result)
                 {
 
                     DateTime DOB = patient.DOB.GetValueOrDefault();

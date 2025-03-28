@@ -4,5 +4,6 @@
     {
         public int mpi { get; set; }
         public string ppqURL { get; set; }
+        public string ppqQR { get; set; }
     }
 }
