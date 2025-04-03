@@ -3,6 +3,7 @@ using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 
 namespace ClinicX.Controllers
 {
@@ -33,6 +34,7 @@ namespace ClinicX.Controllers
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 string searchTerm = "";
+                _pvm.staffCode = staffCode;
 
                 if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")))
                 {
@@ -110,6 +112,13 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "PatientSearch" });
             }
-        }             
+        }    
+        
+        public async Task<IActionResult> ViewAllMyPatients(string staffCode)
+        {
+            _pvm.patientsList = _patientSearchData.GetPatientsListByStaffCode(staffCode).DistinctBy(p => p.MPI).ToList();
+
+            return View(_pvm);
+        }        
     }
 }

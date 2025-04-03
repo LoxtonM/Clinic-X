@@ -12,6 +12,6 @@ namespace ClinicX.ViewModels
         public string surnameSearch { get; set;}
         public DateTime dobSearch { get; set; }
         public string nhsNoSearch { get; set; }
-
+        public string staffCode {  get; set; }
     }
 }

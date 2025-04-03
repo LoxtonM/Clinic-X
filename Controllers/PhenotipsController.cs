@@ -36,7 +36,7 @@ namespace ClinicX.Controllers
             string sMessage = "";
             bool isSuccess = false;
 
-            Int16 result = await _api.PushPtToPhenotips(mpi);
+            Int16 result = await _api.PushPtToPhenotips(mpi); //initiates the push, returns 1 (success), 0 (already exists), or -1 (failed)
 
             if(result==1)
             {
@@ -60,7 +60,7 @@ namespace ClinicX.Controllers
             string sMessage = "";
             bool isSuccess = false;            
 
-            Int16 result = await _api.SchedulePPQ(mpi, pathway);
+            Int16 result = await _api.SchedulePPQ(mpi, pathway); //creates the PPQ, returns 1 (success), 0 (already exists), or -1 (failed)
 
             if (result == 1)
             {
@@ -84,7 +84,7 @@ namespace ClinicX.Controllers
             string sMessage = "";
             bool isSuccess = false;
 
-            string result = _api.GetPPQUrl(mpi, pathway).Result;
+            string result = _api.GetPPQUrl(mpi, pathway).Result; //fetches the URL
 
             return result.ToString();
         }
@@ -96,7 +96,7 @@ namespace ClinicX.Controllers
             
             string result = _api.GetPPQQRCode(mpi, pathway).Result;
             
-            _pvm.ppqQR = result.ToString();
+            _pvm.ppqQR = result.ToString(); // fetches the QR code string
 
             return View(_pvm);
         }
@@ -108,9 +108,9 @@ namespace ClinicX.Controllers
             string user = User.Identity.Name;
             string result = _api.GetPPQQRCode(mpi, pathway).Result;
 
-            _pvm.ppqQR = result.ToString();
+            _pvm.ppqQR = result.ToString(); //fetches the QR code string
 
-            LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _docContext);
+            LetterController let = new LetterController(_clinContext, _docContext);
             
             ReferralData refer = new ReferralData(_clinContext);
             Referral referral = refer.GetActiveReferralsListForPatient(mpi).OrderByDescending(r => r.RefDate).FirstOrDefault();
@@ -118,7 +118,7 @@ namespace ClinicX.Controllers
             if (referral != null)
             {
 
-                if (pathway == "Cancer")
+                if (pathway == "Cancer") //sends either ClicsFHF or Kc letter
                 {
                     let.DoPDF(156, mpi, referral.refid, User.Identity.Name, referral.ReferrerCode, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, true, result);
                 }
@@ -144,7 +144,7 @@ namespace ClinicX.Controllers
         {
             Patient patient = _patientData.GetPatientDetails(mpi);
 
-            string ppqURL = _api.GetPPQUrl(mpi, pathway).Result;
+            string ppqURL = _api.GetPPQUrl(mpi, pathway).Result; //fetches the URL
 
             if (isEmail)
             {
@@ -172,7 +172,7 @@ namespace ClinicX.Controllers
             _pvm.mpi = mpi;
             _pvm.ppqURL = ppqLink;
 
-            return View(_pvm);
+            return View(_pvm); //returns the URL in a web page to copy/paste
         }
         
     }
