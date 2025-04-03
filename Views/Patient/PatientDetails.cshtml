@@ -38,6 +38,7 @@
             </div>
         }
     }
+
     <div class="row mb-5 g-2 mt-2">
         <div class="col-md-4">
             @if (Model.staffMember.BILL_ID == "Technical")
@@ -301,7 +302,7 @@
                             @Model.nextPatient.FIRSTNAME @Model.nextPatient.LASTNAME 
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="50" height="50" viewBox="0 0 256 256" xml:space="preserve"><defs></defs>
                                 <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)" >
-	                                <path d="M 89.947 44.915 L 56.165 25.362 v 13.353 H 0.136 C 0.061 38.715 0 38.776 0 38.851 v 12.298 c 0 0.075 0.061 0.136 0.136 0.136 h 56.029 v 13.353 l 33.782 -19.553 C 90.018 45.05 90.018 44.95 89.947 44.915 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                    <path d="M 89.947 44.915 L 56.165 25.362 v 13.353 H 0.136 C 0.061 38.715 0 38.776 0 38.851 v 12.298 c 0 0.075 0.061 0.136 0.136 0.136 h 56.029 v 13.353 l 33.782 -19.553 C 90.018 45.05 90.018 44.95 89.947 44.915 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
                                 </g>
                             </svg>
                         </h4>
@@ -545,7 +546,14 @@
                         @foreach (var d in Model.diary)
                         {
                             <tr>
-                                <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
+                                @if(d.DiaryDate != null)
+                                {
+                                    <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
                                 <td>@d.DiaryWith</td>
                                 <td>@d.DiaryAction</td>
                                 <td>@d.DiaryText</td>
