@@ -6,14 +6,6 @@
     ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
 
-@{
-    ViewBag.HomeButton = new[]
-    {
-        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Back to Reviews Index", "Index", "Review", new {  }, new { @class = "btn btn-success m-1" }),
-
-    };
-}
 
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">
