@@ -95,11 +95,14 @@ namespace ClinicX.Controllers
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
 
-                if (_api.GetPhenotipsPatientID(id).Result != "")
-                {                    
-                    _pvm.isPatientInPhenotips = true;
-                    _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result;
-                    _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
+                if (_constantsData.GetConstant("PhenotipsURL", 2) == "1")
+                {
+                    if (_api.GetPhenotipsPatientID(id).Result != "")
+                    {
+                        _pvm.isPatientInPhenotips = true;
+                        _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result;
+                        _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
+                    }
                 }
 
                 if (_pvm.patient.DOB != null)
