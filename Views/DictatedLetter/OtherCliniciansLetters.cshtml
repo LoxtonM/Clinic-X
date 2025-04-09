@@ -6,24 +6,39 @@
     ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
 
+@{
+    ViewBag.HomeButton = new[]
+    {   
+        Html.ActionLink("Back to Your Dictated Letters List", "Index", "DictatedLetter", new {  }, new { @class = "btn btn-success m-1" }),
+    
+    };
+}
+
 
 <div class="container card">
-    <div>
-        <a type="button" class="btn btn-default btn-success" asp-action="OtherCliniciansLetters">Other Clinicians' Letters</a>
-    </div>
+    <form asp-action="OtherCliniciansLetters">
+        <select name="staffCode" asp-for=@Model.staffUser.STAFF_CODE>
+            @foreach(var item in Model.staffMemberList)
+            {
+                <option value=@item.STAFF_CODE>@item.NAME</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-success">Go</button>
+
+    </form>
 
    
 
     <div class="d-grid">
         @if (Model.dictatedLettersForApproval.Count() == 0)
         {
-            <h1>There are no letters outstanding</h1>
+            <h1>There are no letters outstanding for @Model.staffUser.NAME</h1>
         }
         else
         {
             <div class="row g-2 mb-5 mt-2">
                 @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().LetterFrom)!</h1>*@
-                <h2 class="text-center">Letters to approve:</h2>
+                <h2 class="text-center">Letters for @Model.staffUser.NAME to approve:</h2>
             </div>
 
             <table class="table">
@@ -68,7 +83,7 @@
 
    
 
-    <div class="d-grid">       
+    @*<div class="d-grid">       
         @if (Model.dictatedLettersForPrinting.Count() == 0)
         {
             <h1>There are no letters awaiting printing</h1>                   
@@ -115,5 +130,5 @@
                 </tbody>
             </table>
         }
-    </div>
+    </div>*@
 </div>

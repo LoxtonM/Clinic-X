@@ -21,7 +21,7 @@
         @*<div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Index">Back to Dictated Letters Index</a>
         </div>*@
-          
+
         <div class="col-md-2">
             <form id="DictatedLetterApproval" asp-action="Approve">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
@@ -69,7 +69,15 @@
         <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
     </h1>
 
-    <h2>Re: @Html.ValueFor(model => model.dictatedLetters.LetterRe)</h2>
+    <h2>Re: @if(Model.dictatedLettersPatients.Count > 0)
+        {
+            @Html.ValueFor(model => model.dictatedLetters.LetterRe)        
+        }
+        else
+        {
+            <p>(add patients via the "Patients" list below) - @Html.ValueFor(model => model.dictatedLetters.LetterRe)</p>
+        }
+    </h2>
 
     <div class="container mb-5">
         <form id="Preview" asp-action="PreviewDOT">
@@ -190,7 +198,7 @@
                     <select class="w-100" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="consultant">
                         @foreach(var item in Model.consultants)
                         {
-                            <option value=@item>@item.NAME</option>
+                            <option value=@item.NAME>@item.NAME</option>
                         }
                     </select>
                 </div>
@@ -199,7 +207,7 @@
                     <select class="w-100" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="gc">
                         @foreach (var item in Model.gcs)
                         {
-                            <option value=@item>@item.NAME</option>
+                            <option value=@item.NAME>@item.NAME</option>
                         }
                     </select>
                 </div>
@@ -241,11 +249,36 @@
         <div class="collapse" id="collapsePatientsTable">
             <form id="frmAddPatientToDOT" asp-action="AddPatientToDOT">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
+                
                 <input id="txtPID" name="pID" hidden="true" />
+                @if(Model.dictatedLettersPatients.Count > 0)
+                {
+                    <table class="table">
+                        <thead>
+                            <th>Patients Added:</th>
+                            <th>CGU Number</th>
+                            <th>Name</th>
+                            <th>DOB</th>
+                            <th>NHS Number</th>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.dictatedLettersPatients)
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td>@item.CGU_No</td>
+                                    <td>@item.FIRSTNAME @item.LASTNAME</td>
+                                    <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.SOCIAL_SECURITY</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
                 <table class="table">
                     <thead>
                         <tr>
-                            <th></th>
+                            <th>Available Patients:</th>
                             <th>CGU Number</th>
                             <th>Name</th>
                             <th>DOB</th>

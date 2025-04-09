@@ -71,6 +71,41 @@ namespace ClinicX.Controllers
             }
         }
 
+        public async Task<IActionResult> OtherCliniciansLetters(string? staffCode)
+        {
+            try
+            {
+                if (User.Identity.Name is null)
+                {
+                    return NotFound();
+                }
+
+                var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Letters", "", _ip.GetIPAddress());
+
+                _lvm.staffMemberList = _staffUser.GetClinicalStaffList();
+
+                if(staffCode == null)
+                {
+                    staffCode = user.STAFF_CODE;
+                }
+
+                _lvm.staffUser = _staffUser.GetStaffMemberDetailsByStaffCode(staffCode);
+
+                var letters = _dictatedLetterData.GetDictatedLettersList(staffCode);
+
+                _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
+                _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
+
+                return View(_lvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter" });
+            }
+        }
+
         public async Task<IActionResult> DictatedLettersForPatient(int id)
         {
             try
@@ -105,12 +140,22 @@ namespace ClinicX.Controllers
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Letter", "ID=" + id.ToString(), _ip.GetIPAddress());
-
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Letter", "ID=" + id.ToString(), _ip.GetIPAddress());                
                 _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(id);
-                _lvm.dictatedLettersPatients = _dictatedLetterData.GetDictatedLettersPatientsList(id);
+                //_lvm.dictatedLettersPatients = _dictatedLetterData.GetDictatedLettersPatientsList(id);
+                
                 _lvm.dictatedLettersCopies = _dictatedLetterData.GetDictatedLettersCopiesList(id);
                 _lvm.patients = _dictatedLetterData.GetDictatedLetterPatientsList(id);
+                List<DictatedLettersPatient> dlp = new List<DictatedLettersPatient>();
+                dlp = _dictatedLetterData.GetDictatedLettersPatientsList(id).ToList();
+                _lvm.dictatedLettersPatients = new List<Patient>();
+                foreach(var p in dlp)
+                {
+                    Patient pat = _patientData.GetPatientDetails(p.MPI);
+                    _lvm.dictatedLettersPatients.Add(pat);
+                    _lvm.patients.Remove(pat);
+                }
+
                 _lvm.staffMemberList = _staffUser.GetClinicalStaffList();
                 int? mpi = _lvm.dictatedLetters.MPI;
                 int? refID = _lvm.dictatedLetters.RefID;
@@ -307,7 +352,9 @@ namespace ClinicX.Controllers
             try
             {                
                 _lc.PrintDOTPDF(dID, User.Identity.Name, true);
-                //return RedirectToAction("Edit", new { id = dID });
+                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+                //lc.PrintDOTPDF(dID, User.Identity.Name, true);
+                
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
             catch (Exception ex)
