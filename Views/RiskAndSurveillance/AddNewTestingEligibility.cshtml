@@ -1,0 +1,103 @@
+﻿@model ClinicX.ViewModels.RiskSurveillanceVM
+
+@{
+    ViewData["Title"] = "ClinicX - Testing Eligibility";
+    ViewData["Page"] = "/ TestingEligibility / Add New";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
+        Html.ActionLink("Back to ICP Review", "CancerReview", "Triage", new { id=Model.icpCancer.ICP_Cancer_ID }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container card">
+
+    <div class="row mb-5 g-5">
+        <h1>New Testing Eligibility for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+    </div>
+
+    <form asp-action="AddNewTestingEligibility">
+        
+        <div class="row" hidden="true">
+            <input name="refID" asp-for=@Model.refID />
+        </div>
+        
+        <div class="row mb-2 g-2">            
+            <div class="col-md-2">
+                <label>Gene:</label>
+            </div>
+            <div class="col-md-2">
+                <select class="w-100" name="gene">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.geneCode)
+                    {
+                        <option value=@item.ID>@item.TestCode (@item.TestType)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label>Calculation Tool Used:</label>
+            </div>
+            <div class="col-md-4">
+                <select class="w-100" name="tool">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.calculationTools)
+                    {
+                        <option value=@item.CalculationToolCode>@item.CalculationToolCode</option>
+                    }
+                </select>
+            </div>            
+        </div>
+        
+        <div class="row mb-2 g-2">
+            <div class="col-md-6">
+                <label>Score or Percentage:</label>
+            </div>            
+            <div class="col-md-2">
+                <input type="text" name="score"
+            </div>
+            
+            <div class="col-md-2">
+                <label>Offer Testing:</label>
+            </div>
+            
+            <div class="col-md-2">                
+                <select class="w-100" name="offerTest">
+                    <option value="">Select...</option>                    
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="BRCA3">BRCA3</option>
+                    <option value="Indirect">Indirect</option>
+                    <option value="DNA Bank">DNA Bank</option>
+                </select>                
+            </div>
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-4">
+                <label>Relative:</label>
+            </div>
+            <div class="col-md-6">
+                <select class="w-100" name="relative">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.relatives)
+                    {
+                        <option value=@item.relsid>@item.RelForename1 @item.RelSurname</option>
+                    }
+                </select>
+            </div>          
+        </div>
+        
+
+        <div class="row mb-2 g-2">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+        </div>
+        
+    </form>
+
+</div>

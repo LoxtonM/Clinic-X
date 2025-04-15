@@ -11,8 +11,7 @@ namespace ClinicX.Data
         public DbSet<NoteItem> NoteItems { get; set; }
         public DbSet<Test> Test { get; set; }        
         public DbSet<ClinicalNoteType> NoteTypes { get; set; }              
-        public DbSet<TestType> Tests { get; set; }                         
-        public DbSet<Eligibility> Eligibility { get; set; }               
+        public DbSet<TestType> Tests { get; set; }                                
         public DbSet<RiskCodes> RiskCodes { get; set; }
         public DbSet<SurvSiteCodes> SurvSiteCodes { get; set ; }
         public DbSet<SurvTypeCodes> SurvTypeCodes { get; set; }
@@ -24,5 +23,7 @@ namespace ClinicX.Data
         public DbSet<ScreeningService> ScreeningService { get; set; }
         public DbSet<ScreeningServiceGPCode> ScreeningServiceGPCode { get; set; }
         public DbSet<BreastSurgeryHistory> BreastSurgeryHistory { get; set; }        
+        public DbSet<GeneCode> GeneCode { get; set; }
+        
     }
 }

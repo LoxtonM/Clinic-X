@@ -203,6 +203,8 @@ namespace ClinicX.Controllers
                 }
 
                 if(enclosures == null) { enclosures = ""; }
+                if(letterContentBold == null) { letterContentBold = ""; }
+                if(letterContent == null) { letterContent = ""; }
 
                 int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc, 0,0,0,0,0, comments);
 
@@ -378,5 +380,38 @@ namespace ClinicX.Controllers
             }
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> NewDOTLetterPatient()
+        {
+            try
+            {
+                _lvm.patientList = new List<Patient>();
+
+                return View(_lvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-activityitems" });
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> NewDOTLetterPatient(string cguNo)
+        {
+            try
+            {
+                _lvm.patientList = _patientData.GetPatientsInPedigree(cguNo);
+                
+                return View(_lvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-activityitems" });
+            }
+
+        }
+
     }
 }

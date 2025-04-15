@@ -88,19 +88,7 @@ namespace ClinicX.Models
         public Int16? T_O { get; set; }
     }        
     
-    [Table("ViewTestingEligibility", Schema = "dbo")] //Testing eligibility
-    public class Eligibility
-    {
-        [Key]
-        public int ID { get; set; }
-        public int MPI { get; set; }
-        public string? FIRSTNAME { get; set; }
-        public string? LASTNAME { get; set; }
-        public string? CalcTool { get; set; }
-        public int? Gene { get; set; }
-        public string? Score { get; set; }
-        public string? OfferTesting { get; set; }
-    }    
+        
 
     [Table("ListRisk", Schema = "dbo")]
     public class RiskCodes
@@ -210,5 +198,17 @@ namespace ClinicX.Models
         public int BreastTissueLeft { get; set; }
         public int ImplantsRight { get; set; }
         public int ImplantsLeft { get; set; }
-    }    
+    }
+
+    [Table("GeneticTestingEligibilityCodes", Schema = "dbo")]
+    public class GeneCode
+    {
+        [Key]
+        public int ID { get; set; }
+        public string TestCode { get; set; }
+        public string TestType { get; set; }
+        public bool InUse { get; set; }
+    }
+
+    
 }

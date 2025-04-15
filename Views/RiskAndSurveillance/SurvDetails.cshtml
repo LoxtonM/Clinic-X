@@ -16,15 +16,7 @@
 }
 
 <div class="container">
-    <div class="row mb-5 g-2 mt-2">
-        <div class="col-md-2">
-            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="RiskAndSurveillance" asp-action="RiskDetails" asp-route-id=@Model.surveillanceDetails.RiskID>Back to Risk Details</a>
-        </div>
-        <div class="col-md-2">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.surveillanceDetails.MPI)>Patient Details</a>
-        </div>
-    </div>
+    
     <hr />
     
     <h1>Surveillance Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
@@ -79,7 +71,7 @@
                 <div class="col-md-2">
                     <select class="w-100" name="geneChange" asp-for=@Model.surveillanceDetails.GeneChangeID>
                         <option selected value = "">Select...</option>
-                        @foreach(var item in Model.GeneChange)
+                        @foreach(var item in Model.geneChange)
                         {
                             <option value=@item.GeneChangeID>@item.GeneChangeDescription</option>
                         }
@@ -96,13 +88,3 @@
     </div>
 
 </div>
-
-<script>
-    document.getElementById("btnBack").addEventListener("click", GoBack);
-
-        function GoBack()
-        {
-            window.history.back();
-            //window.close();
-        }
-</script>

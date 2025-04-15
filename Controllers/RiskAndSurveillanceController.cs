@@ -1,9 +1,12 @@
 ﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client.Extensions.Msal;
+using MigraDoc.DocumentObjectModel.Tables;
 
 namespace ClinicX.Controllers
 {
@@ -22,7 +25,9 @@ namespace ClinicX.Controllers
         private readonly ISurveillanceCodesData _survCodesData;
         private readonly ITestEligibilityData _testEligibilityData;
         private readonly IMiscData _misc;
-        private readonly IGeneChangeData _gene;
+        private readonly IGeneChangeData _geneChange;
+        private readonly IGeneCodeData _geneCode;
+        private readonly IRelativeData _relData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
@@ -39,9 +44,11 @@ namespace ClinicX.Controllers
             _survData = new SurveillanceData(_clinContext);
             _riskCodesData = new RiskCodesData(_cXContext);
             _survCodesData = new SurveillanceCodesData(_cXContext);
-            _testEligibilityData = new TestEligibilityData(_cXContext);
+            _testEligibilityData = new TestEligibilityData(_clinContext);
             _misc = new MiscData(_config);
-            _gene = new GeneChangeData(_cXContext);
+            _geneChange = new GeneChangeData(_cXContext);
+            _geneCode = new GeneCodeData(_cXContext);
+            _relData = new RelativeData(_clinContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
         }
@@ -72,7 +79,7 @@ namespace ClinicX.Controllers
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rsvm.GeneChange = _gene.GetGeneChangeList();
+                _rsvm.geneChange = _geneChange.GetGeneChangeList();
                 _rsvm.riskDetails = _riskData.GetRiskDetails(id);
                 _rsvm.surveillanceList = _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
                 _rsvm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
@@ -92,7 +99,7 @@ namespace ClinicX.Controllers
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rsvm.GeneChange= _gene.GetGeneChangeList();
+                _rsvm.geneChange= _geneChange.GetGeneChangeList();
                 _rsvm.surveillanceDetails = _survData.GetSurvDetails(id);
                 _rsvm.riskDetails = _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
                 int mpi = _rsvm.surveillanceDetails.MPI;
@@ -243,7 +250,7 @@ namespace ClinicX.Controllers
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rsvm.GeneChange = _gene.GetGeneChangeList();
+                _rsvm.geneChange = _geneChange.GetGeneChangeList();
                 _rsvm.riskDetails = _riskData.GetRiskDetails(id);
                 _rsvm.surveillanceList = _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
                 _rsvm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
@@ -284,7 +291,7 @@ namespace ClinicX.Controllers
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rsvm.GeneChange = _gene.GetGeneChangeList();
+                _rsvm.geneChange = _geneChange.GetGeneChangeList();
                 _rsvm.surveillanceDetails = _survData.GetSurvDetails(id);
                 _rsvm.riskDetails = _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
                 int mpi = _rsvm.surveillanceDetails.MPI;
@@ -296,6 +303,60 @@ namespace ClinicX.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddNewTestingEligibility(int id)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Risk", "ICPID=" + id.ToString(), _ip.GetIPAddress());
+
+                _rsvm.icpCancer = _triageData.GetCancerICPDetails(id);
+                _rsvm.patient = _patientData.GetPatientDetails(_rsvm.icpCancer.MPI);
+                _rsvm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_rsvm.patient.MPI);
+                _rsvm.refID = _rsvm.icpCancer.RefID;                
+                _rsvm.geneCode = _geneCode.GetGeneCodeList();
+                _rsvm.staffCode = staffCode;
+                _rsvm.calculationTools = _riskCodesData.GetCalculationToolsList();
+                _rsvm.relatives = _relData.GetRelativesList(_rsvm.patient.MPI);
+                
+                return View(_rsvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv-addRisk" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewTestingEligibility(int refID, int gene, string tool, string score, string offerTest, int? relative=0)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Testing Eligibility", "", _ip.GetIPAddress());
+                                
+                bool isRelative = false;
+                if(relative != 0)
+                {
+                    isRelative = true;
+                }
+
+                int success = _crud.CallStoredProcedure("TestEligibility", "Create", refID, relative.GetValueOrDefault(), gene, tool, score, offerTest, "",
+                User.Identity.Name, null, null, isRelative);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addSurv(SQL)" }); }
+
+                return View(_rsvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv-addTestEli" });
             }
         }
     }

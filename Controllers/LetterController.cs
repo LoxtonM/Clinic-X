@@ -9,6 +9,10 @@ using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using System.Drawing;
+using System.Diagnostics;
+using PdfSharp.Pdf;
+using ClinicX.Models;
+using ClinicX.Meta;
 
 
 
@@ -1385,6 +1389,470 @@ namespace ClinicX.Controllers
             }
         }
 
+        public void DoRepsum(int icpID, string user)
+        {
+            _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
+            
+            ITriageData triageData = new TriageData(_clinContext);
+            ICPCancer icpc = triageData.GetCancerICPDetails(icpID);
+            ICP icp = triageData.GetICPDetails(icpc.ICPID);
+            Referral referral = _referralData.GetReferralDetails(icp.REFID);
+            _lvm.patient = _patientData.GetPatientDetails(referral.MPI);
+
+            _lvm.referrer = _externalClinicianData.GetClinicianDetails(referral.ReferrerCode);
+            _lvm.gp = _externalClinicianData.GetClinicianDetails(_lvm.patient.GP_Code);
+
+
+            MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
+            Section section = document.AddSection();
+
+            MigraDoc.DocumentObjectModel.Tables.Table table = section.AddTable();
+            MigraDoc.DocumentObjectModel.Tables.Column reportHeader = table.AddColumn();
+            MigraDoc.DocumentObjectModel.Tables.Column logo = table.AddColumn();
+            reportHeader.Format.Alignment = ParagraphAlignment.Left;
+            logo.Format.Alignment = ParagraphAlignment.Right;
+            //MigraDoc.DocumentObjectModel.Tables.Column ourAddressInfo = table.AddColumn();
+            //ourAddressInfo.Format.Alignment = ParagraphAlignment.Right;
+            MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
+            row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
+            row1.Cells[0].AddParagraph().AddFormattedText($"Summary of reports for referral: {referral.refid} / {_lvm.patient.CGU_No}", TextFormat.Bold);
+            
+            MigraDoc.DocumentObjectModel.Tables.Row row2 = table.AddRow();
+            row2.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
+
+
+            string redHeaderText = "***SENSITIVE INFORMATION - DO NOT SHARE***" + Environment.NewLine + "This summary contains information that may have been requested as part of another family members' referral";
+
+            row2.Cells[0].AddParagraph().AddFormattedText(redHeaderText, TextFormat.Bold);
+            row2.Cells[0].Format.Font.Color = Colors.Red;
+
+            MigraDoc.DocumentObjectModel.Shapes.Image imgLogo = row2.Cells[1].AddImage(@"wwwroot\Letterhead.jpg");
+            imgLogo.ScaleWidth = new Unit(0.5, UnitType.Point);
+            imgLogo.ScaleHeight = new Unit(0.5, UnitType.Point);
+
+            table.Columns.Width = 240;
+            reportHeader.Width = 300;
+            logo.Width = 180;
+            row1.Height = 10;
+            row2.Height = 100;
+
+            Paragraph spacer = section.AddParagraph();
+
+            MigraDoc.DocumentObjectModel.Tables.Table table2 = section.AddTable();
+            MigraDoc.DocumentObjectModel.Tables.Column boldTextColumn = table2.AddColumn();
+            MigraDoc.DocumentObjectModel.Tables.Column normalTextColumn = table2.AddColumn();
+            boldTextColumn.Width = 120;
+            normalTextColumn.Width = 500;
+            MigraDoc.DocumentObjectModel.Tables.Row row2_1 = table2.AddRow();
+            MigraDoc.DocumentObjectModel.Tables.Row row2_2 = table2.AddRow();
+            MigraDoc.DocumentObjectModel.Tables.Row row2_3 = table2.AddRow();
+            MigraDoc.DocumentObjectModel.Tables.Row row2_4 = table2.AddRow();
+            table2.Rows.Height = 15;
+
+            row2_1.Cells[0].AddParagraph().AddFormattedText("Referred By:", TextFormat.Bold);
+            row2_1.Cells[1].AddParagraph($"{referral.RefType} - {referral.RefDate.Value.ToString("dd/MM/yyyy")} - {referral.ReferringClinician} at {referral.ReferringFacility}");
+            row2_2.Cells[0].AddParagraph().AddFormattedText("Action on Referral:", TextFormat.Bold);
+            row2_2.Cells[1].AddParagraph(icpc.ActRefInfo);
+            row2_3.Cells[0].AddParagraph().AddFormattedText("Provisional Review:", TextFormat.Bold);
+            string reviewByDetails = "";
+            if (icpc.ReviewedBy != null)
+            {
+                reviewByDetails = $"{_staffUser.GetStaffMemberDetailsByStaffCode(icpc.ReviewedBy).NAME} on {icpc.ReviewedDate.Value.ToString("dd/MM/yyyy")}";
+            }
+            row2_3.Cells[1].AddParagraph(reviewByDetails);
+            row2_4.Cells[0].AddParagraph().AddFormattedText("Final Review:", TextFormat.Bold);
+            string finalReviewDetails = "";
+            if (icpc.FinalReviewedBy != null)
+            {
+                finalReviewDetails = $"{_staffUser.GetStaffMemberDetailsByStaffCode(icpc.FinalReviewedBy).NAME} on {icpc.FinalReviewedDate.Value.ToString("dd/MM/yyyy")}";
+            }
+            row2_4.Cells[1].AddParagraph(finalReviewDetails);
+            Paragraph p1 = section.AddParagraph();
+            p1.AddFormattedText("Additional Pre-clinic Review Notes:", TextFormat.Bold);
+            string additionalNotes = "";
+            if (icpc.Comments != null)
+            {
+                additionalNotes = icpc.Comments;
+            }
+            Paragraph p2 = section.AddParagraph(additionalNotes);
+            spacer = section.AddParagraph();
+
+            Paragraph pRiskHeader = section.AddParagraph();
+            pRiskHeader.AddFormattedText("Risk Summary", TextFormat.Bold);
+            pRiskHeader.Format.Font.Size = 12;
+            RiskData riskData = new RiskData(_clinContext);
+            List<Risk> riskList = riskData.GetRiskListForPatient(_lvm.patient.MPI);
+            if (riskList.Count > 0)
+            {
+                MigraDoc.DocumentObjectModel.Tables.Table tableRisk = section.AddTable();
+                MigraDoc.DocumentObjectModel.Tables.Column rDate = tableRisk.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column rRisk = tableRisk.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column rLifetime = tableRisk.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column r30_40 = tableRisk.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column r40_50 = tableRisk.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column rCalc = tableRisk.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column rSite = tableRisk.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Row rRowHead = tableRisk.AddRow();
+                rRowHead.Cells[0].AddParagraph().AddFormattedText("Date", TextFormat.Bold);
+                rRowHead.Cells[1].AddParagraph().AddFormattedText("Risk", TextFormat.Bold);
+                rRowHead.Cells[2].AddParagraph().AddFormattedText("Lifetime Risk", TextFormat.Bold);
+                rRowHead.Cells[3].AddParagraph().AddFormattedText("Ten Year Risk (30-40)", TextFormat.Bold);
+                rRowHead.Cells[4].AddParagraph().AddFormattedText("Ten Year Risk (40-50)", TextFormat.Bold);
+                rRowHead.Cells[5].AddParagraph().AddFormattedText("Calculation Tool", TextFormat.Bold);
+                rRowHead.Cells[6].AddParagraph().AddFormattedText("Surv Site", TextFormat.Bold);
+
+                foreach (var r in riskList)
+                {
+                    //tableRisk.AddRow();
+                    MigraDoc.DocumentObjectModel.Tables.Row rRow = tableRisk.AddRow();
+                    rRow.Cells[0].AddParagraph(r.RiskDate.Value.ToString("dd/MM/yyyy"));
+                    if (r.RiskName != null)
+                    {
+                        rRow.Cells[1].AddParagraph(r.RiskName);
+                    }
+                    else
+                    {
+                        rRow.Cells[1].AddParagraph(r.RiskCode);
+                    }
+                    rRow.Cells[2].AddParagraph(r.LifetimeRiskPercentage.ToString());
+                    rRow.Cells[3].AddParagraph(r.R30_40.ToString());
+                    rRow.Cells[4].AddParagraph(r.R40_50.ToString());
+                    rRow.Cells[5].AddParagraph(r.CalculationToolUsed);
+                    rRow.Cells[6].AddParagraph(r.SurvSite);
+                }
+
+            }
+            spacer = section.AddParagraph();
+            
+            Paragraph pSurvHeader = section.AddParagraph();
+            pSurvHeader.AddFormattedText("Surveillance Summary", TextFormat.Bold);
+            pSurvHeader.Format.Font.Size = 12;
+            SurveillanceData survData = new SurveillanceData(_clinContext);
+            List<Surveillance> survList = survData.GetSurveillanceList(_lvm.patient.MPI);
+            if (survList.Count > 0)
+            {
+                MigraDoc.DocumentObjectModel.Tables.Table tableSurv = section.AddTable();
+                MigraDoc.DocumentObjectModel.Tables.Column sSite = tableSurv.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sStaA = tableSurv.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sStoA = tableSurv.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sFreq = tableSurv.AddColumn();
+                sFreq.Width = 150;
+                MigraDoc.DocumentObjectModel.Tables.Column sType = tableSurv.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Row sRowHead = tableSurv.AddRow();
+                sRowHead.Cells[0].AddParagraph().AddFormattedText("Site", TextFormat.Bold);
+                sRowHead.Cells[1].AddParagraph().AddFormattedText("Start Age", TextFormat.Bold);
+                sRowHead.Cells[2].AddParagraph().AddFormattedText("Stop Age", TextFormat.Bold);
+                sRowHead.Cells[3].AddParagraph().AddFormattedText("Frequency", TextFormat.Bold);
+                sRowHead.Cells[4].AddParagraph().AddFormattedText("Type", TextFormat.Bold);                
+
+                foreach (var s in survList)
+                {
+                    MigraDoc.DocumentObjectModel.Tables.Row sRow = tableSurv.AddRow();
+                    sRow.Cells[0].AddParagraph(s.SurvSite);
+                    sRow.Cells[1].AddParagraph(s.SurvStartAge.ToString());
+                    sRow.Cells[2].AddParagraph(s.SurvStopAge.ToString());
+                    sRow.Cells[3].AddParagraph(s.SurvFreq);
+                    sRow.Cells[4].AddParagraph(s.SurvType);
+                }
+            }
+            spacer = section.AddParagraph();
+
+            Paragraph pStudiesHeader = section.AddParagraph();
+            pStudiesHeader.AddFormattedText("Studies Summary", TextFormat.Bold);
+            pStudiesHeader.Format.Font.Size = 12;
+            StudyData studyData = new StudyData(_clinContext);
+            List<Study> studyList = studyData.GetStudiesList(_lvm.patient.MPI);
+            if (studyList.Count > 0)
+            {
+                MigraDoc.DocumentObjectModel.Tables.Table tableStudy = section.AddTable();
+                MigraDoc.DocumentObjectModel.Tables.Column sDat = tableStudy.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sNam = tableStudy.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sSta = tableStudy.AddColumn();                                                
+                MigraDoc.DocumentObjectModel.Tables.Row sRowHead = tableStudy.AddRow();
+                sNam.Width = 300;
+                sRowHead.Cells[0].AddParagraph().AddFormattedText("Date Identified", TextFormat.Bold);
+                sRowHead.Cells[1].AddParagraph().AddFormattedText("Study Code/Name", TextFormat.Bold);
+                sRowHead.Cells[2].AddParagraph().AddFormattedText("Status", TextFormat.Bold);
+                
+                foreach (var s in studyList)
+                {
+                    MigraDoc.DocumentObjectModel.Tables.Row sRow = tableStudy.AddRow();
+                    if (s.IdentifiedDate != null)
+                    {
+                        sRow.Cells[0].AddParagraph(s.IdentifiedDate.Value.ToString("dd/MM/yyyy"));
+                    }
+                    sRow.Cells[1].AddParagraph(s.StudyCode + "-" + s.StudyName);
+                    if (s.Status != null)
+                    {
+                        sRow.Cells[2].AddParagraph(s.Status);
+                    }
+                }
+                    
+            }
+
+            spacer = section.AddParagraph();
+            Paragraph pTestHeader = section.AddParagraph();
+            pTestHeader.AddFormattedText("Test Eligibility Summary", TextFormat.Bold);
+            pTestHeader.Format.Font.Size = 12;
+            TestEligibilityData teData = new TestEligibilityData(_clinContext);
+            List<Eligibility> teList = teData.GetTestingEligibilityList(_lvm.patient.MPI);
+            if (teList.Count > 0)
+            {
+                MigraDoc.DocumentObjectModel.Tables.Table tableTE = section.AddTable();
+                MigraDoc.DocumentObjectModel.Tables.Column sDat = tableTE.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sNam = tableTE.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sSta = tableTE.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Row sRowHead = tableTE.AddRow();
+                sRowHead.Cells[0].AddParagraph().AddFormattedText("Gene", TextFormat.Bold);
+                sRowHead.Cells[1].AddParagraph().AddFormattedText("Calc Tool", TextFormat.Bold);
+                sRowHead.Cells[2].AddParagraph().AddFormattedText("Score", TextFormat.Bold);
+                sRowHead.Cells[3].AddParagraph().AddFormattedText("Offer Testing", TextFormat.Bold);
+                sRowHead.Cells[4].AddParagraph().AddFormattedText("Relative", TextFormat.Bold);
+                sRowHead.Cells[5].AddParagraph().AddFormattedText("Name", TextFormat.Bold);
+
+
+                foreach (var s in teList)
+                {
+                    MigraDoc.DocumentObjectModel.Tables.Row sRow = tableTE.AddRow();
+                    sRow.Cells[0].AddParagraph(s.Gene.ToString());                    
+                    sRow.Cells[1].AddParagraph(s.CalcTool);
+                    sRow.Cells[2].AddParagraph(s.Score);
+                    sRow.Cells[3].AddParagraph(s.OfferTesting);
+                    if (s.Relative)
+                    {
+                        sRow.Cells[4].AddParagraph("Yes");
+                    }
+                    else
+                    {
+                        sRow.Cells[4].AddParagraph("No");
+                    }
+                    if (s.RelSurname != null)
+                    {
+                        sRow.Cells[5].AddParagraph($"{s.RelTitle} {s.RelForename1} {s.RelSurname}");
+                    }
+                }
+
+            }
+
+
+            spacer = section.AddParagraph();
+            Paragraph pAppHeader = section.AddParagraph();
+            pAppHeader.AddFormattedText("Appointment Summary", TextFormat.Bold);
+            pAppHeader.Format.Font.Size = 12;
+            ClinicData appData = new ClinicData(_clinContext);
+            List<Appointment> appList = appData.GetClinicByPatientsList(_lvm.patient.MPI);
+            if (appList.Count > 0)
+            {                
+                MigraDoc.DocumentObjectModel.Tables.Table tableApp = section.AddTable();
+                MigraDoc.DocumentObjectModel.Tables.Column aDate = tableApp.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column aTime = tableApp.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column aType = tableApp.AddColumn();
+                aType.Width = 100;
+                MigraDoc.DocumentObjectModel.Tables.Column aWith = tableApp.AddColumn();
+                aWith.Width = 100;
+                MigraDoc.DocumentObjectModel.Tables.Column aCounseled = tableApp.AddColumn();
+                aCounseled.Width = 200;
+                MigraDoc.DocumentObjectModel.Tables.Row aRowHead = tableApp.AddRow();
+                aRowHead.Cells[0].AddParagraph().AddFormattedText("Date", TextFormat.Bold);
+                aRowHead.Cells[1].AddParagraph().AddFormattedText("Time", TextFormat.Bold);
+                aRowHead.Cells[2].AddParagraph().AddFormattedText("Appt Type", TextFormat.Bold);
+                aRowHead.Cells[3].AddParagraph().AddFormattedText("Appt With", TextFormat.Bold);
+                aRowHead.Cells[4].AddParagraph().AddFormattedText("Attended", TextFormat.Bold);
+
+                foreach (var a in appList)
+                {
+                    MigraDoc.DocumentObjectModel.Tables.Row sRow = tableApp.AddRow();
+                    sRow.Cells[0].AddParagraph(a.BOOKED_DATE.Value.ToString("dd/MM/yyyy"));
+                    sRow.Cells[1].AddParagraph(a.BOOKED_TIME.Value.ToString("HH:mm"));
+                    sRow.Cells[2].AddParagraph(a.AppType);
+                    sRow.Cells[3].AddParagraph(a.Clinician);
+                    sRow.Cells[4].AddParagraph(a.Attendance);
+                }
+            }
+
+            spacer = section.AddParagraph();
+            Paragraph pWaitHeader = section.AddParagraph();
+            pWaitHeader.AddFormattedText("Waiting List Summary", TextFormat.Bold);
+            pWaitHeader.Format.Font.Size = 12;
+            WaitingListData wlData = new WaitingListData(_clinContext);
+            List<WaitingList> wlList = wlData.GetWaitingListByCGUNo(_lvm.patient.CGU_No);
+            if (wlList.Count > 0)
+            {
+                MigraDoc.DocumentObjectModel.Tables.Table tableWL = section.AddTable();
+                MigraDoc.DocumentObjectModel.Tables.Column wClin = tableWL.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column wVen = tableWL.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column wAddedBy = tableWL.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column wAddedDate = tableWL.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column wToBeSeenBy = tableWL.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column wComments = tableWL.AddColumn();
+                
+                MigraDoc.DocumentObjectModel.Tables.Row wRowHead = tableWL.AddRow();
+                wRowHead.Cells[0].AddParagraph().AddFormattedText("Clinician", TextFormat.Bold);
+                wRowHead.Cells[1].AddParagraph().AddFormattedText("Clinic", TextFormat.Bold);
+                wRowHead.Cells[2].AddParagraph().AddFormattedText("Added By", TextFormat.Bold);
+                wRowHead.Cells[3].AddParagraph().AddFormattedText("Added Date", TextFormat.Bold);
+                wRowHead.Cells[4].AddParagraph().AddFormattedText("To Be Seen By", TextFormat.Bold);
+                wRowHead.Cells[5].AddParagraph().AddFormattedText("Comments", TextFormat.Bold);
+
+                foreach (var w in wlList)
+                {
+                    MigraDoc.DocumentObjectModel.Tables.Row sRow = tableWL.AddRow();
+                    sRow.Cells[0].AddParagraph(w.ClinicianName);
+                    sRow.Cells[1].AddParagraph(w.ClinicName);
+                    sRow.Cells[2].AddParagraph();
+                    sRow.Cells[3].AddParagraph(w.AddedDate.Value.ToString("dd/MM/yyyy"));
+                    sRow.Cells[4].AddParagraph();
+                    sRow.Cells[4].AddParagraph(w.Comment);
+                }
+            }
+
+
+
+            spacer = section.AddParagraph();
+            Paragraph pDiaryHeader = section.AddParagraph();
+            pDiaryHeader.AddFormattedText("Diary Summary", TextFormat.Bold);
+            pDiaryHeader.Format.Font.Size = 12;
+            DiaryData dData = new DiaryData(_clinContext);
+            List<Diary> dList = dData.GetDiaryList(_lvm.patient.MPI);
+            if (dList.Count > 0)
+            {
+                Paragraph dPatient = section.AddParagraph();
+                dPatient.AddFormattedText($"Patient - {_lvm.patient.FIRSTNAME} {_lvm.patient.LASTNAME}", TextFormat.Bold);
+                dPatient.Format.Font.Color = Colors.Blue;
+                dPatient.Format.Font.Size = 12;
+                MigraDoc.DocumentObjectModel.Tables.Table tableDiary = section.AddTable();
+                MigraDoc.DocumentObjectModel.Tables.Column dDate = tableDiary.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column dAction = tableDiary.AddColumn();
+                dAction.Width = 50;
+                MigraDoc.DocumentObjectModel.Tables.Column dText = tableDiary.AddColumn();
+                dText.Width = 200;
+                MigraDoc.DocumentObjectModel.Tables.Column dDocCode = tableDiary.AddColumn();
+                dDocCode.Width = 50;
+                MigraDoc.DocumentObjectModel.Tables.Column dReceived = tableDiary.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column dRetExpected = tableDiary.AddColumn();
+
+                MigraDoc.DocumentObjectModel.Tables.Row wRowHead = tableDiary.AddRow();
+                wRowHead.Cells[0].AddParagraph().AddFormattedText("Diary Date", TextFormat.Bold);
+                wRowHead.Cells[1].AddParagraph().AddFormattedText("Diary Action", TextFormat.Bold);
+                wRowHead.Cells[2].AddParagraph().AddFormattedText("Diary Text", TextFormat.Bold);
+                wRowHead.Cells[3].AddParagraph().AddFormattedText("DocCode", TextFormat.Bold);
+                wRowHead.Cells[4].AddParagraph().AddFormattedText("Received", TextFormat.Bold);
+                wRowHead.Cells[5].AddParagraph().AddFormattedText("Return Expected", TextFormat.Bold);
+
+                foreach (var d in dList)
+                {
+                    MigraDoc.DocumentObjectModel.Tables.Row sRow = tableDiary.AddRow();
+                    sRow.Cells[0].AddParagraph(d.DiaryDate.Value.ToString("dd/MM/yyyy"));
+                    sRow.Cells[1].AddParagraph(d.DiaryAction);
+                    if (d.DiaryText != null)
+                    {
+                        sRow.Cells[2].AddParagraph(d.DiaryText);
+                    }
+                    if (d.DocCode != null)
+                    {
+                        sRow.Cells[3].AddParagraph(d.DocCode);
+                    }
+                    sRow.Cells[4].AddParagraph();
+                    sRow.Cells[5].AddParagraph();
+                }
+            }
+
+            RelativeData relData = new RelativeData(_clinContext);
+            
+            List<Relative> rList = relData.GetRelativesList(_lvm.patient.MPI);
+            if (rList.Count > 0)
+            {
+                RelativeDiaryData relDiaryData = new RelativeDiaryData(_clinContext);
+
+                foreach (var rel in rList)
+                {
+                    
+
+                    List<RelativeDiary> rdList = relDiaryData.GetRelativeDiaryList(rel.relsid);
+
+                    if (rdList.Count > 0)
+                    {
+                        Paragraph dRel = section.AddParagraph();
+                        dRel.AddFormattedText($"Relative - {rel.RelTitle}  {rel.RelForename1} {rel.RelSurname}", TextFormat.Bold);
+                        dRel.Format.Font.Color = Colors.Blue;
+                        dRel.Format.Font.Size = 12;
+
+                        MigraDoc.DocumentObjectModel.Tables.Table tableRelDiary = section.AddTable();
+                        MigraDoc.DocumentObjectModel.Tables.Column dDate = tableRelDiary.AddColumn();
+                        MigraDoc.DocumentObjectModel.Tables.Column dAction = tableRelDiary.AddColumn();
+                        dAction.Width = 50;
+                        MigraDoc.DocumentObjectModel.Tables.Column dText = tableRelDiary.AddColumn();
+                        dText.Width = 200;
+                        MigraDoc.DocumentObjectModel.Tables.Column dDocCode = tableRelDiary.AddColumn();
+                        dDocCode.Width = 50;
+                        MigraDoc.DocumentObjectModel.Tables.Column dReceived = tableRelDiary.AddColumn();
+                        MigraDoc.DocumentObjectModel.Tables.Column dRetExpected = tableRelDiary.AddColumn();
+
+                        MigraDoc.DocumentObjectModel.Tables.Row wRowHead = tableRelDiary.AddRow();
+                        wRowHead.Cells[0].AddParagraph().AddFormattedText("Diary Date", TextFormat.Bold);
+                        wRowHead.Cells[1].AddParagraph().AddFormattedText("Diary Action", TextFormat.Bold);
+                        wRowHead.Cells[2].AddParagraph().AddFormattedText("Diary Text", TextFormat.Bold);
+                        wRowHead.Cells[3].AddParagraph().AddFormattedText("DocCode", TextFormat.Bold);
+                        wRowHead.Cells[4].AddParagraph().AddFormattedText("Received", TextFormat.Bold);
+                        wRowHead.Cells[5].AddParagraph().AddFormattedText("Return Expected", TextFormat.Bold);
+
+                        foreach (var d in rdList)
+                        {
+                            MigraDoc.DocumentObjectModel.Tables.Row sRow = tableRelDiary.AddRow();
+                            sRow.Cells[0].AddParagraph(d.DiaryDate.ToString("dd/MM/yyyy"));
+                            sRow.Cells[1].AddParagraph(d.DiaryAction);
+                            if (d.DiaryText != null)
+                            {
+                                sRow.Cells[2].AddParagraph(d.DiaryText);
+                            }
+                            if (d.DocCode != null)
+                            {
+                                sRow.Cells[3].AddParagraph(d.DocCode);
+                            }
+                            sRow.Cells[4].AddParagraph(d.DiaryRec.Value.ToString("dd/MM/yyyy"));
+                            if (d.NotReturned)
+                            {
+                                sRow.Cells[5].AddParagraph("Yes");
+                            }
+                            else
+                            {
+                                sRow.Cells[5].AddParagraph("No");
+                            }
+                        }
+                    }
+                }
+            }
+            spacer = section.AddParagraph();
+            Paragraph pFamHeader = section.AddParagraph();
+            pFamHeader.AddFormattedText("Family History Summary", TextFormat.Bold);
+            Paragraph pFam = section.AddParagraph("PLACEHOLDER");
+            
+            
+            
+            
+            
+            spacer = section.AddParagraph();
+
+
+
+            string key = "Reason not requested:\r\n" +
+                "C = consent known to be declined\r\n" +
+                "E = too early for cancer registry records\r\n" +
+                "N = consent form not returned to department\r\n" +
+                "O = overseas registry; unable to request details\r\n" +
+                "P = patient did not forward consent form to relative\r\n" +
+                "R = details registered on database only (older files)\r\n" +
+                "S = information obtained from a different (non cancer registry) source\r\n" +
+                "X = insufficient information available to request details\r\n" +
+                "Z = other reason, not specified above";
+
+
+            PdfDocumentRenderer pdf = new PdfDocumentRenderer();
+            pdf.Document = document;
+            pdf.RenderDocument();
+            pdf.PdfDocument.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf"));
+        }
+
         public void DoConsentForm(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
             string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
             int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false)
@@ -1403,7 +1871,7 @@ namespace ClinicX.Controllers
             //creates a new PDF document
             PdfSharpCore.Pdf.PdfDocument document = new PdfSharpCore.Pdf.PdfDocument();
             document.Info.Title = "My PDF";
-            PdfPage page = document.AddPage();
+            PdfSharpCore.Pdf.PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
             var tf = new XTextFormatter(gfx);
             //set the fonts used for the letters

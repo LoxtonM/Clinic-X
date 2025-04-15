@@ -1,0 +1,38 @@
+﻿@model ClinicX.ViewModels.DictatedLetterVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Dictated Letters";
+    ViewData["Page"] = "/ Dictated Letter / Edit";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Dictated Letters List", "Index", "DictatedLetter", new { }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <form asp-action="NewDOTLetterPatient">
+            <input name="cguNo" asp-for=@Model.patientDetails.CGU_No />
+            <button class="btn btn-success">Search</button>
+        </form>
+    </div>
+
+    
+    @if(Model.patientList.Count > 0)
+    {
+        @foreach(var item in Model.patientList)
+        {
+            <div class="row mb-5 g-5">
+                <div class="col-md-8">@item.CGU_No @item.FIRSTNAME @item.LASTNAME - @item.DOB.Value.ToString("dd/MM/yyyy") - NHS No: @item.SOCIAL_SECURITY</div>
+
+                <div class="col-md-2"><a type="button" class="btn btn-outline-success" asp-action="ActivityItems" asp-route-id=@item.MPI>Create Letter</a></div>
+            </div>
+        }
+    }
+
+    
+</div>

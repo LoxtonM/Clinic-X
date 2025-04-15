@@ -7,6 +7,7 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class ICPVM
     {
+        public Patient patient {  get; set; }
         public List<StaffMember> staffMembers { get; set; }
         public List<StaffMember> consultants { get; set; }
         public List<StaffMember> GCs { get; set; }

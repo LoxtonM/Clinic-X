@@ -15,19 +15,7 @@
 }
 
 <div class="container card">
-    <div class="row mb-5 g-2 mt-2">
-        <div class="col-md-2">
-            <button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
-        </div>
-        @*
-        <div class="col-md-6"></div>
-        <div class="col-md-1">
-            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
-        </div>
-        *@
-    </div>
-
+    
     <div class="row mb-5 g-5">        
         <h1>New Risk Item for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>       
     </div>
@@ -156,15 +144,8 @@
 
 <script>
 
-    document.getElementById("chkUseLetter").addEventListener("change", SetUseLetter);
-    document.getElementById("btnBack").addEventListener("click", GoBack);
+    document.getElementById("chkUseLetter").addEventListener("change", SetUseLetter);  
     window.addEventListener("load", LoadForm);
-
-    function GoBack() 
-    {
-        window.history.back();
-        //window.close();
-    }
 
     function SetUseLetter()
     {

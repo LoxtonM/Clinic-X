@@ -9,23 +9,19 @@
 @{
     ViewBag.HomeButton = new[]
     {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Clinical Notes Index", "Index", "ClinicalNote", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
     };
 }
 
 <div class="container card">
-    <div class="row g-2 mb-5 mt-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        @*<div class="col-md-2">
-            <a type="button" id="btnBack" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Clinical Notes Index</a>
-        </div>*@
-    </div>
-
+    
     <div class ="row g-5 mb-5">
-        <h2>Choose appointment to create new clinical note for @Model.patient.FIRSTNAME @Model.patient.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h2>
+        <h2>Choose activity to create new clinical note for @Model.patient.FIRSTNAME @Model.patient.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h2>
     </div>
-
+    
     <div class="d-grid">
+        <h3>Appointments</h3>
         <table class="table">
             <thead>
                 <tr>
@@ -45,6 +41,28 @@
                         <td>@item.BOOKED_TIME.Value.ToString("hh:mm")</td>
                     </tr>                   
                 }          
+            </tbody>
+        </table>
+        <h3>Referrals</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Referral Date</th>
+                    <th>Referred By</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Referrals)
+                {
+                    <tr>
+                        <td><a asp-controller="ClinicalNote" asp-action="Create" asp-route-id=@item.refid>Select</a></td>
+                        <td>@item.RefType</td>
+                        <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                        <td>@item.ReferringClinician - @item.ReferringFacility</td>                        
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

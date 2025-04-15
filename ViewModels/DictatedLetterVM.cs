@@ -15,6 +15,7 @@ namespace ClinicX.ViewModels
         public List<Patient> patients { get; set; }
         public List<StaffMember> staffMemberList { get; set;}
         public Patient patientDetails { get; set; }        
+        public List<Patient> patientList { get; set; }
         public ActivityItem activityDetails { get; set; }
         public ExternalFacility referrerFacility { get; set; }
         public ExternalClinician referrer { get; set; }

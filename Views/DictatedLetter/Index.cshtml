@@ -6,14 +6,17 @@
     ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
 
+@{
+    ViewBag.HomeButton = new[]
+    {        
+        Html.ActionLink("New Dictated Letter", "NewDOTLetterPatient", "DictatedLetter", new { }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Other Clinicians' Letters", "OtherCliniciansLetters", "DictatedLetter", new { }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
 
 <div class="container card">
-    <div>
-        <a type="button" class="btn btn-default btn-success" asp-action="OtherCliniciansLetters">Other Clinicians' Letters</a>
-    </div>
-
    
-
     <div class="d-grid">
         @if (Model.dictatedLettersForApproval.Count() == 0)
         {

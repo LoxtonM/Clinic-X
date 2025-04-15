@@ -11,6 +11,7 @@ namespace ClinicX.ViewModels
         public List<ActivityItem> activityItems { get; set; }    
         public Appointment Clinic { get; set; }
         public List<Appointment> Clinics { get; set; }
+        public List<Referral> Referrals { get; set; }
         public Referral linkedReferral { get; set; }       
         public List<ClinicalNoteType> noteTypeList { get; set; }
         public Note clinicalNote { get; set; }

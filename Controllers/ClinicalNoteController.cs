@@ -20,6 +20,7 @@ namespace ClinicX.Controllers
         private readonly IActivityData _activityData;
         private readonly IClinicalNoteData _clinicalNoteData;        
         private readonly IClinicData _clinicData;
+        private readonly IReferralData _referralData;
         private readonly IMiscData _misc;        
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
@@ -34,6 +35,7 @@ namespace ClinicX.Controllers
             _activityData = new ActivityData(_clinContext);
             _clinicalNoteData = new ClinicalNoteData(_cXContext);
             _clinicData = new ClinicData(_clinContext);
+            _referralData = new ReferralData(_clinContext);
             _crud = new CRUD(_config);
             _cvm = new ClinicalNoteVM();
             _misc = new MiscData(_config);
@@ -159,6 +161,7 @@ namespace ClinicX.Controllers
 
                 _cvm.patient = _patientData.GetPatientDetails(id);
                 _cvm.Clinics = _clinicData.GetClinicByPatientsList(id);
+                _cvm.Referrals = _referralData.GetActiveReferralsListForPatient(id);
 
                 return View(_cvm);
             }

@@ -15,15 +15,7 @@
 }
 
 <div class="container card">
-    <div class="row mb-5 g-2 mt-2">
-        @*<div class="col-md-2">
-            
-            <a class="btn btn-default btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@Model.riskDetails.ICP_Cancer_ID>Back to Cancer ICP</a>
-        </div>
-        <div class="col-md-2">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.riskDetails.MPI)>Patient Details</a>
-        </div>*@
-    </div>
+    
     <hr />
 
     <div class="row mb-5 g-5">
@@ -163,13 +155,3 @@
         </div>
     </div>
 </div>
-
-<script>
-document.getElementById("btnBack").addEventListener("click", GoBack);
-
-    function GoBack()
-    {
-        window.history.back();
-        //window.close();
-    }
-</script>

@@ -591,6 +591,7 @@
                             <td>Pathway</td>
                             <td>Consultant</td>
                             <td>GC</td>
+                            <td></td>
                         </tr>
                     </thead>
                     <tbody>
@@ -613,6 +614,20 @@
                                 <td>@r.PATHWAY</td>
                                 <td>@r.LeadClinician</td>
                                 <td>@r.GC</td>
+                                @if(@r.PATHWAY.Contains("Cancer"))
+                                {
+                                    foreach(var i in Model.icpCancerList)
+                                    {
+                                        if(i.RefID == r.refid)
+                                        {
+                                            <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@i.ICP_Cancer_ID>ICP Review</a></td>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
                             </tr>
                         }
                     </tbody>

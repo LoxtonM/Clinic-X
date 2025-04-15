@@ -26,5 +26,7 @@ namespace ClinicX.ViewModels
         public bool isCancerPPQScheduled { get; set; }
         public bool isGeneralPPQScheduled { get; set; }
         public bool isPatientInPhenotips { get; set; }
+        public int cancerICPID { get; set; }
+        public List<ICPCancer> icpCancerList { get; set; }
     }
 }

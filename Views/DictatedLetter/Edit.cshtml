@@ -407,7 +407,7 @@
     document.getElementById("btnAddCC").addEventListener("click", AddCC);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     window.addEventListener("load", LoadLetter);
-    window.addEventListener("load", LoadEDMSLink);
+    //window.addEventListener("load", LoadEDMSLink);
 
     function LoadEDMSLink() 
     {
@@ -443,6 +443,8 @@
             }
         }    
         document.getElementById("txtisAddressChanged").value = "false";        
+
+        LoadEDMSLink();
     }
 
     function SaveLetter() 
@@ -450,10 +452,10 @@
         document.getElementById("txtLetterContent").value = document.getElementById("letterText").innerHTML.trim();
         //we have to enable them or it won't pass the parameters to the function
         document.getElementById("ddlLetterStatus").disabled = false;     
-        if (CheckFormValid())
-        {
+        //if (CheckFormValid())
+        //{
             document.getElementById("DictatedLetter").submit();
-        }
+        //}
         //we can't do C# validation because there's simply no way to display the message,
         //because the only way to refresh the page wipes everything!!
     }
@@ -481,8 +483,10 @@
         }
         else
         {
-            document.getElementById("DictatedLetterApproval").submit();        
-        
+            if (CheckFormValid())
+            {
+                document.getElementById("DictatedLetterApproval").submit();        
+            }
             document.getElementById("btnApprove").hidden = true;
             document.getElementById("btnUnapprove").hidden = false;
             document.getElementById("ddlLetterStatus").disabled = false;

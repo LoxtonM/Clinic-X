@@ -6,6 +6,7 @@ using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using APIControllers.Controllers;
 using APIControllers.Data;
+using System.Linq;
 
 namespace ClinicX.Controllers
 {
@@ -27,6 +28,7 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         private readonly IConstantsData _constantsData;
         private readonly IAgeCalculator _ageCalculator;
+        private readonly ITriageData _triageData;
         private readonly APIController _api;
 
         public PatientController(ClinicalContext context, DocumentContext docContext, APIContext apiContext, IConfiguration config)
@@ -46,7 +48,8 @@ namespace ClinicX.Controllers
             _hpoData = new HPOCodeData(_clinContext);
             _audit = new AuditService(_config);
             _constantsData = new ConstantsData(_docContext);
-            _ageCalculator = new AgeCalculator();            
+            _ageCalculator = new AgeCalculator();
+            _triageData = new TriageData(_clinContext);
             _api = new APIController(_apiContext, _config);
         }
         
@@ -88,10 +91,19 @@ namespace ClinicX.Controllers
                 }
                 _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
                 _pvm.hpoTermDetails = _hpoData.GetHPOTermsAddedList(id);
-                _pvm.referrals = _referralData.GetReferralsList(id);
+                _pvm.referrals = _referralData.GetReferralsList(id).Where(r => r.COMPLETE == "Active").ToList();
                 _pvm.referralsActiveGeneral = _pvm.referrals.Where(r => r.COMPLETE == "Active" && r.PATHWAY.Contains("General")).ToList();
-                _pvm.referralsActiveCancer = _pvm.referrals.Where(r => r.COMPLETE == "Active" && r.PATHWAY == "Cancer").ToList();
+                _pvm.referralsActiveCancer = _pvm.referrals.Where(r => r.COMPLETE == "Active" && r.PATHWAY.Contains("Cancer")).ToList();
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
+                _pvm.icpCancerList = new List<ICPCancer>();
+
+                foreach (var r in _pvm.referralsActiveCancer)
+                {   
+                    ICP icp = _triageData.GetICPDetailsByRefID(r.refid);
+                    ICPCancer icpc = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+                    _pvm.icpCancerList.Add(icpc);
+                }
+
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
 

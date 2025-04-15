@@ -22,7 +22,9 @@ namespace ClinicX.ViewModels
         public List<SurvTypeCodes> survTypeCodes { get; set; }
         public List<SurvFreqCodes> survFreqCodes { get; set; }
         public List<DiscontinuedReasonCodes> discontinuedReasonCodes { get; set; }
-        public List<GeneChange> GeneChange { get; set; }
+        public List<GeneChange> geneChange { get; set; }
+        public List<GeneCode> geneCode { get; set; }
+        public List<Relative> relatives { get; set; }
         public int refID { get; set; }
         public int riskID { get; set; }
         public string staffCode { get; set; }

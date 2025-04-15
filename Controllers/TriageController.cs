@@ -38,6 +38,7 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         private readonly IAgeCalculator _ageCalculator;
+        private readonly IPatientData _patientData;
 
         public TriageController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
@@ -54,7 +55,7 @@ namespace ClinicX.Controllers
             _icpActionData = new ICPActionData(_clinContext);
             _riskData = new RiskData(_clinContext);
             _survData = new SurveillanceData(_clinContext);
-            _testEligibilityData = new TestEligibilityData(_cXContext);
+            _testEligibilityData = new TestEligibilityData(_clinContext);
             _diaryData = new DiaryData(_clinContext);
             _relativeData = new RelativeData(_clinContext);
             _cancerRequestData = new CancerRequestData(_cXContext);
@@ -65,6 +66,7 @@ namespace ClinicX.Controllers
             _lc = new LetterController(_clinContext, _docContext);
             _audit = new AuditService(_config);
             _ageCalculator = new AgeCalculator();
+            _patientData = new PatientData(_clinContext);
         }
 
         [Authorize]
@@ -99,6 +101,7 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - ICP Details", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.triage = _triageData.GetTriageDetails(id);
+                _ivm.patient = _patientData.GetPatientDetails(_ivm.triage.MPI);
 
                 if (_triageData.GetCancerICPCountByICPID(id) > 0 || _triageData.GetGeneralICPCountByICPID(id) > 0) { _ivm.isICPTriageStarted = true; }
 
@@ -106,7 +109,7 @@ namespace ClinicX.Controllers
 
                 //_ivm.triage = _vm.GetTriageDetails(id);
                 _ivm.referralDetails = _referralData.GetReferralDetails(_ivm.triage.RefID);
-                _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList();
+                _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList().OrderBy(f => f.NAME).ToList();
                 _ivm.icpGeneral = _triageData.GetGeneralICPDetails(id);
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
                 _ivm.cancerActionsList = _icpActionData.GetICPCancerActionsList();
@@ -114,6 +117,7 @@ namespace ClinicX.Controllers
                 _ivm.generalActionsList2 = _icpActionData.GetICPGeneralActionsList2();
                 _ivm.loggedOnUserType = _staffUser.GetStaffMemberDetails(User.Identity.Name).CLINIC_SCHEDULER_GROUPS;
                 _ivm.priorityList = _priorityData.GetPriorityList();
+                _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
                 if (_ivm.referralDetails.RefDate != null)
                 {
                     _ivm.referralAgeDays = _ageCalculator.DateDifferenceDay(_ivm.referralDetails.RefDate.GetValueOrDefault(), DateTime.Today);
@@ -249,7 +253,9 @@ namespace ClinicX.Controllers
                     _lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer);
                 }
 
-                return RedirectToAction("Index");
+                _ivm.icpCancer = _triageData.GetCancerICPDetailsByICPID(icpID);
+
+                return RedirectToAction("CancerReview", "Triage", new {id = _ivm.icpCancer.ICP_Cancer_ID });
             }
             catch (Exception ex)
             {
@@ -676,6 +682,15 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-returnToCons" });
             }
+        }
+
+        public async Task<IActionResult> DoRepsum(int icpid)
+        {
+            LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _docContext);
+
+            let.DoRepsum(icpid, User.Identity.Name);
+
+            return RedirectToAction("CancerReview", new { id = icpid });
         }
     }
 }
