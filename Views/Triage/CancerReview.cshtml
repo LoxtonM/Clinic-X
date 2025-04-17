@@ -251,16 +251,17 @@
                 Final Review Complete:
             </div>
             <div class="col-md-4">
-                <select name="finalReview">
+                <select id="ddlFinalReviewComplete" name="finalReview">
                     <option value="No">No</option>
                     <option value="Yes">Yes - complete and remove from list</option>
+                    <option value="Complete">Completed</option>
                 </select>
             </div>
             <div class="col-md-2">
                 To Be Reviewed By:
             </div>
             <div class="col-md-4">
-                <select name="toBeReviewedBy" asp-for=@Model.icpCancer.ToBeReviewedby>
+                <select id="ddlToBeReviewedBy" name="toBeReviewedBy" asp-for=@Model.icpCancer.ToBeReviewedby>
                     <option value="">Select...</option>
                     @foreach(var item in Model.staffMembers)
                     {
@@ -278,9 +279,8 @@
     </form>
     <div class="row mb-5 g-5">
         <div class="col-md-4">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="DoRepsum" asp-route-icpid=@Model.icpCancer.ICP_Cancer_ID>Create Repsum</a>
-        </div>
-       
+            @*<a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="DoRepsum" asp-route-icpid=@Model.icpCancer.ICP_Cancer_ID asp-route-diaryID="12345">Create Repsum</a>*@
+        </div>       
     </div>
 
     <div class="row mb-5 g-5">
@@ -308,6 +308,8 @@
     {
         var _reviewOption = document.getElementById("ddlLetter");       
         var _clinic = document.getElementById("ddlClinic");
+        var _finalreview = document.getElementById("ddlFinalReviewComplete");
+        var _toBeReviewed = document.getElementById("ddlToBeReviewedBy");
 
         if (_reviewOption.value != 1) 
         { 
@@ -320,6 +322,15 @@
             document.getElementById("ddlClinician").disabled = true;
             document.getElementById("txtComments").disabled = true;
         }
+        
+
+        if("@Model.icpCancer.FinalReviewed" != null && "@Model.icpCancer.FinalReviewed" != "")
+        {
+            _finalreview.value = "Complete";
+            _finalreview.disabled = true;
+            _toBeReviewed.disabled = true;
+            document.getElementById("btnSave").disabled = true;
+        }
 
     }
     
@@ -327,6 +338,12 @@
     {
         if (CheckFormValid() == 1) 
         {
+            document.getElementById("ddlFinalReviewComplete").disabled=false;
+            document.getElementById("ddlToBeReviewedBy").disabled=false;
+            document.getElementById("ddlClinician").disabled=false;
+            document.getElementById("ddlClinic").disabled=false;
+            document.getElementById("txtComments").disabled=false;
+            document.getElementById("ddlLetter").disabled=false;
             document.getElementById("CancerReviewForm").submit();
         }
     }

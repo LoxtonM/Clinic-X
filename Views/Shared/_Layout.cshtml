@@ -12,7 +12,7 @@
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 </head>
-<body>
+<body class="bodyStyle">
     <header class="mb-7">
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
             <div class="container-fluid">
@@ -94,6 +94,12 @@
             @RenderBody()
         </main>
     </div>
+    <footer class="fixed-bottom">
+        <div class="col-md-1">
+            <button type="button" class="btn btn-outline-dark" id="btnLargeFont">Large Fonts</button>
+            <input type="checkbox" id="chkLargeFont" hidden="true"/>
+        </div>
+    </footer>
 
     
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -108,8 +114,46 @@
     
     <script>
 
+        document.getElementById("btnLargeFont").addEventListener("click", ChangeFont);
+
+        function ChangeFont()
+        {   
+            const box = document.getElementById("chkLargeFont");
+            box.checked = !box.checked;
+            window.sessionStorage.setItem("isBoxChecked", box.checked);            
+            SetFont();
+        }
+
+        function SetFont()
+        {
+            const box = document.getElementById("chkLargeFont");
+            const bodyTag = document.querySelector(".bodyStyle");
+                        
+            if(box.checked)
+            {
+                bodyTag.style.fontSize = "20px";
+            }
+            else
+            {
+                bodyTag.style.fontSize = "14px";
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () 
         {
+            const box = document.getElementById("chkLargeFont");
+            
+            if(window.sessionStorage.getItem("isBoxChecked") == "true")
+            {                
+                box.checked = true;
+            }
+            else
+            {
+                box.checked = false; //because for some reason it simply can't evaluate it the usual way!!
+            }
+            
+            SetFont();
+
             $('.defaultTable').DataTable({
                 info: true,
                 order: false,

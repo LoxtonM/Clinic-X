@@ -349,8 +349,8 @@ namespace ClinicX.Controllers
             
             if (toBeReviewedBy == null) { toBeReviewedBy = ""; }//because the default value isn't being assigned for some reason!            
 
-            if(clinician != null && clinician != "")
-            {                
+            if(clinician != null && clinician != "" && _ivm.icpCancer.WaitingListVenue == null)
+            {  
                 int successWL = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, clinic, "Cancer", clinician, comments,
                     User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
 
@@ -365,9 +365,18 @@ namespace ClinicX.Controllers
             //}
 
             int success = _crud.CallStoredProcedure("ICP Cancer", "ICP Review", id, letter.GetValueOrDefault(), 0, reviewBy, finalReview, toBeReviewedBy, addNotes,
-                    User.Identity.Name, null, null, false, false);
+                    User.Identity.Name, null, null, false, false, 0,0,0,clinician, clinic, comments);
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canReview" }); }
+
+            if(finalReview == "Yes")
+            {
+                int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "REPSUM", "", "", User.Identity.Name, null, null, false, false);
+                int diaryID = _diaryData.GetLatestDiaryByRefID(refID, "REPSUM").DiaryID;
+
+                LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _docContext);
+                let.DoRepsum(_ivm.icpCancer.ICP_Cancer_ID, diaryID, User.Identity.Name);
+            }
 
             return RedirectToAction("CancerReview", new { id = id });
         }
@@ -684,11 +693,11 @@ namespace ClinicX.Controllers
             }
         }
 
-        public async Task<IActionResult> DoRepsum(int icpid)
+        public async Task<IActionResult> DoRepsum(int icpid, int diaryID)
         {
             LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _docContext);
 
-            let.DoRepsum(icpid, User.Identity.Name);
+            let.DoRepsum(icpid, diaryID, User.Identity.Name);
 
             return RedirectToAction("CancerReview", new { id = icpid });
         }

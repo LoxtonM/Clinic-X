@@ -39,3 +39,7 @@ body {
 .mediumfonttext {
     font-size: medium;
 }
+
+.bodyStyle {
+    font-size: 14px;
+}
