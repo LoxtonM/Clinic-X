@@ -370,10 +370,10 @@
                         </div>
                         <div class="row">
                             <div class="col-md-10">
-                                <textarea rows="8" cols="40" id="txtCC"></textarea>
+                                <textarea rows="8" cols="40" id="txtCC" name="cc"></textarea>
                             </div>
                             <div class="col-md-2">
-                                <input type="text" id="txtCCCode" name="cc" hidden="true"/>
+                                @*<input type="text" id="txtCCCode" hidden="true"/>*@
                             </div>
                         </div>
                     </div>            
@@ -806,7 +806,7 @@
                 "@Model.referrerFacility.STATE" + "\n" +
                 "@Model.referrerFacility.ZIP";
 
-            document.getElementById("txtCCCode").value = "@Model.referrer.MasterClinicianCode";
+            @*document.getElementById("txtCCCode").value = "@Model.referrer.MasterClinicianCode";*@
         }
         else if (ccCode == "Patient") {
             sName = "@Model.patientDetails.Title" + " " + "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
@@ -816,7 +816,7 @@
                 "@Model.patientDetails.ADDRESS4" + "\n" +
                 "@Model.patientDetails.POSTCODE";
 
-            document.getElementById("txtCCCode").value = "Patient";
+            @*document.getElementById("txtCCCode").value = "Patient";*@
         }
         else if (ccCode == "GP") {
             sName = "@Model.patientDetails.GP"
@@ -826,7 +826,7 @@
                 "@Model.GPFacility.STATE" + "\n" +
                 "@Model.GPFacility.ZIP";
 
-            document.getElementById("txtCCCode").value = "@Model.patientDetails.GP_Code";
+            @*document.getElementById("txtCCCode").value = "@Model.patientDetails.GP_Code";*@
         }
         else 
         { 
@@ -846,7 +846,7 @@
                 {
                     sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
                     facilityCode = facilityArray[k];
-                    document.getElementById("txtCCCode").value = _ccCode;
+                    @*document.getElementById("txtCCCode").value = _ccCode;*@
                 }
             }
 

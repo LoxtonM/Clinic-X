@@ -315,7 +315,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, cc, "", "", "", User.Identity.Name);
+                //int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, cc, "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, "", "", "", cc, User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addCC(SQL)" }); }
 
