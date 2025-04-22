@@ -76,7 +76,7 @@
                 <div class="col-md-6"></div>
             </div>
         
-            <div class="row mb-5">
+            <div class="row">
                 <div class="col-md-2">
                     Contact Outcome:
                 </div>
@@ -89,10 +89,11 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1"></div> @*because text-right refuses to work for some reason!!*@
+                <div class="col-md-1">
                     <label for="ddlSeenBy" id="lblSeenBy">Seen by:</label>
                 </div>
-                <div class="col-md-4">                    
+                <div class="col-md-4">
                     <select asp-for=@Model.activityItem.SEEN_BY id="ddlSeenBy" name="seenBy" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach (var c in Model.staffMembers)
@@ -102,9 +103,39 @@
                     </select>
                 </div>
             </div>
+            <div id="AdditionalClinicians" hidden="true">
+                <div class="row">
+                    <div class="col-md-8"></div>                
+                    <div class="col-md-4">
+                        <select asp-for=@Model.activityItem.SEEN_BY2 id="ddlSeenBy2" name="seenBy2" class="w-100" hidden="true">
+                            <option value="" selected>select...</option>
+                            @foreach (var c in Model.staffMembers)
+                            {
+                                <option value="@c.STAFF_CODE">@c.NAME</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-4">
+                        <select asp-for=@Model.activityItem.SEEN_BY3 id="ddlSeenBy3" name="seenBy3" class="w-100" hidden="true">
+                            <option value="" selected>select...</option>
+                            @foreach (var c in Model.staffMembers)
+                            {
+                                <option value="@c.STAFF_CODE">@c.NAME</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-5">
+            </div>
+
             <div id="ContactDetails">
                 <div class="row mb-5">
-                    <div class="col-md-2">
+                    <div class="col-md-2 text-right">
                         <label for="txtArrivalTime" id="lblArrivalTime">Arrival Time:</label>
                     </div>
                     <div class="col-md-6">                        
@@ -215,6 +246,18 @@
                 _ethnic.disabled = true;
                 _complete.hidden = true;
                 document.getElementById("lblCloseRef").hidden = true;
+                document.getElementById("AdditionalClinicians").hidden = false;
+                
+                if("@Model.activityItem.SEEN_BY2" != null && "@Model.activityItem.SEEN_BY2" != "")
+                {
+                    document.getElementById("ddlSeenBy2").hidden = false;
+                    document.getElementById("ddlSeenBy2").disabled = true;
+                }
+                if("@Model.activityItem.SEEN_BY3" != null && "@Model.activityItem.SEEN_BY3" != "")
+                {
+                    document.getElementById("ddlSeenBy3").hidden = false;
+                    document.getElementById("ddlSeenBy3").disabled = true;
+                }
             }
             else 
             {
@@ -250,6 +293,7 @@
                 document.getElementById("txtNoPatientsSeen").hidden = true;
                 document.getElementById("lblLetterRequired").hidden = false;
                 document.getElementById("ddlLetterRequired").hidden = false;
+                document.getElementById("AdditionalClinicians").hidden = true;
             }
             else
             {
@@ -264,6 +308,7 @@
                 document.getElementById("txtNoPatientsSeen").hidden = false;
                 document.getElementById("lblLetterRequired").hidden = false;
                 document.getElementById("ddlLetterRequired").hidden = false;
+                document.getElementById("AdditionalClinicians").hidden = false;
             }
             
         }

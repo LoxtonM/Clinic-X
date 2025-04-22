@@ -101,6 +101,23 @@ namespace ClinicX.Controllers
                 _cvm.Clinic = _clinicData.GetClinicDetails(id);
                 _cvm.linkedReferral = _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
 
+                if(_cvm.Clinic.Attendance.Contains("Att"))
+                {
+                    _cvm.seenByString = $"Seen by {_cvm.Clinic.SeenByClinician}";
+                    
+                    if(_cvm.Clinic.SeenBy2 != null)
+                    {
+                        _cvm.seenByString = _cvm.seenByString + $", {_cvm.Clinic.SeenByClinician2}";
+                    }
+                    if (_cvm.Clinic.SeenBy3 != null)
+                    {
+                        _cvm.seenByString = _cvm.seenByString + $", {_cvm.Clinic.SeenByClinician3}";
+                    }
+
+                    _cvm.seenByString = _cvm.seenByString + $" on {_cvm.Clinic.BOOKED_DATE.Value.ToString("dd/MM/yyyy")} at {_cvm.Clinic.ArrivalTime.Value.ToString("HH:mm")}";
+                }                
+
+
                 if (_cvm.Clinic == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
@@ -147,7 +164,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, string? ethnicity, bool? isComplete = false)
+        public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, string? ethnicity, bool? isComplete = false, string? seenBy2="", string? seenBy3="")
         {
             try
             {
@@ -175,7 +192,7 @@ namespace ClinicX.Controllers
                 }
                 
                 int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
-                    letterRequired, ethnicity, User.Identity.Name, arrivalTime, null, isClockStop, isComplete);
+                    letterRequired, ethnicity, User.Identity.Name, arrivalTime, null, isClockStop, isComplete, 0,0,0,seenBy2,seenBy3);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="Clinic-edit(SQL)" }); }
 

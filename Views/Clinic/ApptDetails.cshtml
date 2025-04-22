@@ -103,20 +103,38 @@
             }
             @if (Model.Clinic.BOOKED_DATE <= DateTime.Now)
             {
-                @if (@Model.Clinic.Attendance != null && @Model.Clinic.Attendance != "")
+                @if (@Model.Clinic.Attendance != null && @Model.Clinic.Attendance != "NOT RECORDED")
                 {
                     <dt class="col-sm-2">
-                        @Model.Clinic.Attendance:
+                        Attendance:
                     </dt>
                     <dd class="col-sm-10">
+                        @*
                         @if (@Model.Clinic.Attendance == "Attended")
                         {
-                            <span>Seen by @Model.Clinic.SeenByClinician on @Html.DisplayFor(model => model.Clinic.BOOKED_DATE) at @Html.DisplayFor(model => model.Clinic.ArrivalTime)</span>
+                            <span>Seen by @Model.Clinic.SeenByClinician</span>
+                            @if(@Model.Clinic.SeenBy2 != null)
+                            {
+                                <span>, @Model.Clinic.SeenByClinician2</span>
+                            }
+                            @if(@Model.Clinic.SeenBy3 != null)
+                            {
+                                <span>, @Model.Clinic.SeenByClinician3</span>
+                            }
+                            <span> on @Html.DisplayFor(model => model.Clinic.BOOKED_DATE) at @Html.DisplayFor(model => model.Clinic.ArrivalTime)</span>
                         }
                         else
                         {
                             @Model.Clinic.Attendance
-                        }                    
+                        } *@
+                        @if(Model.seenByString != null)
+                        {
+                            <span>@Model.seenByString</span>
+                        }
+                        else
+                        {
+                            <span>@Model.Clinic.Attendance</span>
+                        }
                     </dd>
                 }
             }

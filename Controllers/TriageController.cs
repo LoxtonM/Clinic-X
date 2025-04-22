@@ -374,8 +374,9 @@ namespace ClinicX.Controllers
                 int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "REPSUM", "", "", User.Identity.Name, null, null, false, false);
                 int diaryID = _diaryData.GetLatestDiaryByRefID(refID, "REPSUM").DiaryID;
 
-                LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _docContext);
-                let.DoRepsum(_ivm.icpCancer.ICP_Cancer_ID, diaryID, User.Identity.Name);
+                //LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _docContext);
+                //let.DoRepsum(_ivm.icpCancer.ICP_Cancer_ID, diaryID, User.Identity.Name);
+                _lc.DoRepsum(_ivm.icpCancer.ICP_Cancer_ID, diaryID, User.Identity.Name);
             }
 
             return RedirectToAction("CancerReview", new { id = id });
