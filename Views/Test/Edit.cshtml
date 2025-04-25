@@ -49,7 +49,7 @@
                     }
                     else
                     {
-                        <span>(@Model.ageOfTest days old - received on @Model.test.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</span>
+                        <span>(@Model.ageOfTest days old - received on @Model.test.DATE_RECEIVED.Value.ToString("dd/MM/yyyy"))</span>
                     }
                 }
             </dd>
@@ -140,7 +140,53 @@
                 <div class="col-md-2"></div>
             </div>
         </form>
+
+        <div class="row">
+            <div class="col-md-2">
+                <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="NewBloodForm" asp-route-testID=@Model.test.TestID>Create Blood Form for this test</a>
+            </div>
+        </div>
+
     </div>
+
+    @if(Model.bloodFormList.Count > 0)
+    {
+        <h2>Blood Forms Created For This Test</h2>
+        <div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Sample Type</th>
+                        <th>Clinical Details</th>
+                        <th>Test Requirements</th>
+                        
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach(var item in Model.bloodFormList)
+                    {
+                        <tr>
+                            <td><a type="button" class="btn btn-success" asp-action="BloodFormEdit" asp-route-bloodFormID=@item.BloodFormID>Select</a></td>
+                            
+                            @if(item.IsVenousBlood) { <td>Venous Blood</td> }
+                            @if (item.IsSaliva) { <td>Saliva</td> }
+                            @if(item.IsBuccalSwab) { <td>Buccal Swab</td> }
+                            @if (item.IsCVS) { <td>CVS</td> }
+                            @if (item.IsAmnioticFluid) { <td>Amniotic Fluid</td> }
+                            @if (item.IsTissue) { <td>Tissue</td> }
+                            @if (item.IsCordBlood) { <td>Cord Blood</td> }
+                            @if (item.IsFetalBlood) { <td>Fetal Blood</td> }
+                            <td>@item.ClinicalDetails</td>
+                            <td>@item.TestingRequirements</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
 </div>
 
 <script>

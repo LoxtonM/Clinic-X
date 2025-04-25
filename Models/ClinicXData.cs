@@ -210,5 +210,56 @@ namespace ClinicX.Models
         public bool InUse { get; set; }
     }
 
-    
+    [Table("PatientBloodFormDetails", Schema = "dbo")]
+    public class  BloodForm
+    {
+        [Key]
+        public int BloodFormID { get; set; }
+        public int TestID { get; set; }
+        public bool IsNHS { get; set; }
+        public bool IsPrivate { get; set; }
+        public bool IsOutpatient { get; set; }
+        public bool IsInpatient { get; set; }
+        public bool IsUrgent { get; set; }
+        public bool IsRoutine { get; set; }
+        public DateTime? DateOfNextAppointment { get; set; }
+        public string? ClinicalDetails { get; set; }
+        public string? TestingRequirements { get; set; }
+        public bool IsPrenatal { get; set; }
+        public bool IsPresymptomatic { get; set; }
+        public bool IsDiagnostic { get; set; }
+        public bool IsCarrier { get; set; }
+        public string? PrenatalType { get; set; }
+        public int? PrenatalGestation { get; set; }
+        public string? PrenatalRisk { get; set; }
+        public bool IsVenousBlood { get; set; }
+        public bool IsSaliva { get; set; }
+        public bool IsBuccalSwab { get; set; }
+        public bool IsCVS { get; set; }
+        public bool IsAmnioticFluid { get; set; }
+        public bool IsTissue { get; set; }
+        public bool IsCordBlood { get; set; }
+        public bool IsFetalBlood { get; set; }
+        public string? RelativeName { get; set; }
+        public DateTime? RelativeDOB { get; set; }
+        public string? RelativeNo { get; set; }
+        public string? RelativeDetails { get; set; }
+        public string? SampleRequirements { get; set; }
+
+    }
+
+    [Table("ListSampleType", Schema = "dbo")]
+    public class SampleTypes
+    {
+        [Key]
+        public string SampleTypeCode { get; set; }
+        public string SampleType { get; set; }
+    }
+
+    [Table("ListSampleRequirements", Schema = "dbo")]
+    public class SampleRequirements
+    {
+        [Key] public int ID { get; set; }
+        public string SampleRequirement { get; set; }
+    }
 }

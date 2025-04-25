@@ -1,0 +1,149 @@
+﻿@model ClinicX.ViewModels.TestDiseaseVM
+
+@{
+    ViewData["Title"] = "ClinicX - Test Details";
+    ViewData["Page"] = "/ Test / Edit";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Full Test List for " + Model.patient.CGU_No, "Index", "Test", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Test Details", "Edit", "Test", new { id=Model.test.TestID }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container">
+    <div cass="row mb-5 g-5">
+        <h1>New blood form for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <h2>Test details: @Model.test.TEST - requested on @Model.test.DATE_REQUESTED.Value.ToString("dd/MM/yyyy") by @Model.test.NAME</h2>
+    </div>
+        
+
+    <form asp-action="NewBloodForm">
+        <div hidden="true">
+            <input asp-for=@Model.test.TestID name="testID" />
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-1"></div>
+            <div class="col-md-1">
+                <label>NHS/Private</label>
+            </div>
+            <div class="col-md-2">
+                <label>NHS </label><input id="chkNHS" type="checkbox" name="isNHS" checked /> <label>Private </label><input id="chkPrivate" type="checkbox" />
+            </div>
+            <div class="col-md-1">
+                <label>Urgent/Routine</label>
+            </div>
+            <div class="col-md-2">
+                <label>Routine </label><input id="chkRoutine" type="checkbox" name="isRoutine" checked /> <label>Urgent </label><input id="chkUrgent" type="checkbox" />
+            </div>
+        </div>
+
+
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Clinical Details</label>
+            </div>
+            <div class="col-md-4">
+                <textarea name="clinicalDetails"></textarea>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Date of Next Appointment</label>
+            </div>
+            <div class="col-md-4">
+                <input type="date" name="nextAppDate" />
+            </div>
+            <div class="col-md-2">
+                <label>Testing Requirements</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="testingRequirements" />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Specimen Type</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sampleType">
+                    <option value="" selected>Select...</option>
+                    @foreach (var item in Model.sampleTypes)
+                    {
+                        <option value=@item.SampleTypeCode>@item.SampleType</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Sample Requirements</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sampleRequirements">
+                    <option value="" selected>Select...</option>
+                    @foreach (var item in Model.sampleRequirementList)
+                    {
+                        <option value=@item.ID>@item.SampleRequirement</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+
+
+        <div class="row mb-5 g-5">
+            <div action="col-md-2">
+                <button type="submit" class="btn btn-success">Save Form Details</button>
+            </div>
+        </div>
+    </form>
+
+
+
+
+</div>
+
+
+<script>
+    document.getElementById("chkNHS").addEventListener("change", SetNHSPrivate1); //because we can't do this properly with just one function, obviously!!
+    document.getElementById("chkPrivate").addEventListener("change", SetNHSPrivate2);
+    document.getElementById("chkRoutine").addEventListener("change", SetRoutineUrgent1); 
+    document.getElementById("chkUrgent").addEventListener("change", SetRoutineUrgent2);
+
+    function SetNHSPrivate1()
+    {
+       document.getElementById("chkPrivate").checked = !document.getElementById("chkNHS").checked
+    }
+
+    function SetNHSPrivate2()
+    {
+       document.getElementById("chkNHS").checked = !document.getElementById("chkPrivate").checked
+    }
+
+    function SetRoutineUrgent1()
+    {
+       document.getElementById("chkUrgent").checked = !document.getElementById("chkRoutine").checked
+    }
+
+    function SetRoutineUrgent2()
+    {
+       document.getElementById("chkRoutine").checked = !document.getElementById("chkUrgent").checked
+    }
+
+    
+
+</script>

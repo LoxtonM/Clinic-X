@@ -1,0 +1,28 @@
+﻿@model ClinicX.ViewModels.TestDiseaseVM
+
+@{
+    ViewData["Title"] = "ClinicX - Test Details";
+    ViewData["Page"] = "/ Test / Edit";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Full Test List for " + Model.patient.CGU_No, "Index", "Test", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Test Details", "Edit", "Test", new { id=Model.test.TestID }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+
+<div class="container">
+
+
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            <a type="button" class="btn btn-success" asp-action="DoBloodForm" asp-route-bloodFormID=@Model.bloodForm.BloodFormID>View Blood Form for Printing</a>
+        </div>
+    </div>
+</div>

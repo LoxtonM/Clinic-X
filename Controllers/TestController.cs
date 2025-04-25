@@ -6,6 +6,7 @@ using System.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 using ClinicX.Data;
+using ClinicX.Models;
 
 namespace ClinicX.Controllers
 {
@@ -21,6 +22,8 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         private readonly IAgeCalculator _ageCalculator;
+        private readonly IBloodFormData _bloodFormData;
+        private readonly ISampleData _sampleData;
 
         public TestController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
         {
@@ -34,6 +37,8 @@ namespace ClinicX.Controllers
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
             _ageCalculator = new AgeCalculator();
+            _bloodFormData = new BloodFormData(_cXContext);
+            _sampleData = new SampleData(_cXContext);
         }
 
         [Authorize]
@@ -140,6 +145,8 @@ namespace ClinicX.Controllers
                         }
                     }
                 }
+                _tvm.bloodFormList = _bloodFormData.GetBloodFormList(id);
+
                 return View(_tvm);
             }
             catch (Exception ex)
@@ -210,6 +217,78 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test-edit" });
             }
         }
-        
+
+        [HttpGet]
+        public async Task<IActionResult> NewBloodForm(int testID)
+        {
+            _tvm.test = _testData.GetTestDetails(testID);
+            _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);            
+            _tvm.sampleTypes = _sampleData.GetSampleTypeList();
+            _tvm.sampleRequirementList = _sampleData.GetSampleRequirementsList();
+
+            return View(_tvm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> NewBloodForm(int testID, int iSampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
+            DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails)
+        {
+
+
+            int iSuccess = _crud.CallStoredProcedure("BloodForm", "Create", testID, iSampleRequirements, 0, clinicalDetails, testingRequirements, sampleType, relativeDetails, User.Identity.Name,
+                nextAppDate, relDOB, isNHS, isUrgent, 0,0,0, sampleDetails, relname);
+            
+            
+
+
+            return View(_tvm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BloodFormEdit(int bloodFormID)
+        {
+            _tvm.bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
+            _tvm.test = _testData.GetTestDetails(_tvm.bloodForm.TestID);
+            _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);
+            
+            _tvm.sampleTypes = _sampleData.GetSampleTypeList();
+            _tvm.sampleRequirementList = _sampleData.GetSampleRequirementsList();
+
+            return View(_tvm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BloodFormEdit(int bloodFormID, int iSampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
+            DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails)
+        {
+            _tvm.bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
+            _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);
+
+            _tvm.sampleTypes = _sampleData.GetSampleTypeList();
+            _tvm.sampleRequirementList = _sampleData.GetSampleRequirementsList();
+
+            int iSuccess = _crud.CallStoredProcedure("BloodForm", "Edit", bloodFormID, iSampleRequirements, 0, clinicalDetails, testingRequirements, sampleType, relativeDetails, User.Identity.Name,
+                nextAppDate, relDOB, isNHS, isUrgent, 0, 0, 0, sampleDetails, relname);
+
+            return View(_tvm);
+        }
+
+
+
+
+        public async Task<IActionResult> DoBloodForm(int bloodFormID)
+        {
+            BloodFormData bfData = new BloodFormData(_cXContext);
+            BloodForm bf = bfData.GetBloodFormDetails(bloodFormID);
+            int testID = bf.TestID;
+
+            BloodFormController bfc = new BloodFormController(_clinContext, _cXContext);
+
+            bfc.CreateBloodForm(bloodFormID, User.Identity.Name);
+
+            //return RedirectToAction("Edit", new { id = testID});
+            return File($"~/StandardLetterPreviews/bloodform-{User.Identity.Name}.pdf", "Application/PDF");
+        }
+
     }
 }

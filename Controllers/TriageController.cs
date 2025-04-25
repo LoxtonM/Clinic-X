@@ -118,11 +118,18 @@ namespace ClinicX.Controllers
                 _ivm.loggedOnUserType = _staffUser.GetStaffMemberDetails(User.Identity.Name).CLINIC_SCHEDULER_GROUPS;
                 _ivm.priorityList = _priorityData.GetPriorityList();
                 _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
+                
                 if (_ivm.referralDetails.RefDate != null)
                 {
                     _ivm.referralAgeDays = _ageCalculator.DateDifferenceDay(_ivm.referralDetails.RefDate.GetValueOrDefault(), DateTime.Today);
                     _ivm.referralAgeWeeks = _ageCalculator.DateDifferenceWeek(_ivm.referralDetails.RefDate.GetValueOrDefault(), DateTime.Today);
                 }
+
+                if(DateTime.Now.AddYears(-16) < _ivm.patient.DOB)
+                {
+                    _ivm.isChild = true;
+                }
+
                 return View(_ivm);
             }
             catch (Exception ex)
@@ -208,6 +215,9 @@ namespace ClinicX.Controllers
                     int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genDiaryUpdate(SQL)" }); }
                     int diaryID = _diaryData.GetLatestDiaryByRefID(refID, "CTBAck").DiaryID;
+
+                    //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+                    //lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
                     _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
                 }
 
@@ -219,7 +229,7 @@ namespace ClinicX.Controllers
                 }
 
                 if (tp2 == 7) //Reject letter
-                {
+                {                    
                     _lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer);
                 }
 

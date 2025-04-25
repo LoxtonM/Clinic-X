@@ -216,7 +216,7 @@
                 </div>
 
                 <div class="col-md-2">
-                    <select id="ddlIsChild" name="isChild">
+                    <select id="ddlIsChild" name="isChild" asp-for=@Model.isChild>
                         <option value="true">Yes</option>
                         <option value="false">No</option>
                     </select>
@@ -421,6 +421,7 @@
         document.getElementById("formICPGeneral").hidden = true;
         document.getElementById("formICPCancer").hidden = true;
 
+        
 
         if (_rp.match("Gen*"))
         {
@@ -430,6 +431,9 @@
             document.getElementById("ddlTreatPath2-Clinic").hidden = true;
             document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
             document.getElementById("btnGeneralTriage").hidden = true;
+
+            
+
             if (_cons == "True")
             {
                 var _tp1 = document.getElementById("ddlTreatPath1");
@@ -437,9 +441,7 @@
                 _tp1.disabled = true;
                 var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
                 var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
-            }
-
-
+            }            
 
             if (_gc == "True")
             {

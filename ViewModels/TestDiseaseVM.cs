@@ -17,5 +17,9 @@ namespace ClinicX.ViewModels
         public List<DiseaseStatus> statusList { get; set; }
         public string? searchTerm { get; set; }
         public int? ageOfTest { get; set; }
+        public List<SampleTypes> sampleTypes { get; set; }
+        public List<SampleRequirements> sampleRequirementList { get; set; }
+        public BloodForm bloodForm { get; set; }
+        public List<BloodForm> bloodFormList { get; set; }
     }
 }

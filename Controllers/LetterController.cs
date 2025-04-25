@@ -47,7 +47,7 @@ namespace ClinicX.Controllers
             _documentsData = new DocumentsData(_docContext);
             _externalClinicianData = new ExternalClinicianData(_clinContext);
             _externalFacilityData = new ExternalFacilityData(_clinContext);
-            _constantsData = new ConstantsData(_docContext);
+            _constantsData = new ConstantsData(_docContext);            
         }        
 
         //Creates a preview of the DOT letter
@@ -441,7 +441,11 @@ namespace ClinicX.Controllers
 
                 string[] ccs = { "", "", "" };
 
-                int printCount = 1;
+                int printCount = 0;
+                if (_documentsData.GetDocumentData(docCode).HasAdditionalActions)
+                {
+                    printCount = printCount += 1;
+                }
                 int totalLength = 400; //used for spacing - so the paragraphs can dynamically resize
                 int totalLength2 = 40;
                 int pageCount = 1;
@@ -1301,8 +1305,7 @@ namespace ClinicX.Controllers
                 }
 
                 if (ccs[0] != "")
-                {
-                    printCount = printCount += 1;
+                {                    
 
                     int ccLength = 50;
                     spacer = section.AddParagraph();
@@ -1313,10 +1316,10 @@ namespace ClinicX.Controllers
                     //Add a page for all of the CC addresses (must be declared here or we can't use it)            
                     for (int i = 0; i < ccs.Length; i++)
                     {
-                        string arse = ccs[i].ToString();
+                        
                         string cc = "";
 
-                        if (ccs[i] != null || ccs[i] != "")
+                        if (ccs[i] != null && ccs[i] != "")
                         {
                             if (ccs[i].Contains("Ganesan")) //because of course it's hard-coded
                             {
@@ -1343,7 +1346,10 @@ namespace ClinicX.Controllers
                             Paragraph contentCCDetail = section.AddParagraph(cc);
                             contentCCDetail.Format.Font.Size = 12;
                             ccLength += 150;
-                            printCount = printCount += 1;
+                            if (_documentsData.GetDocumentData(docCode).HasAdditionalActions)
+                            {
+                                printCount = printCount += 1;
+                            }
                             spacer = section.AddParagraph();
                         }
 
@@ -2465,30 +2471,6 @@ namespace ClinicX.Controllers
             {
                 RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "StdLetter" });
             }*/
-        }
-
-        public void SendPhenotipsLetter(int mpi, string user, string qrCode)
-        {
-            CreateQRImageFile(qrCode, user);
-            
-            MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
-            Section section = document.AddSection();
-
-            Paragraph contentLogo = section.AddParagraph();
-            MigraDoc.DocumentObjectModel.Shapes.Image imgLogo = contentLogo.AddImage($"wwwroot\\Images\\qrCode-{user}.jpg");
-            imgLogo.ScaleWidth = new Unit(2, UnitType.Point);
-            imgLogo.ScaleHeight = new Unit(2, UnitType.Point);
-            contentLogo.Format.Alignment = ParagraphAlignment.Right;
-            Paragraph spacer = section.AddParagraph();
-            Paragraph para1 = section.AddParagraph("Stuff goes here...");
-
-            PdfDocumentRenderer pdf = new PdfDocumentRenderer();
-            pdf.Document = document;
-            pdf.RenderDocument();
-
-            pdf.PdfDocument.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf"));
-
-            File.Delete($"wwwroot\\Images\\qrCode-{user}.jpg");
         }
         
         void CreateQRImageFile(string qrCode, string user)

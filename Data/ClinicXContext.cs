@@ -24,6 +24,8 @@ namespace ClinicX.Data
         public DbSet<ScreeningServiceGPCode> ScreeningServiceGPCode { get; set; }
         public DbSet<BreastSurgeryHistory> BreastSurgeryHistory { get; set; }        
         public DbSet<GeneCode> GeneCode { get; set; }
-        
+        public DbSet<BloodForm> BloodForm { get; set; }
+        public DbSet<SampleTypes> SampleTypes { get; set; }
+        public DbSet<SampleRequirements> SampleRequirements { get; set; }
     }
 }

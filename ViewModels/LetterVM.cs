@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ClinicalXPDataConnections.Models;
+using ClinicX.Models;
+using Microsoft.Identity.Client;
 
 namespace ClinicX.ViewModels
 {
@@ -15,5 +17,7 @@ namespace ClinicX.ViewModels
         public ExternalClinician other { get; set; }
         public ExternalFacility facility { get; set; }
         public DictatedLetter dictatedLetter { get; set; }
+        public Test test { get; set; }
+        public BloodForm bloodForm { get; set; }
     }
 }
