@@ -26,11 +26,8 @@
 
     <div class="row mb-5 g-5">
         <div class="col-md-2">
-            <label>Change Name</label>
-        </div>
-        <div class="col-md-1">
-            <input type="checkbox" id="chkChangeName" />
-        </div>
+            <button type="button" id="btnChangeName" class="btn btn-success">Change Name</button>
+        </div>        
     </div>
 
     <div class="row mb-5 g-5" id="NameChangeForm" hidden="true">
@@ -55,22 +52,19 @@
                 <label>NHS/Private</label>
             </div>
             <div class="col-md-2">
-                <label>NHS </label><input id="chkNHS" type="checkbox" checked /> <label>Private </label><input id="chkPrivate" type="checkbox" />
-                <input name="isNHS" id="txtNHS" value="true" hidden="true" />
+                <label>NHS </label><input id="chkNHS" type="checkbox" asp-for=@Model.bloodForm.IsNHS disabled /> <label>Private </label><input id="chkPrivate" type="checkbox" disabled />                
             </div>
             <div class="col-md-1">
                 <label>Urgent/Routine</label>
             </div>
             <div class="col-md-2">
-                <label>Routine </label><input id="chkRoutine" type="checkbox" checked /> <label>Urgent </label><input id="chkUrgent" type="checkbox" />
-                <input name="isRoutine" id="txtRoutine" value="true" hidden="true" />
+                <label>Routine </label><input id="chkRoutine" type="checkbox" asp-for=@Model.bloodForm.IsRoutine disabled /> <label>Urgent </label><input id="chkUrgent" type="checkbox" disabled />                
             </div>
             <div class="col-md-2">
                 <label>Inpatient/Outpatient</label>
             </div>
             <div class="col-md-2">
-                <label>Outpatient </label><input id="chkOutpatient" type="checkbox" checked /> <label>Inpatient </label><input id="chkInpatient" type="checkbox" />
-                <input name="isInpatient" id="txtInpatient" value="0" hidden="true" />
+                <label>Outpatient </label><input id="chkOutpatient" type="checkbox" disabled /> <label>Inpatient </label><input id="chkInpatient" type="checkbox" asp-for=@Model.bloodForm.IsInpatient disabled />
             </div>
         </div>
 
@@ -82,7 +76,7 @@
                 <label>Clinical Details</label>
             </div>
             <div class="col-md-4">
-                <textarea name="clinicalDetails"></textarea>
+                <textarea name="clinicalDetails" asp-for=@Model.bloodForm.ClinicalDetails></textarea>
             </div>
         </div>
 
@@ -91,13 +85,13 @@
                 <label>Date of Next Appointment</label>
             </div>
             <div class="col-md-4">
-                <input type="date" name="nextAppDate" />
+                <input type="date" name="nextAppDate" asp-for=@Model.bloodForm.DateOfNextAppointment />
             </div>
             <div class="col-md-2">
                 <label>Testing Requirements</label>
             </div>
             <div class="col-md-4">
-                <input type="text" name="testingRequirements" />
+                <input type="text" name="testingRequirements" asp-for=@Model.bloodForm.TestingRequirements />
             </div>
         </div>
 
@@ -107,25 +101,25 @@
                 <label>Prenatal</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkPrenatal" /><input type="text" name="isPrenatal" id="txtPrenatal" hidden="true" />
+                <input type="checkbox" id="chkPrenatal" asp-for=@Model.bloodForm.IsPrenatal disabled />
             </div>
             <div class="col-md-1">
                 <label>Presymptomatic</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkPresymptomatic" /><input type="text" name="isPresymptomatic" id="txtPresymptomatic" hidden="true" />
+                <input type="checkbox" id="chkPresymptomatic" asp-for=@Model.bloodForm.IsPresymptomatic disabled />
             </div>
             <div class="col-md-1">
                 <label>Diagnostic</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkDiagnostic" /><input type="text" name="isDiagnostic" id="txtDiagnostic" hidden="true" />
+                <input type="checkbox" id="chkDiagnostic" asp-for=@Model.bloodForm.IsDiagnostic disabled />
             </div>
             <div class="col-md-1">
                 <label>Carrier</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkCarrier" /><input type="text" name="isCarrier" id="txtCarrier" hidden="true" />
+                <input type="checkbox" id="chkCarrier" asp-for=@Model.bloodForm.IsCarrier disabled />
             </div>
         </div>
 
@@ -135,19 +129,19 @@
                 <label>Type of Screening</label>
             </div>
             <div class="col-md-2">
-                <input type="text" name="prenatalType" />
+                <input type="text" name="prenatalType" asp-for=@Model.bloodForm.PrenatalType />
             </div>
             <div class="col-md-2">
                 <label>Gestation</label>
             </div>
             <div class="col-md-2">
-                <input type="text" name="gestation" />
+                <input type="text" name="gestation" asp-for=@Model.bloodForm.PrenatalGestation />
             </div>
             <div class="col-md-2">
                 <label>Risk</label>
             </div>
             <div class="col-md-2">
-                <input type="text" name="prenatalRisk" />
+                <input type="text" name="prenatalRisk" asp-for=@Model.bloodForm.PrenatalRisk />
             </div>
         </div>
 
@@ -157,7 +151,7 @@
                 <label>Specimen Type</label>
             </div>
             <div class="col-md-2">
-                <select name="sampleType">
+                <select name="sampleType" id="ddlSampleType" >
                     <option value="" selected>Select...</option>
                     @foreach (var item in Model.sampleTypes)
                     {
@@ -173,19 +167,19 @@
                 <label>Full name</label>
             </div>
             <div class="col-md-2">
-                <input name="relname" />
+                <input name="relname" asp-for=@Model.bloodForm.RelativeName />
             </div>
             <div class="col-md-2">
                 <label>DOB</label>
             </div>
             <div class="col-md-2">
-                <input type="date" name="relDOB" />
+                <input type="date" name="relDOB" asp-for=@Model.bloodForm.RelativeDOB />
             </div>
             <div class="col-md-2">
                 <label>Lab/NHS number</label>
             </div>
             <div class="col-md-2">
-                <input name="relNumber" />
+                <input name="relNumber" asp-for=@Model.bloodForm.RelativeNo />
             </div>
         </div>
         <div class="row mb-5 g-5">
@@ -193,7 +187,7 @@
                 <label>Details</label>
             </div>
             <div class="col-md-4">
-                <input name="relativeDetails" />
+                <input name="relativeDetails" asp-for=@Model.bloodForm.RelativeDetails />
             </div>
         </div>
 
@@ -202,11 +196,11 @@
                 <label>Sample Requirements</label>
             </div>
             <div class="col-md-2">
-                <select name="iSampleRequirements">
+                <select name="sampleRequirements" asp-for=@Model.bloodForm.SampleRequirements>
                     <option value="" selected>Select...</option>
                     @foreach (var item in Model.sampleRequirementList)
                     {
-                        <option value=@item.ID>@item.SampleRequirement</option>
+                        <option value=@item.SampleRequirement>@item.SampleRequirement</option>
                     }
                 </select>
             </div>
@@ -229,8 +223,9 @@
 </div>
 
 <script>
-    document.getElementById("chkChangeName").addEventListener("change", ShowNameChangeForm);
+    document.getElementById("btnChangeName").addEventListener("click", ShowNameChangeForm);
     document.getElementById("DoFormLinkNameChange").addEventListener("click", DoBloodFormWithNameChange);
+    window.addEventListener("load", LoadForm);
 
 
     function ShowNameChangeForm()
@@ -249,6 +244,34 @@
         surl = surl.replace("BloodFormEdit", "DoBloodForm")
         surl = surl + "?bloodFormID=" + sbfi + "&altPatName=" + altPatName;       
         window.location.href = (surl);
+    }
+
+    function LoadForm()
+    {
+        document.getElementById("chkPrivate").checked = !document.getElementById("chkNHS").checked;
+        document.getElementById("chkUrgent").checked = !document.getElementById("chkRoutine").checked;
+        document.getElementById("chkOutpatient").checked = !document.getElementById("chkInpatient").checked;
+
+        var sampleType = document.getElementById("ddlSampleType");
+
+        var isVB = "@Model.bloodForm.IsVenousBlood";
+        var isSa = "@Model.bloodForm.IsSaliva";
+        var isBS = "@Model.bloodForm.IsBuccalSwab";
+        var isCVS = "@Model.bloodForm.IsCVS";
+        var isAF = "@Model.bloodForm.IsAmnioticFluid";
+        var isTi = "@Model.bloodForm.IsTissue";
+        var isCB = "@Model.bloodForm.IsCordBlood";
+        var isFB = "@Model.bloodForm.IsFetalBlood";
+
+        if(isVB) { sampleType.value = "VB"; }
+        if(isSa) { sampleType.value = "Sa"; }
+        if(isBS) { sampleType.value = "BS"; }
+        if(isCVS) { sampleType.value = "CVS"; }
+        if(isAF) { sampleType.value = "isAF" }
+        if(isTi) { sampleType.value = "Ti"; }
+        if(isCB) { sampleType.value = "CB"; }
+        if(isFB) { sampleType.value = "FB"; }
+
     }
 
 </script>
