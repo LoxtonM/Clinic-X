@@ -110,9 +110,9 @@ namespace ClinicX.Controllers
                 //_ivm.triage = _vm.GetTriageDetails(id);
                 _ivm.referralDetails = _referralData.GetReferralDetails(_ivm.triage.RefID);
                 _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList().OrderBy(f => f.NAME).ToList();
-                _ivm.icpGeneral = _triageData.GetGeneralICPDetails(id);
-                _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
-                _ivm.cancerActionsList = _icpActionData.GetICPCancerActionsList();
+                _ivm.icpGeneral = _triageData.GetGeneralICPDetailsByICPID(id);
+                _ivm.icpCancer = _triageData.GetCancerICPDetailsByICPID(id);
+                _ivm.cancerActionsList = _icpActionData.GetICPCancerActionsList();                
                 _ivm.generalActionsList = _icpActionData.GetICPGeneralActionsList();
                 _ivm.generalActionsList2 = _icpActionData.GetICPGeneralActionsList2();
                 _ivm.loggedOnUserType = _staffUser.GetStaffMemberDetails(User.Identity.Name).CLINIC_SCHEDULER_GROUPS;
@@ -257,11 +257,21 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canTriage(SQL)" }); }
 
+                /*
                 if (action == 5)
                 {
                     LetterController _lc = new LetterController(_clinContext,  _docContext);
                     _lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer);
                 }
+                */
+
+                ICPAction icpAction = _icpActionData.GetICPCancerActionsList().First(a => a.ID == action);
+                if(icpAction.RelatedLetterID != null)
+                {
+                    LetterController _lc = new LetterController(_clinContext, _docContext);
+                    _lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer);
+                }
+
 
                 _ivm.icpCancer = _triageData.GetCancerICPDetailsByICPID(icpID);
 
@@ -603,7 +613,7 @@ namespace ClinicX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change General Triage", "ID=" + id.ToString(), _ip.GetIPAddress());
 
-                _ivm.icpGeneral = _triageData.GetGeneralICPDetails(id);
+                _ivm.icpGeneral = _triageData.GetGeneralICPDetailsByICPID(id);
                 _ivm.consultants = _staffUser.GetClinicalStaffList().Where(s => s.CLINIC_SCHEDULER_GROUPS == "Consultant").ToList();
                 _ivm.GCs = _staffUser.GetClinicalStaffList().Where(s => s.CLINIC_SCHEDULER_GROUPS == "GC").ToList();
                 return View(_ivm);
@@ -711,6 +721,6 @@ namespace ClinicX.Controllers
             let.DoRepsum(icpid, diaryID, User.Identity.Name);
 
             return RedirectToAction("CancerReview", new { id = icpid });
-        }
+        }        
     }
 }
