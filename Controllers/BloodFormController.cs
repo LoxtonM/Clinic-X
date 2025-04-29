@@ -38,7 +38,7 @@ namespace ClinicX.Controllers
 
         
 
-        public void CreateBloodForm(int bloodFormID, string user)
+        public void CreateBloodForm(int bloodFormID, string user, string? altPatName="")
         {
             StaffMember staffMember = _staffUser.GetStaffMemberDetails(user);
             BloodForm bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
@@ -111,7 +111,14 @@ namespace ClinicX.Controllers
             gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + pageWidth / 2 + 1, totalLength, pageWidth / 2 - 2, 18));
             totalLength += 1;
             tf.DrawString("Forename:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 5, totalLength, 100, 20));
-            tf.DrawString(patient.FIRSTNAME, font, XBrushes.Black, new XRect(pageEdge + 60, totalLength, 100, 20));
+            if (altPatName == "" || altPatName == null)
+            {
+                tf.DrawString(patient.FIRSTNAME, font, XBrushes.Black, new XRect(pageEdge + 60, totalLength, 100, 20));
+            }
+            else
+            {
+                tf.DrawString(altPatName, font, XBrushes.Black, new XRect(pageEdge + 60, totalLength, 100, 20));
+            }
             tf.DrawString("Consultant/Clinician:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + pageWidth / 2 + 5, totalLength, 100, 20));
             tf.DrawString(staffMember.NAME, font, XBrushes.Black, new XRect(pageEdge + pageWidth / 2 + 100, totalLength, 100, 20));
             totalLength += 17;
@@ -506,13 +513,13 @@ namespace ClinicX.Controllers
             }
             gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + (pageWidth / 6) * 4 + 11, totalLength, 8, 8));
             tf.DrawString("Cord blood", fontSmall, XBrushes.Black, new XRect(pageEdge + (pageWidth / 6) * 4 + 30, totalLength, 100, 20));
-            if (!bloodForm.IsCordBlood)
+            if (bloodForm.IsCordBlood)
             {
                 gfx.DrawString(tick, symbols, XBrushes.Black, pageEdge + (pageWidth / 6) * 4 + 11, totalLength + 6);
             }
             gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + (pageWidth / 6) * 5 + 11, totalLength, 8, 8));
             tf.DrawString("Fetal blood", fontSmall, XBrushes.Black, new XRect(pageEdge + (pageWidth / 6) * 5 + 30, totalLength, 100, 20));
-            if (!bloodForm.IsFetalBlood)
+            if (bloodForm.IsFetalBlood)
             {
                 gfx.DrawString(tick, symbols, XBrushes.Black, pageEdge + (pageWidth / 6) * 5 + 11, totalLength + 6);
             }

@@ -36,19 +36,29 @@
                 <label>NHS/Private</label>
             </div>
             <div class="col-md-2">
-                <label>NHS </label><input id="chkNHS" type="checkbox" name="isNHS" checked /> <label>Private </label><input id="chkPrivate" type="checkbox" />
+                <label>NHS </label><input id="chkNHS" type="checkbox" checked /> <label>Private </label><input id="chkPrivate" type="checkbox" />
+                <input name="isNHS" id="txtNHS" value="true" hidden="true" />
             </div>
             <div class="col-md-1">
                 <label>Urgent/Routine</label>
             </div>
             <div class="col-md-2">
-                <label>Routine </label><input id="chkRoutine" type="checkbox" name="isRoutine" checked /> <label>Urgent </label><input id="chkUrgent" type="checkbox" />
+                <label>Routine </label><input id="chkRoutine" type="checkbox" checked /> <label>Urgent </label><input id="chkUrgent" type="checkbox" />
+                <input name="isRoutine" id="txtRoutine" value="true" hidden="true" />
+            </div>
+            <div class="col-md-2">
+                <label>Inpatient/Outpatient</label>
+            </div>
+            <div class="col-md-2">
+                <label>Outpatient </label><input id="chkOutpatient" type="checkbox" checked /> <label>Inpatient </label><input id="chkInpatient" type="checkbox" /> 
+                <input name="isInpatient" id="txtInpatient" value="0" hidden="true" />                
             </div>
         </div>
 
 
 
         <div class="row mb-5 g-5">
+            <h3>Test Details</h3>
             <div class="col-md-2">
                 <label>Clinical Details</label>
             </div>
@@ -71,8 +81,59 @@
                 <input type="text" name="testingRequirements" />
             </div>
         </div>
+        
 
         <div class="row mb-5 g-5">
+            <div class="col-md-1">
+                <label>Prenatal</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkPrenatal" /><input type="text" name="isPrenatal" id="txtPrenatal" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Presymptomatic</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkPresymptomatic" /><input type="text" name="isPresymptomatic" id="txtPresymptomatic" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Diagnostic</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkDiagnostic" /><input type="text" name="isDiagnostic" id="txtDiagnostic" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Carrier</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkCarrier" /><input type="text" name="isCarrier" id="txtCarrier" hidden="true" />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <h3>Prenatal Screening</h3>
+            <div class="col-md-2">
+                <label>Type of Screening</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="prenatalType" />
+            </div>
+            <div class="col-md-2">
+                <label>Gestation</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="gestation" />
+            </div>
+            <div class="col-md-2">
+                <label>Risk</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="prenatalRisk" />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <h3>Sample details</h3>
             <div class="col-md-2">
                 <label>Specimen Type</label>
             </div>
@@ -87,13 +148,42 @@
             </div>
         </div>
 
+        <div class="row mb-5 g-5">
+            <h3>Family member/relative details</h3>
+            <div class="col-md-2">
+                <label>Full name</label>
+            </div>
+            <div class="col-md-2">
+                <input name="relname" />
+            </div>
+            <div class="col-md-2">
+                <label>DOB</label>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="relDOB" />
+            </div>
+            <div class="col-md-2">
+                <label>Lab/NHS number</label>
+            </div>
+            <div class="col-md-2">
+                <input name="relNumber" />
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Details</label>
+            </div>
+            <div class="col-md-4">
+                <input name="relativeDetails" />
+            </div>
+        </div>
 
         <div class="row mb-5 g-5">
             <div class="col-md-2">
                 <label>Sample Requirements</label>
             </div>
             <div class="col-md-2">
-                <select name="sampleRequirements">
+                <select name="iSampleRequirements">
                     <option value="" selected>Select...</option>
                     @foreach (var item in Model.sampleRequirementList)
                     {
@@ -102,8 +192,6 @@
                 </select>
             </div>
         </div>
-
-
 
         <div class="row mb-5 g-5">
             <div action="col-md-2">
@@ -123,27 +211,116 @@
     document.getElementById("chkPrivate").addEventListener("change", SetNHSPrivate2);
     document.getElementById("chkRoutine").addEventListener("change", SetRoutineUrgent1); 
     document.getElementById("chkUrgent").addEventListener("change", SetRoutineUrgent2);
+    document.getElementById("chkOutpatient").addEventListener("change", SetOutpatient);
+    document.getElementById("chkInpatient").addEventListener("change", SetInpatient);
+    document.getElementById("chkPrenatal").addEventListener("change", SetPrenatal);
+    document.getElementById("chkPresymptomatic").addEventListener("change", SetPresymptomatic);
+    document.getElementById("chkDiagnostic").addEventListener("change", SetDiagnostic);
+    document.getElementById("chkCarrier").addEventListener("change", SetCarrier);
 
     function SetNHSPrivate1()
     {
-       document.getElementById("chkPrivate").checked = !document.getElementById("chkNHS").checked
+       document.getElementById("chkPrivate").checked = !document.getElementById("chkNHS").checked;
+
+       //because we can't just pass the value of the check box to the C#, oh no. That would be far too fucking simple!!!
+       if(document.getElementById("chkNHS").checked)
+       {
+           document.getElementById("txtNHS").value="true";
+       }
+       else
+       {
+           document.getElementById("txtNHS").value="false";
+       }
     }
 
     function SetNHSPrivate2()
     {
-       document.getElementById("chkNHS").checked = !document.getElementById("chkPrivate").checked
+       document.getElementById("chkNHS").checked = !document.getElementById("chkPrivate").checked;
+
+       if(document.getElementById("chkNHS").checked)
+       {
+           document.getElementById("txtNHS").value="true";
+       }
+       else
+       {
+           document.getElementById("txtNHS").value="false";
+       }
     }
 
     function SetRoutineUrgent1()
     {
-       document.getElementById("chkUrgent").checked = !document.getElementById("chkRoutine").checked
+       document.getElementById("chkUrgent").checked = !document.getElementById("chkRoutine").checked;
+
+       if(document.getElementById("chkRoutine").checked)
+       {
+           document.getElementById("txtRoutine").value="true";
+       }
+       else
+       {
+           document.getElementById("txtRoutine").value="false";
+       }
     }
 
     function SetRoutineUrgent2()
     {
-       document.getElementById("chkRoutine").checked = !document.getElementById("chkUrgent").checked
+       document.getElementById("chkRoutine").checked = !document.getElementById("chkUrgent").checked;
+
+       if(document.getElementById("chkRoutine").checked)
+       {
+           document.getElementById("txtRoutine").value="true";
+       }
+       else
+       {
+           document.getElementById("txtRoutine").value="false";
+       }
     }
 
+    function SetOutpatient()
+    {
+        document.getElementById("chkInpatient").checked = !document.getElementById("chkOutpatient").checked;
+
+        if(document.getElementById("chkInpatient").checked)
+        {
+            document.getElementById("txtInpatient").value = 1;
+        }
+        else
+        {
+            document.getElementById("txtInpatient").value = 0;
+        }
+    }
+
+    function SetInpatient()
+    {
+        document.getElementById("chkOutpatient").checked = !document.getElementById("chkInpatient").checked;
+
+        if(document.getElementById("chkInpatient").checked)
+        {
+            document.getElementById("txtInpatient").value = 1;
+        }
+        else
+        {
+            document.getElementById("txtInpatient").value = 0;
+        }
+    }
+
+    function SetPrenatal()
+    {        
+        document.getElementById("txtPrenatal").value = document.getElementById("chkPrenatal").checked;
+    }
     
+    function SetPresymptomatic()
+    {
+        document.getElementById("txtPresymptomatic").value = document.getElementById("chkPresymptomatic").checked;
+    }
+
+    function SetDiagnostic()
+    {
+        document.getElementById("txtDiagnostic").value = document.getElementById("chkDiagnostic").checked;
+    }
+
+    function SetCarrier()
+    {
+        document.getElementById("txtCarrier").value = document.getElementById("chkCarrier").checked;
+    }
 
 </script>

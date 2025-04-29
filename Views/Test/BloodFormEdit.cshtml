@@ -17,12 +17,238 @@
 
 
 <div class="container">
+    <div id="metadata" hidden="true">
+        <span id="theurl">@Context.Request.Path</span>
+        <span id="thehost">@Context.Request.Host</span>        
+    </div>
 
+    <h1>Blood form for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            <label>Change Name</label>
+        </div>
+        <div class="col-md-1">
+            <input type="checkbox" id="chkChangeName" />
+        </div>
+    </div>
+
+    <div class="row mb-5 g-5" id="NameChangeForm" hidden="true">
+
+        <div class="col-md-2">
+            <label>Name to appear on form:</label>
+        </div>
+        <div class="col-md-2">
+            <input type="text" id="txtAltPatName" />
+        </div>        
+        
+    </div>
+
+    <form asp-action="BloodFormEdit">
+        <div hidden="true">
+            <input asp-for=@Model.bloodForm.BloodFormID name="bloodFormID" />
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-1"></div>
+            <div class="col-md-1">
+                <label>NHS/Private</label>
+            </div>
+            <div class="col-md-2">
+                <label>NHS </label><input id="chkNHS" type="checkbox" checked /> <label>Private </label><input id="chkPrivate" type="checkbox" />
+                <input name="isNHS" id="txtNHS" value="true" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Urgent/Routine</label>
+            </div>
+            <div class="col-md-2">
+                <label>Routine </label><input id="chkRoutine" type="checkbox" checked /> <label>Urgent </label><input id="chkUrgent" type="checkbox" />
+                <input name="isRoutine" id="txtRoutine" value="true" hidden="true" />
+            </div>
+            <div class="col-md-2">
+                <label>Inpatient/Outpatient</label>
+            </div>
+            <div class="col-md-2">
+                <label>Outpatient </label><input id="chkOutpatient" type="checkbox" checked /> <label>Inpatient </label><input id="chkInpatient" type="checkbox" />
+                <input name="isInpatient" id="txtInpatient" value="0" hidden="true" />
+            </div>
+        </div>
+
+
+
+        <div class="row mb-5 g-5">
+            <h3>Test Details</h3>
+            <div class="col-md-2">
+                <label>Clinical Details</label>
+            </div>
+            <div class="col-md-4">
+                <textarea name="clinicalDetails"></textarea>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Date of Next Appointment</label>
+            </div>
+            <div class="col-md-4">
+                <input type="date" name="nextAppDate" />
+            </div>
+            <div class="col-md-2">
+                <label>Testing Requirements</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="testingRequirements" />
+            </div>
+        </div>
+
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-1">
+                <label>Prenatal</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkPrenatal" /><input type="text" name="isPrenatal" id="txtPrenatal" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Presymptomatic</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkPresymptomatic" /><input type="text" name="isPresymptomatic" id="txtPresymptomatic" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Diagnostic</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkDiagnostic" /><input type="text" name="isDiagnostic" id="txtDiagnostic" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Carrier</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkCarrier" /><input type="text" name="isCarrier" id="txtCarrier" hidden="true" />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <h3>Prenatal Screening</h3>
+            <div class="col-md-2">
+                <label>Type of Screening</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="prenatalType" />
+            </div>
+            <div class="col-md-2">
+                <label>Gestation</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="gestation" />
+            </div>
+            <div class="col-md-2">
+                <label>Risk</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="prenatalRisk" />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <h3>Sample details</h3>
+            <div class="col-md-2">
+                <label>Specimen Type</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sampleType">
+                    <option value="" selected>Select...</option>
+                    @foreach (var item in Model.sampleTypes)
+                    {
+                        <option value=@item.SampleTypeCode>@item.SampleType</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <h3>Family member/relative details</h3>
+            <div class="col-md-2">
+                <label>Full name</label>
+            </div>
+            <div class="col-md-2">
+                <input name="relname" />
+            </div>
+            <div class="col-md-2">
+                <label>DOB</label>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="relDOB" />
+            </div>
+            <div class="col-md-2">
+                <label>Lab/NHS number</label>
+            </div>
+            <div class="col-md-2">
+                <input name="relNumber" />
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Details</label>
+            </div>
+            <div class="col-md-4">
+                <input name="relativeDetails" />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Sample Requirements</label>
+            </div>
+            <div class="col-md-2">
+                <select name="iSampleRequirements">
+                    <option value="" selected>Select...</option>
+                    @foreach (var item in Model.sampleRequirementList)
+                    {
+                        <option value=@item.ID>@item.SampleRequirement</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div action="col-md-2">
+                <button type="submit" class="btn btn-success">Save Form Details</button>
+            </div>
+        </div>
+    </form>
 
 
     <div class="row mb-5 g-5">
         <div class="col-md-2">
-            <a type="button" class="btn btn-success" asp-action="DoBloodForm" asp-route-bloodFormID=@Model.bloodForm.BloodFormID>View Blood Form for Printing</a>
+            <a type="button" class="btn btn-success" id="DoFormLinkStandard" asp-action="DoBloodForm" asp-route-bloodFormID=@Model.bloodForm.BloodFormID>View Blood Form for Printing</a>            
+            <button type="button" class="btn btn-success" id="DoFormLinkNameChange" hidden="true">View Blood Form for Printing</button>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("chkChangeName").addEventListener("change", ShowNameChangeForm);
+    document.getElementById("DoFormLinkNameChange").addEventListener("click", DoBloodFormWithNameChange);
+
+
+    function ShowNameChangeForm()
+    {
+        document.getElementById("NameChangeForm").hidden=false;
+        document.getElementById("DoFormLinkStandard").hidden=true;
+        document.getElementById("DoFormLinkNameChange").hidden=false;
+    }
+
+    function DoBloodFormWithNameChange()
+    {
+        var surl = "http://" + document.getElementById("thehost").innerHTML + document.getElementById("theurl").innerHTML;        
+        const _url = window.location.toString();        
+        const sbfi = _url.substring(_url.indexOf("=")+1, _url.length);        
+        const altPatName = document.getElementById("txtAltPatName").value;
+        surl = surl.replace("BloodFormEdit", "DoBloodForm")
+        surl = surl + "?bloodFormID=" + sbfi + "&altPatName=" + altPatName;       
+        window.location.href = (surl);
+    }
+
+</script>

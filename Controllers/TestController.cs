@@ -231,17 +231,19 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> NewBloodForm(int testID, int iSampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
-            DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails)
+            DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails, bool isInpatient, string? relNumber,
+            bool isPrenatal, bool isPresymptomatic, bool isDiagnostic, bool isCarrier, string? prenatalType, string? prenatalRisk, int? gestation=0)
         {
+            int success = _crud.CallPatientBloodFormCRUD("Create", testID, iSampleRequirements, gestation.GetValueOrDefault(), 0, 0, 0, 0, clinicalDetails, testingRequirements, 
+                sampleType, relativeDetails, User.Identity.Name, prenatalType, prenatalRisk, relname, relNumber, "", nextAppDate, relDOB, isNHS, isUrgent, isInpatient, 
+                isPrenatal, isPresymptomatic, isDiagnostic, isCarrier);
 
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-edit(SQL)" }); }
 
-            int iSuccess = _crud.CallStoredProcedure("BloodForm", "Create", testID, iSampleRequirements, 0, clinicalDetails, testingRequirements, sampleType, relativeDetails, User.Identity.Name,
-                nextAppDate, relDOB, isNHS, isUrgent, 0,0,0, sampleDetails, relname);
-            
-            
+            int iBloodFormID = _bloodFormData.GetBloodFormList(testID).OrderByDescending(f => f.BloodFormID).First().BloodFormID;
 
-
-            return View(_tvm);
+            //return View(_tvm);
+            return RedirectToAction("BloodFormEdit", new { bloodFormID = iBloodFormID });
         }
 
         [HttpGet]
@@ -259,7 +261,8 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> BloodFormEdit(int bloodFormID, int iSampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
-            DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails)
+            DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails, bool isInpatient, string? relNumber,
+            bool isPrenatal, bool isPresymptomatic, bool isDiagnostic, bool isCarrier, string? prenatalType, string? prenatalRisk, int? gestation = 0)
         {
             _tvm.bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
             _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);
@@ -267,16 +270,15 @@ namespace ClinicX.Controllers
             _tvm.sampleTypes = _sampleData.GetSampleTypeList();
             _tvm.sampleRequirementList = _sampleData.GetSampleRequirementsList();
 
-            int iSuccess = _crud.CallStoredProcedure("BloodForm", "Edit", bloodFormID, iSampleRequirements, 0, clinicalDetails, testingRequirements, sampleType, relativeDetails, User.Identity.Name,
-                nextAppDate, relDOB, isNHS, isUrgent, 0, 0, 0, sampleDetails, relname);
+            int iSuccess = _crud.CallPatientBloodFormCRUD("Edit", bloodFormID, iSampleRequirements, gestation.GetValueOrDefault(), 0, 0, 0, 0, clinicalDetails, testingRequirements,
+                sampleType, relativeDetails, User.Identity.Name, prenatalType, prenatalRisk, relname, relNumber, "", nextAppDate, relDOB, isNHS, isUrgent, isInpatient,
+                isPrenatal, isPresymptomatic, isDiagnostic, isCarrier);
 
             return View(_tvm);
         }
 
 
-
-
-        public async Task<IActionResult> DoBloodForm(int bloodFormID)
+        public async Task<IActionResult> DoBloodForm(int bloodFormID, string? altPatName)
         {
             BloodFormData bfData = new BloodFormData(_cXContext);
             BloodForm bf = bfData.GetBloodFormDetails(bloodFormID);
@@ -284,7 +286,7 @@ namespace ClinicX.Controllers
 
             BloodFormController bfc = new BloodFormController(_clinContext, _cXContext);
 
-            bfc.CreateBloodForm(bloodFormID, User.Identity.Name);
+            bfc.CreateBloodForm(bloodFormID, User.Identity.Name, altPatName);
 
             //return RedirectToAction("Edit", new { id = testID});
             return File($"~/StandardLetterPreviews/bloodform-{User.Identity.Name}.pdf", "Application/PDF");
