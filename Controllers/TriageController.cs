@@ -39,6 +39,7 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         private readonly IAgeCalculator _ageCalculator;
         private readonly IPatientData _patientData;
+        private readonly ILeafletData _leafletData;
 
         public TriageController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
@@ -67,6 +68,7 @@ namespace ClinicX.Controllers
             _audit = new AuditService(_config);
             _ageCalculator = new AgeCalculator();
             _patientData = new PatientData(_clinContext);
+            _leafletData = new LeafletData(_docContext);
         }
 
         [Authorize]
@@ -267,9 +269,14 @@ namespace ClinicX.Controllers
 
                 ICPAction icpAction = _icpActionData.GetICPCancerActionsList().First(a => a.ID == action);
                 if(icpAction.RelatedLetterID != null)
-                {
+                {                    
+                    string docCode = _documentsData.GetDocumentDetails(icpAction.RelatedLetterID.Value).DocCode;
+
+                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
+                    int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
+
                     LetterController _lc = new LetterController(_clinContext, _docContext);
-                    _lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer);
+                    _lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID);
                 }
 
 
@@ -297,6 +304,8 @@ namespace ClinicX.Controllers
                 _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList();
                 _ivm.staffMembers = _staffUser.GetClinicalStaffList();
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
+                _ivm.leaflets = _leafletData.GetCancerLeafletsList();
+
                 if (_ivm.icpCancer != null)
                 {
                     _ivm.riskList = _riskData.GetRiskList(id);
@@ -319,7 +328,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> CancerReview(int id, string finalReview, string? clinician = "", string? clinic = "", string? comments = "", 
-            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "", string? freeText1="") //, 
+            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "", string? freeText1="", int? leafletID = 0) //, 
             //int? request = 0, string? freeText2 = "", int? relID = 0, string? clinicianCode = "", string? siteText = "")
         {
             string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
@@ -359,7 +368,8 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0);
+                        _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0, 
+                            "", "", null, false, "", leafletID);
                     }
 
                     if (successDiary == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canDiaryUpdate(SQL)" }); }

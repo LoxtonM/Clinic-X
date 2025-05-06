@@ -103,7 +103,7 @@
             </div>
         </div>
 
-        
+
 
 
         @if (Model.eligibilityList.Count() > 0)
@@ -143,11 +143,11 @@
     </div>
 
     <form id="CancerReviewForm" asp-action="CancerReview">
-    
+
         <div class="row mb-5 g-5" hidden="true">
             <input asp-for=@Model.icpCancer.ICP_Cancer_ID name="id" />
         </div>
-               
+
 
         <div class="d-grid mt-2 mb-2">
             <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseSeeInClinic" aria-expanded="false" aria-controls="collapseExample">See in Clinic (click to expand/hide)</button>
@@ -184,7 +184,7 @@
                     </select>
                 </div>
             </div>
-        
+
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
                     <label class="text-right">Comments:</label>
@@ -232,6 +232,20 @@
                 </div>
                 <div class="col-md-4">
                     <textarea class="w-100" name="freeText1"></textarea>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label>Enclosures</label>
+                </div>
+                <div class="col-md-6">
+                    <select name="leafletID">
+                        <option value="0" selected>Select...</option>
+                        @foreach(var l in Model.leaflets)
+                        {
+                            <option value=@l.ID>@l.Code - @l.Name</option>
+                        }
+                    </select>
                 </div>
             </div>
         </div>
