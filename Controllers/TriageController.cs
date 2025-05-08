@@ -476,18 +476,33 @@ namespace ClinicX.Controllers
 
                 if (docID != null && docID != 0)
                 {
+                    string docCode = _documentsData.GetDocumentDetails(docID).DocCode;
+
+                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
+                    int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
+
                     _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
                         false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview);
                 }
 
                 if (docID2 != null && docID2 != 0)
                 {
+                    string docCode = _documentsData.GetDocumentDetails(docID2).DocCode;
+
+                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
+                    int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
+
                     _lc.DoPDF(docID2, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
                         false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview);
                 }
 
                 if (docID3 != null && docID3 != 0)
                 {
+                    string docCode = _documentsData.GetDocumentDetails(docID3).DocCode;
+
+                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
+                    int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
+
                     _lc.DoPDF(docID3, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, additionalText, "", 0, "",
                         false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview);
                 }
