@@ -340,6 +340,9 @@ namespace ClinicX.Controllers
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Testing Eligibility", "", _ip.GetIPAddress());
+
+                ICP icp = _triageData.GetICPDetailsByRefID(refID);
+                ICPCancer icpc = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
                                 
                 bool isRelative = false;
                 if(relative != 0)
@@ -352,7 +355,8 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addSurv(SQL)" }); }
 
-                return View(_rsvm);
+                //return View(_rsvm);
+                return RedirectToAction("CancerReview", "Triage", new { id = icpc.ICP_Cancer_ID });
             }
             catch (Exception ex)
             {
