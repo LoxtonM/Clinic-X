@@ -16,7 +16,6 @@
 }
 
 <div class="container card">
-
     @if (Model.message != null)
     {
         @if (Model.success)
@@ -32,15 +31,13 @@
             </div>
         }
     }
-
-    <div class="row mb-5 g-5">
+    <div class="row mb-5 g-2">
         <h1>Cancer ICP Review for @Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME</h1>
     </div>
 
     <div class="d-grid mt-2 mb-2">
         <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseRiskItems" aria-expanded="false" aria-controls="collapseExample">Risk and Surveillance, and Testing (click to expand/hide)</button>
     </div>
-
     <div class="collapse" id="collapseRiskItems">
         @if (Model.riskList.Count() > 0)
         {
@@ -95,17 +92,12 @@
         {
             <h2>There are no risk items added</h2>
         }
-
         <div class="row mb-5 g-5">
             <div class="col-md-2">
                 @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
                 <a type="button" class="btn btn-default btn-success" asp-controller="RiskAndSurveillance" asp-action="AddNewRisk" asp-route-id=@Model.icpCancer.ICPID>Add New Risk</a>
             </div>
         </div>
-
-
-
-
         @if (Model.eligibilityList.Count() > 0)
         {
             <h2>Testing Eligibility</h2>
@@ -123,7 +115,7 @@
                     @foreach(var item in Model.eligibilityList)
                     {
                         <tr>
-                            <td><a asp-controller="WIP" asp-action="Index">@item.ID</a></td>
+                            <td><a type="button" class="btn btn-success" asp-controller="RiskAndSurveillance" asp-action="EditTestingEligibilityDetails" asp-route-id=@item.ID>Select</a></td>
                             <td>@item.CalcTool</td>
                             <td>@item.Gene</td>
                             <td>@item.Score</td>
@@ -132,8 +124,7 @@
                     }
                 </tbody>
             </table>
-        } 
-
+        }
         <div class="row mb-5 g-5">
             <div class="col-md-2">
                 @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@

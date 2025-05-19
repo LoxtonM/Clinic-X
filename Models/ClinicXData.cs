@@ -262,4 +262,17 @@ namespace ClinicX.Models
         [Key] public int ID { get; set; }
         public string SampleRequirement { get; set; }
     }
+
+    [Table("PatientRelativesRisk", Schema = "dbo")]
+    public class UntestedVHRGroup
+    {
+        [Key]
+        public int RelativeRiskID { get; set; }
+        public int? RefID { get; set; }
+        public bool FirstDegreeBelow30 { get; set; }
+        public bool FirstDegreeBelow50 { get; set; }
+        public bool OtherUntested { get; set; }
+        public bool CauseNotIdentified { get; set; }
+        public int? ThresholdAge8pct { get; set; }
+    }
 }

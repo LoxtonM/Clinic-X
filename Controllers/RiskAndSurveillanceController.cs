@@ -1,12 +1,11 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿using APIControllers.Models;
+using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client.Extensions.Msal;
-using MigraDoc.DocumentObjectModel.Tables;
 
 namespace ClinicX.Controllers
 {
@@ -123,8 +122,7 @@ namespace ClinicX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + survID.ToString(), _ip.GetIPAddress());
 
-                int riskID = _survData.GetSurvDetails(survID).RiskID;
-                
+                int riskID = _survData.GetSurvDetails(survID).RiskID;                
 
                 int success = _crud.CallStoredProcedure("Surveillance", "Add Gene Change", survID, geneChange, 0, "", "", "", "",
                     User.Identity.Name, null, null, false, false);
@@ -342,7 +340,7 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Testing Eligibility", "", _ip.GetIPAddress());
 
                 ICP icp = _triageData.GetICPDetailsByRefID(refID);
-                ICPCancer icpc = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+                _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
                                 
                 bool isRelative = false;
                 if(relative != 0)
@@ -356,12 +354,42 @@ namespace ClinicX.Controllers
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addSurv(SQL)" }); }
 
                 //return View(_rsvm);
-                return RedirectToAction("CancerReview", "Triage", new { id = icpc.ICP_Cancer_ID });
+                return RedirectToAction("CancerReview", "Triage", new { id = _rsvm.icpCancer.ICP_Cancer_ID });
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv-addTestEli" });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditTestingEligibilityDetails(int id)
+        {
+            _rsvm.eligibilityDetails = _testEligibilityData.GetTestingEligibilityDetails(id);
+            _rsvm.patient = _patientData.GetPatientDetails(_rsvm.eligibilityDetails.MPI);            
+            _rsvm.relatives = _relData.GetRelativesList(_rsvm.patient.MPI);
+            ICP icp = _triageData.GetICPDetailsByRefID(_rsvm.eligibilityDetails.RefID);
+            _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+            _rsvm.geneCode = _geneCode.GetGeneCodeList();
+            _rsvm.calculationTools = _riskCodesData.GetCalculationToolsList();
+
+            return View(_rsvm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditTestingEligibilityDetails(int id, int gene, string tool, string score, string offerTest)
+        {
+            _rsvm.eligibilityDetails = _testEligibilityData.GetTestingEligibilityDetails(id);
+            ICP icp = _triageData.GetICPDetailsByRefID(_rsvm.eligibilityDetails.RefID);
+            _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+
+            int success = _crud.CallStoredProcedure("TestEligibility", "Edit", id, gene, 0, tool, score, offerTest, "",
+                User.Identity.Name);
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addSurv(SQL)" }); }
+
+            return RedirectToAction("Index", "WIP");
+            //return RedirectToAction("CancerReview", "Triage", new { id = _rsvm.icpCancer.ICP_Cancer_ID });
         }
     }
 }

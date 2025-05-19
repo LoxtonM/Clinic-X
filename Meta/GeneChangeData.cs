@@ -26,7 +26,5 @@ namespace ClinicX.Meta
 
             return geneChanges.ToList();
         }
-
-        
     }
 }

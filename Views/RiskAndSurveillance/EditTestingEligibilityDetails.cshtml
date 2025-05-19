@@ -20,10 +20,10 @@
         <h1>New Testing Eligibility for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
     </div>
 
-    <form asp-action="AddNewTestingEligibility">
+    <form asp-action="EditTestingEligibilityDetails">
         
         <div class="row" hidden="true">
-            <input name="refID" asp-for=@Model.refID />
+            <input name="id" asp-for=@Model.eligibilityDetails.ID/>
         </div>
         
         <div class="row mb-2 g-2">            
@@ -31,7 +31,7 @@
                 <label>Gene:</label>
             </div>
             <div class="col-md-2">
-                <select class="w-100" name="gene">
+                <select class="w-100" name="gene" asp-for=@Model.eligibilityDetails.Gene>
                     <option value="">Select...</option>
                     @foreach (var item in Model.geneCode)
                     {
@@ -43,7 +43,7 @@
                 <label>Calculation Tool Used:</label>
             </div>
             <div class="col-md-4">
-                <select class="w-100" name="tool">
+                <select class="w-100" name="tool" asp-for=@Model.eligibilityDetails.CalcTool>
                     <option value="">Select...</option>
                     @foreach (var item in Model.calculationTools)
                     {
@@ -58,14 +58,14 @@
                 <label>Score or Percentage:</label>
             </div>            
             <div class="col-md-2">
-                <input type="text" name="score" />
+                <input type="text" name="score" asp-for=@Model.eligibilityDetails.Score/>
             </div>
             
             <div class="col-md-2">
                 <label>Offer Testing:</label>
             </div>            
             <div class="col-md-2">                
-                <select class="w-100" name="offerTest">
+                <select class="w-100" name="offerTest" asp-for=@Model.eligibilityDetails.OfferTesting>
                     <option value="">Select...</option>                    
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
@@ -76,12 +76,13 @@
             </div>
         </div>
 
+        @*
         <div class="row mb-2 g-2">
             <div class="col-md-4">
                 <label>Relative:</label>
             </div>
             <div class="col-md-6">
-                <select class="w-100" name="relative">
+                <select class="w-100" name="relative" asp-for=@Model.eligibilityDetails.RelID>
                     <option value="">Select...</option>
                     @foreach (var item in Model.relatives)
                     {
@@ -90,7 +91,7 @@
                 </select>
             </div>          
         </div>
-        
+        *@
 
         <div class="row mb-2 g-2">
             <div class="col-md-2">

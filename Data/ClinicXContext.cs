@@ -27,5 +27,6 @@ namespace ClinicX.Data
         public DbSet<BloodForm> BloodForm { get; set; }
         public DbSet<SampleTypes> SampleTypes { get; set; }
         public DbSet<SampleRequirements> SampleRequirements { get; set; }
+        public DbSet<UntestedVHRGroup> UntestedVHRGroup { get; set; }
     }
 }
