@@ -66,11 +66,7 @@ public class VHRController : Controller
             return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Letter" });
         }
     }
-
-    //Creates a preview of the DOT letter
-    
-
-    //Prints standard letter templates from the menu
+        
     public void DoVHRPro(int id, int mpi, int icpCancerID, string user, string referrer, string screeningService, string? additionalText = "", int? diaryID = 0)
     {
         try
@@ -82,8 +78,7 @@ public class VHRController : Controller
 
             int icpID = _triageData.GetCancerICPDetails(icpCancerID).ICPID;
             int refID = _triageData.GetICPDetails(icpID).REFID;
-
-            //string docCode = _lvm.documentsContent.DocCode;
+                        
             string docCode = _lvm.documentsContent.DocCode;
             //creates a new PDF document            
             //set the fonts used for the letters
@@ -155,10 +150,7 @@ public class VHRController : Controller
 
             patName = _lvm.patient.FIRSTNAME + " " + _lvm.patient.LASTNAME;
             patAddress = _lvm.patient.ADDRESS1;
-            //if (_lvm.patient.ADDRESS2 != null) { patAddress = patAddress + _lvm.patient.ADDRESS2 + Environment.NewLine; }
-            //if (_lvm.patient.ADDRESS3 != null) { patAddress = patAddress + _lvm.patient.ADDRESS3 + Environment.NewLine; }
             if (_lvm.patient.ADDRESS3 != null) { patAddress = patAddress + ", " + _lvm.patient.ADDRESS3; }
-            //patAddress = patAddress + _lvm.patient.POSTCODE;
 
             var gp = _externalClinicianData.GetClinicianDetails(_lvm.patient.GP_Code);
             var gpFac = _externalFacilityData.GetFacilityDetails(_lvm.patient.GP_Facility_Code);            
@@ -173,10 +165,6 @@ public class VHRController : Controller
                     "DOB: " + _lvm.patient.DOB.Value.ToString("dd/MM/yyyy") + Environment.NewLine + Environment.NewLine +
                     "Home number: " + _lvm.patient.TEL;
 
-                   //"GP Practice Code: " + _lvm.patient.GP_Facility_Code + Environment.NewLine +
-                   // "GP Address: ";
-
-            
                         
             vhrTf.DrawString(content2, fontSmall, XBrushes.Black, new XRect(310, totalLengthVHR, 500, 80));
             totalLengthVHR += 65;
@@ -191,7 +179,6 @@ public class VHRController : Controller
 
             ScreeningService sServ = _screenData.GetScreeningServiceDetails(_lvm.patient.GP_Facility_Code);
 
-            //vhrTf.DrawString("Referee name:", fontSmallBold, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 20));
             content4 = "Referee name:" + sServ.Contact + Environment.NewLine +
                 "Address: " + sServ.Add1 + ", " + sServ.Add2 + ", " + sServ.Add3 + ", " + sServ.Add4;
 
@@ -380,10 +367,7 @@ public class VHRController : Controller
                     vhrTf.DrawString("Age at which the risk meets the 8% threshold: " + uvg.ThresholdAge8pct, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 50)); 
                 }
             }
-
-            //totalLengthVHR += 60;
-
-
+                        
             //Second page
             vhrGfx2.DrawRectangle(pen, new XRect(45, totalLengthVHR2, pageWidth, 40));
             vhrGfx2.DrawRectangle(XBrushes.DarkGray, new XRect(46, totalLengthVHR2 + 1, pageWidth - 2, 39));
