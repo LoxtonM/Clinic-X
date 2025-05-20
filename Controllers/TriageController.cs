@@ -559,7 +559,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> VHRPro(int id, string? freeText, string? screeningService)
+        public async Task<IActionResult> VHRPro(int id, string? freeText, string? screeningService, bool? isPreview = false)
         {
             try
             {
@@ -575,35 +575,45 @@ namespace ClinicX.Controllers
                 int mpi = icpDetails.MPI;
                 int refID = icpDetails.REFID;
 
-                VHRController _vhrc = new VHRController(_clinContext, _cXContext, _docContext);
+                VHRController _vhrc = new VHRController(_clinContext, _cXContext, _docContext, _config);
 
-                string docCode = "VHRPro";
-                string diaryText = "";
+                if (isPreview.GetValueOrDefault())
+                {
+                    _vhrc.DoVHRPro(213, mpi, id, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, screeningService, freeText, 0, true);
 
-                int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
-                int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
-                _vhrc.DoVHRPro(213, mpi, id, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, screeningService, freeText, diaryID);
-                
-                docCode = "VHRProC";
-                diaryText = "";
-                successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
-                diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
+                    return File($"~/StandardLetterPreviews/VHRPropreview-{User.Identity.Name}.pdf", "Application/PDF");
+                }
+                else
+                {
+                    string docCode = "VHRPro";
+                    string diaryText = "";
 
-                _vhrc.DoVHRProCoverLetter(214, mpi, id, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, screeningService, freeText, diaryID);
-                //_lc.DoPDF(214, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, freeText, "", 0
-                //    , "", false, false, 0, "", "", 0, screeningService);
+                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+                    int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
+                    _vhrc.DoVHRPro(213, mpi, id, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, screeningService, freeText, diaryID, false);
 
-                bool iSuccess = true;
-                string sMessage = "VHRPro created for filing in EDMS";
+                    docCode = "VHRProC";
+                    diaryText = "";
+                    successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+                    diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
 
-                return RedirectToAction("CancerReview", new { id = id, success=iSuccess, message=sMessage });
+                    _vhrc.DoVHRProCoverLetter(214, mpi, id, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, screeningService, freeText, diaryID);
+                    //_lc.DoPDF(214, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, freeText, "", 0
+                    //    , "", false, false, 0, "", "", 0, screeningService);
+
+                    bool iSuccess = true;
+                    string sMessage = "VHRPro created for filing in EDMS";
+
+                    return RedirectToAction("CancerReview", new { id = id, success = iSuccess, message = sMessage });
+                }
 
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-vhrpro" });
             }
-        }
+        }      
+
 
 
         [HttpGet]

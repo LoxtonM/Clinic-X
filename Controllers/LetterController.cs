@@ -5,15 +5,9 @@ using ClinicalXPDataConnections.Meta;
 using System.Text.RegularExpressions;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
-using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using System.Drawing;
-using System.Diagnostics;
-using PdfSharp.Pdf;
-using ClinicX.Models;
-using ClinicX.Meta;
-using Microsoft.SqlServer.Server;
 
 
 

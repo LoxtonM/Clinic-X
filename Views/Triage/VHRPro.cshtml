@@ -66,12 +66,34 @@
             </div>        
 
             <div class="row mb-5 g-5">
+                <input id="txtIsPreview" name="isPreview" hidden="true" />
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-success">Create VHR Proforma and Letter</button>
+                    <button type="button" id="btnVHRProSubmit" class="btn btn-success">Create VHR Proforma and Letter</button>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" id="btnVHRProPreview" class="btn btn-success">Preview VHR Proforma</button>
                 </div>
             </div>
         </div>
 
     </form>
 </div>
+
+<script>
+    document.getElementById("btnVHRProSubmit").addEventListener("click", DoVHRPro);
+    document.getElementById("btnVHRProPreview").addEventListener("click", DoVHRProPreview);
+
+    function DoVHRPro()
+    {
+        document.getElementById("txtIsPreview").value = "false";
+        document.getElementById("VHRProForm").submit();
+    }
+
+    function DoVHRProPreview()
+    {
+        document.getElementById("txtIsPreview").value = "true";
+        document.getElementById("VHRProForm").submit();
+    }
+
+</script>
 
