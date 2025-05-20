@@ -223,7 +223,7 @@
             _seenBy.value = "@Model.activityItem.STAFF_CODE_1"
         }
         if (_att != null && _att != "")         
-        {            
+        {
             document.getElementById("ddlContactOutcome").disabled = true;
             document.getElementById("ContactDetails").hidden = false;            
             var _arrivalTime = document.getElementById("txtArrivalTime");
@@ -272,6 +272,12 @@
             }
             document.getElementById("btnCompleteCOF").disabled = true;
             document.getElementById("ddlClockStop").disabled = true;
+        }
+        else
+        {
+            document.getElementById("AdditionalClinicians").hidden = false;
+            document.getElementById("ddlSeenBy2").hidden = false;
+            document.getElementById("ddlSeenBy3").hidden = false;
         }
     }
 
