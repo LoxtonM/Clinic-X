@@ -34,11 +34,11 @@ namespace ClinicX.Controllers
             _staffUser = new StaffUserData(_clinContext);
             _testData = new TestData(_clinContext, _cxContext);
             _clinicData = new ClinicData(_clinContext);
-        }        
+        }
 
-        
 
-        public void CreateBloodForm(int bloodFormID, string user, string? altPatName="")
+
+        public void CreateBloodForm(int bloodFormID, string user, string? altPatName = "", bool? isPreview = false)
         {
             StaffMember staffMember = _staffUser.GetStaffMemberDetails(user);
             BloodForm bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
@@ -932,9 +932,38 @@ namespace ClinicX.Controllers
 
 
             document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\bloodform-{user}.pdf"));
+
+            if(!isPreview.GetValueOrDefault()) //send to clinicians' VOT (depending on name and job title)
+            {
+                string votFolder = "";
+
+                if(user == "mnln") { votFolder = "Martin Loxton (Test)"; }
+                else
+                {
+                    if (staffMember.CLINIC_SCHEDULER_GROUPS == "GC")
+                    {
+                        switch (staffMember.POSITION)
+                        {
+                            case "Genomics Associate":
+                                votFolder = "GenA ";
+                                break;
+                            case "Genomics Practitioner":
+                                votFolder = "GenP ";
+                                break;
+                            default:
+                                votFolder = "GC ";
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        votFolder = staffMember.StaffTitle + " ";
+                    }
+                    votFolder = votFolder + staffMember.StaffForename + " " + staffMember.StaffSurname;
+                }
+                System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\bloodform-{user}.pdf", $@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Blood Form_{patient.CGU_No}.pdf");
+            }
         }
-        
-        
     }
 }
     

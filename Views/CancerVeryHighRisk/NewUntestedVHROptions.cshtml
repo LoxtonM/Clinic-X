@@ -1,0 +1,104 @@
+﻿@model ClinicX.ViewModels.CancerVeryHighRiskVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Untested VHR Group";
+}
+
+@{
+    ViewData["Title"] = "ClinicX - Untested VHR Group";
+    ViewData["Page"] = "/ Triage / Untested VHR Group";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.icpCancer.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Cancer ICP Review", "CancerReview", "Triage", new { id=Model.icpCancer.ICP_Cancer_ID }, new { @class = "btn btn-success m-1"}),
+        Html.ActionLink("Back to VHR Pro", "CancerVeryHighRisk", "VHRPro", new { id=Model.icpCancer.ICP_Cancer_ID }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container">
+
+    <form asp-action="NewUntestedVHROptions">
+        <div class="row mb-5 g-5" hidden>
+            <input name="id" name="refid" asp-for=@Model.referral.refid />
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-4">
+                <label>Age at which 8% threshold is met</label>
+            </div>
+            <div class="col-md-1">
+                <input type="text" class="w-100" name="thresholdAge" asp-for=@Model.untestedVHRGroup.ThresholdAge8pct />
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>First degree relative under 30</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkBelow30" asp-for=@Model.untestedVHRGroup.FirstDegreeBelow30 />
+                <input type="text" id="txtBelow30" name="below30" asp-for=@Model.untestedVHRGroup.FirstDegreeBelow30 hidden />
+            </div>
+            <div class="col-md-2">
+                <label>First degree relative 30 to 50</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkBelow50" asp-for=@Model.untestedVHRGroup.FirstDegreeBelow50 />
+                <input type="text" id="txtBelow50" name="below50" asp-for=@Model.untestedVHRGroup.FirstDegreeBelow50 hidden />
+            </div>
+            <div class="col-md-2">
+                <label>Other untested</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkOther" asp-for=@Model.untestedVHRGroup.OtherUntested />
+                <input type="text" id="txtOther" name="other" asp-for=@Model.untestedVHRGroup.OtherUntested hidden />
+            </div>
+            <div class="col-md-2">
+                <label>Genetic cause not identified</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkNotID" asp-for=@Model.untestedVHRGroup.CauseNotIdentified />
+                <input type="text" id="txtNotID" name="notID" asp-for=@Model.untestedVHRGroup.CauseNotIdentified hidden />
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+        </div>
+    </form>
+
+
+</div>
+<script>
+    document.getElementById("chkBelow30").addEventListener("change", SetBelow30);
+    document.getElementById("chkBelow50").addEventListener("change", SetBelow50);
+    document.getElementById("chkOther").addEventListener("change", SetOther);
+    document.getElementById("chkNotID").addEventListener("change", SetNotID);
+
+    
+
+    function SetBelow30()
+    {
+        document.getElementById("txtBelow30").value = document.getElementById("chkBelow30").checked;
+    }
+
+    function SetBelow50()
+    {
+        document.getElementById("txtBelow50").value = document.getElementById("chkBelow50").checked;
+    }
+
+    function SetOther()
+    {
+        document.getElementById("txtOther").value = document.getElementById("chkOther").checked;
+    }
+
+    function SetNotID()
+    {
+        document.getElementById("txtNotID").value = document.getElementById("chkNotID").checked;
+    }
+
+</script>

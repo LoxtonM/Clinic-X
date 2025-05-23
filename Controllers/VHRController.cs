@@ -27,7 +27,6 @@ public class VHRController : Controller
     private readonly IExternalFacilityData _externalFacilityData;
     private readonly IScreeningServiceData _screenData;
     private readonly ITriageData _triageData;
-    private readonly IRiskData _riskData;
     private readonly ISurveillanceData _survData;
     private readonly IBreastHistoryData _bhsData;
     private readonly IUntestedVHRGroupData _uVHRData;
@@ -47,13 +46,13 @@ public class VHRController : Controller
         _externalFacilityData = new ExternalFacilityData(_clinContext);
         _screenData = new ScreeningServiceData(_cXContext);
         _triageData = new TriageData(_clinContext);
-        _riskData = new RiskData(_clinContext);
         _survData = new SurveillanceData(_clinContext);
         _bhsData = new BreastHistoryData(_cXContext);
         _uVHRData = new UntestedVHRGroupData(cXContext);
         _constantsData = new ConstantsData(docContext);
     }
 
+    /*
     public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)
     {
         try
@@ -70,6 +69,10 @@ public class VHRController : Controller
             return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Letter" });
         }
     }
+    */
+
+
+
         
     public void DoVHRPro(int id, int mpi, int icpCancerID, string user, string referrer, string screeningService, string? additionalText = "", int? diaryID = 0, bool? isPreview = false)
     {
@@ -286,7 +289,7 @@ public class VHRController : Controller
             }
 
             UntestedVHRGroup uvg = new UntestedVHRGroup();
-            uvg = _uVHRData.GetUntestedVHRGroupData(refID);
+            uvg = _uVHRData.GetUntestedVHRGroupDataByRefID(refID);
             bool isUntestedGroupTicked = false;
             if (uvg != null)
             {
@@ -562,7 +565,7 @@ public class VHRController : Controller
             totalLengthVHR3 += 30;
             vhrTf3.DrawString("(Referral forms can be authorised by a consultant radiologist, consultant practitioner or breast clinician.)", fontTiny, XBrushes.Black, new XRect(50, totalLengthVHR3, 400, 50));
 
-            //vhrDocument.Save($@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
+            
             vhrDocument.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\VHRPropreview-{user}.pdf"));
 
             if(!isPreview.GetValueOrDefault())

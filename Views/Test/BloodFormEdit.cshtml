@@ -17,7 +17,7 @@
 
 
 <div class="container">
-    <div id="metadata" hidden="true">
+    <div id="metadata" hidden>
         <span id="theurl">@Context.Request.Path</span>
         <span id="thehost">@Context.Request.Host</span>        
     </div>
@@ -30,7 +30,7 @@
         </div>        
     </div>
 
-    <div class="row mb-5 g-5" id="NameChangeForm" hidden="true">
+    <div class="row mb-5 g-5" id="NameChangeForm" hidden>
 
         <div class="col-md-2">
             <label>Name to appear on form:</label>
@@ -42,7 +42,7 @@
     </div>
 
     <form asp-action="BloodFormEdit">
-        <div hidden="true">
+        <div hidden>
             <input asp-for=@Model.bloodForm.BloodFormID name="bloodFormID" />
         </div>
 
@@ -216,8 +216,12 @@
 
     <div class="row mb-5 g-5">
         <div class="col-md-2">
-            <a type="button" class="btn btn-success" id="DoFormLinkStandard" asp-action="DoBloodForm" asp-route-bloodFormID=@Model.bloodForm.BloodFormID>View Blood Form for Printing</a>            
-            <button type="button" class="btn btn-success" id="DoFormLinkNameChange" hidden="true">View Blood Form for Printing</button>
+            <a type="button" class="btn btn-success" id="DoFormLinkStandardPreview" asp-action="DoBloodForm" asp-route-bloodFormID=@Model.bloodForm.BloodFormID asp-route-isPreview=true>Preview Blood Form for manual printing</a>
+            <button type="button" class="btn btn-success" id="DoFormLinkNameChangePreview" hidden>Preview Blood Form for manual printing</button>
+        </div>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-success" id="DoFormLinkStandard" asp-action="DoBloodForm" asp-route-bloodFormID=@Model.bloodForm.BloodFormID asp-route-isPreview=false>Print Blood Form to VOT</a>
+            <button type="button" class="btn btn-success" id="DoFormLinkNameChange" hidden>Print Blood Form to VOT</button>
         </div>
     </div>
 </div>
@@ -225,6 +229,7 @@
 <script>
     document.getElementById("btnChangeName").addEventListener("click", ShowNameChangeForm);
     document.getElementById("DoFormLinkNameChange").addEventListener("click", DoBloodFormWithNameChange);
+    document.getElementById("DoFormLinkNameChangePreview").addEventListener("click", DoBloodFormWithNameChangePreview);
     window.addEventListener("load", LoadForm);
 
 
@@ -233,6 +238,8 @@
         document.getElementById("NameChangeForm").hidden=false;
         document.getElementById("DoFormLinkStandard").hidden=true;
         document.getElementById("DoFormLinkNameChange").hidden=false;
+        document.getElementById("DoFormLinkStandardPreview").hidden=true;
+        document.getElementById("DoFormLinkNameChangePreview").hidden=false;
     }
 
     function DoBloodFormWithNameChange()
@@ -245,6 +252,19 @@
         surl = surl + "?bloodFormID=" + sbfi + "&altPatName=" + altPatName;       
         window.location.href = (surl);
     }
+
+    function DoBloodFormWithNameChangePreview()
+    {
+        var surl = "http://" + document.getElementById("thehost").innerHTML + document.getElementById("theurl").innerHTML;
+        const _url = window.location.toString();
+        const sbfi = _url.substring(_url.indexOf("=")+1, _url.length);
+        const altPatName = document.getElementById("txtAltPatName").value;
+        surl = surl.replace("BloodFormEdit", "DoBloodForm")
+        surl = surl + "?bloodFormID=" + sbfi + "&altPatName=" + altPatName + "&isPreview=true";
+        window.location.href = (surl);
+    }
+
+
 
     function LoadForm()
     {

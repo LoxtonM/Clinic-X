@@ -279,7 +279,7 @@ namespace ClinicX.Controllers
         }
 
 
-        public async Task<IActionResult> DoBloodForm(int bloodFormID, string? altPatName)
+        public async Task<IActionResult> DoBloodForm(int bloodFormID, string? altPatName, bool? isPreview = false)
         {
             BloodFormData bfData = new BloodFormData(_cXContext);
             BloodForm bf = bfData.GetBloodFormDetails(bloodFormID);
@@ -287,7 +287,7 @@ namespace ClinicX.Controllers
 
             BloodFormController bfc = new BloodFormController(_clinContext, _cXContext);
 
-            bfc.CreateBloodForm(bloodFormID, User.Identity.Name, altPatName);
+            bfc.CreateBloodForm(bloodFormID, User.Identity.Name, altPatName, isPreview);
 
             //return RedirectToAction("Edit", new { id = testID});
             return File($"~/StandardLetterPreviews/bloodform-{User.Identity.Name}.pdf", "Application/PDF");

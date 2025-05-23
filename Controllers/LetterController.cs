@@ -260,11 +260,14 @@ namespace ClinicX.Controllers
                     freeText2, relID, clinicianCode, siteText, diagDate, isPreview);
             }
             else
-            {
+            { 
 
                 MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
                 Section section = document.AddSection();
-
+                section.PageSetup.LeftMargin = 40;
+                section.PageSetup.RightMargin = 40;
+                section.PageSetup.TopMargin = 40;
+                section.PageSetup.BottomMargin = 40;
                 Paragraph contentLogo = section.AddParagraph();
                 MigraDoc.DocumentObjectModel.Shapes.Image imgLogo = contentLogo.AddImage(@"wwwroot\Letterhead.jpg");
                 imgLogo.ScaleWidth = new Unit(0.5, UnitType.Point);
@@ -280,26 +283,31 @@ namespace ClinicX.Controllers
                     MigraDoc.DocumentObjectModel.Tables.Column ourAddressInfo = table.AddColumn();
                     ourAddressInfo.Format.Alignment = ParagraphAlignment.Right;
 
-                    table.Rows.Height = 50;
-                    table.Columns.Width = 250;
+                    table.Rows.Height = 40;
+                    table.Columns.Width = 270;
                     table.Format.Font.Size = 12;
                     MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
                     row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
                     MigraDoc.DocumentObjectModel.Tables.Row row2 = table.AddRow();
                     row2.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
 
-                    quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
+                    quoteRef = Environment.NewLine + "Our Reference: " + _lvm.patient.CGU_No + Environment.NewLine;
+                    quoteRef = quoteRef + "Please quote this reference on all correspondence" + Environment.NewLine;
                     quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
                     quoteRef = quoteRef + "Consultant: " + referral.LeadClinician + Environment.NewLine;
                     quoteRef = quoteRef + "Genetic Counsellor: " + referral.GC;
 
                     row1.Cells[0].AddParagraph(quoteRef);
-                    row1.Cells[1].AddParagraph(_lvm.documentsContent.OurAddress);
-                    row2.Cells[0].AddParagraph(DateTime.Today.ToString("dd MMMM yyyy"));
+                    string ourAddress = _lvm.documentsContent.OurAddress;
+                    //row1.Cells[1].AddParagraph(_lvm.documentsContent.OurAddress);
+                    //row2.Cells[0].AddParagraph(DateTime.Today.ToString("dd MMMM yyyy"));
                     if (_lvm.documentsContent.OurEmailAddress != null) //because obviously there's a null.
                     {
-                        row2.Cells[1].AddParagraph(_lvm.documentsContent.OurEmailAddress);
+                        //row2.Cells[1].AddParagraph(_lvm.documentsContent.OurEmailAddress);
+                        ourAddress = ourAddress + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.OurEmailAddress;
                     }
+
+                    row1.Cells[1].AddParagraph(ourAddress);
 
                 }
                 else
@@ -396,8 +404,11 @@ namespace ClinicX.Controllers
                     table2.Format.Font.Size = 12;
                     MigraDoc.DocumentObjectModel.Tables.Row row1 = table2.AddRow();
                     row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
-                    row1[0].AddParagraph(name + System.Environment.NewLine + address);
 
+                    address = address + Environment.NewLine + Environment.NewLine + Environment.NewLine + DateTime.Today.ToString("dd MMMM yyyy");
+
+                    row1[0].AddParagraph(name + System.Environment.NewLine + address);
+                    /*
                     string emailEtc = "";
                     if (_lvm.documentsContent.OurEmailAddress != null) //because obviously there's a null.
                     {
@@ -407,6 +418,7 @@ namespace ClinicX.Controllers
                     emailEtc = emailEtc + DateTime.Today.ToString("dd MMMM yyyy");
 
                     row1[1].AddParagraph(emailEtc);
+                    */
                 }
                 //Content containers for all of the paragraphs, as well as other data required
 
@@ -424,6 +436,7 @@ namespace ClinicX.Controllers
                     Paragraph contentSalutation = section.AddParagraph("Dear " + salutation);
                     contentSalutation.Format.Font.Size = 12;
                 }
+                spacer = section.AddParagraph();
                 //WHY IS THERE ALWAYS A NULL SOMEWHWERE?????????
                 string referrerName = "";
                 if (_lvm.referrer != null) { referrerName = _lvm.referrer.TITLE + " " + _lvm.referrer.FIRST_NAME + " " + _lvm.referrer.NAME; }
@@ -1301,7 +1314,8 @@ namespace ClinicX.Controllers
                 }
 
                 if (ccs[0] != "")
-                {                    
+                {
+                    section.AddPageBreak();
 
                     int ccLength = 50;
                     spacer = section.AddParagraph();

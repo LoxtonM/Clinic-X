@@ -6,6 +6,7 @@ namespace ClinicX.Meta
     interface IUntestedVHRGroupData
     {
         public UntestedVHRGroup GetUntestedVHRGroupData(int refid);
+        public UntestedVHRGroup GetUntestedVHRGroupDataByRefID(int refid);
     }
     public class UntestedVHRGroupData : IUntestedVHRGroupData
     {
@@ -16,7 +17,14 @@ namespace ClinicX.Meta
             _clinContext = context;
         }
 
-        public UntestedVHRGroup GetUntestedVHRGroupData(int refid)
+        public UntestedVHRGroup GetUntestedVHRGroupData(int id)
+        {            
+            UntestedVHRGroup uvg = _clinContext.UntestedVHRGroup.FirstOrDefault(v => v.RelativeRiskID == id);
+
+            return uvg;
+        }
+
+        public UntestedVHRGroup GetUntestedVHRGroupDataByRefID(int refid)
         {
             List<UntestedVHRGroup> uvgList = _clinContext.UntestedVHRGroup.Where(v => v.RefID != null).ToList();
 
