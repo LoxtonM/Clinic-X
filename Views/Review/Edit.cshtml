@@ -16,17 +16,7 @@
 }
 
 <div class="container card">
-    <div class="row mb-5 g-2 mt-2">
-        @*
-        <div class="col-md-2">
-            <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Index">Back to Reviews Index</a>
-        </div>
-        <div class="col-md-1">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Patient Details</a>
-        </div>
-        <div class="col-md-9"></div>*@
-    </div>
-
+    
     <div class="row mb-5 g-5">
         <h1>Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME</a></h1>
     </div>

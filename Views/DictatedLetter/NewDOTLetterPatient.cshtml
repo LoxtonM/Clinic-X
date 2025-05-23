@@ -29,7 +29,7 @@
             <div class="row mb-5 g-5">
                 <div class="col-md-8">@item.CGU_No @item.FIRSTNAME @item.LASTNAME - @item.DOB.Value.ToString("dd/MM/yyyy") - NHS No: @item.SOCIAL_SECURITY</div>
 
-                <div class="col-md-2"><a type="button" class="btn btn-outline-success" asp-action="ActivityItems" asp-route-id=@item.MPI>Create Letter</a></div>
+                <div class="col-md-2"><a type="button" class="btn btn-default btn-outline-success" asp-action="ActivityItems" asp-route-id=@item.MPI>Create Letter</a></div>
             </div>
         }
     }

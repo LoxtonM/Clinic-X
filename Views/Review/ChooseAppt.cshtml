@@ -1,0 +1,90 @@
+﻿@model ClinicX.ViewModels.ReviewVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Choose Appointment";
+    ViewData["Page"] = "/ Review / Activity List";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Reviews Index", "Index", "Review", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container card">
+
+    <div class ="row g-2 mb-5">
+        <h2>Choose activity to create new review for @Model.patient.FIRSTNAME @Model.patient.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h2>
+    </div>
+
+    <div class="d-grid">
+        <h3>Appointments</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>                
+                    <th>Clinic</th>
+                    <th>Booked date</th>
+                    <th>Booked time</th>                
+                </tr>
+            </thead>
+            <tbody>           
+                @foreach (var item in Model.appointmentList)
+                {                   
+                    <tr>
+                        <td><a type="button" class="btn btn-default btn-success" asp-controller="Review" asp-action="Create" asp-route-id=@item.RefID>Select</a></td>                            
+                        <td>@item.Clinic</td>
+                        @if(item.BOOKED_DATE.HasValue)
+                        {
+                            <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        @if(item.BOOKED_TIME.HasValue)
+                        {
+                            <td>@item.BOOKED_TIME.Value.ToString("hh:mm")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                    </tr>                   
+                }          
+            </tbody>
+        </table>
+        <h3>Referrals</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Referral Date</th>
+                    <th>Referred By</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.referralList)
+                {
+                    <tr>
+                        <td><a type="button" class="btn btn-default btn-success" asp-controller="Review" asp-action="Create" asp-route-id=@item.refid>Select</a></td>
+                        <td>@item.RefType</td>
+                        @if(item.RefDate.HasValue)
+                        {
+                            <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <td>@item.ReferringClinician - @item.ReferringFacility</td>                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

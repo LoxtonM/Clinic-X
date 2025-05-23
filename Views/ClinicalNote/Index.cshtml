@@ -18,20 +18,7 @@
 
 
 <div class="container card">
-    <div class="row mb-5 g-2 mt-2">
-        @*
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to Patient Details</a>
-        </div>
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Clinics Index</a>
-        </div>
-        <div class="col-md-2">           
-            <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="ChooseAppt" asp-route-id=@Model.patient.MPI>Create New</a>
-        </div>
-        <div class="col-md-8"></div>
-        *@
-    </div>
+
     <hr />
 
 
@@ -61,8 +48,22 @@
                         <td><a asp-controller="ClinicalNote" asp-action="Edit" asp-route-id=@item.ClinicalNoteID class="btn btn-success">Select</a></td>
                         <td>@item.NoteType</td>
                         <td>@item.RefID</td>
-                        <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy")</td>
-                        <td>@item.CreatedTime.Value.ToString("HH:mm")</td>
+                        @if(item.CreatedDate != null)
+                        {
+                            <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        @if(item.CreatedTime != null)
+                        {
+                            <td>@item.CreatedTime.Value.ToString("HH:mm")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
                     </tr>               
                 }
             </tbody>

@@ -14,15 +14,7 @@
     };
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
-        <div class="col-md-2">
-            @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@Model.relativeDetails.relsid>Back to Relative Details</a>*@
-        </div>        
-        </div>        
-    </div>
+<div class="container">    
 
     <div class="row mb-5">
         <hr />
@@ -76,13 +68,12 @@
     <div class=row mb-5 g-5>
         <div class="col-md-2">
             <div col-md-2>
-                @*<button id="btnAddNew" class="btn btn-default btn-success">Add New</button>*@
                 <a class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="AddNew" asp-route-id=@Model.relativeDetails.relsid>Add New</a>
             </div>
         </div>
     </div>
 
-    <div id="metadata" hidden="true">
+    <div id="metadata" hidden>
         <span id="theurl">@Context.Request.Path</span>
         <span id="thehost">@Context.Request.Host</span>
         <span id="count">@Model.relativesDiagnosisList.Count()</span>
@@ -90,10 +81,7 @@
 </div>
 
 <script type="text/javascript">
-
-    //document.getElementById("btnBack").addEventListener("click", GoBack);
-    //document.getElementById("btnAddNew").addEventListener("click", OpenDiagForm);   
-
+        
     function GoBack() 
     {
         window.history.back();

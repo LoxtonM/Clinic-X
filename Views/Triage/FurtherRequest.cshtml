@@ -16,17 +16,6 @@
 }
 
 <div class="container card">
-
-    @*
-    <div class="row mb-5 g-2 mt-2">
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@Model.icpCancer.ICP_Cancer_ID>Back to ICP Review</a>
-        </div>
-        <div class="col-md-2">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.icpCancer.MPI>Patient Details</a>
-        </div>
-    </div>*@
-
     <div class="row mb-5 g-5">
         <h1>Cancer ICP Review for @Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME</h1>
     </div>
@@ -35,7 +24,7 @@
         <h2>Post-Clinic Patient Letter</h2>
     </div>
     <form id="FurtherRequestForm" asp-action="FurtherRequest">
-        <div class="row mb-5 g-5" hidden="true">
+        <div class="row mb-5 g-5" hidden>
             <input asp-for=@Model.icpCancer.ICP_Cancer_ID name="id" />
         </div>
         <div class="row mb-5 g-5">
@@ -54,7 +43,7 @@
             </div>
         </div>
 
-        <div class="row mb-5 g-5" id="letterDetails" hidden="true">
+        <div class="row mb-5 g-5" id="letterDetails" hidden>
             <div class="col-md-2">
                 <label>Select letter:</label>
             </div>
@@ -75,7 +64,7 @@
                 <textarea id="freeText" class="w-100" name="freeText"></textarea>
             </div>
         </div>
-        <div class="row mb-5 g-5" id="externalClinicians" hidden="true">
+        <div class="row mb-5 g-5" id="externalClinicians" hidden>
             <div class="col-md-2">
                 <label>Select Recipient:</label>
             </div>
@@ -88,7 +77,7 @@
                     }
                 </select>
 
-                <select class="w-100" id="ddlLetterToClinician" hidden="true" name="clinicianCode">
+                <select class="w-100" id="ddlLetterToClinician" hidden name="clinicianCode">
 
                 </select>
             </div>
@@ -100,7 +89,7 @@
             </div>
         </div>
 
-        <div class="row mb-5 g-5" id="CancerDiag" hidden="true">
+        <div class="row mb-5 g-5" id="CancerDiag" hidden>
             <div class="col-md-2">
                 <label>Site diagnosis</label>
             </div>
@@ -112,7 +101,7 @@
 
         </div>
 
-        <div class="row mb-5 g-5" id="analysis" hidden="true">
+        <div class="row mb-5 g-5" id="analysis" hidden>
             <div class="col-md-1">
                 <label>Germline Analysis</label>
             </div>
@@ -139,7 +128,7 @@
                 <button type="button" class="btn btn-outline-success" id="btnSubmit">Create Letter</button> (this will update the diary)
             </div>
             <div class="col-md-6">
-                <input id="isPreview" name="isPreview" hidden="true" />
+                <input id="isPreview" name="isPreview" hidden />
             </div>
 
             <div class="col-md-2">

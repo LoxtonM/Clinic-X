@@ -11,33 +11,29 @@
     {
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Dictated Letters List", "Index", "DictatedLetter", new {  }, new { @class = "btn btn-success m-1" }),
-        Html.RouteLink("", "EDMS (GEMR)", new { id = "btnEDMS" })
-        @*<a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS(GEMR)</a>*@
+        Html.RouteLink("", "EDMS (GEMR)", new { id = "btnEDMS" })       
     };
 }
 
 <div class="container card">    
-    <div class="row mb-2 mt-2 g-2">
-        @*<div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Index">Back to Dictated Letters Index</a>
-        </div>*@
+    <div class="row mb-2 mt-2 g-2">       
 
         <div class="col-md-2">
             <form id="DictatedLetterApproval" asp-action="Approve">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
-                <input id="txtCloseReferral" name="isCloseReferral" hidden="true" />
-                <input type="button" class="btn btn-default btn-outline-success" value="Approve" id="btnApprove" hidden="true" />
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+                <input id="txtCloseReferral" name="isCloseReferral" hidden />
+                <input type="button" class="btn btn-default btn-outline-success" value="Approve" id="btnApprove" hidden />
             </form>
             <form id="DictatedLetterUnapproval" asp-action="Unapprove">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
-                <input type="button" class="btn btn-default btn-outline-success" value="Unapprove" id="btnUnapprove" hidden="true" />
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+                <input type="button" class="btn btn-default btn-outline-success" value="Unapprove" id="btnUnapprove" hidden />
             </form>
         </div>
         <div class="col-md-2">
             <form id="DictatedLetterDelete" asp-action="Delete">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
-                <input type="button" class="btn btn-default btn-success" value="Delete" id="btnReqDelete" />
-                <div class="row mb-1 g-1" id="ConfDelete" hidden="true">
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+                <input type="button" class="btn btn-default btn-outline-success" value="Delete" id="btnReqDelete" />
+                <div class="row mb-1 g-1" id="ConfDelete" hidden>
                     <h6>Are you sure? You won't be able to undo this.</h6>
                     <input type="button" class="btn btn-default btn-success" value="Yes" id="btnDelete"  />
                     <input type="button" class="btn btn-default btn-success" value="No" id="btnNoDelete"  />
@@ -48,7 +44,7 @@
             <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
         </div>
     </div>
-    <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden="true">
+    <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden>
         <div class="col-md-2"></div>
         <div class="col-md-3">
             <label>Do you want to close the referral?</label>
@@ -89,13 +85,13 @@
                     <label class="redtext">Note: the preview may not accurately reflect the formatting of the letter when printed, only the content.</label>
                 </div>
             </div>
-            <div hidden="true">
+            <div hidden>
                 <input asp-for="dictatedLetters.DoTID" name="dID" />
             </div>
         </form>
 
         <form id="DictatedLetter" asp-action="Edit">
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input asp-for="dictatedLetters.DoTID" name="dID" />
                 <input id="txtisAddressChanged" name="isAddresseeChanged" />
                 <input id="txtLetterToCode" name="letterToCode" />
@@ -126,24 +122,24 @@
                             <option value="GP">GP</option>
                             <option value="Other">Other</option>
                         </select>                    
-                    
-                        <select class="w-100" id="ddlLetterToType" hidden="true">                            
+
+                        <select class="w-100" id="ddlLetterToType" hidden>                            
                             <option value="">Select...</option>
                             @foreach (var item in Model.specialities)
                             {
                                 <option value=@item>@item</option>
                             }
                         </select>
-                    
-                    
-                        <select class="w-100" id="ddlLetterToClinician" hidden="true">
-                            
+
+
+                        <select class="w-100" id="ddlLetterToClinician" hidden>
+
                         </select>                    
                     </div>
                     <div class="col-md-4">
                         <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo" name="letterTo"></textarea>
                     </div>
-               
+
                     <div class="col-md-2">
                         <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
                             <option value="">Select...</option>                    
@@ -159,7 +155,7 @@
                 </div>
             </div>
             <div class="row mb-5 g-5">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     Letter Status:
                 </div>
                 <div class="col-md-4">
@@ -175,7 +171,7 @@
                 <div class="col-md-6"></div>
             </div>
             <div class="row mb-5 g-5">
-                <div class="col-md-2" class="text-right">Summary:</div>
+                <div class="col-md-2 text-right">Summary:</div>
                 <div class="col-md-10">
                     <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold" name="letterContentBold"></textarea>
                 </div>
@@ -183,7 +179,7 @@
             </div>
 
             <div class="row mb-5">
-                <div class="col-md-1" class="text-right">Secreterial Team:</div>
+                <div class="col-md-1 text-right">Secreterial Team:</div>
                 <div class="col-md-2">
                     <select class="w-100" id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="secTeam">
                         <option value="">Select...</option>
@@ -193,7 +189,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-1" class="text-right">Consultant:</div>
+                <div class="col-md-1 text-right">Consultant:</div>
                 <div class="col-md-2">
                     <select class="w-100" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="consultant">
                         @foreach(var item in Model.consultants)
@@ -202,7 +198,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-1" class="text-right">Genetic Counsellor:</div>
+                <div class="col-md-1 text-right">Genetic Counsellor:</div>
                 <div class="col-md-2">
                     <select class="w-100" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="gc">
                         @foreach (var item in Model.gcs)
@@ -211,16 +207,16 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-1" class="text-right">Date Dictated:</div>
+                <div class="col-md-1 text-right">Date Dictated:</div>
                 <div class="col-md-2">
                     <input class="w-100" id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="dateDictated" />
                 </div>
             </div>
             <hr />
             <div class="row mb-5">
-                <div class="col-md-1" class="text-right"><b>Letter Content:</b> (type your letter here)</div>
+                <div class="col-md-1 text-right"><b>Letter Content:</b> (type your letter here)</div>
                 <div class="col-md-11">
-                    <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="letterContent" hidden="true"></textarea>
+                    <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="letterContent" hidden></textarea>
                     <div class="col-md-10 solidbordertext min-vh-50" id="letterText" contenteditable="true">
                         @Html.Raw(@Model.dictatedLetters.LetterContent)
                     </div>
@@ -228,13 +224,13 @@
             </div>
             <hr />
             <div class="row mb-5">
-                <div class="col-md-2" class="text-right">Enclosures:</div>
+                <div class="col-md-2 text-right">Enclosures:</div>
                 <div class="col-md-10">
                     <textarea id="txtEnclosures" rows="8" cols="40" asp-for="dictatedLetters.Enclosures" name="enclosures"></textarea>
                 </div>
             </div>
             <div class="row mb-5">
-                <div class="col-md-2" class="text-right">Comments:</div>
+                <div class="col-md-2 text-right">Comments:</div>
                 <div class="col-md-10">
                     <textarea id="txtComments" rows="4" cols="80" asp-for="dictatedLetters.Comments" name="comments"></textarea>
                 </div>
@@ -248,18 +244,20 @@
 
         <div class="collapse" id="collapsePatientsTable">
             <form id="frmAddPatientToDOT" asp-action="AddPatientToDOT">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
-                
-                <input id="txtPID" name="pID" hidden="true" />
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+
+                <input id="txtPID" name="pID" hidden />
                 @if(Model.dictatedLettersPatients.Count > 0)
                 {
                     <table class="table">
                         <thead>
-                            <th>Patients Added:</th>
-                            <th>CGU Number</th>
-                            <th>Name</th>
-                            <th>DOB</th>
-                            <th>NHS Number</th>
+                            <tr>
+                                <th>Patients Added:</th>
+                                <th>CGU Number</th>
+                                <th>Name</th>
+                                <th>DOB</th>
+                                <th>NHS Number</th>
+                            </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model.dictatedLettersPatients)
@@ -268,7 +266,14 @@
                                     <td></td>
                                     <td>@item.CGU_No</td>
                                     <td>@item.FIRSTNAME @item.LASTNAME</td>
-                                    <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                    @if(item.DOB.HasValue)
+                                    {
+                                        <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
                                     <td>@item.SOCIAL_SECURITY</td>
                                 </tr>
                             }
@@ -292,7 +297,14 @@
                                 <td><input type="submit" ID=@item.MPI value="Add Patient" class="btn btn-default btn-sm btn-success" onclick="AddToDOT(@item.MPI)" /></td>
                                 <td>@item.CGU_No</td>
                                 <td>@item.FIRSTNAME @item.LASTNAME</td>
-                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                @if(item.DOB.HasValue)
+                                {
+                                    <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
                                 <td>@item.SOCIAL_SECURITY</td>
                             </tr>
                         }
@@ -309,7 +321,7 @@
             <h3>CCs currently added to letter:</h3>
             <div class="row mb-5 g-5">
                 <form id="frmDeleteCC" asp-action="DeleteCCFromDOT">                
-                    <input id="txtCCID" name="id" hidden="true" />
+                    <input id="txtCCID" name="id" hidden />
                     <table class="table">
                         <thead>
                             <tr>
@@ -332,7 +344,7 @@
                 </form>
             </div>
             <form id="frmAddCCToDOT" asp-action="AddCCToDOT">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true"/>
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden/>
                 <div class="row">
                     <div class="col-md-8">
                         <label class="redtext">Note: adding a CC will cause the page to refresh, please be sure to save any changes first!</label>
@@ -355,7 +367,7 @@
                                 <option value="GP">GP</option>
                                 <option value="Other">Other</option>
                             </select>
-                            <select class="w-100" id="ddlCCType2" hidden="true">
+                            <select class="w-100" id="ddlCCType2" hidden>
                                 <option value="" selected>Select...</option>
                                 @foreach (var item in Model.specialities)
                                 {
@@ -364,17 +376,14 @@
                             </select>
 
                             
-                            <select id="ddlCC" hidden="true">
+                            <select id="ddlCC" hidden>
                                 
                             </select>
                         </div>
                         <div class="row">
                             <div class="col-md-10">
                                 <textarea rows="8" cols="40" id="txtCC" name="cc"></textarea>
-                            </div>
-                            <div class="col-md-2">
-                                @*<input type="text" id="txtCCCode" hidden="true"/>*@
-                            </div>
+                            </div>                            
                         </div>
                     </div>            
                 </div>
@@ -618,7 +627,7 @@
         
         @foreach (var item in Model.clinicians)
         {
-        @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null) 
+            @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null) 
             { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
                 @:clinCodeArray.push("@item.MasterClinicianCode");
                 @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");

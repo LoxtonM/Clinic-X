@@ -97,7 +97,7 @@
             </div>
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-success">Save Options</button>
+                    <button type="submit" class="btn btn-default btn-outline-success">Save Options</button>
                 </div>
             </div>
         </form>
@@ -113,7 +113,7 @@
 
 
     <form id="VHRProForm" asp-action="VHRPro">
-        <div class="row mb-5 g-5" hidden="true">
+        <div class="row mb-5 g-5" hidden>
             <input asp-for=@Model.icpCancer.ICP_Cancer_ID name="id" />
         </div>
 
@@ -144,7 +144,7 @@
             </div>        
 
             <div class="row mb-5 g-5">
-                <input id="txtIsPreview" name="isPreview" hidden="true" />
+                <input id="txtIsPreview" name="isPreview" hidden />
                 <div class="col-md-2">
                     <button type="button" id="btnVHRProSubmit" class="btn btn-success">Create VHR Proforma and Letter</button>
                 </div>

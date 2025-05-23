@@ -18,12 +18,12 @@
 <div class="container card">
     
 
-    <div class="row mb-5 g-5">        
+    <div class="row mb-5 g-2">        
         <h1>New Surveillance Recommendation for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>       
     </div>
 
     <form asp-action="AddNewSurveillance">
-        <div class="row" hidden="true">
+        <div class="row" hidden>
             <input name="riskID" asp-for=@Model.riskID  />
         </div>
         <div class="row mb-2 g-2">
@@ -105,7 +105,7 @@
                 <input type="checkbox" class="form-check-input" id="chkUseLetter" />
             </div>
             <div class="col-md-1">
-                <input type="text" id="txtUseLetter" name="isUseLetter" hidden=true />
+                <input type="text" id="txtUseLetter" name="isUseLetter" hidden />
             </div>
             <div class="col-md-1">
                 <label>Discontinued?:</label>
@@ -114,13 +114,13 @@
                 <input type="checkbox" class="form-check-input" id="chkYN" />
             </div>
             <div class="col-md-1">
-                <input type="text" id="txtYN" name="isYN" hidden=true />
+                <input type="text" id="txtYN" name="isYN" hidden />
             </div>        
             <div class="col-md-2">
                 <label>Discontinued reason:</label>
             </div>
             <div class="col-md-4">
-                <select class="w-100" name="discReason" id="ddlDiscReason" disabled="true">
+                <select class="w-100" name="discReason" id="ddlDiscReason" disabled>
                     <option value="">Select...</option>
                     @foreach (var item in Model.discontinuedReasonCodes)
                     {
@@ -132,7 +132,7 @@
 
         <div class="row mb-2 g-2">
             <div class="col-md-2">
-                <button type="submit" class="btn btn-success">Save</button>
+                <button type="submit" class="btn btn-default btn-outline-success">Save</button>
             </div>            
         </div>
     </form>

@@ -15,17 +15,7 @@
     };
 }
 
-<div class="container card">
-    <div class="row mb-5 mt-2 g-2">
-        @*
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AllOutstandingTests">Back to Test Index</a>
-        </div>
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.patient.MPI>Full Test List for @Model.patient.CGU_No</a>
-        </div>
-        *@
-    </div>
+<div class="container card">    
     <hr />
 
     <h1>Record Test for @Model.patient.FIRSTNAME @Model.patient.LASTNAME </h1>
@@ -89,7 +79,7 @@
 
     <div class="container mb-5">
         <form id="TestForm" asp-action="Edit">
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input class="w-100" asp-for=@Model.test.TestID type="text" id="txtTestID" name="testID" />
             </div>
             <div class="row mb-5">
@@ -135,7 +125,7 @@
             <div class="row mb-5">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
-                    <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveTest" />
+                    <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveTest" />
                 </div>
                 <div class="col-md-2"></div>
             </div>

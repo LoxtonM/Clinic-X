@@ -22,7 +22,6 @@
 }
 
 <div class="container card">
-
     @if (Model.message != null)
     {
         @if (Model.ptSuccess)
@@ -38,7 +37,6 @@
             </div>
         }
     }
-
     <div class="row mb-5 g-2 mt-2">
         <div class="col-md-4">
             @if (Model.staffMember.BILL_ID == "Technical")
@@ -265,7 +263,7 @@
 
     @if (Model.alerts.Count > 0)
     {
-        <h1 class="text-danger" class="text-center">There are active alerts for this patient</h1>
+        <h1 class="text-danger text-center">There are active alerts for this patient</h1>
     }
 
     <div class="d-grid">
@@ -598,7 +596,10 @@
                         @foreach (var r in Model.referrals)
                         {
                             <tr>
-                                <td>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                                @if(r.RefDate.HasValue)
+                                {
+                                    <td>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                                }
                                 <td>@r.RefType</td>
                                 @if (@r.ReferringFacilityCode != "GP")
                                 {
@@ -614,19 +615,22 @@
                                 <td>@r.PATHWAY</td>
                                 <td>@r.LeadClinician</td>
                                 <td>@r.GC</td>
-                                @if(@r.PATHWAY.Contains("Cancer"))
+                                @if (r.PATHWAY != null)
                                 {
-                                    foreach(var i in Model.icpCancerList)
+                                    @if (@r.PATHWAY.Contains("Cancer"))
                                     {
-                                        if(i.RefID == r.refid)
+                                        foreach (var i in Model.icpCancerList)
                                         {
-                                            <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@i.ICP_Cancer_ID>ICP Review</a></td>
+                                            if (i.RefID == r.refid)
+                                            {
+                                                <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@i.ICP_Cancer_ID>ICP Review</a></td>
+                                            }
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    <td></td>
+                                    else
+                                    {
+                                        <td></td>
+                                    }
                                 }
                             </tr>
                         }
@@ -723,7 +727,7 @@
         }
         else
         {
-            <button type="button" class="btn btn-success" disabled="true">Phenotips import currently unavailable</button>
+            <button type="button" class="btn btn-success" disabled>Phenotips import currently unavailable</button>
         }
 
         <div class="d-grid mt-2 mb-2">

@@ -41,7 +41,10 @@
                         <td>@item.RiskCode</td>
                         <td>@item.SurvSiteCode</td>
                         <td>@item.Clinician</td>
-                        <td>@item.RiskDate.Value.ToString("dd/MM/yyyy")</td>
+                        @if(item.RiskDate.HasValue)
+                        {
+                            <td>@item.RiskDate.Value.ToString("dd/MM/yyyy")</td>
+                        }
                         <td>@item.LifetimeRiskPercentage</td>
                         <td>@item.R25_29</td>
                         <td>@item.R30_40</td>

@@ -16,6 +16,8 @@ namespace ClinicX.Controllers
         private readonly IPatientData _patientData;
         private readonly IStaffUserData _staffUser;
         private readonly IReviewData _reviewData;
+        private readonly IReferralData _referralData;
+        private readonly IAppointmentData _appointmentData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         private readonly IAgeCalculator _ageCalculator;
@@ -29,6 +31,8 @@ namespace ClinicX.Controllers
             _activityData = new ActivityData(_clinContext);
             _staffUser = new StaffUserData(_clinContext);
             _reviewData = new ReviewData(_clinContext);
+            _referralData = new ReferralData(_clinContext);
+            _appointmentData = new AppointmentData(_clinContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
             _ageCalculator = new AgeCalculator();
@@ -92,9 +96,9 @@ namespace ClinicX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
-                _rvm.referrals = _activityData.GetActivityDetails(id);
+                _rvm.referral = _activityData.GetActivityDetails(id);
                 _rvm.staffMembers = _staffUser.GetClinicalStaffList();
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.referrals.MPI);
+                _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
                
                 return View(_rvm);
             }
@@ -202,6 +206,27 @@ namespace ClinicX.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-edit" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChooseAppt(int id)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinical Notes Choose Appt", id.ToString(), _ip.GetIPAddress());
+
+                _rvm.patient = _patientData.GetPatientDetails(id);
+                _rvm.appointmentList = _appointmentData.GetAppointmentListByPatient(id);
+                _rvm.referralList = _referralData.GetActiveReferralsListForPatient(id);
+
+                return View(_rvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message });
             }
         }
     }

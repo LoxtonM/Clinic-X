@@ -15,13 +15,7 @@
 }
 
 <div class="container card">
-    <div class="row mb-5 g-2 mt-2">       
-        @*<div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.activityItem.MPI>Back to Index</a>
-        </div>*@
-           
-    </div>
-
+    
     <hr />
 
     <h1>New Clinical Note</h1>
@@ -30,7 +24,7 @@
     <div class="container mb-5">
     
         <form id="ClinicalNote" asp-action="Create">
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input name="refID" value=@Model.activityItem.RefID />
                 <input name="mpi" value=@Model.activityItem.MPI />
             </div>

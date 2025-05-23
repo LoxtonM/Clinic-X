@@ -65,7 +65,14 @@
                             <td>@item.RiskCode</td>
                             <td>@item.SurvSiteCode</td>
                             <td>@item.Clinician</td>
-                            <td>@item.RiskDate.Value.ToString("dd/MM/yyyy")</td>
+                            @if(item.RiskDate.HasValue)
+                            {
+                                <td>@item.RiskDate.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
                             <td>@item.LifetimeRiskPercentage</td>
                             <td>@item.R25_29</td>
                             <td>@item.R30_40</td>
@@ -127,7 +134,6 @@
         }
         <div class="row mb-5 g-5">
             <div class="col-md-2">
-                @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
                 <a type="button" class="btn btn-default btn-success" asp-controller="RiskAndSurveillance" asp-action="AddNewTestingEligibility" asp-route-id=@Model.icpCancer.ICP_Cancer_ID>Add Testing Eligibility</a>
             </div>
         </div>
@@ -135,7 +141,7 @@
 
     <form id="CancerReviewForm" asp-action="CancerReview">
 
-        <div class="row mb-5 g-5" hidden="true">
+        <div class="row mb-5 g-5" hidden>
             <input asp-for=@Model.icpCancer.ICP_Cancer_ID name="id" />
         </div>
 
@@ -192,7 +198,7 @@
                     <input id="chkNotForCrossBooking" type="checkbox" class="form-check" />
                 </div>
                 <div class="col-md-2">
-                    <input id="txtNotForCrossBooking" name="isNotForCrossBooking" hidden="true" />
+                    <input id="txtNotForCrossBooking" name="isNotForCrossBooking" hidden />
                 </div>
             </div>
         </div>
@@ -278,15 +284,10 @@
 
         <div class="row mb-5 g-5">
             <div class="col-md-2">
-                <button type="button" id="btnSave" class="btn btn-default btn-success">Save</button>
+                <button type="button" id="btnSave" class="btn btn-default btn-outline-success">Save</button>
             </div>
         </div>
-    </form>
-    <div class="row mb-5 g-5">
-        <div class="col-md-4">
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="DoRepsum" asp-route-icpid=@Model.icpCancer.ICP_Cancer_ID asp-route-diaryID="12345">Create Repsum</a>*@
-        </div>       
-    </div>
+    </form>    
 
     <div class="row mb-5 g-5">
         <div class="col-md-4">

@@ -21,12 +21,19 @@
     </div>
 
     <div class="row mb-5 g-5">
-        <h2>Test details: @Model.test.TEST - requested on @Model.test.DATE_REQUESTED.Value.ToString("dd/MM/yyyy") by @Model.test.NAME</h2>
+        @if(Model.test.DATE_REQUESTED.HasValue)
+        {
+            <h2>Test details: @Model.test.TEST - requested on @Model.test.DATE_REQUESTED.Value.ToString("dd/MM/yyyy") by @Model.test.NAME</h2>
+        }
+        else
+        {
+            <h2>Test details: @Model.test.TEST - requested by @Model.test.NAME</h2>
+        }
     </div>
         
 
     <form asp-action="NewBloodForm">
-        <div hidden="true">
+        <div hidden>
             <input asp-for=@Model.test.TestID name="testID" />
         </div>
 
@@ -37,21 +44,21 @@
             </div>
             <div class="col-md-2">
                 <label>NHS </label><input id="chkNHS" type="checkbox" checked /> <label>Private </label><input id="chkPrivate" type="checkbox" />
-                <input name="isNHS" id="txtNHS" value="true" hidden="true" />
+                <input name="isNHS" id="txtNHS" value="true" hidden />
             </div>
             <div class="col-md-1">
                 <label>Urgent/Routine</label>
             </div>
             <div class="col-md-2">
                 <label>Routine </label><input id="chkRoutine" type="checkbox" checked /> <label>Urgent </label><input id="chkUrgent" type="checkbox" />
-                <input name="isRoutine" id="txtRoutine" value="true" hidden="true" />
+                <input name="isRoutine" id="txtRoutine" value="true" hidden />
             </div>
             <div class="col-md-2">
                 <label>Inpatient/Outpatient</label>
             </div>
             <div class="col-md-2">
                 <label>Outpatient </label><input id="chkOutpatient" type="checkbox" checked /> <label>Inpatient </label><input id="chkInpatient" type="checkbox" /> 
-                <input name="isInpatient" id="txtInpatient" value="0" hidden="true" />                
+                <input name="isInpatient" id="txtInpatient" value="0" hidden />                
             </div>
         </div>
 
@@ -88,25 +95,25 @@
                 <label>Prenatal</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkPrenatal" /><input type="text" name="isPrenatal" id="txtPrenatal" hidden="true" />
+                <input type="checkbox" id="chkPrenatal" /><input type="text" name="isPrenatal" id="txtPrenatal" hidden />
             </div>
             <div class="col-md-1">
                 <label>Presymptomatic</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkPresymptomatic" /><input type="text" name="isPresymptomatic" id="txtPresymptomatic" hidden="true" />
+                <input type="checkbox" id="chkPresymptomatic" /><input type="text" name="isPresymptomatic" id="txtPresymptomatic" hidden />
             </div>
             <div class="col-md-1">
                 <label>Diagnostic</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkDiagnostic" /><input type="text" name="isDiagnostic" id="txtDiagnostic" hidden="true" />
+                <input type="checkbox" id="chkDiagnostic" /><input type="text" name="isDiagnostic" id="txtDiagnostic" hidden />
             </div>
             <div class="col-md-1">
                 <label>Carrier</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkCarrier" /><input type="text" name="isCarrier" id="txtCarrier" hidden="true" />
+                <input type="checkbox" id="chkCarrier" /><input type="text" name="isCarrier" id="txtCarrier" hidden />
             </div>
         </div>
 
@@ -195,7 +202,7 @@
 
         <div class="row mb-5 g-5">
             <div action="col-md-2">
-                <button type="submit" class="btn btn-success">Save Form Details</button>
+                <button type="submit" class="btn btn-default btn-outline-success">Save Form Details</button>
             </div>
         </div>
     </form>

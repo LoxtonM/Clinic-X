@@ -61,7 +61,7 @@
         </dl>
 
         <form asp-action="SurvDetails">
-            <div class="row mb-2 g-2" hidden ="true">
+            <div class="row mb-2 g-2" hidden>
                 <input type="text" name="survID" asp-for=@Model.surveillanceDetails.SurvRecID />
             </div>
             <div class="row mb-2 g-2">
@@ -81,7 +81,7 @@
 
             <div class="row mb-2 g-2">
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="submit" class="btn btn-default btn-outline-success">Save</button>
                 </div>
             </div>
         </form>

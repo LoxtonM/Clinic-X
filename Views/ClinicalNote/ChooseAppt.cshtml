@@ -16,7 +16,7 @@
 
 <div class="container card">
     
-    <div class ="row g-5 mb-5">
+    <div class ="row g-2 mb-5">
         <h2>Choose activity to create new clinical note for @Model.patient.FIRSTNAME @Model.patient.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h2>
     </div>
     
@@ -35,7 +35,7 @@
                 @foreach (var item in Model.Clinics)
                 {                   
                     <tr>
-                        <td><a asp-controller="ClinicalNote" asp-action="Create" asp-route-id=@item.RefID>Select</a></td>                            
+                        <td><a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Create" asp-route-id=@item.RefID>Select</a></td>
                         <td>@item.Clinic</td>
                         <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
                         <td>@item.BOOKED_TIME.Value.ToString("hh:mm")</td>
@@ -57,7 +57,7 @@
                 @foreach (var item in Model.Referrals)
                 {
                     <tr>
-                        <td><a asp-controller="ClinicalNote" asp-action="Create" asp-route-id=@item.refid>Select</a></td>
+                        <td><a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Create" asp-route-id=@item.refid>Select</a></td>
                         <td>@item.RefType</td>
                         <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
                         <td>@item.ReferringClinician - @item.ReferringFacility</td>                        

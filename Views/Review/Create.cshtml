@@ -16,28 +16,18 @@
 }
 
 <div class="container card">
-    <div class="row mb-5 g-2 mt-2">
-        @*
-        <div class="col-md-2">
-            <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Index">Back to Reviews Index</a>
-        </div>
-        <div class="col-md-1">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>Patient Details</a>
-        </div>
-        <div class="col-md-9"></div>*@
-    </div>
-
-    <div class="row mb-5 g-5">
+    
+    <div class="row mb-5 g-2">
         <h1>Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>@Html.DisplayFor(model => model.patient.FIRSTNAME) @Html.DisplayFor(model => model.patient.LASTNAME)</a></h1>
     </div>
 
     <div>
         <form id="ReviewForm" asp-action="Create">
             <div class="row mb-5 g-5">
-                <div id="meta" hidden="true">
+                <div id="meta" hidden>
                     <input asp-for=@Model.patient.MPI name ="mpi" />
-                    <input asp-for=@Model.referrals.RefID name="refID" />
-                    <input asp-for=@Model.referrals.PATHWAY name="pathway" />
+                    <input asp-for=@Model.referral.RefID name="refID" />
+                    <input asp-for=@Model.referral.PATHWAY name="pathway" />
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -80,7 +70,7 @@
             <div class="row mb-5 g-5">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
-                    <button type="button" class="btn btn-default btn-success" id="btnSave">Save</button>
+                    <button type="button" class="btn btn-default btn-outline-success" id="btnSave">Save</button>
                 </div>
                 <div class="col-md-2"></div>
             </div>

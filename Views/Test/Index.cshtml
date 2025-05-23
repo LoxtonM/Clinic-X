@@ -15,15 +15,7 @@
 
 
 
-<div class="container card">
-    <div class="mb-5 mt-2 g-2">
-        @*
-        <div col-md-2>
-            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>
-        </div>*@
-    </div>
-
-
+<div class="container card"> 
     @if (Model.tests.Count() >= 1)
     {
         <h1 class="text-center">Tests for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.patient.CGU_No</a></h1>
@@ -49,7 +41,7 @@
                             <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID class="btn btn-success">Select</a></td>
                             <td>@item.TEST</td>
                             <td>@item.NAME</td>                           
-                            @if (@item.DATE_RECEIVED.HasValue)
+                            @if (item.DATE_REQUESTED.HasValue)
                             {
                                 <td>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
                             }
@@ -86,15 +78,14 @@
     {   
         <h1 class="text-center">There are no tests recorded for this patient.</h1>    
     }
-
     <div class="row g-5 mb-5">        
         <div col-md-2>
             <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="AddNew" asp-route-id=@Model.patient.MPI>Add New</a>
         </div>
-        @*<div col-md-2><button id="btnAddNew" class="btn btn-default btn-success">Add New</button> </div>        *@
+        
     </div>
 
-    <div id="metadata" hidden="true">
+    <div id="metadata" hidden>
         <span id="theurl">@Context.Request.Path</span>
         <span id="thehost">@Context.Request.Host</span>
         <span id="count">@Model.tests.Count()</span>

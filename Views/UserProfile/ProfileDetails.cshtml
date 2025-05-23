@@ -15,7 +15,7 @@
 }
 
 <div class="container">
-    
+
     @if (Model.message != null)
     {
         @if (Model.success)
@@ -89,20 +89,16 @@
             <label>Start date:</label>
         </div>
         <div class="col-md-8">
-            <p>@Model.staffMember.EMPLOYMENT_START_DATE.Value.ToString("dd/MM/yyyy")</p>
+            @if(Model.staffMember.EMPLOYMENT_START_DATE.HasValue)
+            {
+                <p>@Model.staffMember.EMPLOYMENT_START_DATE.Value.ToString("dd/MM/yyyy")</p>
+            }
+            else
+            {
+                <p>Unknown</p>
+            }
         </div>
     </div>
 
-    @*
-    <div class="row">
-        <div class="col-md-2">
-            <a type="button" class="btn btn-success" asp-controller="UserProfile" asp-action="Edit">Update Your Details</a>
-        </div>
-        <div class="col-md-8"></div>
-        <div class="col-md-2">
-            <a type="button" class="btn btn-success" asp-controller="UserProfile" asp-action="ChangePassword">Update Password</a>
-        </div>
-    </div>
-    *@
 
 </div>

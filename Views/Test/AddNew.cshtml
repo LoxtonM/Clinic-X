@@ -14,19 +14,13 @@
     };
 }
 
-<div class="container card">
-    <div class ="row g-2 mb-5 mt-2">
-        @*
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Html.ValueFor(Model => Model.patient.MPI)>Back to Test List</a>
-        </div>*@
-    </div>
+<div class="container card">   
 
     <h1>Add new test for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME)</h1>
 
     <div class="container">
         <form id="AddTestForm" asp-action="AddNew">
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input id="txtMPI" name="mpi" asp-for=@Model.patient.MPI />
             </div>
             <div class="row g-5 mb-5">
@@ -55,13 +49,7 @@
                     <input class="w-100" id="txtExpected" type="date" name="expectedDate" />
                 </div>
             </div>
-
-            @*<div class="row g-5 mb-5">
-                <div class="col-md-2">Results:</div>
-                <div class="col-md-4"><input type="text" name="sResults" /></div>
-                <div class="col-md-2">Comments:</div>
-                <div class="col-md-4"><input type="text" name="sComments" /></div>
-            </div>*@
+                      
 
             <div class="row g-5 mb-5">
                 <div class="col-md-2">
@@ -73,9 +61,7 @@
 </div>
 
 <script type="text/javascript">
-
-    //window.addEventListener("load", LoadData)
-    //document.getElementById("btnBack").addEventListener("click", GoBack);
+        
     document.getElementById("btnSave").addEventListener("click", AddTest);
     document.getElementById("ddlTest").addEventListener("change", SetDefaultTAT);
 
@@ -85,15 +71,7 @@
         window.history.back();
         //window.close();
     }
-    
-    function LoadData()
-    {
-        //var _expdat = document.getElementById("txtExpected");
-        //if (_expdat.value == null)         
-        //{ 
-        //    //somehow get standard date
-       // }
-    }
+       
 
     function SetDefaultTAT()
     { 

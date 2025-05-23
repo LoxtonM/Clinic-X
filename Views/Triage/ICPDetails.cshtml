@@ -18,16 +18,7 @@
     };
 }
 
-<div class="container card">
-    @*<div class="row mb-5 g-2 mt-2">
-        <div class="col-md-2">
-
-            <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="Index">Back to Triage Index</a>
-        </div>
-        <div class="col-md-1">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.triage.MPI>Patient Details</a>
-        </div>    
-    </div>*@
+<div class="container card">   
 
     <h1>ICP Details</h1>
 
@@ -102,7 +93,7 @@
                 </div>
                 <div class="col-md-4">
 
-                    <input name="icpID" asp-for=@Model.triage.ICPID hidden="true" />
+                    <input name="icpID" asp-for=@Model.triage.ICPID hidden />
                     <input class="w-100" name="indicationNotes" asp-for=@Model.referralDetails.REASON_FOR_REFERRAL />
                 </div>
                 <div class="col-md-2">
@@ -116,8 +107,7 @@
 
 
     <form id="formICPGeneral" asp-action="DoGeneralTriage">
-        <div id="metadata-general" hidden="true">
-            @*<input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />*@
+        <div id="metadata-general" hidden>            
             <input name="icpID" asp-for=@Model.triage.ICPID />
             <input id="txtTP1" name="tp" />
             <input id="txtTP2" name="tp2" />
@@ -248,7 +238,7 @@
     </form>
 
     <form id="formICPCancer" asp-action="DoCancerTriage">
-        <div id="metadata-cancer" hidden="true">
+        <div id="metadata-cancer" hidden>
             <input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />
         </div>
         <div class="row">

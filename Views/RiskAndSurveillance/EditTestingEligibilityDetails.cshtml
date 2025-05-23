@@ -22,7 +22,7 @@
 
     <form asp-action="EditTestingEligibilityDetails">
         
-        <div class="row" hidden="true">
+        <div class="row" hidden>
             <input name="id" asp-for=@Model.eligibilityDetails.ID/>
         </div>
         
@@ -75,23 +75,6 @@
                 </select>                
             </div>
         </div>
-
-        @*
-        <div class="row mb-2 g-2">
-            <div class="col-md-4">
-                <label>Relative:</label>
-            </div>
-            <div class="col-md-6">
-                <select class="w-100" name="relative" asp-for=@Model.eligibilityDetails.RelID>
-                    <option value="">Select...</option>
-                    @foreach (var item in Model.relatives)
-                    {
-                        <option value=@item.relsid>@item.RelForename1 @item.RelSurname</option>
-                    }
-                </select>
-            </div>          
-        </div>
-        *@
 
         <div class="row mb-2 g-2">
             <div class="col-md-2">

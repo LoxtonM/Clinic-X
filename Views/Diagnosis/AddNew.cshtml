@@ -14,25 +14,18 @@
     };
 }
 
-<div class="container card">
-    <div class ="row g-2 mb-5 mt-2">
-        <div class="col-md-2">
-            @*
-            <a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Diagnosis List</a>
-            *@
-        </div>
-    </div>
+<div class="container card">   
 
     <h1>Add new diagnosis for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME)</h1>
     <div class="row g-2 mb-5 mt-2">
         <form id="DiseaseSearch">
             <div class="row mb-2 g-2">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Search:</label>
                 </div>
                 <div class="col-md-2">
                     <input type="text" class="w-100" id="txtSearch" name="searchTerm" asp-for=@Model.searchTerm />
-                    <input name="id" value="@Html.DisplayFor(model => model.patient.MPI)" hidden="true" />
+                    <input name="id" value="@Html.DisplayFor(model => model.patient.MPI)" hidden />
                 </div>
                 <div class="col-md-8">
                     <label>(enter a search term to display the list)</label>
@@ -77,7 +70,7 @@
                 <div class="col-md-6"><input type="text" id="txtComments" name="comments" /></div>
             </div>
                 
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input class="w-100" name="mpi" value="@Html.DisplayFor(model => model.patient.MPI)" />
             </div>
         </form>

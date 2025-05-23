@@ -20,13 +20,7 @@
 }
 
 <div class="container card">
-    <div class="mb-5 mt-2 g-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        @*<a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Edit" asp-route-id=@Html.ValueFor(Model => Model.clinicalNote.ClinicalNoteID)>Back to Note</a>*@
-    </div>
-
-    <div class="mb-5 mt-2 g-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+    <div class="mb-5 mt-2 g-2">        
         @if (Model.staffMember.BILL_ID == "Technical")
         {
             <a type="button" class="btn btn-default btn-danger" asp-controller="HPO" asp-action="GetAllHPOTerms">Get all HPO codes</a>
@@ -46,13 +40,8 @@
                     <div class="col-sm-10">
                         <textarea id="txtClinicalNote" rows="10" cols="120" name="clinicalNote" asp-for=@Model.clinicalNote.ClinicalNote></textarea>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-2">
-                        @*<input type="button" value="Extract Terms" id="btnExtract" class="btn btn-default btn-success" />*@
-                    </div>
-                </div>
-                <div id="metadata" hidden="true">        
+                </div>                
+                <div id="metadata" hidden>        
                     RefID:<input id="metaRefID" value=@Model.clinicalNote.RefID />
                     NoteID:<input id="metaNoteID" name="noteID" value=@Model.clinicalNote.ClinicalNoteID />
                     DCTMSTS:<input id="txtDCTMSts" value=@Model.clinicalNote.CN_DCTM_sts />
@@ -64,7 +53,7 @@
     <div class="d-grid">
     <h4>Existing HPO codes:</h4>
         <form id="DeleteHPOTermFromNote" asp-action="DeleteHPOTermFromNote">
-        <input id="txtID" name="id" hidden="true" />
+        <input id="txtID" name="id" hidden />
     
         @foreach (var e in Model.hpoTermDetails)
         {
@@ -88,7 +77,7 @@
         <h4>Suggested HPO codes:</h4>
         <br /><br />
         <form id="AddHPOTermFromText" asp-action="AddHPOTermFromText">
-            <input id="txtNoteID1" name="noteID" value=@Model.clinicalNote.ClinicalNoteID hidden="true" /> <input id="txtTermID" name="termID" hidden="true" />
+            <input id="txtNoteID1" name="noteID" value=@Model.clinicalNote.ClinicalNoteID hidden /> <input id="txtTermID" name="termID" hidden />
             @if(Model.hpoExtractedTerms.Count > 0)
             {
                 <h5>The following HPO terms have been found in the text:</h5>
@@ -120,25 +109,24 @@
         <h4>Add other HPO codes:</h4> <h6>(enter a search term to activate the menu)</h6>
         <form id="HPOSearch">
             <div class="row mb-2 g-2">
-                <div class="col-md-2" class="text-right">
+                <div class="col text-right">
                     <label>Search:</label>
                 </div>
                 <div class="col-md-6">
                     <input type="text" id="txtSearch" name="searchTerm" asp-for=@Model.searchTerm />
-                    <input name="id" value=@Model.clinicalNote.ClinicalNoteID hidden="true" />
-                    @*<a type="button" class="btn btn-success" asp-controller="API" asp-action="GetHPOCodes" asp-route-searchTerm="kidney">TestSearch</a>*@
+                    <input name="id" value=@Model.clinicalNote.ClinicalNoteID hidden />                    
                 </div>
             </div>
         </form>
 
         <form id="AddHPOTerm" asp-action="AddHPOTerm">        
             <div class="row">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     HPO Codes:
                 </div>
     
                 <div class="col-md-8">
-                    <select class="w-100" id="ddlHPO" name="termCode" disabled="true">
+                    <select class="w-100" id="ddlHPO" name="termCode" disabled>
                         @if(Model.hpoTerms != null)
                         {
                             @foreach (var t in Model.hpoTerms)
@@ -149,12 +137,12 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <input type="button" value="Add HPO Code" id="btnAdd" class="btn btn-default btn-outline-success" asp-controller="HPO" asp-action="AddHPOTerm" disabled="true" />
+                    <input type="button" value="Add HPO Code" id="btnAdd" class="btn btn-default btn-outline-success" asp-controller="HPO" asp-action="AddHPOTerm" disabled />
                 </div>    
             </div>
     
             <div class="row mb-5 g-5">        
-                <input id="txtNoteID2" name="noteID" value=@Model.clinicalNote.ClinicalNoteID hidden="true" />
+                <input id="txtNoteID2" name="noteID" value=@Model.clinicalNote.ClinicalNoteID hidden />
             </div>
         </form>
     
@@ -180,14 +168,11 @@
             document.getElementById("txtClinicalNote").disabled = true;           
         }
 
-        //window.alert(document.getElementById("txtSearch").value);
-
         if (document.getElementById("txtSearch").value != "" && document.getElementById("txtSearch").value != null) 
         {
             document.getElementById("ddlHPO").disabled = false;
             document.getElementById("btnAdd").disabled = false;
         }
-        //document.getElementById("ddlHPO").disabled = false;
     }
 
     function ExtractTerms()

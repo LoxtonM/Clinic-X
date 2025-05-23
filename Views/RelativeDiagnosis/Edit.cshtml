@@ -18,13 +18,7 @@
     };
 }
 
-<div class="container">    
-    <div class="row g-5 mb-5">
-        <div class="col-md-2">
-            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativesDiagnosis.RelsID>Back to Diagnosis List</a>*@
-        </div>
-    </div>
+<div class="container">
 
     <div class="row g-5 mb-5">
         <h1>Add new diagnosis</h1>
@@ -41,13 +35,13 @@
                 <div class="col-md-3">
                     @Html.DisplayFor(model => model.relativesDiagnosis.Diagnosis)
                 </div>
-                <div class="col-md-1" class="text-right">
+                <div class="col-md-1 text-right">
                     <label>Age:</label>
                 </div>
                 <div class="col-md-2">
                     @Html.DisplayFor(model => model.relativesDiagnosis.AgeDiag)
                 </div>
-                <div class="col-md-1" class="text-right">
+                <div class="col-md-1 text-right">
                     <label>Hospital(s):</label>
                 </div>
                 <div class="col-md-2">
@@ -59,13 +53,13 @@
                 <h2>Information Request:</h2>
             </div>
             <div class="row g-5 mb-5">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Source:</label>
                 </div>
                 <div class="col-md-2">
                     @Html.DisplayFor(model => model.relativesDiagnosis.CRegCode)
                 </div>
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>
                         Date Requested:
                     </label>
@@ -73,7 +67,7 @@
                 <div class="col-md-2">
                     @Html.DisplayFor(model => model.relativesDiagnosis.DateReq)
                 </div>
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Consultant:</label>
                 </div>
                 <div class="col-md-2">
@@ -81,7 +75,7 @@
                 </div>
             </div>
             <div class="row mb-5 g-5">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Information Not Requested:</label>                
                 </div>
                 <div class="col-md-8">
@@ -117,7 +111,7 @@
                 <h2>Request Outcome:</h2>
             </div>
             <div class="row g-5 mb-5">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Confirmed:</label>
                 </div>
                 <div class="col-md-2">
@@ -127,13 +121,13 @@
                         <option value="X">Unknown</option>
                     </select>
                 </div>
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Date of Diagnosis:</label>
                 </div>
                 <div class="col-md-2">
                     <input class="w-100" type="date" name="confDiagDate" asp-for=@Model.relativesDiagnosis.ConfDiagDate />
                 </div>
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Age at Diagnosis:</label>
                 </div>
                 <div class="col-md-1">
@@ -141,7 +135,7 @@
                 </div>
             </div>
             <div class="row g-5 mb-5">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Site (topography)</label>
                 </div>
                 <div class="col-md-2">
@@ -155,7 +149,7 @@
                 </div>
             </div>
             <div class="row mb-5 g-5">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Laterality (side):</label>
                 </div>
                 <div class="col-md-2">
@@ -167,7 +161,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-1" class="text-right">
+                <div class="col-md-1 text-right">
                     <label>Grade/stage:</label>
                 </div>
                 <div class="col-md-3">
@@ -179,7 +173,7 @@
                         <option value="4">Anaplastic</option>
                     </select>
                 </div>
-                <div class="col-md-1" class="text-right">
+                <div class="col-md-1 text-right">
                     <label>Duke's:</label>
                 </div>
                 <div class="col-md-1">
@@ -194,7 +188,7 @@
                 </div>
             </div>
             <div class="row g-5 mb-5">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Histology (morphology):</label>
                 </div>
                 <div class="col-md-2">
@@ -208,13 +202,13 @@
                 </div>
             </div>
             <div class="row mb-5 g-5">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Histology number:</label>
                 </div>
                 <div class="col-md-2">
                     <input type="text" name="histologyNumber" asp-for=@Model.relativesDiagnosis.HistologyNumber />
                 </div>
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right">
                     <label>Comments:</label>
                 </div>
                 <div class="col-md-2">
@@ -223,14 +217,14 @@
             </div>
 
 
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input name="tumourID" asp-for=@Model.relativesDiagnosis.TumourID />
             </div>
         </form>
 
         <div class="row g-5 mb-5">
             <div class="col-md-2">
-                <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+                <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSave" />
             </div>
         </div>
     </div>

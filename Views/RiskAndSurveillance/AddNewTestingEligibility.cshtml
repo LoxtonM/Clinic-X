@@ -22,7 +22,7 @@
 
     <form asp-action="AddNewTestingEligibility">
         
-        <div class="row" hidden="true">
+        <div class="row" hidden>
             <input name="refID" asp-for=@Model.refID />
         </div>
         
@@ -94,7 +94,7 @@
 
         <div class="row mb-2 g-2">
             <div class="col-md-2">
-                <button type="submit" class="btn btn-success">Save</button>
+                <button type="submit" class="btn btn-default btn-outline-success">Save</button>
             </div>
         </div>
         

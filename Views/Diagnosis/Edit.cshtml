@@ -14,10 +14,7 @@
     };
 }
 
-<div class="container card">
-    <div class="mb-5 mt-2 g-2">
-        @*<a type="button" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>Back to Diagnosis List</a>*@
-    </div>
+<div class="container card">    
 
     <h1>Diagnosis details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME </h1>
     <div>
@@ -39,7 +36,7 @@
 
     <div class="container mb-5">
         <form id="DiagForm" asp-action="Edit">
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input class="w-100" asp-for=@Model.diagnosis.ID type="text" id="txtDiagID" name="diagID" />
             </div>
             <div class="row mb-5">            

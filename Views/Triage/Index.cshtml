@@ -11,13 +11,8 @@
 
 
 <div class="container card">
-    @*<div>
-        <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
-    </div>*@
 
     <div class="row g-2 mb-5 mt-2">
-        @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().Clinician)!</h1>*@
-
         <h2 class="text-center">Cases to Triage:</h2>
     </div>
 
@@ -42,7 +37,14 @@
                         <td>@item.ReferralPathway</td>
                         <td>@item.RefType</td>
                         <td>@item.Name</td>
-                        <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>                
+                        @if(item.RefDate.HasValue)
+                        {
+                            <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
                     </tr>
                 }
             </tbody>
@@ -74,7 +76,14 @@
                             <td><a asp-action="CancerReview" asp-route-id=@item.ICP_Cancer_ID class="btn btn-success">Select</a></td>
                             <td>@item.CGU_No</td>
                             <td>@item.FIRSTNAME @item.LASTNAME</td>
-                            <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            @if(item.REFERRAL_DATE.HasValue)
+                            {
+                                <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
                             <td>@item.ReferralAction</td>
                             <td>@item.Comments</td>
                         </tr>
@@ -106,7 +115,14 @@
                             <td><a asp-action="CancerReview" asp-route-id=@item.ICP_Cancer_ID class="btn btn-success">Select</a></td>
                             <td>@item.CGU_No</td>
                             <td>@item.FIRSTNAME @item.LASTNAME</td>
-                            <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            @if(item.REFERRAL_DATE.HasValue)
+                            {
+                                <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
                             <td>@item.ReferralAction</td>
                             <td>@item.Comments</td>
                         </tr>
