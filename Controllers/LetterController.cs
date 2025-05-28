@@ -8,6 +8,8 @@ using MigraDoc.Rendering;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using System.Drawing;
+using System.Security;
+using Microsoft.Office.Interop.Outlook;
 
 
 
@@ -87,14 +89,10 @@ namespace ClinicX.Controllers
             table.Format.Font.Size = 12;
             MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
             row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
-            MigraDoc.DocumentObjectModel.Tables.Row row2 = table.AddRow();
-            row2.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
+            //MigraDoc.DocumentObjectModel.Tables.Row row2 = table.AddRow();
+            //row2.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
 
             string clinicianHeader = $"Consultant: {_lvm.dictatedLetter.Consultant}" + System.Environment.NewLine + $"Genetic Counsellor: {_lvm.dictatedLetter.GeneticCounsellor}";
-
-            row1.Cells[0].AddParagraph(clinicianHeader);
-            row1.Cells[0].Format.Font.Bold = true;
-            row1.Cells[1].AddParagraph(ourAddress);
 
             string phoneNumbers = "Secretaries Direct Line:" + System.Environment.NewLine;
 
@@ -104,8 +102,14 @@ namespace ClinicX.Controllers
                 phoneNumbers = phoneNumbers + $"{t.NAME} {t.TELEPHONE}" + System.Environment.NewLine;
             }
 
-            row2.Cells[0].AddParagraph(phoneNumbers);
-            row2.Cells[1].AddParagraph(_constantsData.GetConstant("MainCGUEmail", 1));
+            row1.Cells[0].AddParagraph(clinicianHeader + System.Environment.NewLine + System.Environment.NewLine + phoneNumbers);
+            //row1.Cells[0].Format.Font.Bold = true;            
+            row1.Cells[1].AddParagraph(ourAddress + System.Environment.NewLine + System.Environment.NewLine + _constantsData.GetConstant("MainCGUEmail", 1));
+
+            
+
+            //row2.Cells[0].AddParagraph(phoneNumbers);
+            //row2.Cells[1].AddParagraph(_constantsData.GetConstant("MainCGUEmail", 1));
 
             string datesInfo = "";
 
@@ -117,8 +121,8 @@ namespace ClinicX.Controllers
             _lvm.patient = _patientData.GetPatientDetails(_lvm.dictatedLetter.MPI.GetValueOrDefault());
 
             spacer = section.AddParagraph();
-            Paragraph contentRefNo = section.AddParagraph($"Please quote our reference on all correspondence: {_lvm.patient.CGU_No}");
-            contentRefNo.Format.Font.Size = 12;
+            Paragraph contentRefNo = section.AddParagraph($"Please quote our reference on all correspondence: {System.Environment.NewLine} {_lvm.patient.CGU_No}");
+            contentRefNo.Format.Font.Size = 12;            
             spacer = section.AddParagraph();
             Paragraph contentDatesInfo = section.AddParagraph(datesInfo);
             contentDatesInfo.Format.Font.Size = 12;
@@ -147,9 +151,35 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
             string letterContent = RemoveHTML(_lvm.dictatedLetter.LetterContent);
-
-            Paragraph contentLetterContent = section.AddParagraph(letterContent);
+            
+            //Paragraph contentLetterContent = section.AddParagraph(letterContent);
+            Paragraph contentLetterContent = section.AddParagraph();
             contentLetterContent.Format.Font.Size = 12;
+
+            if (letterContent.Contains("<<strong>>")) //This is all required because there's no other way to get the bold text into the letter!!
+            {
+                List<string> letterContentParts = ParseBold(letterContent);
+
+                foreach (var item in letterContentParts)
+                {
+                    if (item.Contains("NOTBOLD"))
+                    {
+                        contentLetterContent.AddFormattedText(item.Replace("NOTBOLD", ""), TextFormat.NotBold);
+                    }
+                    else if (item.Contains("BOLD"))
+                    {
+                        contentLetterContent.AddFormattedText(item.Replace("BOLD", ""), TextFormat.Bold);
+                    }
+                    else
+                    {
+                        contentLetterContent.AddFormattedText(item, TextFormat.NotBold);
+                    }
+                }
+            }
+            else
+            {
+                contentLetterContent.AddFormattedText(letterContent, TextFormat.NotBold);
+            }
 
             string signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
             string sigFilename = $"{_lvm.staffMember.StaffForename.Replace(" ", "")}{_lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
@@ -171,6 +201,15 @@ namespace ClinicX.Controllers
             Paragraph contentSignOffName = section.AddParagraph(signOff);
             contentSignOffName.Format.Font.Size = 12;
 
+            
+
+            if (_lvm.dictatedLetter.Enclosures != null && _lvm.dictatedLetter.Enclosures != "")
+            {
+                spacer = section.AddParagraph();
+                spacer = section.AddParagraph();
+                Paragraph enclosures = section.AddParagraph("Enclosures: " + _lvm.dictatedLetter.Enclosures);
+                enclosures.Format.Font.Size = 12;
+            }
             int printCount = 1;
 
             string[] ccs = { "", "", "" };
@@ -180,8 +219,7 @@ namespace ClinicX.Controllers
 
             if (ccList.Count() > 0)
             {
-                spacer = section.AddParagraph();
-                spacer = section.AddParagraph();
+                section.AddPageBreak();                
                 Paragraph ccHead = section.AddParagraph("CC:");
                 ccHead.Format.Font.Size = 12;
 
@@ -196,6 +234,13 @@ namespace ClinicX.Controllers
                     printCount = printCount += 1;
                 }
             }
+
+            spacer = section.AddParagraph();
+
+            Paragraph contentDocCode = section.AddParagraph("Letter code: DOT");
+            contentDocCode.Format.Alignment = ParagraphAlignment.Right;
+            contentDocCode.Format.Font.Size = 8;
+
 
             //document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf"));
 
@@ -219,6 +264,11 @@ namespace ClinicX.Controllers
                 */
             }
         }
+
+
+
+
+
 
         public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
             string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
@@ -2507,18 +2557,58 @@ namespace ClinicX.Controllers
 
         string RemoveHTML(string text)
         {
-
-            text = text.Replace("&nbsp;", System.Environment.NewLine);
+            text = text.Replace("<div><font face=Arial size=3>", "");
+            text = text.Replace("</font></div>", "");
+            text = text.Replace("<div>&nbsp;</div>", "");
+            text = text.Replace("&nbsp;", "");
+            //text = text.Replace("&nbsp;", System.Environment.NewLine);
             text = text.Replace(System.Environment.NewLine, "newline");
-            text = Regex.Replace(text, @"<[^>]+>", "").Trim();
-            //text = Regex.Replace(text, @"\n{2,}", " ");
-            text = text.Replace("&lt;", "<");
-            text = text.Replace("&gt;", ">"); //because sometimes clinicians like to actually use those symbols
+            //text = Regex.Replace(text, @"<[^>]+>", "").Trim();
+            ////text = Regex.Replace(text, @"\n{2,}", " ");
+            //text = text.Replace("&lt;", "<");
+            //text = text.Replace("&gt;", ">"); //because sometimes clinicians like to actually use those symbols
+            text = text.Replace("newlinenewlinenewlinenewline", System.Environment.NewLine + System.Environment.NewLine);
+            //text = text.Replace("newlinenewlinenewline", "3 lines " + System.Environment.NewLine + System.Environment.NewLine);
             text = text.Replace("newlinenewline", System.Environment.NewLine);
             text = text.Replace("newline", "");
-            //this is the ONLY way to strip out the excessive new lines!! (and still can't remove all of them)
+            text = text.Replace("<br>", System.Environment.NewLine + System.Environment.NewLine);
+            text = text.Replace("<div>", "");
+            text = text.Replace("</div>", "");
+            text = text.Replace("b>", "strong>");
+            if (text.Contains("<span style=\"font-weight: 600;\">")){ text = text.Replace("<span style=\"font-weight: 600;\">", "<strong>"); }
+            text = text.Replace("</span>", "</strong>"); //because there are a million different ways that it can decide to save bold formatting
+            text = text.Replace("<strong>", "<<strong>>");
+            text = text.Replace("</strong>", "<</strong>>");            
 
             return text;
+        }
+
+        List<string> ParseBold(string text)
+        {
+            List<string> newText = new List<string>();
+
+            if (text.Contains("<strong>"))
+            {
+                string[] textBlocks = text.Split("strong>>");
+
+                foreach (var item in textBlocks)
+                {
+                    if (item.Contains("<</"))
+                    {
+                        newText.Add(item.Replace("<</", "") + "BOLD ");
+                    }
+                    else if (item.Contains("<<"))
+                    {
+                        newText.Add(item.Replace("<<", "") + "NOTBOLD ");
+                    }
+                    else
+                    {
+                        newText.Add(item);
+                    }
+                }
+            }
+
+            return newText;
         }
     }
 }

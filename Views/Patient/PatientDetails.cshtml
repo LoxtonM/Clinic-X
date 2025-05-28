@@ -621,10 +621,13 @@
                                     {
                                         foreach (var i in Model.icpCancerList)
                                         {
-                                            if (i.RefID == r.refid)
+                                            @if(i != null) @*because obviously the list of cancer ICPs has a null cancer ICP, that makes perfect sense...*@
                                             {
-                                                <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@i.ICP_Cancer_ID>ICP Review</a></td>
-                                            }
+                                                if (i.RefID == r.refid)
+                                                {
+                                                    <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@i.ICP_Cancer_ID>ICP Review</a></td>
+                                                }
+                                            }                                            
                                         }
                                     }
                                     else
