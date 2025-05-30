@@ -25,6 +25,7 @@ namespace ClinicX.Controllers
         private readonly IExternalFacilityData _externalFacilityData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly IConstantsData _constantsData;
 
         public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext, ClinicXContext cXContext)
         {
@@ -42,6 +43,7 @@ namespace ClinicX.Controllers
             _crud = new CRUD(_config);
             _lc = new LetterController(_clinContext, _docContext);
             _audit = new AuditService(_config);
+            _constantsData = new ConstantsData(_docContext);
         }
 
         [Authorize]
@@ -177,6 +179,7 @@ namespace ClinicX.Controllers
                 _lvm.gcs = _staffUser.GetGCList().ToList();
                 _lvm.secteams = _staffUser.GetSecTeamsList();
                 _lvm.specialities = _externalClinicianData.GetClinicianTypeList();
+                _lvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1);
 
                 return View(_lvm);
             }

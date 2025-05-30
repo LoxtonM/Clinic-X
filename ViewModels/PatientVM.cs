@@ -28,5 +28,6 @@ namespace ClinicX.ViewModels
         public bool isPatientInPhenotips { get; set; }
         public int cancerICPID { get; set; }
         public List<ICPCancer> icpCancerList { get; set; }
+        public string edmsLink { get; set; }
     }
 }

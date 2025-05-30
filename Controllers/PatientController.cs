@@ -144,6 +144,8 @@ namespace ClinicX.Controllers
                     }
                 }
 
+                _pvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1);
+
                 return View(_pvm);
             }
             catch (Exception ex)

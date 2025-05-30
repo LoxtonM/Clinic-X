@@ -293,7 +293,8 @@
         //only load EDMS link if there actually is one
         if ("@(Model.patient.DCTM_Folder_ID)" != "")
         {
-            document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+            //document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+            document.getElementById("btnEDMS").href = "@Model.edmsLink" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
         }
         else
         {

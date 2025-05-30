@@ -39,6 +39,7 @@ namespace ClinicX.Controllers
         private readonly IAgeCalculator _ageCalculator;
         private readonly IPatientData _patientData;
         private readonly ILeafletData _leafletData;
+        private readonly IConstantsData _constantsData;
 
         public TriageController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
@@ -68,6 +69,7 @@ namespace ClinicX.Controllers
             _ageCalculator = new AgeCalculator();
             _patientData = new PatientData(_clinContext);
             _leafletData = new LeafletData(_docContext);
+            _constantsData = new ConstantsData(_docContext);
         }
 
         [Authorize]
@@ -119,6 +121,7 @@ namespace ClinicX.Controllers
                 _ivm.loggedOnUserType = _staffUser.GetStaffMemberDetails(User.Identity.Name).CLINIC_SCHEDULER_GROUPS;
                 _ivm.priorityList = _priorityData.GetPriorityList();
                 _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
+                _ivm.edmsLink = _constantsData.GetConstant("GEMRLink", 1);
                 
                 if (_ivm.referralDetails.RefDate != null)
                 {

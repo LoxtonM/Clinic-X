@@ -50,5 +50,6 @@ namespace ClinicX.ViewModels
         public int? referralAgeWeeks { get; set; }
         //public string? defaultScreeningCo {  get; set; }
         public bool isChild { get; set; }
+        public string edmsLink { get; set; }
     }
 }
