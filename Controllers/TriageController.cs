@@ -413,7 +413,9 @@ namespace ClinicX.Controllers
 
                 //LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _docContext);
                 //let.DoRepsum(_ivm.icpCancer.ICP_Cancer_ID, diaryID, User.Identity.Name);
-                _lc.DoRepsum(_ivm.icpCancer.ICP_Cancer_ID, diaryID, User.Identity.Name);
+                //_lc.DoRepsum(_ivm.icpCancer.ICP_Cancer_ID, diaryID, User.Identity.Name);
+                return RedirectToAction("PrepareRepsum", "Repsum", new { id = id, diaryID = diaryID }); 
+                //we HAVE to do it this way or it won't update the data model
             }
 
             return RedirectToAction("CancerReview", new { id = id });
@@ -665,13 +667,6 @@ namespace ClinicX.Controllers
             }
         }
 
-        public async Task<IActionResult> DoRepsum(int icpid, int diaryID)
-        {
-            LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _docContext);
-
-            let.DoRepsum(icpid, diaryID, User.Identity.Name);
-
-            return RedirectToAction("CancerReview", new { id = icpid });
-        }        
+           
     }
 }

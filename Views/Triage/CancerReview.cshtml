@@ -124,7 +124,7 @@
                         <tr>
                             <td><a type="button" class="btn btn-success" asp-controller="RiskAndSurveillance" asp-action="EditTestingEligibilityDetails" asp-route-id=@item.ID>Select</a></td>
                             <td>@item.CalcTool</td>
-                            <td>@item.Gene</td>
+                            <td>@item.TestCode (@item.TestType)</td>
                             <td>@item.Score</td>
                             <td>@item.OfferTesting</td>
                         </tr>
@@ -317,6 +317,7 @@
         var _finalreview = document.getElementById("ddlFinalReviewComplete");
         var _toBeReviewed = document.getElementById("ddlToBeReviewedBy");
 
+        /*
         if (_reviewOption.value != 1) 
         { 
             _reviewOption.disabled = true;
@@ -328,10 +329,14 @@
             document.getElementById("ddlClinician").disabled = true;
             document.getElementById("txtComments").disabled = true;
         }
-        
+        */
 
         if("@Model.icpCancer.FinalReviewed" != null && "@Model.icpCancer.FinalReviewed" != "")
         {
+            _reviewOption.disabled = true;
+            _clinic.disabled = true;
+            document.getElementById("ddlClinician").disabled = true;
+            document.getElementById("txtComments").disabled = true;
             _finalreview.value = "Complete";
             _finalreview.disabled = true;
             _toBeReviewed.disabled = true;
