@@ -376,6 +376,12 @@
                 @:return 0;            
             }
         }
+                
+        if (document.getElementById("ddlLetter").value == 1 && document.getElementById("ddlClinic").value != "")
+        {
+            window.alert("You need to choose a letter option if you want to add the patient to a clinic.");
+            return 0;
+        }
 
         return 1;
     }

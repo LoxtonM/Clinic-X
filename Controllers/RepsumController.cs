@@ -14,7 +14,7 @@ namespace ClinicX.Controllers
         private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
         private readonly IReferralData _referralData;
-        private readonly IExternalClinicianData _externalClinicianData;
+        private readonly IConstantsData _constantsData;
 
         public RepsumController(ClinicalContext context, DocumentContext documentContext)
         {
@@ -23,13 +23,11 @@ namespace ClinicX.Controllers
             _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
             _referralData = new ReferralData(_clinContext);
-            _externalClinicianData = new ExternalClinicianData(_clinContext);
+            _constantsData = new ConstantsData(_documentContext);
         }
 
         public IActionResult PrepareRepsum(int id, int diaryID)
-        {
-            //LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _documentContext);
-            //let.DoRepsum(id, diaryID, User.Identity.Name);
+        {            
             DoRepsum(id, diaryID, User.Identity.Name);
 
             return RedirectToAction("CancerReview", "Triage", new { id = id });
@@ -47,12 +45,7 @@ namespace ClinicX.Controllers
             ICP icp = triageData.GetICPDetails(icpc.ICPID);
             Referral referral = _referralData.GetReferralDetails(icp.REFID);
             patient = _patientData.GetPatientDetails(referral.MPI);
-            //ExternalClinician referrer = new ExternalClinician();
-            //ExternalClinician gp = new ExternalClinician();
-
-            //referrer = _externalClinicianData.GetClinicianDetails(referral.ReferrerCode);
-            //gp = _externalClinicianData.GetClinicianDetails(patient.GP_Code);
-
+            
             MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
 
             Section section = document.AddSection();
@@ -67,8 +60,7 @@ namespace ClinicX.Controllers
             MigraDoc.DocumentObjectModel.Tables.Column logo = table.AddColumn();
             reportHeader.Format.Alignment = ParagraphAlignment.Left;
             logo.Format.Alignment = ParagraphAlignment.Right;
-            //MigraDoc.DocumentObjectModel.Tables.Column ourAddressInfo = table.AddColumn();
-            //ourAddressInfo.Format.Alignment = ParagraphAlignment.Right;
+        
             MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
             row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
             row1.Cells[0].AddParagraph().AddFormattedText($"Summary of reports for referral: {referral.refid} / {patient.CGU_No}", TextFormat.Bold);
@@ -697,21 +689,8 @@ namespace ClinicX.Controllers
                         sRow.Cells[7].AddParagraph("Yes");
                         sRow.Cells[7].Format.Font.Color = Colors.Blue;
                     }
-                    /*
-                    if (f.Notes != null)
-                    {
-                        sRow.Cells[8].AddParagraph(f.Notes);
-                    }
-                    
-                    sRow.Cells[9].AddParagraph(f.Conf);
-                    sRow.Cells[10].AddParagraph(f.WMFACSID.ToString());
-                    */
-
-
-
-
-
                 }
+
                 MigraDoc.DocumentObjectModel.Tables.Row wKeyHeader = tableFam.AddRow();
                 wKeyHeader.Cells[5].MergeRight = 2;
                 wKeyHeader.Cells[5].AddParagraph().AddFormattedText("* Key to CA registry request fields:", TextFormat.Bold);
@@ -764,8 +743,10 @@ namespace ClinicX.Controllers
 
             //if (!isPreview.GetValueOrDefault())
             //{
-            System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
-            //System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
+            //System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
+            string edmsPath = _constantsData.GetConstant("PrintPathEDMS", 1);
+
+            System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
             //}
         }
     }
