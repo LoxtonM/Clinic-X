@@ -196,7 +196,15 @@ namespace ClinicX.Controllers
             try
             {
                 DateTime dDateDictated = new DateTime();
-                dDateDictated = DateTime.Parse(dateDictated);
+
+                if (dateDictated != null)
+                {
+                    dDateDictated = DateTime.Parse(dateDictated);
+                }
+                else
+                {
+                    dDateDictated = DateTime.Parse("1900-01-01");
+                }
                 //two updates required - one to update the addressee (if addressee has changed)
                 if (isAddresseeChanged)
                 {
