@@ -13,7 +13,6 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
-        private readonly ClinicXContext _cXContext;
         private readonly LetterController _lc;
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;        
@@ -31,7 +30,6 @@ namespace ClinicX.Controllers
         {
             _clinContext = clinContext;
             _docContext = docContext;
-            _cXContext = cXContext;
             _config = config;
             _lvm = new DictatedLetterVM();
             _staffUser = new StaffUserData(_clinContext);
