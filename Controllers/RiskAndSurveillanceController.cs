@@ -104,6 +104,7 @@ namespace ClinicX.Controllers
                 int mpi = _rsvm.surveillanceDetails.MPI;
 
                 _rsvm.patient = _patientData.GetPatientDetails(mpi);
+
                 
                 return View(_rsvm);
             }
@@ -120,7 +121,7 @@ namespace ClinicX.Controllers
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + survID.ToString(), _ip.GetIPAddress());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + survID.ToString(), _ip.GetIPAddress());                
 
                 int riskID = _survData.GetSurvDetails(survID).RiskID;                
 
@@ -206,7 +207,20 @@ namespace ClinicX.Controllers
                 _rsvm.survFreqCodes = _survCodesData.GetSurvFreqCodesList();
                 _rsvm.discontinuedReasonCodes = _survCodesData.GetDiscReasonCodesList();
                 _rsvm.staffMembersList = _staffUser.GetClinicalStaffList();
+
+                AgeCalculator ageCalc = new AgeCalculator();
+
+                int ddYear = ageCalc.DateDifferenceYear(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now);
+                int ddMonth = ageCalc.DateDifferenceMonth(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now);
                 
+                if(ddMonth <= 0)
+                {
+                    ddYear -= 1;
+                    ddMonth += 12; 
+                }
+
+                _rsvm.patientAge = $"{ddYear} years {ddMonth} months";
+
                 return View(_rsvm);
             }
             catch (Exception ex)
@@ -348,6 +362,8 @@ namespace ClinicX.Controllers
                     isRelative = true;
                 }
 
+                if (score == null) { score = ""; }
+
                 int success = _crud.CallStoredProcedure("TestEligibility", "Create", refID, relative.GetValueOrDefault(), gene, tool, score, offerTest, "",
                 User.Identity.Name, null, null, isRelative);
 
@@ -390,6 +406,16 @@ namespace ClinicX.Controllers
 
             return RedirectToAction("Index", "WIP");
             //return RedirectToAction("CancerReview", "Triage", new { id = _rsvm.icpCancer.ICP_Cancer_ID });
+        }
+
+        public async Task<IActionResult> SetUsingLetter(int id, bool isUsingLetter)
+        {
+            _rsvm.riskDetails = _riskData.GetRiskDetails(id);
+            int icpID = _rsvm.riskDetails.ICP_Cancer_ID;
+
+            _crud.CallStoredProcedure("Risk", "Set Use Letter", id, 0, 0, "", "", "", "", User.Identity.Name, null, null, isUsingLetter, false);
+
+            return RedirectToAction("CancerReview", "Triage", new { id = icpID });
         }
     }
 }

@@ -1,0 +1,216 @@
+﻿@model ClinicX.ViewModels.LettersMenuVM
+
+@{
+    ViewData["Title"] = "ClinicX - Letters Menu";
+    ViewData["Page"] = "/ LettersMenu / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container">
+    <h1>Letters for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</h1>
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-4">
+            <select id="letterGroups">
+                <option value="">Select Group</option>
+                <option value="Standard">Standard</option>
+                <option value="MEDREC">Medical Records Requests</option>
+                <option value="DNATS">DNA</option>
+                <option value="Outcome">Outcome</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+    </div>
+
+    
+    <form id="frmDoLetter" asp-action="DoLetter">
+        <div class="row mb-5 g-5">
+            <input name="refID" asp-for=@Model.referral.refid hidden />
+            <input name="docCode" id="txtDocCode" hidden />
+            <input name="isPreview" id="txtIsPreview" hidden />
+            <div class="col-md-4">
+                <select name="docID" id="docGroupStandard" hidden>
+                    <option value="" selected>Select</option>
+                    @foreach (var item in Model.docsListStandard)
+                    {
+                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+                <select name="docID" id="docGroupMedRec" hidden>
+                    <option value="" selected>Select</option>
+                    @foreach (var item in Model.docsListMedRec)
+                    {
+                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+                <select name="docID" id="docGroupDNA" hidden>
+                    <option value="" selected>Select</option>
+                    @foreach (var item in Model.docsListDNA)
+                    {
+                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+                <select name="docID" id="docGroupOutcome" hidden>
+                    <option value="" selected>Select</option>
+                    @foreach (var item in Model.docsListOutcome)
+                    {
+                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Additional Text</label>
+            </div>
+            <div class="col-md-4">
+                <textarea name="additionalText"></textarea>
+            </div>
+            <div class="col-md-2">
+                <label>Enclosures</label>
+            </div>
+            <div class="col-md-4">
+                <textarea name="enclosures"></textarea>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Leaflets</label>
+            </div>
+            <div class="col-md-4">
+                <select name="leafletID">
+                    <option value="0" selected>Select...</option>
+                    @foreach (var l in Model.leaflets)
+                    {
+                        <option value=@l.ID>@l.Code - @l.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="button" class="btn btn-default btn-outline-success" id="btnPreview">Preview</button>
+            </div>        
+            <div class="col-md-2">
+                <button type="button" class="btn btn-default btn-outline-success" id="btnPrint">Print and Send</button>
+            </div>
+        </div>
+
+    </form>
+
+    
+</div>
+
+<script>
+
+    document.getElementById("letterGroups").addEventListener("change", ShowLetterMenu);
+    document.getElementById("docGroupStandard").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupMedRec").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupDNA").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupOutcome").addEventListener("change", SetDoccode);
+    document.getElementById("btnPreview").addEventListener("click", DoPreview);
+    document.getElementById("btnPrint").addEventListener("click", DoPrint);
+    window.addEventListener("load", ShowLetterMenu);
+    
+    function ShowLetterMenu()
+    {
+        
+        var groupMenu = document.getElementById("letterGroups");
+        var standardLetters = document.getElementById("docGroupStandard");
+        var medrecLetters = document.getElementById("docGroupMedRec");
+        var dnaLetters = document.getElementById("docGroupDNA");
+        var outcomeLetters = document.getElementById("docGroupOutcome");
+                
+
+        standardLetters.value = "";
+        standardLetters.hidden = true;
+        medrecLetters.value = "";
+        medrecLetters.hidden = true;
+        dnaLetters.value = "";
+        dnaLetters.hidden = true;
+        outcomeLetters.value = "";
+        outcomeLetters.hidden = true;
+
+        
+        if (groupMenu.value == "Standard")
+        {
+            standardLetters.hidden = false;            
+        }
+
+        if (groupMenu.value == "MEDREC")
+        {
+            
+            medrecLetters.hidden = false;
+        }
+
+        if (groupMenu.value == "DNATS")
+        {            
+            dnaLetters.hidden = false;
+        }
+
+        if (groupMenu.value == "Outcome")
+        {
+            outcomeLetters.hidden = false;
+        }
+        
+    }
+
+    function SetDoccode()
+    {
+        var docCode = "";
+        var docGroup = "";
+
+        var standardLetters = document.getElementById("docGroupStandard");
+        var medrecLetters = document.getElementById("docGroupMedRec");
+        var dnaLetters = document.getElementById("docGroupDNA");
+        var outcomeLetters = document.getElementById("docGroupOutcome");
+
+        if(!standardLetters.hidden) //because we absolutely CAN FUCKING NOT simply pass the parameter to a function this way, because that would be far too fucking simple!!!!!
+        {
+            docCode = standardLetters.value;
+        }
+
+        if(!medrecLetters.hidden)
+        {
+            docCode = medrecLetters.value;
+        }
+
+        if(!dnaLetters.hidden)
+        {
+            docCode = dnaLetters.value;
+        }
+
+        if(!outcomeLetters.hidden)
+        {
+            docCode = outcomeLetters.value;
+        }
+
+        document.getElementById("txtDocCode").value = docCode;
+    }
+
+    function DoPreview()
+    {
+        document.getElementById("txtIsPreview").value = "true";
+        
+        document.getElementById("frmDoLetter").submit();
+    }
+
+    function DoPrint()
+    {
+        document.getElementById("txtIsPreview").value = "false";
+
+        document.getElementById("frmDoLetter").submit();
+    }
+
+
+</script>

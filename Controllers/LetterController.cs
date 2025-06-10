@@ -227,8 +227,16 @@ namespace ClinicX.Controllers
                 {
                     spacer = section.AddParagraph();
                     spacer = section.AddParagraph();
-                    Paragraph contentCC = section.AddParagraph(item.CC);
-                    contentCC.Format.Font.Size = 12;
+                    MigraDoc.DocumentObjectModel.Tables.Table tableCC = section.AddTable();
+                    
+                    MigraDoc.DocumentObjectModel.Tables.Column colCC = tableCC.AddColumn();
+                    MigraDoc.DocumentObjectModel.Tables.Column colADDRESS = tableCC.AddColumn();
+                    MigraDoc.DocumentObjectModel.Tables.Row rowcc = tableCC.AddRow();
+                    colCC.Width = 20;
+                    colADDRESS.Width = 300;
+
+                    rowcc[0].AddParagraph("cc:");
+                    rowcc[1].AddParagraph(item.CC);                   
                     spacer = section.AddParagraph();
                     spacer = section.AddParagraph();
                     printCount = printCount += 1;

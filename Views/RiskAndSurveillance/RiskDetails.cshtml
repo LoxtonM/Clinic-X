@@ -105,8 +105,11 @@
         <dt class="col-md-2">
             Recorded By:
         </dt>
-        <dd class="col-md-10">
+        <dd class="col-md-6">
             @Html.DisplayFor(model => model.riskDetails.Clinician)
+        </dd>
+        <dd class="col-md-4">
+            @*<a type="button" class="btn btn-default btn-success" asp-action="EditRisk" asp-route-id=@Model.riskDetails.RiskID>Edit</a>*@
         </dd>
     </div>
 

@@ -25,6 +25,7 @@ namespace ClinicX.ViewModels
         public List<GeneChange> geneChange { get; set; }
         public List<GeneCode> geneCode { get; set; }
         public List<Relative> relatives { get; set; }
+        public string patientAge { get; set; }
         public int refID { get; set; }
         public int riskID { get; set; }
         public string staffCode { get; set; }

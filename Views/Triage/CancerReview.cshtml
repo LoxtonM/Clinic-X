@@ -55,6 +55,7 @@
                         <td>40-50 (%)</td>
                         <td>50-60 (%)</td>                   
                         <td>Surveillance Recommendations</td>
+                        <td>Currently used in letters</td>
                     </tr>
                 </thead>
                 <tbody>            
@@ -90,6 +91,15 @@
                                     }
                                 }
                             </td>
+
+                            @if (item.IncludeLetter == 0)
+                            {
+                                <td><a type="button" class="btn btn-default btn-outline-success" asp-controller="RiskAndSurveillance" asp-action="SetUsingLetter" asp-route-id=@item.RiskID asp-route-isUsingLetter="true">No</a></td>
+                            }
+                            else
+                            {
+                                <td><a type="button" class="btn btn-default btn-outline-success" asp-controller="RiskAndSurveillance" asp-action="SetUsingLetter" asp-route-id=@item.RiskID asp-route-isUsingLetter="false">Yes</a></td>
+                            }
                         </tr>
                     }            
                 </tbody>
@@ -293,7 +303,9 @@
         <div class="col-md-4">
             <a type="button" class="btn btn-default btn-success" asp-controller="Triage" asp-action="FurtherRequest" asp-route-id=@Model.icpCancer.ICP_Cancer_ID>Further Requests</a>
         </div>
-        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <a type="button" class="btn btn-default btn-success" asp-controller="LetterMenu" asp-action="Index" asp-route-refID=@Model.icpCancer.RefID>Send Standard Letter</a>
+        </div>
         <div class="col-md-4">
             <a type="button" class="btn btn-default btn-success" asp-controller="CancerVeryHighRisk" asp-action="VHRPro" asp-route-id=@Model.icpCancer.ICP_Cancer_ID>Send VHR Proforma</a>
         </div>

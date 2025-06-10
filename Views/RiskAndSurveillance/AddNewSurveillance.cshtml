@@ -22,6 +22,11 @@
         <h1>New Surveillance Recommendation for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>       
     </div>
 
+    <div class="row mb-5 g-2">
+        <h3>Current age: @Model.patientAge</h3>
+    </div>
+
+
     <form asp-action="AddNewSurveillance">
         <div class="row" hidden>
             <input name="riskID" asp-for=@Model.riskID  />
