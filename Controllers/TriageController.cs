@@ -306,7 +306,7 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 URLChecker urlChecker = new URLChecker();
-                string urlGenomicTestDirectoryurl = _constantsData.GetConstant("TestDirectoryCancer", 1);
+                string urlGenomicTestDirectoryurl = _constantsData.GetConstant("TestDirectoryGeneral", 1); //apparently they want Rare Diseases, not the cancer one
                 string urlCanriskurl = _constantsData.GetConstant("CanriskURL", 1);
 
                 if (urlGenomicTestDirectoryurl != null)
@@ -315,7 +315,7 @@ namespace ClinicX.Controllers
                     {
                         //if the current URL doesn't work, check the next ten version numbers to see if that works - if not, make it empty
                         urlGenomicTestDirectoryurl = urlChecker.urlLatestVersion(urlGenomicTestDirectoryurl);
-                    }
+                    } //note: this only works if the file is named ".....-v*.xlsx"
                 }
 
                 if (urlCanriskurl != null)
