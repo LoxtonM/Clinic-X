@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Data;
-using Microsoft.AspNetCore.Authorization;
-using ClinicX.ViewModels;
-using System.Data;
+﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
-using ClinicX.Meta;
-using ClinicX.Data;
 using ClinicalXPDataConnections.Models;
+using ClinicX.Data;
+using ClinicX.Meta;
+using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Data;
+using static System.Net.WebRequestMethods;
 
 
 namespace ClinicX.Controllers
@@ -302,6 +304,30 @@ namespace ClinicX.Controllers
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Cancer Review", "ID=" + id.ToString(), _ip.GetIPAddress());
+
+                URLChecker urlChecker = new URLChecker();
+                string urlGenomicTestDirectoryurl = _constantsData.GetConstant("TestDirectoryCancer", 1);
+                string urlCanriskurl = _constantsData.GetConstant("CanriskURL", 1);
+
+                if (urlGenomicTestDirectoryurl != null)
+                {
+                    if (!urlChecker.CheckURL(urlGenomicTestDirectoryurl).Result)
+                    {
+                        //if the current URL doesn't work, check the next ten version numbers to see if that works - if not, make it empty
+                        urlGenomicTestDirectoryurl = urlChecker.urlLatestVersion(urlGenomicTestDirectoryurl);
+                    }
+                }
+
+                if (urlCanriskurl != null)
+                {
+                    if (!urlChecker.CheckURL(urlCanriskurl).Result) //if Canrisk doesn't resolve, make it empty
+                    {
+                        urlCanriskurl = "";
+                    }
+                }
+
+                _ivm.genomicsTestDirectoryLink = urlGenomicTestDirectoryurl;
+                _ivm.canriskLink = urlCanriskurl;
 
                 _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList();
                 _ivm.staffMembers = _staffUser.GetClinicalStaffList();

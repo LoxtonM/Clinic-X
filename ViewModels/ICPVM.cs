@@ -51,5 +51,7 @@ namespace ClinicX.ViewModels
         //public string? defaultScreeningCo {  get; set; }
         public bool isChild { get; set; }
         public string edmsLink { get; set; }
+        public string canriskLink { get; set; }
+        public string genomicsTestDirectoryLink { get; set; }
     }
 }

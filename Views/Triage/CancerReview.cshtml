@@ -35,6 +35,24 @@
         <h1>Cancer ICP Review for @Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME</h1>
     </div>
 
+    @if (Model.canriskLink != "")
+    {
+        <h4><a href=@Model.canriskLink target="_blank">CanRisk</a></h4>
+    }
+    else
+    {
+        <h4>Canrisk not currently available, or has moved.</h4>
+    }
+
+    @if (Model.genomicsTestDirectoryLink != "")
+    {
+        <h4><a href=@Model.genomicsTestDirectoryLink target="_blank">Genomics Test Directory for Cancer</a></h4>
+    }
+    else
+    {
+        <h4>Genomics testing directory currently available, or has moved.</h4>
+    }
+
     <div class="d-grid mt-2 mb-2">
         <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseRiskItems" aria-expanded="false" aria-controls="collapseExample">Risk and Surveillance, and Testing (click to expand/hide)</button>
     </div>
