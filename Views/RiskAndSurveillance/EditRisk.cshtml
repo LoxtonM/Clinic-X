@@ -10,6 +10,7 @@
     ViewBag.HomeButton = new[]
     {
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.riskDetails.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Risk Details", "RiskDetails", "RiskAndSurveillance", new { id=Model.riskDetails.RiskID }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Back to Cancer ICP", "CancerReview", "Triage", new { id=Model.riskDetails.ICP_Cancer_ID }, new { @class = "btn btn-success m-1" }),
     };
 }
@@ -22,136 +23,120 @@
         <h1>Risk and Surveillance Details for @Html.DisplayFor(model => model.riskDetails.FIRSTNAME) @Html.DisplayFor(model => model.riskDetails.LASTNAME)</h1>
     </div>
 
-    <div class="row">
-        <dt class="col-md-2">
-            @Html.DisplayNameFor(model => model.riskDetails.CGU_No)
-        </dt>
-        <dd class="col-md-10">
-            @Html.DisplayFor(model => model.riskDetails.CGU_No)
-        </dd>
-        <dt class="col-md-2">
-            @Html.DisplayNameFor(model => model.riskDetails.RiskDate)
-        </dt>
-        <dd class="col-md-10">
-            @Html.DisplayFor(model => model.riskDetails.RiskDate)
-        </dd>
-        <dt class="col-md-2">
-            Risk:
-        </dt>
-        <dd class="col-md-10">
-            @Html.DisplayFor(model => model.riskDetails.RiskCode)
-        </dd>
-        <dt class="col-md-2">
-            Site:
-        </dt>
-        <dd class="col-md-10">
-            @Html.DisplayFor(model => model.riskDetails.SurvSiteCode)
-        </dd>
-    </div>
-
-    <div class="d-grid greybg">
+    <form asp-action="EditRisk">
+        <input name="id" asp-for=@Model.riskDetails.RiskID hidden />
         <div class="row">
-            <dt class="col-md-12 text-center">
-                <span class="text-center">Risk percentage details:</span>
+            <dt class="col-md-2">
+                @Html.DisplayNameFor(model => model.riskDetails.CGU_No)
             </dt>
-            <dt class="col-md-4 text-center">
-                Lifetime:
-            </dt>
-            <dt class="col-md-2 text-center">
-                25-29
-            </dt>
-            <dt class="col-md-2 text-center">
-                30-40
-            </dt>
-            <dt class="col-md-2 text-center">
-                40-50
-            </dt>
-            <dt class="col-md-2 text-center">
-                50-60
-            </dt>
-            <dd class="col-md-4 text-center">
-                @Html.DisplayFor(model => model.riskDetails.LifetimeRiskPercentage)
+            <dd class="col-md-10">
+                @Html.DisplayFor(model => model.riskDetails.CGU_No)
             </dd>
-            <dd class="col-md-2 text-center">
-                @Html.DisplayFor(model => model.riskDetails.R25_29)
+            <dt class="col-md-2">
+                @Html.DisplayNameFor(model => model.riskDetails.RiskDate)
+            </dt>
+            <dd class="col-md-10">
+                @Html.DisplayFor(model => model.riskDetails.RiskDate)
             </dd>
-            <dd class="col-md-2 text-center">
-                @Html.DisplayFor(model => model.riskDetails.R30_40)
-            </dd>
-            <dd class="col-md-2 text-center">
-                @Html.DisplayFor(model => model.riskDetails.R40_50)
-            </dd>
-            <dd class="col-md-2 text-center">
-                @Html.DisplayFor(model => model.riskDetails.R50_60)
-            </dd>
-        </div>
-    </div>
-
-    <br />
-
-    <div class="row">
-        <dt class="col-md-2">
-            Calculation Tool Used:
-        </dt>
-        <dd class="col-md-10">
-            @Html.DisplayFor(model => model.riskDetails.CalculationToolUsed)
-        </dd>
-        <dt class="col-md-2">
-            Comments:
-        </dt>
-        <dd class="col-md-10">
-            @Html.DisplayFor(model => model.riskDetails.RiskComments)
-        </dd>
-        <dt class="col-md-2">
-            Recorded By:
-        </dt>
-        <dd class="col-md-10">
-            @Html.DisplayFor(model => model.riskDetails.Clinician)
-        </dd>
-    </div>
-
-    <br />
-
-    <div class="row mb-5 g-5">
-        <h2>Surveillance Recommended</h2>
-    </div>
-
-    <div class="row mb-5 g-5">
-        <div class="d-grid">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Gene Change</th>
-                        <th>Frequency</th>
-                        <th>Start Age</th>
-                        <th>End Age</th>
-                        <th>Recommended By</th>
-                        <th>Site</th>
-                        <th>Hospital</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.surveillanceList)
+            <dt class="col-md-2">
+                Risk:
+            </dt>
+            <dd class="col-md-10">
+                <select name="riskCode" asp-for=@Model.riskDetails.RiskCode>
+                    @foreach(var item in Model.riskCodes)
                     {
-                        <tr>
-                            <td><a class="btn btn-success" asp-controller="RiskAndSurveillance" asp-action="SurvDetails" asp-route-id=@item.SurvRecID>Select</a></td>
-                            <td>@item.GeneChangeDescription</td>
-                            <td>@item.SurvFreqCode</td>
-                            <td>@item.SurvStartAge</td>
-                            <td>@item.SurvStopAge</td>
-                            <td>@item.Clinician</td>
-                            <td>@item.SurvSiteCode</td>
-                            <td>@item.SurvRecHoCode</td>
-                        </tr>
+                        <option value=@item.RiskCode>@item.RiskCode - @item.Risk</option>
                     }
-                </tbody>
-            </table>
+                </select>
+            </dd>
+            <dt class="col-md-2">
+                Site:
+            </dt>
+            <dd class="col-md-10">
+                <select name="siteCode" asp-for=@Model.riskDetails.SurvSiteCode>
+                    @foreach (var item in Model.survSiteCodes)
+                    {
+                        <option value=@item.SurvSiteCode>@item.SurvSiteCode - @item.SurvSite</option>
+                    }
+                </select>
+            </dd>
         </div>
-    </div>
-    <div class="row mb-5 g-5">
-        <div class="col-md-2">
-            <a class="btn btn-default btn-outline-success" asp-controller="RiskAndSurveillance" asp-action="AddNewSurveillance" asp-route-id=@Model.riskDetails.RiskID>Add New</a>
+
+        <div class="d-grid greybg">
+            <div class="row">
+                <dt class="col-md-12 text-center">
+                    <span class="text-center">Risk percentage details:</span>
+                </dt>
+                <dt class="col-md-4 text-center">
+                    Lifetime:
+                </dt>
+                <dt class="col-md-2 text-center">
+                    25-29
+                </dt>
+                <dt class="col-md-2 text-center">
+                    30-40
+                </dt>
+                <dt class="col-md-2 text-center">
+                    40-50
+                </dt>
+                <dt class="col-md-2 text-center">
+                    50-60
+                </dt>
+                <dd class="col-md-4 text-center">
+                    <input name="lifetimePercent" asp-for=@Model.riskDetails.LifetimeRiskPercentage />
+                </dd>
+                <dd class="col-md-2 text-center">
+                    <input name="f2529" asp-for=@Model.riskDetails.R25_29 />
+                </dd>
+                <dd class="col-md-2 text-center">
+                    <input name="f3040" asp-for=@Model.riskDetails.R30_40 />
+                </dd>
+                <dd class="col-md-2 text-center">
+                    <input name="f4050" asp-for=@Model.riskDetails.R40_50 />
+                </dd>
+                <dd class="col-md-2 text-center">
+                    <input name="f5060" asp-for=@Model.riskDetails.R50_60 />
+                </dd>
+            </div>
         </div>
-    </div>
+
+        <br />
+
+        <div class="row">
+            <dt class="col-md-2">
+                Calculation Tool Used:
+            </dt>
+            <dd class="col-md-10">
+                <select name="tool" asp-for=@Model.riskDetails.CalculationToolUsed>
+                    @foreach(var item in Model.calculationTools)
+                    {
+                        <option value=@item.CalculationToolCode>@item.CalculationToolCode</option>
+                    }
+                </select>
+            </dd>
+            <dt class="col-md-2">
+                Comments:
+            </dt>
+            <dd class="col-md-10">
+                <textarea name="comments" asp-for=@Model.riskDetails.RiskComments></textarea>
+            </dd>
+            <dt class="col-md-2">
+                Recorded By:
+            </dt>
+            <dd class="col-md-10">
+                <select name="clinCode" asp-for=@Model.riskDetails.Clinician>
+                    @foreach(var item in Model.staffMembersList)
+                    {
+                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                    }
+                </select>
+            </dd>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-default btn-outline-success" >Save</button>
+            </div>
+        </div>
+    </form>
 </div>

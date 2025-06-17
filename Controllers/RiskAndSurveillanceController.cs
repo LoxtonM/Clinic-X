@@ -266,6 +266,10 @@ namespace ClinicX.Controllers
                 _rsvm.riskDetails = _riskData.GetRiskDetails(id);
                 _rsvm.surveillanceList = _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
                 _rsvm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
+                _rsvm.riskCodes = _riskCodesData.GetRiskCodesList();
+                _rsvm.survSiteCodes = _survCodesData.GetSurvSiteCodesList();
+                _rsvm.calculationTools = _riskCodesData.GetCalculationToolsList();
+                _rsvm.staffMembersList = _staffUser.GetClinicalStaffList();
                 return View(_rsvm);
             }
             catch (Exception ex)
@@ -284,10 +288,11 @@ namespace ClinicX.Controllers
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
-                
-                //crud etc
 
-                return View(_rsvm);
+                _crud.CallStoredProcedure("Risk", "Edit", id, 0, 0, riskCode, siteCode, clinCode, comments, User.Identity.Name, null, null, isUseLetter, false,
+                    0, 0, 0, "", tool, "", f2529, f3040, f4050, f5060, lifetimePercent);
+
+                return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = id });
             }
             catch (Exception ex)
             {

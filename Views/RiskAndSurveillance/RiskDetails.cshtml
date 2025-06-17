@@ -39,13 +39,13 @@
             Risk:
         </dt>
         <dd class="col-md-10">
-            @Html.DisplayFor(model => model.riskDetails.RiskCode)
+            @Html.DisplayFor(model => model.riskDetails.RiskCode) - @Html.DisplayFor(model => model.riskDetails.RiskName)
         </dd>
         <dt class="col-md-2">
             Site:
         </dt>
         <dd class="col-md-10">
-            @Html.DisplayFor(model => model.riskDetails.SurvSiteCode)
+            @Html.DisplayFor(model => model.riskDetails.SurvSiteCode) - @Html.DisplayFor(model => model.riskDetails.SurvSite)
         </dd>
     </div>
 
@@ -111,6 +111,12 @@
         <dd class="col-md-4">
             @*<a type="button" class="btn btn-default btn-success" asp-action="EditRisk" asp-route-id=@Model.riskDetails.RiskID>Edit</a>*@
         </dd>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-action="EditRisk" asp-route-id=@Model.riskDetails.RiskID>Edit</a>
+        </div>
     </div>
 
     <br />

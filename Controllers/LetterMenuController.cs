@@ -55,7 +55,7 @@ namespace ClinicX.Controllers
             }
             else
             {
-                _lvm.leaflets = _leafletData.GetAllLeafletsList(); //in case there is no preferral pathway listed
+                _lvm.leaflets = _leafletData.GetAllLeafletsList(); //in case there is no referral pathway listed
             }
 
             return View(_lvm);

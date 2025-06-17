@@ -309,6 +309,7 @@ namespace ClinicX.Controllers
                 string urlGenomicTestDirectoryurl = _constantsData.GetConstant("TestDirectoryGeneral", 1); //apparently they want Rare Diseases, not the cancer one
                 string urlCanriskurl = _constantsData.GetConstant("CanriskURL", 1);
 
+                /*
                 if (urlGenomicTestDirectoryurl != null)
                 {
                     if (!urlChecker.CheckURL(urlGenomicTestDirectoryurl).Result)
@@ -317,6 +318,18 @@ namespace ClinicX.Controllers
                         urlGenomicTestDirectoryurl = urlChecker.urlLatestVersion(urlGenomicTestDirectoryurl);
                     } //note: this only works if the file is named ".....-v*.xlsx"
                 }
+                */
+
+
+                /*
+                if (urlGenomicTestDirectoryurl != null)
+                {
+                    if (!urlChecker.CheckURL(urlGenomicTestDirectoryurl).Result) //if Canrisk doesn't resolve, make it empty
+                    {
+                        urlGenomicTestDirectoryurl = "";
+                    }
+                }
+                
 
                 if (urlCanriskurl != null)
                 {
@@ -325,6 +338,7 @@ namespace ClinicX.Controllers
                         urlCanriskurl = "";
                     }
                 }
+                */ //so apparently this won't work on the server for some reason... fucking excellent!!!
 
                 _ivm.genomicsTestDirectoryLink = urlGenomicTestDirectoryurl;
                 _ivm.canriskLink = urlCanriskurl;
