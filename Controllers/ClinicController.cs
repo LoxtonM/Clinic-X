@@ -101,11 +101,11 @@ namespace ClinicX.Controllers
                 _cvm.Clinic = _clinicData.GetClinicDetails(id);
                 _cvm.linkedReferral = _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
 
-                if(_cvm.Clinic.Attendance.Contains("Att"))
+                if(_cvm.Clinic.Attendance.Contains("Att")) //show "seen by" details for completed appts
                 {
                     _cvm.seenByString = $"Seen by {_cvm.Clinic.SeenByClinician}";
                     
-                    if(_cvm.Clinic.SeenBy2 != null)
+                    if(_cvm.Clinic.SeenBy2 != null) //add other clinicians if present
                     {
                         _cvm.seenByString = _cvm.seenByString + $", {_cvm.Clinic.SeenByClinician2}";
                     }
@@ -173,26 +173,18 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
-                //because it doesn't like passing nulls to SQL
+                //because it doesn't like passing nulls to SQL, we have to set it to a value SQL can take, then re-set it to null in the SQL
                 if (isClockStop == null) { isClockStop = false; }
 
-                if (seenBy == null)
-                {
-                    seenBy = "";
-                }
+                if (seenBy == null) { seenBy = ""; }
 
-                if (letterRequired == null)
-                {
-                    letterRequired = "No";
-                }
+                if (letterRequired == null) { letterRequired = "No"; }
 
-                if (ethnicity == null)
-                {
-                    ethnicity = "";
-                }
+                if (ethnicity == null) { ethnicity = ""; }
                 
                 int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
                     letterRequired, ethnicity, User.Identity.Name, arrivalTime, null, isClockStop, isComplete, 0,0,0,seenBy2,seenBy3);
+                //do the update, return 1 if successful and 0 if not
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="Clinic-edit(SQL)" }); }
 

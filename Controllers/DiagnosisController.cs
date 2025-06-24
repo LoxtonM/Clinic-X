@@ -81,12 +81,10 @@ namespace ClinicX.Controllers
         {
             try
             {
-                if (comments == null)
-                {
-                    comments = "";
-                }
+                if (comments == null) { comments = ""; }
                 
                 int success = _crud.CallStoredProcedure("Diagnosis", "Create", mpi, 0, 0, diseaseCode, status, "", comments, User.Identity.Name);
+                //do the update, return 1 if successful and 0 if not
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName= "Diagnosis-new(SQL)" }); }
 
@@ -128,13 +126,9 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                //apparently we simply can't send a null parameter to the SQL, so we have to convert it to an empty string and then back again!
-                if (comments == null)
-                {
-                    comments = "";
-                }
+                //we simply can't send a null parameter to the SQL, so we have to convert it to an empty string and then back again
+                if (comments == null) { comments = ""; }
 
-                //var patient = await _clinContext.Diagnosis.FirstOrDefaultAsync(d => d.ID == diagID);
                 Diagnosis diag = _diseaseData.GetDiagnosisDetails(diagID);
                 int mpi = diag.MPI;
                                 

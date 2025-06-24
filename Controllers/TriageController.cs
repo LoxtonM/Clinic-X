@@ -6,10 +6,7 @@ using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Data;
-using static System.Net.WebRequestMethods;
-
 
 namespace ClinicX.Controllers
 {
@@ -86,8 +83,7 @@ namespace ClinicX.Controllers
                 _ivm.triages = _triageData.GetTriageList(User.Identity.Name);
                 _ivm.icpCancerListOwn = _triageData.GetCancerICPList(User.Identity.Name).Where(r => r.GC_CODE == _ivm.staffCode).ToList();
                 _ivm.icpCancerListOther = _triageData.GetCancerICPList(User.Identity.Name).Where(r => r.ToBeReviewedby == User.Identity.Name.ToUpper()).ToList();
-                int bleep = _ivm.icpCancerListOwn.Count();                
-                int bloop = _ivm.icpCancerListOther.Count();
+                
                 return View(_ivm);
             }
             catch (Exception ex)
@@ -112,7 +108,6 @@ namespace ClinicX.Controllers
 
                 if (_ivm.triage == null) { return RedirectToAction("NotFound", "WIP"); }
 
-                //_ivm.triage = _vm.GetTriageDetails(id);
                 _ivm.referralDetails = _referralData.GetReferralDetails(_ivm.triage.RefID);
                 _ivm.clinicalFacilityList = _triageData.GetClinicalFacilitiesList().OrderBy(f => f.NAME).ToList();
                 _ivm.icpGeneral = _triageData.GetGeneralICPDetailsByICPID(id);
@@ -120,6 +115,7 @@ namespace ClinicX.Controllers
                 _ivm.cancerActionsList = _icpActionData.GetICPCancerActionsList();                
                 _ivm.generalActionsList = _icpActionData.GetICPGeneralActionsList();
                 _ivm.generalActionsList2 = _icpActionData.GetICPGeneralActionsList2();
+                //check user type for cons/GC triage
                 _ivm.loggedOnUserType = _staffUser.GetStaffMemberDetails(User.Identity.Name).CLINIC_SCHEDULER_GROUPS;
                 _ivm.priorityList = _priorityData.GetPriorityList();
                 _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
@@ -131,10 +127,8 @@ namespace ClinicX.Controllers
                     _ivm.referralAgeWeeks = _ageCalculator.DateDifferenceWeek(_ivm.referralDetails.RefDate.GetValueOrDefault(), DateTime.Today);
                 }
 
-                if(DateTime.Now.AddYears(-16) < _ivm.patient.DOB)
-                {
-                    _ivm.isChild = true;
-                }
+
+                if(DateTime.Now.AddYears(-16) < _ivm.patient.DOB) { _ivm.isChild = true; }
 
                 return View(_ivm);
             }
@@ -175,9 +169,7 @@ namespace ClinicX.Controllers
                         facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }
-                        //_crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, facility, "General", "", comment, User.Identity.Name);
-
-                        //_lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer);
+                        
                     }
                     else
                     {
@@ -195,9 +187,7 @@ namespace ClinicX.Controllers
                         facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
-                        //_crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, facility, "General", "", comment, User.Identity.Name);
-
-                        //_lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer);
+                        
                     }
                     else
                     {
@@ -222,8 +212,7 @@ namespace ClinicX.Controllers
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genDiaryUpdate(SQL)" }); }
                     int diaryID = _diaryData.GetLatestDiaryByRefID(refID, "CTBAck").DiaryID;
 
-                    //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
-                    //lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
+                    
                     _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
                 }
 
@@ -263,14 +252,7 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canTriage(SQL)" }); }
 
-                /*
-                if (action == 5)
-                {
-                    LetterController _lc = new LetterController(_clinContext,  _docContext);
-                    _lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer);
-                }
-                */
-
+                
                 ICPAction icpAction = _icpActionData.GetICPCancerActionsList().First(a => a.ID == action);
                 if(icpAction.RelatedLetterID != null)
                 {                    
@@ -310,8 +292,8 @@ namespace ClinicX.Controllers
                 string urlCanriskurl = _constantsData.GetConstant("CanriskURL", 1);
 
                 /*
-                if (urlGenomicTestDirectoryurl != null)
-                {
+                if (urlGenomicTestDirectoryurl != null) //I wanted to get it to ping the URL and only show it if it's actually working,
+                {                                       //but it won't work on the server for some reason!
                     if (!urlChecker.CheckURL(urlGenomicTestDirectoryurl).Result)
                     {
                         //if the current URL doesn't work, check the next ten version numbers to see if that works - if not, make it empty
@@ -338,7 +320,7 @@ namespace ClinicX.Controllers
                         urlCanriskurl = "";
                     }
                 }
-                */ //so apparently this won't work on the server for some reason... fucking excellent!!!
+                */
 
                 _ivm.genomicsTestDirectoryLink = urlGenomicTestDirectoryurl;
                 _ivm.canriskLink = urlCanriskurl;
@@ -371,17 +353,17 @@ namespace ClinicX.Controllers
         [HttpPost]
         public async Task<IActionResult> CancerReview(int id, string finalReview, string? clinician = "", string? clinic = "", string? comments = "", 
             string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "", string? freeText1="", int? leafletID = 0) //, 
-            //int? request = 0, string? freeText2 = "", int? relID = 0, string? clinicianCode = "", string? siteText = "")
+            
         {
             string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            //bool isfinalReview = false;
+            
             _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
             var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
             string reviewText = "";
-            //string finalReviewText = "";
+            
             string reviewBy = "";
             _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
-            //DateTime finalReviewDate = DateTime.Parse("1900-01-01");
+            
             int mpi = icpDetails.MPI;
             int refID = icpDetails.REFID;
 
@@ -410,9 +392,7 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        //_lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0, 
-                        //    "", "", null, false, "", leafletID);
-
+                        
                         LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
 
                         lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0,
@@ -510,18 +490,12 @@ namespace ClinicX.Controllers
                 var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);               
                 //DateTime finalReviewDate = DateTime.Parse("1900-01-01");
                 int mpi = icpDetails.MPI;
-                int refID = icpDetails.REFID;     
-               
-
-
+                int refID = icpDetails.REFID;
                 int docID = _ivm.cancerRequest.DocContentID.GetValueOrDefault();
                 int docID2 = _ivm.cancerRequest.DocContentID2.GetValueOrDefault();
                 int docID3 = _ivm.cancerRequest.DocContentID3.GetValueOrDefault();
 
-                if(freeText != "")
-                {
-                    freeText1 = freeText;
-                }
+                if(freeText != "") { freeText1 = freeText; }
 
                 if (docID != null && docID != 0)
                 {

@@ -114,10 +114,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                if (recipient == null)
-                {
-                    recipient = "";
-                }
+                if (recipient == null) { recipient = ""; } //set nulls to default values for the SQL
                 DateTime reviewDate = new DateTime();
 
                 if (revDate != null)
@@ -156,7 +153,7 @@ namespace ClinicX.Controllers
 
                 _rvm.review = _reviewData.GetReviewDetails(id);
                 _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);
-                if (_rvm.review.Planned_Date != null)
+                if (_rvm.review.Planned_Date != null) //show days remaining/overdue
                 {
                     _rvm.daysToReview = _ageCalculator.DateDifferenceDay(DateTime.Now, _rvm.review.Planned_Date.GetValueOrDefault());
                     if(_rvm.daysToReview < 0)

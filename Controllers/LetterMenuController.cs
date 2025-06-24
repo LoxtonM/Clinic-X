@@ -40,7 +40,7 @@ namespace ClinicX.Controllers
         {
             _lvm.referral = _referralData.GetReferralDetails(refID);
             _lvm.patient = _patientData.GetPatientDetails(_lvm.referral.MPI);
-            _lvm.docsListStandard = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "Standard").ToList();
+            _lvm.docsListStandard = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "Standard").ToList(); //might need a "ListDocGroups" data model
             _lvm.docsListMedRec = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "MEDREC").ToList();
             _lvm.docsListDNA = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "DNATS").ToList();
             _lvm.docsListOutcome = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "Outcome").ToList();
@@ -72,7 +72,7 @@ namespace ClinicX.Controllers
             int diaryID = 0;            
 
 
-            if (!isPreview) //don't create a diary entry for every preview!!
+            if (!isPreview) //don't create a diary entry for every time we preview the letter!!
             {
                 int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
 

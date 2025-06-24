@@ -41,19 +41,20 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    _cvm.notificationMessage = _notificationData.GetMessage("ClinicXOutage");
+                    _cvm.notificationMessage = _notificationData.GetMessage("ClinicXOutage"); //messaging system for outages
                     var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                     IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                     _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Home", "", _ip.GetIPAddress());
                     _cvm.caseLoad = _caseload.GetCaseloadList(user.STAFF_CODE).OrderBy(c => c.BookedDate).ToList();
+                    //count each instance of caseload type for telemetry
                     _cvm.countClinics = _cvm.caseLoad.Where(c => c.Type.Contains("App")).Count();
                     _cvm.countTriages = _cvm.caseLoad.Where(c => c.Type.Contains("Triage")).Count();
                     _cvm.countCancerICPs = _cvm.caseLoad.Where(c => c.Type.Contains("Cancer")).Count();
                     _cvm.countTests = _cvm.caseLoad.Where(c => c.Type.Contains("Test")).Count();
                     _cvm.countReviews = _cvm.caseLoad.Where(c => c.Type.Contains("Review")).Count();
                     _cvm.countLetters = _cvm.caseLoad.Where(c => c.Type.Contains("Letter")).Count();
-                    _cvm.dllVersion = _version.GetDLLVersion();
-                    _cvm.appVersion = _config.GetValue("AppVersion", "");
+                    _cvm.dllVersion = _version.GetDLLVersion(); //display version of data library
+                    _cvm.appVersion = _config.GetValue("AppVersion", ""); //display version from json file
                     if (_cvm.caseLoad.Count > 0)
                     {
                         _cvm.name = _cvm.caseLoad.FirstOrDefault().Clinician;

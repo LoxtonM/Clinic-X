@@ -55,8 +55,7 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - HPO", "ID=" + id.ToString(), _ip.GetIPAddress());
                 
                 _hpo.clinicalNote = _clinicaNoteData.GetClinicalNoteDetails(id);
-                _hpo.hpoTermDetails = _hpoData.GetExistingHPOTermsList(id);
-                //_hpo.hpoTerms = _hpoData.GetHPOTermsList();
+                _hpo.hpoTermDetails = _hpoData.GetExistingHPOTermsList(id);                
                 _hpo.hpoExtractedTerms = _hpoData.GetExtractedTermsList(id, _config);
 
                 if(searchTerm != null) 
@@ -68,8 +67,6 @@ namespace ClinicX.Controllers
                     {
                         _hpo.hpoTerms.Add(new ClinicalXPDataConnections.Models.HPOTerm { ID = item.ID, Term = item.Term, TermCode = item.TermCode });
                     }
-
-                    //_hpo.hpoTerms = await _api.GetHPOCodes(searchTerm);
 
                     _hpo.searchTerm = searchTerm;
                 }
@@ -83,7 +80,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddHPOTerm(int noteID, string termCode)
+        public async Task<IActionResult> AddHPOTerm(int noteID, string termCode) //add a HPO code from the list (available through the API)
         {
             try
             {
@@ -122,7 +119,7 @@ namespace ClinicX.Controllers
         }
                 
         [HttpPost]
-        public async Task<IActionResult> AddHPOTermFromText(int termID, int noteID)
+        public async Task<IActionResult> AddHPOTermFromText(int termID, int noteID) //add a HPO term found in the text
         {
             try
             {
@@ -160,13 +157,12 @@ namespace ClinicX.Controllers
             }
         }  
 
-        public async Task<IActionResult> GetAllHPOTerms()
+        public async Task<IActionResult> GetAllHPOTerms() //refreshes the list from the API (NOT available to most users)
         {
             string hpoTermGet = await _api.GetAllHPOTerms(User.Identity.Name);
 
             if (hpoTermGet == "success")
             {
-
                 return RedirectToAction("Index", "Home");
             }
             else

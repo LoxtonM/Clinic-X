@@ -114,6 +114,8 @@
                             }
                             else
                             {
+                                <span hidden>@item.BookedDate.Value.ToString("yyyyMMdd")</span> 
+                                @*this line is to make it possible to sort in date order*@
                                 @if (item.BookedDate < DateTime.Today)
                                 {
                                     <span class="redtext">@item.BookedDate.Value.ToString("dd/MM/yyyy")</span>

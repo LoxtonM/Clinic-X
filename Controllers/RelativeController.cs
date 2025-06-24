@@ -135,15 +135,9 @@ namespace ClinicX.Controllers
                     deathDate = DateTime.Parse("1/1/1900");
                 }
 
-                if (title == null)
-                {
-                    title = "";
-                }
+                if (title == null) { title = ""; }
 
-                if (forename2 == null)
-                {
-                    forename2 = "";
-                }
+                if (forename2 == null) { forename2 = ""; }
 
                 int success = _crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, title, forename1, forename2, surname,
                         User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
@@ -208,10 +202,7 @@ namespace ClinicX.Controllers
                     deathDate = DateTime.Parse("1/1/1900");
                 }
 
-                if (forename2 == null)
-                {
-                    forename2 = "";
-                }
+                if (forename2 == null) { forename2 = ""; }
 
                 int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, isAffected, 0, title, forename1, forename2, surname,
                     User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
@@ -243,10 +234,6 @@ namespace ClinicX.Controllers
 
                 TestAPIController apitest = new TestAPIController(_apiContext, _config);
                 ptRels = await apitest.ImportRelativesFromPhenotips(_rvm.patient.MPI);
-
-                //ptRels = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
-
-                //_rvm.phenotipsRelativesList = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
 
                 _rvm.phenotipsRelativesList = new List<ClinicalXPDataConnections.Models.Relative>();
                 foreach(var r in ptRels)

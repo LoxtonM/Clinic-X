@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
-using System.Data.SqlClient;
 using APIControllers.Data;
 using APIControllers.Meta;
 using APIControllers.Models;
-using Microsoft.Extensions.Configuration;
 
 namespace APIControllers.Controllers
 {
@@ -21,7 +19,7 @@ namespace APIControllers.Controllers
         private string authKey;
         private string apiKey;
 
-        public TestAPIController(APIContext context, IConfiguration config)
+        public TestAPIController(APIContext context, IConfiguration config) //FOR TESTING - production should use the APIControllers library
         {
             _context = context;
             _APIPatientData = new APIPatientData(_context);

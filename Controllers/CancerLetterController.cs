@@ -7,13 +7,12 @@ using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using ClinicalXPDataConnections.Models;
-using System.Text.RegularExpressions;
 using ClinicX.Data;
 using ClinicX.Models;
 
-namespace ClinicX.Controllers;
+namespace ClinicX.Controllers; //suspect this may be depreciated, need to confirm before deleting it
 
-public class CancerLetterController : Controller
+public class Canc1rLett1rControll1r : Controller
 {
     private readonly ClinicalContext _clinContext;
     private readonly ClinicXContext _cXContext;
@@ -23,16 +22,14 @@ public class CancerLetterController : Controller
     private readonly IPatientData _patientData;
     private readonly IRelativeData _relativeData;
     private readonly IReferralData _referralData;
-    private readonly IDictatedLetterData _dictatedLetterData;
     private readonly IStaffUserData _staffUser;
     private readonly IDocumentsData _documentsData;
     private readonly IExternalClinicianData _externalClinicianData;
     private readonly IExternalFacilityData _externalFacilityData;
     private readonly IScreeningServiceData _screenData;    
-    private readonly IConstantsData _constantsData;
     private readonly ICRUD _crud;
 
-    public CancerLetterController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
+    public Canc1rLett1rControll1r(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
     {
         _clinContext = clinContext;
         _cXContext = cXContext;
@@ -43,12 +40,10 @@ public class CancerLetterController : Controller
         _relativeData = new RelativeData(_clinContext);
         _referralData = new ReferralData(_clinContext);
         _staffUser = new StaffUserData(_clinContext);
-        _dictatedLetterData = new DictatedLetterData(_clinContext);
         _documentsData = new DocumentsData(_docContext);
         _externalClinicianData = new ExternalClinicianData(_clinContext);
         _externalFacilityData = new ExternalFacilityData(_clinContext);
         _screenData = new ScreeningServiceData(_cXContext);
-        _constantsData = new ConstantsData(_docContext);
         _crud = new CRUD(_config);
     }
 
@@ -78,304 +73,10 @@ public class CancerLetterController : Controller
         return success;
     }
 
-    //Creates a preview of the DOT letter
-    public void PreviewDOTPDF(int dID,string user)
-    {
-        try
-        {
-            _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
-            _lvm.dictatedLetter = _dictatedLetterData.GetDictatedLetterDetails(dID);                        
-            string ourAddress = _docContext.DocumentsContent.FirstOrDefault(d => d.OurAddress != null).OurAddress;            
-            //creates a new PDF document
-            PdfDocument document = new PdfDocument();
-            document.Info.Title = "DOT Letter Preview";
-            PdfPage page = document.AddPage();
-            PdfPage page2 = document.AddPage();
-            PdfPage page3 = document.AddPage();
-            PdfPage page4 = document.AddPage(); //we HAVE to add all four pages whether we want them or not, or we can't use them later!
-            XGraphics gfx = XGraphics.FromPdfPage(page);
-            var tf = new XTextFormatter(gfx);
-            //set the fonts used for the letters
-            XFont font = new XFont("Arial", 12, XFontStyle.Regular);
-            XFont fontBold = new XFont("Arial", 12, XFontStyle.Bold);
-            XFont fontItalic = new XFont("Arial", 12, XFontStyle.Italic);            
-            //Load the image for the letter head
-            XImage image = XImage.FromFile(@"wwwroot\Letterhead.jpg");
-            gfx.DrawImage(image, 350, 20, image.PixelWidth / 2, image.PixelHeight / 2);
-            //Create the stuff that's common to all letters
-            tf.Alignment = XParagraphAlignment.Right;
-            //Our address and contact details
-            tf.DrawString(ourAddress, font, XBrushes.Black, new XRect(-20, 150, page.Width, 200));
-            //the email address just absolutely will not align right, for some stupid reason!!! So we have to force it.
-            tf.DrawString(_constantsData.GetConstant("MainCGUEmail", 1), font, XBrushes.Black, new XRect(450, 250, page.Width, 200));
+    
 
-            tf.Alignment = XParagraphAlignment.Left;
-            tf.DrawString($"Consultant: {_lvm.dictatedLetter.Consultant}", fontBold, XBrushes.Black, new XRect(20, 150, page.Width/2, 200));
-            tf.DrawString($"Genetic Counsellor: {_lvm.dictatedLetter.GeneticCounsellor}", fontBold, XBrushes.Black, new XRect(20, 165, page.Width/2, 200));
-
-            //Note: Xrect parameters are: (Xpos, Ypos, Width, Depth) - use to position blocks of text
-            //Depth of 10 seems sufficient for one line of text; 30 is sufficient for two lines. 7 lines needs 100.
-
-            string phoneNumbers = "Secretaries Direct Line:" + System.Environment.NewLine;
-
-            var secretariesList = _staffUser.GetStaffMemberList().Where(s => s.BILL_ID == _lvm.dictatedLetter.SecTeam && s.CLINIC_SCHEDULER_GROUPS == "Admin");
-            foreach (var t in secretariesList)
-            {
-                phoneNumbers = phoneNumbers + $"{t.NAME} {t.TELEPHONE}" + System.Environment.NewLine;
-            }
-            
-            tf.DrawString(phoneNumbers, font, XBrushes.Black, new XRect(20, 200, page.Width/2, 200));
-
-            string datesInfo = "";
-
-            if (_lvm.dictatedLetter.DateDictated != null)
-            {
-                datesInfo = $"Dictated Date: {_lvm.dictatedLetter.DateDictated.Value.ToString("dd/MM/yyyy")}" + System.Environment.NewLine +
-                                   $"Date Typed: {_lvm.dictatedLetter.CreatedDate.Value.ToString("dd/MM/yyyy")}";
-            }         
-            _lvm.patient = _patientData.GetPatientDetails(_lvm.dictatedLetter.MPI.GetValueOrDefault());
-            tf.DrawString($"Please quote our reference on all correspondence: {_lvm.patient.CGU_No}", fontItalic, XBrushes.Black, new XRect(20, 300, page.Width, 200));
-
-            tf.DrawString(datesInfo, font, XBrushes.Black, new XRect(20, 320, page.Width / 2, 200));
-
-            //recipient's address
-                       
-            string address = "";            
-
-            address = _lvm.dictatedLetter.LetterTo;
-
-            tf.DrawString(address, font, XBrushes.Black, new XRect(50, 350, 490, 100));
-
-            //Date letter created
-            //tf.DrawString(DateTime.Today.ToString("dd MMMM yyyy"), font, XBrushes.Black, new XRect(50, 450, 500, 10)); //today's date
-
-            tf.DrawString($"Dear {_lvm.dictatedLetter.LetterToSalutation}", font, XBrushes.Black, new XRect(20, 450, 500, 10)) ; //salutation
-
-            //Content containers for all of the paragraphs, as well as other data required
-            string letterRe = _lvm.dictatedLetter.LetterRe;
-            string summary = _lvm.dictatedLetter.LetterContentBold;
-            string letterContent = _lvm.dictatedLetter.LetterContent;
-            string content = "";
-            string content2 = "";
-            string content3 = "";
-            string content4 = "";
-            string content5 = "";
-            string quoteRef = "";
-            string signOff = "";
-            string sigFilename = "";
-            string docCode = "DOT";
-            //string referrerName = _lvm.referrer.TITLE + " " + _lvm.referrer.FIRST_NAME + " " + _lvm.referrer.NAME;
-            string cc = "";
-            string cc2 = "";
-            int printCount = 1;
-            int totalLength = 500; //used for spacing - so the paragraphs can dynamically resize
-            int totalLength2 = 0;
-            int totalLength3 = 0;
-            int totalLength4 = 0; //for multiple pages
-            XGraphics gfx2 = XGraphics.FromPdfPage(page2); //they have to be declared here or I can't use them later
-            var tf2 = new XTextFormatter(gfx2);
-            XGraphics gfx3 = XGraphics.FromPdfPage(page3);
-            var tf3 = new XTextFormatter(gfx3);
-            XGraphics gfx4 = XGraphics.FromPdfPage(page4);
-            var tf4 = new XTextFormatter(gfx4);
-            int pageLength = 3500;
-            int firstPageLength = 1000;
-            int pageIndex = 1;
-
-            if (summary == null) { summary = ""; }
-
-            if (letterRe == null) { letterRe = ""; }
-
-            if (letterContent.Contains("</")) { letterContent = RemoveHTML(letterContent); }
-
-            if (_lvm.dictatedLetter.LetterRe != null)
-            {
-                tf.DrawString($"Re  {letterRe}", fontBold, XBrushes.Black, new XRect(20, totalLength, 500, letterRe.Length));
-            }
-
-            totalLength = totalLength + (letterRe.Length / 2) + 20;
-            tf.DrawString(summary, fontBold, XBrushes.Black, new XRect(20, totalLength, 500, summary.Length));
-            totalLength = totalLength + (summary.Length / 2) + 20;
-            
-            signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-            sigFilename = $"{_lvm.staffMember.StaffForename.Replace(" ","")}{_lvm.staffMember.StaffSurname.Replace("'","").Replace(" ","")}.jpg";
-            totalLength = totalLength + 20;
-
-            if (letterContent.Length < firstPageLength) //split the content so it goes over multiple pages if more than one page
-            {
-                tf.DrawString(letterContent, font, XBrushes.Black, new XRect(20, totalLength, 500, letterContent.Length));
-                totalLength = totalLength + _lvm.dictatedLetter.LetterContent.Length + 20;
-            }
-            else
-            {
-                string[] lines = letterContent.Split(
-                new string[] { Environment.NewLine },
-                StringSplitOptions.None);
-
-                tf2 = new XTextFormatter(gfx2);
-                totalLength2 = 20;
-
-                tf3 = new XTextFormatter(gfx3);
-                totalLength3 = 20;
-
-                tf4 = new XTextFormatter(gfx4);
-                totalLength4 = 20;
-
-
-                foreach (var line in lines) //all of this is necessary because PDFSharp has no way to dynamically add pages as required.
-                {
-                    if (line.Length > 0)
-                    {
-
-                        if (pageIndex == 1)
-                        {
-
-                            if (content.Length + line.Length < firstPageLength)
-                            {
-                                content = content + line + System.Environment.NewLine + System.Environment.NewLine;
-                            }
-                            else
-                            {
-                                pageIndex += 1;
-                            }
-                        }
-
-                        if (pageIndex == 2)
-                        {
-                            if (content2.Length + line.Length < pageLength)
-
-                            {
-                                content2 = content2 + line + System.Environment.NewLine + System.Environment.NewLine;
-                            }
-                            else
-                            {
-                                pageIndex += 1;
-                            }
-                        }
-
-                        if (pageIndex == 3)
-                        {
-
-                            if (content3.Length + line.Length < pageLength)
-                            {
-                                content3 = content3 + line + System.Environment.NewLine + System.Environment.NewLine;
-                            }
-                            else
-                            {
-                                pageIndex += 1;
-                            }
-                        }
-
-                        if (pageIndex == 4)
-                        {
-                            if (content4.Length + line.Length < pageLength)
-                            {
-                                content4 = content4 + line + System.Environment.NewLine + System.Environment.NewLine;
-                            }
-                            else
-                            {
-                                pageIndex += 1;
-                            }
-                        }
-
-                        if (pageIndex == 5 && content5.Length + line.Length < pageLength)
-                        {
-                            content5 = content5 + line + System.Environment.NewLine + System.Environment.NewLine;
-                        }
-
-
-                    }
-                }
-
-
-                if (content.Length > 0)
-                {
-                    tf.DrawString(content, font, XBrushes.Black, new XRect(20, totalLength, 500, content.Length));
-                    totalLength = totalLength + (content.Length / 4) + 10;
-                }
-                if (content2.Length > 0)
-                {
-                    tf2.DrawString(content2, font, XBrushes.Black, new XRect(20, totalLength2, 500, content2.Length));
-                    totalLength2 = totalLength2 + (content2.Length / 4) + 10;
-                }
-                if (content3.Length > 0)
-                {
-                    tf3.DrawString(content3, font, XBrushes.Black, new XRect(20, totalLength3, 500, content3.Length));
-                    totalLength3 = totalLength3 + (content3.Length / 4) + 10;
-                }
-                if (content4.Length > 0)
-                {
-                    tf4.DrawString(content4, font, XBrushes.Black, new XRect(20, totalLength4, 500, content4.Length));
-                    totalLength4 = totalLength4 + (content4.Length / 4) + 10;
-                }
-
-
-
-            }
-
-            XImage imageSig = XImage.FromFile(@$"wwwroot\Signatures\Default.jpg"); //we have to initialise it to be able to use it outside of the loop, so we have to give it something.
-
-            if (System.IO.File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
-            {
-                imageSig = XImage.FromFile(@$"wwwroot\Signatures\{sigFilename}");
-            }
-
-            int len = imageSig.PixelWidth;
-            int hig = imageSig.PixelHeight;
-
-            if (pageIndex == 1)
-            {
-                document.Pages.Remove(page2);
-                document.Pages.Remove(page3);
-                document.Pages.Remove(page4);
-                tf.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength, 500, 20));
-                totalLength = totalLength + 20;
-                gfx.DrawImage(imageSig, 50, totalLength, len, hig);
-                totalLength = totalLength + hig + 20;
-                tf.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength, 500, 20));
-            }
-            else if (pageIndex == 2)
-            {
-                document.Pages.Remove(page3);
-                document.Pages.Remove(page4);
-                totalLength2 = totalLength2 + 20;
-                tf2.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength2, 500, 20));
-                totalLength2 = totalLength2 + 20;
-                gfx2.DrawImage(imageSig, 50, totalLength2, len, hig);
-                totalLength2 = totalLength2 + hig + 20;
-                tf2.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength2, 500, 20));
-            }
-            else if (pageIndex == 3)
-            {
-                document.Pages.Remove(page4);
-                totalLength3 = totalLength3 + 20;
-                tf3.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength3, 500, 20));
-                totalLength3 = totalLength3 + 20;
-                gfx3.DrawImage(imageSig, 50, totalLength3, len, hig);
-                totalLength3 = totalLength3 + hig + 20;
-                tf3.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength3, 500, 20));
-            }
-            else
-            {
-                totalLength4 = totalLength4 + 20;
-                tf4.DrawString("Yours sincerely,", font, XBrushes.Black, new XRect(20, totalLength4, 500, 20));
-                totalLength4 = totalLength4 + 20;
-                gfx4.DrawImage(imageSig, 50, totalLength4, len, hig);
-                totalLength4 = totalLength4 + hig + 20;
-                tf4.DrawString(signOff, font, XBrushes.Black, new XRect(20, totalLength4, 500, 20));
-            }
-
-            document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf"));
-        }
-
-        catch (Exception ex)
-        {
-            RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DOTPreview" });
-        }
-    }
-
-    //Prints standard letter templates from the menu
-    public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
+    //Prints standard letter templates from the menu (this may not be used anymore)
+    public void DiPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
         string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1="", string? freeText2 = "", 
         int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false)
     {
@@ -1674,21 +1375,7 @@ public class CancerLetterController : Controller
     }
 
         
-    string RemoveHTML(string text)
-    {
-        
-        text = text.Replace("&nbsp;", System.Environment.NewLine);
-        text = text.Replace(System.Environment.NewLine, "newline");
-        text = Regex.Replace(text, @"<[^>]+>", "").Trim();
-        //text = Regex.Replace(text, @"\n{2,}", " ");
-        text = text.Replace("&lt;", "<");
-        text = text.Replace("&gt;", ">"); //because sometimes clinicians like to actually use those symbols
-        text = text.Replace("newlinenewline", System.Environment.NewLine);
-        text = text.Replace("newline", "");
-        //this is the ONLY way to strip out the excessive new lines!! (and still can't remove all of them)
-
-        return text;
-    }
+    
 
 }
 

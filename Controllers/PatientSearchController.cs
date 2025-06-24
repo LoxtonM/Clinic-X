@@ -86,7 +86,7 @@ namespace ClinicX.Controllers
                         _pvm.forenameSearch = firstname;
                     }
 
-                    if (dob != null && dob != DateTime.Parse("0001-01-01"))
+                    if (dob != null && dob != DateTime.Parse("0001-01-01")) //all the different ways of DOB being null...
                     {
                         if (searchTerm == "")
                         {

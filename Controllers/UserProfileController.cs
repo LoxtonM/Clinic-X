@@ -149,7 +149,7 @@ namespace ClinicX.Controllers
                     _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                     _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Update Details", "Staffcode=" + _pvm.staffMember.STAFF_CODE);
 
-                    if (!email.Contains("@")) //we simply can NOT validate the email address in the front end, because there is no way to escape the @, so it has to be done here.
+                    if (!email.Contains("@")) //we can't validate the email address in the front end, because there is no way to escape the @, so it has to be done here.
                     {
                         return RedirectToAction("ProfileDetails", "UserProfile", new { message = "Email verification failed.", isSuccess = false });
                     }

@@ -102,7 +102,7 @@
                         </td>                        
                         @if(@item.BookedDate.HasValue)
                         {
-                            <td>@item.BookedDate.Value.ToString("dd/MM/yyyy")</td>
+                            <td><span hidden>@item.BookedDate.Value.ToString("yyyyMMdd")</span>@item.BookedDate.Value.ToString("dd/MM/yyyy")</td>
                         }
                         else
                         {

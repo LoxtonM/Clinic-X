@@ -188,7 +188,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                int iOther = other ? 1 : 0;
+                int iOther = other ? 1 : 0; //converts bools to ints for the SQL update
                 int iNotID = notID ? 1 : 0;
 
                 int success = _crud.CallStoredProcedure("UntestedVHRGroup", "Create", refid, thresholdAge.GetValueOrDefault(), 0, "", "", "", "", User.Identity.Name, null, null, below30, below50, iOther, iNotID);

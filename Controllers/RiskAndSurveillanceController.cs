@@ -104,7 +104,6 @@ namespace ClinicX.Controllers
                 int mpi = _rsvm.surveillanceDetails.MPI;
 
                 _rsvm.patient = _patientData.GetPatientDetails(mpi);
-
                 
                 return View(_rsvm);
             }
@@ -179,9 +178,10 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addRisk(QSL)" }); }
 
-                int riskID = _misc.GetRiskID(refID);
+                int riskID = _misc.GetRiskID(refID); //this function simply gets the latest RiskID related to the RefID
                 int icpID = _riskData.GetRiskDetails(riskID).ICPID;
-                int icpCancerID = _triageData.GetCancerICPDetailsByICPID(icpID).ICP_Cancer_ID;
+                int icpCancerID = _triageData.GetCancerICPDetailsByICPID(icpID).ICP_Cancer_ID; //this is all just to get the ICPCancerID!
+
                 return RedirectToAction("CancerReview", "Triage", new { id = icpCancerID });
             }
             catch (Exception ex)
@@ -208,7 +208,7 @@ namespace ClinicX.Controllers
                 _rsvm.discontinuedReasonCodes = _survCodesData.GetDiscReasonCodesList();
                 _rsvm.staffMembersList = _staffUser.GetClinicalStaffList();
 
-                AgeCalculator ageCalc = new AgeCalculator();
+                AgeCalculator ageCalc = new AgeCalculator(); //to display patient's current age (requested feature)
 
                 int ddYear = ageCalc.DateDifferenceYear(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now);
                 int ddMonth = ageCalc.DateDifferenceMonth(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now);
@@ -236,10 +236,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                if(discReason == null)
-                {
-                    discReason = ""; //because it can't simply evaluate the optional parameter as an empty string for some reason!!!
-                }
+                if(discReason == null) { discReason = ""; } //because SQL doesn't like nulls
                 
                 int success = _crud.CallStoredProcedure("Surveillance", "Create", riskID, startAge, endAge, siteCode, typeCode, clinCode, "",
                     User.Identity.Name, recDate, null, isUseLetter, isYN, 0, 0, 0, frequency, discReason);
@@ -361,11 +358,8 @@ namespace ClinicX.Controllers
                 ICP icp = _triageData.GetICPDetailsByRefID(refID);
                 _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
                                 
-                bool isRelative = false;
-                if(relative != 0)
-                {
-                    isRelative = true;
-                }
+                bool isRelative = false; //set a bool based in an int
+                if(relative != 0) { isRelative = true; }
 
                 if (score == null) { score = ""; }
 
@@ -374,7 +368,6 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addSurv(SQL)" }); }
 
-                //return View(_rsvm);
                 return RedirectToAction("CancerReview", "Triage", new { id = _rsvm.icpCancer.ICP_Cancer_ID });
             }
             catch (Exception ex)
@@ -409,11 +402,11 @@ namespace ClinicX.Controllers
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addSurv(SQL)" }); }
 
-            return RedirectToAction("Index", "WIP");
-            //return RedirectToAction("CancerReview", "Triage", new { id = _rsvm.icpCancer.ICP_Cancer_ID });
+            //return RedirectToAction("Index", "WIP");
+            return RedirectToAction("CancerReview", "Triage", new { id = _rsvm.icpCancer.ICP_Cancer_ID });
         }
 
-        public async Task<IActionResult> SetUsingLetter(int id, bool isUsingLetter)
+        public async Task<IActionResult> SetUsingLetter(int id, bool isUsingLetter) //to provide a quick "don't use this one!" mechanic
         {
             _rsvm.riskDetails = _riskData.GetRiskDetails(id);
             int icpID = _rsvm.riskDetails.ICP_Cancer_ID;

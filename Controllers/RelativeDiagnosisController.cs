@@ -125,17 +125,15 @@ namespace ClinicX.Controllers
                 _rdvm.tumourLatList = _relativeDiagnosisData.GetTumourLatList();
                 _rdvm.tumourMorphList = _relativeDiagnosisData.GetTumourMorphList();
 
-                string data = "ConfDiagAge:" + confDiagAge + ",Grade:" + grade + ",Dukes:" + dukes + ",HistologyNumber:" + histologyNumber;
-               
+                string data = "ConfDiagAge:" + confDiagAge + ",Grade:" + grade + ",Dukes:" + dukes + ",HistologyNumber:" + histologyNumber;               
                 //there are too many strings, so I need to concatenate them all to send them to the SP
-                //(it's either that or add another 4 optional string variables!!!)
+                //(it's either that or add another 4 optional string variables - a limitation of my chosen method!)
 
                 int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Edit", tumourID, 0, 0, consent, confirmed, data, notes, User.Identity.Name, dateReceived, confDiagDate,
                     false, false, 0, 0, 0, siteCode, latCode, morphCode);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiagnosis-edit(SQL)" }); }
-
-                //return View(_rdvm);
+                                
                 return RedirectToAction("Index", "RelativeDiagnosis", new { relID = tumourID });
             }
             catch (Exception ex)

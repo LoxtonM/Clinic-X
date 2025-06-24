@@ -56,7 +56,7 @@ namespace ClinicX.Controllers
 
                 if(_supervisorData.GetIsConsSupervisor(staffCode) || _supervisorData.GetIsGCSupervisor(staffCode))
                 {
-                    _cvm.isSupervisor = true;
+                    _cvm.isSupervisor = true; //only supervisors should be able to see certain functions
                 }
                 
                 return View(_cvm);
@@ -68,7 +68,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult CaseloadDistribution(int? year, string? pathway)
+        public IActionResult CaseloadDistribution(int? year, string? pathway) //telemetry - shows distribution of referrals across clinicians
         {
             try
             {

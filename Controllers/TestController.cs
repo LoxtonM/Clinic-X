@@ -174,7 +174,7 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    dateReceived = DateTime.Parse("1/1/1900");
+                    dateReceived = DateTime.Parse("1900-01-01");
                 }
 
                 if (givenDate != null)
@@ -183,33 +183,21 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    dateGiven = DateTime.Parse("1/1/1900");
+                    dateGiven = DateTime.Parse("1900-01-01");
                     //because we can't have a null date, so we have to convert it to an obviously wrong fixed number and then back again.
                 }
 
-                //apparently we simply can't send a null parameter to the SQL, so we have to convert it to an empty string and then back again!
-                if (result == null)
-                {
-                    result = "";
-                }
+                //we simply can't send a null parameter to the SQL, so we have to convert it to an empty string and then back again!
+                if (result == null) { result = ""; }
 
-                if (comments == null)
-                {
-                    comments = "";
-                }
-                //var patient = await _clinContext.Test.FirstOrDefaultAsync(t => t.TestID == testID);
+                if (comments == null) { comments = ""; }
+
                 int mpi = _testData.GetTestDetails(testID).MPI;
-                //int isComplete = 0;
-                //if (complete == "Yes")
-                //{
-                //    isComplete = -1;
-                //}
 
                 int success = _crud.CallStoredProcedure("Test", "Update", testID, complete, 0, result, "", "", comments, User.Identity.Name, dateReceived, dateGiven);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-edit(SQL)" }); }
 
-                //return RedirectToAction("Index", new { id = mpi });
                 return RedirectToAction("AllOutstandingTests");
             }
             catch (Exception ex)
@@ -242,12 +230,12 @@ namespace ClinicX.Controllers
 
             int iBloodFormID = _bloodFormData.GetBloodFormList(testID).OrderByDescending(f => f.BloodFormID).First().BloodFormID;
 
-            //return View(_tvm);
+
             return RedirectToAction("BloodFormEdit", new { bloodFormID = iBloodFormID });
         }
 
         [HttpGet]
-        public async Task<IActionResult> BloodFormEdit(int bloodFormID)
+        public async Task<IActionResult> BloodFormEdit(int bloodFormID) //save data to use in the blood form preview
         {
             _tvm.bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
             _tvm.test = _testData.GetTestDetails(_tvm.bloodForm.TestID);
@@ -279,7 +267,7 @@ namespace ClinicX.Controllers
         }
 
 
-        public async Task<IActionResult> DoBloodForm(int bloodFormID, string? altPatName, bool? isPreview = false)
+        public async Task<IActionResult> DoBloodForm(int bloodFormID, string? altPatName, bool? isPreview = false) //create the blood form itself
         {
             BloodFormData bfData = new BloodFormData(_cXContext);
             BloodForm bf = bfData.GetBloodFormDetails(bloodFormID);

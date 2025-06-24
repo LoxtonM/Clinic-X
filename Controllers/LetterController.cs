@@ -15,7 +15,7 @@ using Microsoft.Office.Interop.Outlook;
 
 namespace ClinicX.Controllers
 {
-    public class LetterControllerLOCAL //this is for testing, to be added to the DLL 
+    public class LetterControllerLOCAL //this is for testing, code to be added to the DLL when happy
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;

@@ -93,10 +93,10 @@ namespace ClinicX.Controllers
 
                 int success = _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 0, noteType, "", "",
                     clinicalNote, User.Identity.Name);
-
+                //do the update, return 1 if successful and 0 if not
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="ClinicalNote-create(SQL)" }); }
 
-                noteID = _misc.GetClinicalNoteID(refID);
+                noteID = _misc.GetClinicalNoteID(refID); //get the newly created ClinicalNoteID so we can redirect to it
 
                 return RedirectToAction("Edit", new { id = noteID });                
             }
@@ -151,7 +151,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ChooseAppt(int id)
+        public async Task<IActionResult> ChooseAppt(int id) //before we create a note, we have to link it to either an appointment or a referral
         {
             try
             {
@@ -171,7 +171,7 @@ namespace ClinicX.Controllers
             }
         }
 
-        public async Task<IActionResult> Finalise(int id)
+        public async Task<IActionResult> Finalise(int id) //sets a clinical note to "final" so it appears in CGU_DB as complete
         {
             try
             {

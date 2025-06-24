@@ -68,7 +68,7 @@ namespace ClinicX.Controllers
             return View(_lvm);
         }
 
-        public IActionResult DNALabReport(string labno, string indication, string reason)
+        public IActionResult DNALabReport(string labno, string indication, string reason) //needs more than the LabNo to get a specific report
         {            
             _lvm.dnaReportDetails = _labData.GetDNAReportDetails(labno, indication, reason);
             _lvm.dnaReport = _labData.GetDNAReport(labno);            

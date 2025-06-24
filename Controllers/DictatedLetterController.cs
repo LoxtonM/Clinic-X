@@ -86,10 +86,7 @@ namespace ClinicX.Controllers
 
                 _lvm.staffMemberList = _staffUser.GetClinicalStaffList();
 
-                if(staffCode == null)
-                {
-                    staffCode = user.STAFF_CODE;
-                }
+                if(staffCode == null) {  staffCode = user.STAFF_CODE; }//default to logged on user
 
                 _lvm.staffUser = _staffUser.GetStaffMemberDetailsByStaffCode(staffCode);
 
@@ -142,14 +139,13 @@ namespace ClinicX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Letter", "ID=" + id.ToString(), _ip.GetIPAddress());                
                 _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(id);
-                //_lvm.dictatedLettersPatients = _dictatedLetterData.GetDictatedLettersPatientsList(id);
                 
                 _lvm.dictatedLettersCopies = _dictatedLetterData.GetDictatedLettersCopiesList(id);
                 _lvm.patients = _dictatedLetterData.GetDictatedLetterPatientsList(id);
                 List<DictatedLettersPatient> dlp = new List<DictatedLettersPatient>();
                 dlp = _dictatedLetterData.GetDictatedLettersPatientsList(id).ToList();
                 _lvm.dictatedLettersPatients = new List<Patient>();
-                foreach(var p in dlp)
+                foreach(var p in dlp) //to add additional family members to the "Re:" list
                 {
                     Patient pat = _patientData.GetPatientDetails(p.MPI);
                     _lvm.dictatedLettersPatients.Add(pat);
@@ -162,7 +158,7 @@ namespace ClinicX.Controllers
                 _lvm.patientDetails = _patientData.GetPatientDetails(mpi.GetValueOrDefault());
                 _lvm.activityDetails = _activityData.GetActivityDetails(refID.GetValueOrDefault());
                 string sGPCode = _lvm.patientDetails.GP_Facility_Code;
-                if (sGPCode == null ) { sGPCode = "Unknown1"; } //because obviously there are nulls.
+                if (sGPCode == null ) { sGPCode = "Unknown1"; } //because obviously there are people with nulls in the GP field.
                 string sRefFacCode = _lvm.activityDetails.REF_FAC;
                 if (sRefFacCode == null) { sRefFacCode = "Unknown"; } 
                 string sRefPhysCode = _lvm.activityDetails.REF_PHYS;
@@ -170,14 +166,16 @@ namespace ClinicX.Controllers
                 _lvm.referrerFacility = _externalFacilityData.GetFacilityDetails(sRefFacCode);                
                 _lvm.referrer = _externalClinicianData.GetClinicianDetails(sRefPhysCode);                
                 _lvm.GPFacility = _externalFacilityData.GetFacilityDetails(sGPCode);
-                _lvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
+                _lvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList(); 
+                //including all clinicians will slow it down too much, so I'm taking a leap of logic here and assuming one wouldn't want to 
+                //write to a GP other than the one registered for the patient (or the one who did the referral).
                 _lvm.clinicians = _externalClinicianData.GetClinicianList().Where(c => c.Is_GP == 0 && c.LAST_NAME != null && c.FACILITY != null).ToList();
                 List<ExternalCliniciansAndFacilities> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();                
                 _lvm.consultants = _staffUser.GetConsultantsList().ToList();
                 _lvm.gcs = _staffUser.GetGCList().ToList();
                 _lvm.secteams = _staffUser.GetSecTeamsList();
                 _lvm.specialities = _externalClinicianData.GetClinicianTypeList();
-                _lvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1);
+                _lvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1); //set web link to EDMS
 
                 return View(_lvm);
             }
@@ -195,14 +193,9 @@ namespace ClinicX.Controllers
             {
                 DateTime dDateDictated = new DateTime();
 
-                if (dateDictated != null)
-                {
-                    dDateDictated = DateTime.Parse(dateDictated);
-                }
-                else
-                {
-                    dDateDictated = DateTime.Parse("1900-01-01");
-                }
+                if (dateDictated != null) { dDateDictated = DateTime.Parse(dateDictated); }
+                else { dDateDictated = DateTime.Parse("1900-01-01"); } //set a default if no value
+
                 //two updates required - one to update the addressee (if addressee has changed)
                 if (isAddresseeChanged)
                 {
@@ -211,7 +204,7 @@ namespace ClinicX.Controllers
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
                 }
 
-                if(enclosures == null) { enclosures = ""; }
+                if(enclosures == null) { enclosures = ""; } //more potential nulls that have to be set to default values
                 if(letterContentBold == null) { letterContentBold = ""; }
                 if(letterContent == null) { letterContent = ""; }
 
@@ -235,8 +228,7 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", staffCode, "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
-
-                //var dot = await _clinContext.DictatedLetters.OrderByDescending(l => l.CreatedDate).FirstOrDefaultAsync(l => l.RefID == id);
+                                
                 List<DictatedLetter> dotList = _dictatedLetterData.GetDictatedLettersList(staffCode).Where(l => l.RefID == id).OrderByDescending(l => l.CreatedDate).ToList();
                 DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
                 int dID = dot.DoTID;
@@ -269,8 +261,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Approve(int dID, bool? isCloseReferral=false)
         {
             try
-            {
-                
+            {                
                 int success = _crud.CallStoredProcedure("Letter", "Approve", dID, 0, 0, "", "", "", "", User.Identity.Name, null, null, isCloseReferral);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-approve(SQL)" }); }
@@ -323,8 +314,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> AddCCToDOT(int dID, string cc)
         {
             try
-            {
-                //int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, cc, "", "", "", User.Identity.Name);
+            {                
                 int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, "", "", "", cc, User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addCC(SQL)" }); }
@@ -364,8 +354,8 @@ namespace ClinicX.Controllers
             try
             {                
                 _lc.PrintDOTPDF(dID, User.Identity.Name, true);
-                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
-                //lc.PrintDOTPDF(dID, User.Identity.Name, true); //FOR TESTING ONLY
+                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext); //for testing purposes
+                //lc.PrintDOTPDF(dID, User.Identity.Name, true); //FOR TESTING ONLY - production should use the data library instead
                 
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
@@ -388,7 +378,6 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-activityitems" });
             }
-
         }
 
         [HttpGet]
@@ -404,7 +393,6 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-activityitems" });
             }
-
         }
 
         [HttpPost]
@@ -420,8 +408,6 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-activityitems" });
             }
-
         }
-
     }
 }

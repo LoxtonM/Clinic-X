@@ -69,7 +69,7 @@ namespace ClinicX.Controllers
                 List<Patient> patients = new List<Patient>();
                 patients = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
 
-                if (patients.Count > 0)
+                if (patients.Count > 0) //to do the fwd and back buttons across the pedigree
                 {
                     int regNo;
                     string cguno = _pvm.patient.CGU_No;
@@ -107,7 +107,7 @@ namespace ClinicX.Controllers
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
 
-                if (_constantsData.GetConstant("PhenotipsURL", 2) == "1")
+                if (_constantsData.GetConstant("PhenotipsURL", 2) == "1") //pings the Phenotips API to see if a PPQ is scheduled
                 {
                     if (_api.GetPhenotipsPatientID(id).Result != "")
                     {
