@@ -163,9 +163,14 @@ namespace ClinicX.Controllers
 
                 if (sStaffType == "Consultant")
                 {
+                    if(tp.GetValueOrDefault() == 3 || tp.GetValueOrDefault() == 5)
+                    {
+                        tp2 = 0;
+                    }
+
                     if (facility != null && facility != "") // && clinician != null && clinician != "")
                     {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), 0,
+                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
                         facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }
@@ -173,7 +178,7 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), 0,
+                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
                         "", sApptIntent, "", comment, User.Identity.Name);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
