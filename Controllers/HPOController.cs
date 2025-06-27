@@ -4,10 +4,8 @@ using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 using ClinicX.Data;
-using ClinicalXPDataConnections.Models;
 using APIControllers.Controllers;
 using APIControllers.Data;
-using APIControllers.Models;
 
 namespace ClinicX.Controllers
 {
@@ -15,7 +13,6 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly ClinicXContext _cXContext;
-        private readonly DocumentContext _docContext;
         private readonly APIContext _apiContext;
         private readonly HPOVM _hpo;
         private readonly IStaffUserData _staffUser;
@@ -27,11 +24,10 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         private readonly APIController _api;
 
-        public HPOController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, APIContext apiContext, IConfiguration config)
+        public HPOController(ClinicalContext context, ClinicXContext cXContext, APIContext apiContext, IConfiguration config)
         {
             _clinContext = context;
             _cXContext = cXContext;
-            _docContext = docContext;
             _apiContext = apiContext;
             _config = config;
             _staffUser = new StaffUserData(_clinContext);
@@ -157,7 +153,7 @@ namespace ClinicX.Controllers
             }
         }  
 
-        public async Task<IActionResult> GetAllHPOTerms() //refreshes the list from the API (NOT available to most users)
+        public async Task<IActionResult> GetAllHPOTerms() //refreshes the list from the API (NOT available to most users) 
         {
             string hpoTermGet = await _api.GetAllHPOTerms(User.Identity.Name);
 

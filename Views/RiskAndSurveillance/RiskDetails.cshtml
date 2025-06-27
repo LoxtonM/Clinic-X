@@ -138,6 +138,7 @@
                     <th>Recommended By</th>
                     <th>Site</th>
                     <th>Hospital</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -146,12 +147,20 @@
                     <tr>
                         <td><a class="btn btn-success" asp-controller="RiskAndSurveillance" asp-action="SurvDetails" asp-route-id=@item.SurvRecID>Select</a></td>
                         <td>@item.GeneChangeDescription</td>
-                        <td>@item.SurvFreqCode</td>
+                        <td>@item.SurvFreq</td>
                         <td>@item.SurvStartAge</td>
                         <td>@item.SurvStopAge</td>
                         <td>@item.Clinician</td>
-                        <td>@item.SurvSiteCode</td>
+                        <td>@item.SurvSite</td>
                         <td>@item.SurvRecHoCode</td>
+                        @if(item.SurvDisc)
+                        {
+                            <td>Discontinued on @item.SurvDiscDate.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
                     </tr>
                 }
             </tbody>

@@ -4,6 +4,7 @@ using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using ClinicX.Data;
 using ClinicX.Meta;
+using ClinicX.Models;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -308,6 +309,8 @@ namespace ClinicX.Controllers
                 _rsvm.geneChange = _geneChange.GetGeneChangeList();
                 _rsvm.surveillanceDetails = _survData.GetSurvDetails(id);
                 _rsvm.riskDetails = _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
+                _rsvm.survFreqCodes = _survCodesData.GetSurvFreqCodesList();
+                _rsvm.discontinuedReasonCodes = _survCodesData.GetDiscReasonCodesList();
                 int mpi = _rsvm.surveillanceDetails.MPI;
 
                 _rsvm.patient = _patientData.GetPatientDetails(mpi);
@@ -319,6 +322,29 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv" });
             }
         }
+
+        [HttpPost]
+        public IActionResult EditSurveillance(int id, string geneChange, DateTime discDate, int startAge, int endAge, string frequency, bool isDisc, string? discReason)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
+
+                if(discDate == null || discDate == DateTime.Parse("0001-01-01")) { discDate = DateTime.Parse("1900-01-01"); } //because Javascript has it as "0001-01-01" but SQL needs it to be "1900-01-01"
+
+                _crud.CallStoredProcedure("Surveillance", "Edit", id, startAge, endAge, geneChange, "", frequency, discReason, User.Identity.Name, discDate, null, isDisc, false);
+
+                return RedirectToAction("SurvDetails", "RiskAndSurveillance", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv" });
+            }
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> AddNewTestingEligibility(int id)
