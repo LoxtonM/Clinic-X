@@ -65,7 +65,7 @@
         <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
     </h1>
 
-    <h2>Re: @if(Model.dictatedLettersPatients.Count > 0)
+    <h2 id="lblLetterRe">Re: @if(Model.dictatedLettersPatients.Count > 0)
         {
             @Html.ValueFor(model => model.dictatedLetters.LetterRe)        
         }
@@ -154,6 +154,16 @@
                     </div>
                 </div>
             </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2 text-right">
+                    Salutation:
+                </div>
+                <div class="col-md-6">
+                    <input name="salutation" id="txtSalutation" class="w-100" asp-for=@Model.dictatedLetters.LetterToSalutation />
+                </div>
+            </div>
+
+
             <div class="row mb-5 g-5">
                 <div class="col-md-2 text-right">
                     Letter Status:
@@ -496,6 +506,7 @@
             if (CheckFormValid())
             {
                 document.getElementById("DictatedLetterApproval").submit();        
+                //window.alert("Okay!");
             }
             document.getElementById("btnApprove").hidden = true;
             document.getElementById("btnUnapprove").hidden = false;
@@ -546,10 +557,13 @@
     {         
         const sLetterTo = document.getElementById("ddlLetterTo").value;
         var letterToCode = document.getElementById("txtLetterToCode");
+        var _salut = document.getElementById("txtSalutation");
                 
         var sName = "";
         var sFacility = "";
-        var sAddress = "";        
+        var sAddress = "";   
+        
+        _salut.value = "";
 
         if (sLetterTo == "Patient") 
         {   
@@ -560,6 +574,8 @@
                         "@Model.patientDetails.ADDRESS4" + "\n" +
                         "@Model.patientDetails.POSTCODE";
             letterToCode.value = "PT";
+
+            _salut.value = "@Model.patientDetails.Title" + " " + "@Model.patientDetails.LASTNAME";
         }
         if (sLetterTo == "GP")
         {
@@ -570,6 +586,8 @@
                         "@Model.GPFacility.STATE" + "\n" +
                         "@Model.GPFacility.ZIP";
             letterToCode.value = "GP";
+
+            _salut.value = "@Model.patientDetails.GP";
         }
         if (sLetterTo == "Referrer")
         {
@@ -580,6 +598,8 @@
                         "@Model.referrerFacility.STATE" + "\n" +
                         "@Model.referrerFacility.ZIP";
             letterToCode.value = "Referrer";
+
+            _salut.value = "@Model.referrer.TITLE" + " " + "@Model.referrer.NAME";
         }
         
         if (sLetterTo == "Other") 
@@ -593,6 +613,8 @@
             document.getElementById("ddlLetterToType").hidden = true;
             document.getElementById("txtLetterTo").value = sName.replace(/&#x27;/g, "'") + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
             document.getElementById("txtisAddressChanged").value = "true";
+
+
         }        
     }
 
@@ -769,6 +791,9 @@
             }
         }
         document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
+        
+        document.getElementById("txtSalutation").value = sName;
+
         document.getElementById("txtisAddressChanged").value = "true";
     }
 
@@ -806,9 +831,10 @@
     { 
         var sName = "Nobody";
         var sFacility = "Nothing";
-        var sAddress = "Nowhere";
+        var sAddress = "Nowhere";        
         
-        if (ccCode == "Referrer") {
+        if (ccCode == "Referrer") 
+        {
             sName = "@Model.referrer.TITLE" + " " + "@Model.referrer.FIRST_NAME" + " " + "@Model.referrer.NAME";
             sAddress = "@Model.referrerFacility.NAME" + "\n" +
                 "@Model.referrerFacility.ADDRESS" + "\n" +
@@ -818,17 +844,17 @@
 
             @*document.getElementById("txtCCCode").value = "@Model.referrer.MasterClinicianCode";*@
         }
-        else if (ccCode == "Patient") {
+        else if (ccCode == "Patient") 
+        {
             sName = "@Model.patientDetails.Title" + " " + "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
             sAddress = "@Model.patientDetails.ADDRESS1" + "\n" +
                 "@Model.patientDetails.ADDRESS2" + "\n" +
                 "@Model.patientDetails.ADDRESS3" + "\n" +
                 "@Model.patientDetails.ADDRESS4" + "\n" +
-                "@Model.patientDetails.POSTCODE";
-
-            @*document.getElementById("txtCCCode").value = "Patient";*@
+                "@Model.patientDetails.POSTCODE";            
         }
-        else if (ccCode == "GP") {
+        else if (ccCode == "GP") 
+        {
             sName = "@Model.patientDetails.GP"
             sAddress = "@Model.GPFacility.NAME" + "\n" +
                 "@Model.GPFacility.ADDRESS" + "\n" +
@@ -963,6 +989,13 @@
             window.alert("Please specify a dictated date.")
             return 0;
         }
+
+        if(document.getElementById("lblLetterRe").innerHTML.match("add patients via the"))
+        {
+            window.alert("Please specify a patient.");
+            return 0;
+        }        
+
         return 1;
     }
 

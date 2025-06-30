@@ -185,9 +185,10 @@ namespace ClinicX.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost] //TODO: set up Salutation box, auto-populate with default
         public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
-            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments)
+            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments,
+            string salutation)
         {
             try
             {
@@ -199,7 +200,7 @@ namespace ClinicX.Controllers
                 //two updates required - one to update the addressee (if addressee has changed)
                 if (isAddresseeChanged)
                 {
-                    int success2 = _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, "", letterToCode, letterFromCode, letterTo, User.Identity.Name);
+                    int success2 = _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, salutation, letterToCode, letterFromCode, letterTo, User.Identity.Name);
 
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
                 }
@@ -208,7 +209,7 @@ namespace ClinicX.Controllers
                 if(letterContentBold == null) { letterContentBold = ""; }
                 if(letterContent == null) { letterContent = ""; }
 
-                int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc, 0,0,0,0,0, comments);
+                int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc, 0,0,0,0,0, comments, salutation);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
 

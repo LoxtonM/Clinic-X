@@ -85,7 +85,7 @@ namespace ClinicX.Meta
             }
             if (string8 != "")
             {
-                cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string8;
+                cmd.Parameters.Add("@string8", SqlDbType.VarChar).Value = string8;
             }
             if (HttpContext != null)
             {
