@@ -231,7 +231,7 @@
         <div class="row mb-5 g-5">
             <div class="col-md-2"></div>
             <div class="col-md-8">
-                <button id="btnGeneralTriage" class="btn btn-default btn-success">Complete Triage</button>
+                <button type="button" id="btnGeneralTriage" class="btn btn-default btn-success">Complete Triage</button>
             </div>
             <div class="col-md-2"></div>
         </div>
@@ -256,7 +256,7 @@
             <div class="row mb-5 g-5">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
-                    <button id="btnCancerTriage" class="btn btn-default btn-outline-success">Complete Triage</button>
+                    <button type="button" id="btnCancerTriage" class="btn btn-default btn-outline-success">Complete Triage</button>
                 </div>
                 <div class="col-md-2"></div>
             </div>
@@ -384,9 +384,12 @@
         }
 
         if (_tp1.value == "4" || _tp1.value == "5")
-        {
-            document.getElementById("lblIsSPR").hidden = false;
-            document.getElementById("ddlIsSPR").hidden = false;
+        {            
+            if(_user == "Consultant")
+            {
+                document.getElementById("lblIsSPR").hidden = false;
+                document.getElementById("ddlIsSPR").hidden = false;
+            }
         }
         else
         {
@@ -402,6 +405,15 @@
         {
             document.getElementById("btnGeneralTriage").hidden = false;
         }
+
+        
+        if("@Model.patient.DOB" >= "@Model.dobAt16") //if adult, hide this box
+        {
+            document.getElementById("lblIsChild").hidden = true
+            document.getElementById("ddlIsChild").value = false
+            document.getElementById("ddlIsChild").hidden = true
+        }
+        
     }
 
 
@@ -413,8 +425,6 @@
         document.getElementById("formICPGeneral").hidden = true;
         document.getElementById("formICPCancer").hidden = true;
 
-        
-
         if (_rp.match("Gen*"))
         {
             document.getElementById("formICPGeneral").hidden = false;
@@ -423,22 +433,24 @@
             document.getElementById("ddlTreatPath2-Clinic").hidden = true;
             document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
             document.getElementById("btnGeneralTriage").hidden = true;
+            var _tp1 = document.getElementById("ddlTreatPath1");
+            var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
+            var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
 
-            
-
-            if (_cons == "True")
+            if (_cons == "True") //consultant triaged
             {
-                var _tp1 = document.getElementById("ddlTreatPath1");
                 DoTreatPath1();
                 _tp1.disabled = true;
-                var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
-                var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
+                
+                document.getElementById("ddlIsSPR").hidden = true;
+                //document.getElementById("ddlIsSPR").hidden = false;
             }            
 
-            if (_gc == "True")
+            if (_gc == "True") //gc triaged
             {
                 //var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
                 //var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
+                //document.getElementById("ddlIsSPR").hidden = true;                
 
                 if (!_tp2c.hidden)
                 {
@@ -455,7 +467,7 @@
 
             document.getElementById("ddlIsSPR").value = "@(Model.triage.ConsWLForSPR)";
 
-            if(_tp2c.value != "" || _tpcnc.value != "")
+            if(_tp2c.value != "" || _tp2nc.value != "")
             {
                 document.getElementById("btnGeneralTriage").hidden = false;
             }
@@ -472,7 +484,12 @@
             //}
         }
 
+        if(_tp2c.value != "" || _tp2nc.value != "")
+        {
+            DoTreatPath2();
+        }
         LoadEDMSLink();
+        AutoLoadEDMS();
     }
 
 
@@ -494,6 +511,18 @@
         document.getElementById("formICPCancer").submit;
     }
 
+    function AutoLoadEDMS()
+    {
+        if("@Model.staffOptions.Automated_GEMR_Open" == "True") //automated GEMR open if true
+        {
+            //window.alert("Yup");           
+            if("@Model.patient.Patient_Dctm_Sts" == 5)
+            {                
+                window.open("@Model.edmsLink" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie");
+            }
+        }        
+    }
+
 
 
     function CheckFormValid()
@@ -503,8 +532,25 @@
         {
             window.alert("Please choose a treatment pathway.");
             return 0;
-        }
+        }       
 
+        if (document.getElementById("ddlTreatPath2-Clinic").value != "")
+        {            
+
+            if(document.getElementById("ddlFacility").value == null || document.getElementById("ddlFacility").value == "")
+            {
+                window.alert("Please choose a facility");
+                return 0;
+            }
+
+            if(document.getElementById("txtDuration").value == null || document.getElementById("txtDuration").value == "")
+            {
+                window.alert("Please enter a duration");
+                return 0;
+            }
+                       
+        }
+        
         return 1;
     }
 

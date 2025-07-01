@@ -39,6 +39,7 @@ namespace ClinicX.Controllers
         private readonly IPatientData _patientData;
         private readonly ILeafletData _leafletData;
         private readonly IConstantsData _constantsData;
+        private readonly IStaffOptionsData _staffOptionsData;
 
         public TriageController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
         {
@@ -69,6 +70,7 @@ namespace ClinicX.Controllers
             _patientData = new PatientData(_clinContext);
             _leafletData = new LeafletData(_docContext);
             _constantsData = new ConstantsData(_docContext);
+            _staffOptionsData = new StaffOptionsData(_cXContext);
         }
 
         [Authorize]
@@ -120,6 +122,8 @@ namespace ClinicX.Controllers
                 _ivm.priorityList = _priorityData.GetPriorityList();
                 _ivm.cancerReviewActionsLists = _icpActionData.GetICPCancerReviewActionsList();
                 _ivm.edmsLink = _constantsData.GetConstant("GEMRLink", 1);
+                _ivm.dobAt16 = DateTime.Now.AddYears(-16);
+                _ivm.staffOptions = _staffOptionsData.GetStaffOptions(staffCode);
                 
                 if (_ivm.referralDetails.RefDate != null)
                 {

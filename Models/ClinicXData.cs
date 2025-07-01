@@ -275,4 +275,14 @@ namespace ClinicX.Models
         public bool CauseNotIdentified { get; set; }
         public int? ThresholdAge8pct { get; set; }
     }
+
+    [Table("Staff_Options", Schema = "dbo")]
+    public class StaffOptions
+    {
+        [Key]
+        public int ID { get; set; }
+        public string Staff_Code { get; set; }
+        public bool Automated_GEMR_Open { get; set; }
+        public string GEMR_browser { get; set; }
+    }
 }

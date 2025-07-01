@@ -43,6 +43,8 @@ namespace ClinicX.Controllers
                 {
                     _cvm.notificationMessage = _notificationData.GetMessage("ClinicXOutage"); //messaging system for outages
                     var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                    //when switching from Dev to Live, it's possible to be "authenticated" with a user that doesn't exist
+                    if (user == null) { return RedirectToAction("ErrorHome", "Error", new { error = "User not found, please sign out and sign in again", formName = "Home" }); }
                     IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                     _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Home", "", _ip.GetIPAddress());
                     _cvm.caseLoad = _caseload.GetCaseloadList(user.STAFF_CODE).OrderBy(c => c.BookedDate).ToList();

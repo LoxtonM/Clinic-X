@@ -40,6 +40,7 @@ namespace ClinicX.ViewModels
         //public List<ScreeningService> screeningCoordinators { get; set; }
         public List<RelativesDiagnosis> relativesDiagnoses { get; set; }
         public List<Leaflet> leaflets { get; set; }
+        public StaffOptions staffOptions { get; set; }
         public List<string> specialities { get; set; }
         public string staffCode { get; set; }
         public string loggedOnUserType { get; set; }
@@ -53,5 +54,6 @@ namespace ClinicX.ViewModels
         public string edmsLink { get; set; }
         public string canriskLink { get; set; }
         public string genomicsTestDirectoryLink { get; set; }
+        public DateTime dobAt16 { get; set; }
     }
 }

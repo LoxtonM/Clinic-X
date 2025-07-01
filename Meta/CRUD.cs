@@ -40,14 +40,12 @@ namespace ClinicX.Meta
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
             float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "")
         {   
-            if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
+            if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); } //set some defaults (because SQL can't take nulls)
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
             if (text == null) { text = ""; }
             if (string4 == null) { string4 = ""; }
             if (string5 == null) { string5 = ""; }
             if (string6 == null) { string6 = ""; }
-
-
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
@@ -81,13 +79,13 @@ namespace ClinicX.Meta
             cmd.Parameters.Add("@float5", SqlDbType.Float).Value = f5;
             if(string7 != "")
             {
-                cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;
+                cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7; //optional parameters - because SQL actually CAN take nulls if you specify it!
             }
             if (string8 != "")
             {
                 cmd.Parameters.Add("@string8", SqlDbType.VarChar).Value = string8;
             }
-            if (HttpContext != null)
+            if (HttpContext != null) //tries to get the hostname (for audit purposes) - if it can't, just use the server name
             {
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = Dns.GetHostEntry(_ip.GetIPAddress()).HostName.Substring(0, 10);
@@ -106,7 +104,7 @@ namespace ClinicX.Meta
         }
 
         public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
-        {
+        {   //this may or may not end up actually getting used
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
             SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
@@ -121,7 +119,7 @@ namespace ClinicX.Meta
             string string1, string string2, string string3, string text, string sLogin, string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "",
              DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false, bool? bool4 = false, bool?
             bool5 = false, bool? bool6 = false, bool? bool7 = false, bool? bool8 = false)
-        {
+        { //same as the standard CRUD but because there are a lot more variables to use here
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
             if (text == null) { text = ""; }

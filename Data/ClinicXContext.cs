@@ -28,5 +28,6 @@ namespace ClinicX.Data
         public DbSet<SampleTypes> SampleTypes { get; set; }
         public DbSet<SampleRequirements> SampleRequirements { get; set; }
         public DbSet<UntestedVHRGroup> UntestedVHRGroup { get; set; }
+        public DbSet<StaffOptions> StaffOptions { get; set; }
     }
 }
