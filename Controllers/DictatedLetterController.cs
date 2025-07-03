@@ -1,11 +1,12 @@
 ﻿using ClinicalXPDataConnections.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using ClinicX.Meta;
 using ClinicX.Data;
+using ClinicX.Meta;
+using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 namespace ClinicX.Controllers
 {
@@ -188,7 +189,7 @@ namespace ClinicX.Controllers
         [HttpPost] //TODO: set up Salutation box, auto-populate with default
         public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
             bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments,
-            string salutation)
+            string salutation, string? ccAddress)
         {
             try
             {
@@ -212,6 +213,11 @@ namespace ClinicX.Controllers
                 int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc, 0,0,0,0,0, comments, salutation);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
+
+                if(ccAddress != null)
+                {
+                    return RedirectToAction("AddCCToDOT", new { dID = dID, cc = ccAddress });
+                }
 
                 return RedirectToAction("Edit", new { id = dID });
             }
@@ -311,7 +317,7 @@ namespace ClinicX.Controllers
             }
         }
 
-        [HttpPost]
+        //[HttpPost]
         public async Task<IActionResult> AddCCToDOT(int dID, string cc)
         {
             try
@@ -409,6 +415,43 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-activityitems" });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchClinician(int dotID)
+        {
+            _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(dotID);
+            _lvm.clinicians = new List<ExternalCliniciansAndFacilities>(); //because we have to have something or it throws a fit
+
+            return View(_lvm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SearchClinician(int dotID, string firstName, string lastName, string? addressToAdd, bool isSearchOnly)
+        {
+            _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(dotID);
+            _lvm.clinicians = _externalClinicianData.GetClinicianList();            
+
+            if (firstName != null)
+            {
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.FIRST_NAME == firstName).ToList();
+            }
+
+            if (lastName != null)
+            {
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.LAST_NAME == lastName).ToList();
+            }
+
+            if(!isSearchOnly)
+            {
+                int success = _crud.CallStoredProcedure("Letter", "AddCC", dotID, 0, 0, "", "", "", addressToAdd, User.Identity.Name);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addCC(SQL)" }); }
+                
+            }
+
+
+            return View(_lvm);
         }
     }
 }

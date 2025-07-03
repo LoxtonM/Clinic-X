@@ -95,6 +95,7 @@
                 <input asp-for="dictatedLetters.DoTID" name="dID" />
                 <input id="txtisAddressChanged" name="isAddresseeChanged" />
                 <input id="txtLetterToCode" name="letterToCode" />
+                <textarea rows="8" cols="40" id="txtCCAddress" name="ccAddress"></textarea>
             </div>
 
             <div class="row mb-5 g-5">
@@ -320,6 +321,7 @@
                         }
                     </tbody>
                 </table>
+
             </form>
         </div>
     
@@ -353,19 +355,21 @@
                     </table>
                 </form>
             </div>
-            <form id="frmAddCCToDOT" asp-action="AddCCToDOT">
+            @*<form id="frmAddCCToDOT" asp-action="AddCCToDOT">*@
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden/>
-                <div class="row">
+                <div class="row mb-2 g-2">
+                    <div class="col-md-2"></div>
                     <div class="col-md-8">
-                        <label class="redtext">Note: adding a CC will cause the page to refresh, please be sure to save any changes first!</label>
+                        @*<label class="redtext">Note: adding a CC will cause the page to refresh, please be sure to save any changes first!</label>*@
+                        <label class="redtext">CC address will be updated when you press "Save".</label>
                     </div>
                 </div>
                 <div class="row mb-5 g-5">            
                     <div class="col-md-2">
-                        <input type="button" id="btnAddCC" class="btn btn-default btn-success" value="Add CC" />
+                        @*<input type="button" id="btnAddCC" class="btn btn-default btn-success" value="Add CC" />*@ @*function now happens when saving the letter*@
                     </div>
                     <div class="col-md-6">
-                        <div class="row">
+                        <div class="row mb-2 g-2">
                             <select class="w-100" id="ddlCCType">
                                 <option value="" selected>Select...</option>
                                 <option value="Patient">Patient</option>
@@ -390,15 +394,18 @@
                                 
                             </select>
                         </div>
-                        <div class="row">
+                        <div class="row mb-2 g-2">
                             <div class="col-md-10">
                                 <textarea rows="8" cols="40" id="txtCC" name="cc"></textarea>
                             </div>                            
+                            <div class="col-md-2">
+                                <a type="button" class="btn btn-success btn-default" id="btnSearch" asp-action="SearchClinician" asp-route-dotID=@Model.dictatedLetters.DoTID target=_blank>Search</a>
+                            </div>
                         </div>
                     </div>            
                 </div>
                 
-            </form>
+            @*</form>*@
         </div>
         <div class="row">
             <div class="col-md-2">
@@ -423,8 +430,10 @@
     document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
     document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);
     document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
+    document.getElementById("ddlCC").addEventListener("change", SetCCClinician);
     document.getElementById("btnAddCC").addEventListener("click", AddCC);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
+    //document.getElementById("btnSearch").addEventListener("click", ClinicianSearch);
     window.addEventListener("load", LoadLetter);
     //window.addEventListener("load", LoadEDMSLink);
 
@@ -437,7 +446,7 @@
     function LoadLetter() 
     { 
         
-        if (document.getElementById("ddlLetterStatus").value == "For Approval") 
+        if (document.getElementById("ddlLetterStatus").value == "For Approval") //enable/disable fields if approved or not
         {
             document.getElementById("btnApprove").hidden = false;
             document.getElementById("ddlLetterStatus").disabled = true;            
@@ -462,9 +471,9 @@
                 document.getElementById("optICP").hidden = true;
             }
         }    
-        document.getElementById("txtisAddressChanged").value = "false";        
+        document.getElementById("txtisAddressChanged").value = "false"; //to flag if the address needs to be updated
 
-        LoadEDMSLink();
+        LoadEDMSLink(); //link to GEMR
     }
 
     function SaveLetter() 
@@ -472,12 +481,13 @@
         document.getElementById("txtLetterContent").value = document.getElementById("letterText").innerHTML.trim();
         //we have to enable them or it won't pass the parameters to the function
         document.getElementById("ddlLetterStatus").disabled = false;     
-        //if (CheckFormValid())
+        //if (CheckFormValid()) //validation disabled for saving - moved to submit instead
         //{
-            document.getElementById("DictatedLetter").submit();
+        document.getElementById("txtCCAddress").value = document.getElementById("txtCC").value //to get the CC to save when... well, saving, it has to be part of the main form
+        document.getElementById("DictatedLetter").submit();
         //}
-        //we can't do C# validation because there's simply no way to display the message,
-        //because the only way to refresh the page wipes everything!!
+        //we can't do C# validation because there's no way to display the message,
+        //because the only way to refresh the page wipes everything
     }
 
     function CloseReferralShow()
@@ -536,9 +546,8 @@
     }
 
     function ShowDelete()
-    {
-        //window.alert("bleh");
-        document.getElementById("ConfDelete").hidden = false;
+    {        
+        document.getElementById("ConfDelete").hidden = false; //displays an "are you sure?" message
         document.getElementById("btnReqDelete").hidden = true;
     }
 
@@ -553,7 +562,7 @@
         document.getElementById("btnReqDelete").hidden = false;
     }
 
-    function SetLetterTo() 
+    function SetLetterTo() //addressee - is saved as a string containing the entire name and address (because of course it is)
     {         
         const sLetterTo = document.getElementById("ddlLetterTo").value;
         var letterToCode = document.getElementById("txtLetterToCode");
@@ -614,7 +623,6 @@
             document.getElementById("txtLetterTo").value = sName.replace(/&#x27;/g, "'") + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
             document.getElementById("txtisAddressChanged").value = "true";
 
-
         }        
     }
 
@@ -625,17 +633,17 @@
 
     function ShowCCClinician() 
     {
-        if (document.getElementById("ddlCCType").value != "Other")
+        if (document.getElementById("ddlCCType").value != "Other") //standard addresses (patient, referrer, GP, etc) will be entered into the box
         {
             SetCCAddress(document.getElementById("ddlCCType").value);
         }
-        else
+        else //if not, show the other stuff
         {
             document.getElementById("ddlCCType2").hidden = false;
         }        
     }
 
-    function ShowCCTypes() 
+    function ShowCCTypes() //list of different specialities that we can CC
     {
         const ccType = document.getElementById("ddlCCType2");
         const ccList = document.getElementById("ddlCC");
@@ -692,7 +700,7 @@
         ccList.hidden = false;
     }
         
-    function ShowLetterToClinician()
+    function ShowLetterToClinician() //the actual list of clinicians that can be picked
     {        
         const ccType = document.getElementById("ddlLetterToType");
         const ccList = document.getElementById("ddlLetterToClinician");
@@ -750,7 +758,7 @@
     }
 
 
-    function SetLetterToClinician() 
+    function SetLetterToClinician() //sets the actual recipient address to that chosen in the list
     { 
         const sClinCode = document.getElementById("ddlLetterToClinician").value;
         
@@ -827,8 +835,13 @@
         document.getElementById("txtisAddressChanged").value = "true";
     }
 
-    function SetCCAddress(ccCode)
-    { 
+    function SetCCClinician()
+    {
+        SetCCAddress(document.getElementById("ddlCC").value);
+    }
+
+    function SetCCAddress(ccCode) //sets value of CC box depending on what's chosen
+    {        
         var sName = "Nobody";
         var sFacility = "Nothing";
         var sAddress = "Nowhere";        
@@ -874,15 +887,22 @@
             var facilityCode;
             var _ccCode;
                                           
+            @foreach(var item in Model.clinicians)
+            {
+                @:clinicianArray.push("@item.MasterClinicianCode");
+                @:titleArray.push("@item.TITLE");
+                @:firstnameArray.push("@item.FIRST_NAME");
+                @:lastnameArray.push("@item.LAST_NAME");
+                @:facilityArray.push("@item.MasterFacilityCode");
+            }
                 
             for (var k = 0; k < clinicianArray.length; k++) 
             {
                 var nameToTest = clinicianArray[k];
-                if (nameToTest == _ccCode) 
-                {
+                if (nameToTest == ccCode) 
+                {                    
                     sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
-                    facilityCode = facilityArray[k];
-                    @*document.getElementById("txtCCCode").value = _ccCode;*@
+                    facilityCode = facilityArray[k];                    
                 }
             }
 
@@ -924,6 +944,49 @@
         document.getElementById("txtCC").value = sName + "\n" + sAddress.replace("&#x27;", "'").replace("&#xD;&#xA;", " ");
     }
 
+    function ClinicianSearch()
+    {
+        
+        var _cc = document.getElementById("txtCC");
+        var stringArray = _cc.value.split(/\s+/);
+
+        var clinicianArray = [];
+        var titleArray = [];
+        var firstnameArray = [];
+        var lastnameArray = [];
+        var facilityArray = [];
+        var matching = [];
+        var facilityCode;
+        var _ccCode;
+        var sName;
+                
+                        
+        @foreach (var item in Model.clinicians)
+        {            
+            @:clinicianArray.push("@item.MasterClinicianCode");
+            @:titleArray.push("@item.TITLE");
+            @:firstnameArray.push("@item.FIRST_NAME");
+            @:lastnameArray.push("@item.LAST_NAME");
+            @:facilityArray.push("@item.MasterFacilityCode");
+        }
+        
+        for (var k = 0; k < clinicianArray.length; k++)
+        {
+            var nameToTest = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
+
+            if(nameToTest.toUpperCase().match(_cc.value.toUpperCase()))
+            {                
+                sName = nameToTest;
+                facilityCode = facilityArray[k];
+            }
+        }
+        
+
+        window.alert(sName + ", " + facilityCode);
+        
+    }
+
+
     function AddToDOT(id) 
     {        
         document.getElementById("txtPID").value = id;        
@@ -953,8 +1016,8 @@
         {
             window.alert("Please enter a summary.")        
             return 0;
-        }
-        if (document.getElementById("txtLetterContent").value == "") 
+        }        
+        if (document.getElementById("txtLetterContent").value == "")
         { 
             window.alert("Please enter some text.")
             return 0;
@@ -1001,7 +1064,10 @@
 
     function DoPreview()
     {        
-        document.getElementById("Preview").submit();
+        if (CheckFormValid())
+        {
+            document.getElementById("Preview").submit();
+        }
     }
 
 

@@ -6,7 +6,6 @@ using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using APIControllers.Controllers;
 using APIControllers.Data;
-using System.Linq;
 
 namespace ClinicX.Controllers
 {
@@ -66,7 +65,7 @@ namespace ClinicX.Controllers
 
                 _pvm.patient = _patientData.GetPatientDetails(id);
                 
-                List<Patient> patients = new List<Patient>();
+                List<Patient> patients = new List<Patient>(); //patients in the pedigree
                 patients = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
 
                 if (patients.Count > 0) //to do the fwd and back buttons across the pedigree
@@ -109,6 +108,7 @@ namespace ClinicX.Controllers
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
 
+                //Constants table flag decides whether Phenotips is in use or not
                 if (_constantsData.GetConstant("PhenotipsURL", 2) == "1") //pings the Phenotips API to see if a PPQ is scheduled
                 {
                     if (_api.GetPhenotipsPatientID(id).Result != "")
@@ -119,7 +119,7 @@ namespace ClinicX.Controllers
                     }
                 }
 
-                if (_pvm.patient.DOB != null)
+                if (_pvm.patient.DOB != null) //yes we do actually have null birth dates!
                 {                    
                     if (_pvm.patient.DECEASED != 0)
                     {
@@ -146,7 +146,7 @@ namespace ClinicX.Controllers
                     }
                 }
 
-                _pvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1);
+                _pvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1); 
 
                 return View(_pvm);
             }

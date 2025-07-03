@@ -133,7 +133,7 @@
                     <option value="">Select...</option>
                     @foreach (var item in Model.priorityList)
                     {
-                        <option value=@item.PriorityLevel>@item.CLASS = @item.DESCRIPTION</option>
+                        <option value=@item.PriorityLevel>@item.CLASS - @item.DESCRIPTION</option>
                     }
                 </select>
             </div>
@@ -502,13 +502,13 @@
         if (CheckFormValid() == 1)
         {
             //window.alert("Submitted!");
-            document.getElementById("formICPGeneral").submit;
+            document.getElementById("formICPGeneral").submit();
         }
     }
 
     function DoCancerTriage()
     {
-        document.getElementById("formICPCancer").submit;
+        document.getElementById("formICPCancer").submit();
     }
 
     function AutoLoadEDMS()

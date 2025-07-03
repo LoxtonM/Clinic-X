@@ -28,5 +28,6 @@ namespace ClinicX.ViewModels
         public List<string> specialities { get; set; }
         public List<ActivityItem> activities { get; set; }
         public string edmsLink { get; set; }
+        public string searchClinicianAddress { get; set; }
     }
 }

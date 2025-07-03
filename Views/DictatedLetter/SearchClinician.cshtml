@@ -1,0 +1,155 @@
+﻿@model ClinicX.ViewModels.DictatedLetterVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Edit Dictated Letter";
+    ViewData["Page"] = "/ Dictated Letter / Edit";    
+}
+
+<div class="container">
+    <form asp-action="SearchClinician" id="frmSearch">
+        <div id="metadata" hidden>
+            <input name="dotID" asp-for=@Model.dictatedLetters.DoTID />
+            <input name="isSearchOnly" id="txtSearchOnly" />
+        </div>        
+        <div class="row mb-5 g-5">            
+            <div class="col-md-2">
+                <label>Firstname</label>
+            </div>
+            <div class="col-md-2">
+                <input name="firstName" />
+            </div>
+            <div class="col-md-2">
+                <label>Lastname</label>
+            </div>
+            <div class="col-md-2">
+                <input name="lastName" />
+            </div>        
+            <div class="col-md-2">
+                <button type="button" id="btnSearch" class="btn btn-default btn-success">Search</button>
+            </div>
+            
+        </div>
+    
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-5">            
+                <select class="w-100" id="ddlClinicians" hidden>
+                    <option value="">Select</option>
+                    @foreach(var item in Model.clinicians)
+                    {
+                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY</option>
+                    }
+                </select>            
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAddToDOT" class="btn btn-default btn-success" hidden>Add to DOT</button>
+            </div>
+            <div class="col-md-5">
+                <label id="lblAddingCC" hidden>You will need to refresh the main DOT Edit page to see the changes.</label>
+            </div>
+        </div>
+        
+
+        <div class="row mb-5 g-5">        
+            @*<div class="col-md-2">
+                Copy-paste the address from here.
+            </div>*@
+            <div class="col-md-6">
+                <textarea id="txtClinicianAddress" name="addressToAdd" rows="6" cols="50"></textarea>
+            </div>
+        </div>
+    </form>
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            <button type="button" class="btn btn-default btn-success" id="btnClose">Close</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    document.getElementById("ddlClinicians").addEventListener("change", SetClinicianAddress);
+    document.getElementById("btnClose").addEventListener("click", CloseForm);
+    document.getElementById("btnSearch").addEventListener("click", DoSearch);
+    document.getElementById("btnAddToDOT").addEventListener("click", DoSubmit);
+    window.addEventListener("load", LoadForm);
+
+    function LoadForm()
+    {
+        if(document.getElementById("ddlClinicians").length > 1)
+        {
+            document.getElementById("ddlClinicians").hidden = false;
+            //document.getElementById("btnAddToDOT").hidden = false;
+        }
+    }
+
+    function SetClinicianAddress()
+    {  
+        var sName = "";
+        var sAddress = "";
+
+        var _clin = document.getElementById("ddlClinicians");
+        
+        var clinicianArray = [];
+        var titleArray = [];
+        var firstnameArray = [];
+        var lastnameArray = [];
+        var facilityArray = [];
+        var addressArray = [];
+        var districtArray = [];
+        var cityArray = [];
+        var postcodeArray = [];
+                   
+
+
+        @foreach (var item in Model.clinicians)
+        {
+            @:clinicianArray.push("@item.MasterClinicianCode");
+            @:titleArray.push("@item.TITLE");
+            @:firstnameArray.push("@item.FIRST_NAME");
+            @:lastnameArray.push("@item.LAST_NAME");
+            @:facilityArray.push("@item.FACILITY");
+            @:addressArray.push("@item.ADDRESS");
+            @:districtArray.push("@item.DISTRICT");
+            @:cityArray.push("@item.CITY");
+            @:postcodeArray.push("@item.ZIP");
+        }
+
+        for (var k = 0; k < clinicianArray.length; k++)
+        {
+            if(clinicianArray[k] = _clin.value)
+            {                
+                sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
+                sAddress = facilityArray[k] + "\n" +
+                addressArray[k] + "\n" +
+                districtArray[k] + "\n" +
+                cityArray[k] + "\n" +                            
+                postcodeArray[k];
+            }
+        }
+
+        sAddress = sAddress.replace("&#xD;&#xA;", "\n");
+
+        document.getElementById("txtClinicianAddress").value = sName + "\n" + sAddress;
+        document.getElementById("btnAddToDOT").hidden = false;
+        document.getElementById("lblAddingCC").hidden = false;
+    }
+
+    function DoSearch()
+    {
+        document.getElementById("txtSearchOnly").value = "true";
+        document.getElementById("frmSearch").submit();
+    }
+
+    function DoSubmit()
+    {
+        document.getElementById("txtSearchOnly").value = "false";
+        document.getElementById("frmSearch").submit();
+    }
+
+    function CloseForm()
+    {        
+        window.close();
+    }
+</script>
