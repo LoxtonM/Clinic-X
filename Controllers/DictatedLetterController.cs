@@ -427,7 +427,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SearchClinician(int dotID, string firstName, string lastName, string? addressToAdd, bool isSearchOnly)
+        public async Task<IActionResult> SearchClinician(int dotID, string firstName, string lastName, string hospitalName, string speciality, string? addressToAdd, bool isSearchOnly)
         {
             _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(dotID);
             _lvm.clinicians = _externalClinicianData.GetClinicianList();            
@@ -442,7 +442,18 @@ namespace ClinicX.Controllers
                 _lvm.clinicians = _lvm.clinicians.Where(c => c.LAST_NAME == lastName).ToList();
             }
 
-            if(!isSearchOnly)
+            if (hospitalName != null)
+            {
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.FACILITY != null).ToList(); //because of course there are nulls.
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.FACILITY.Contains(hospitalName)).ToList();
+            }
+
+            if (speciality != null)
+            {
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.SPECIALITY == speciality || c.POSITION.Contains(speciality)).ToList();
+            }
+
+            if (!isSearchOnly)
             {
                 int success = _crud.CallStoredProcedure("Letter", "AddCC", dotID, 0, 0, "", "", "", addressToAdd, User.Identity.Name);
 

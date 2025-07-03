@@ -23,7 +23,23 @@
             </div>
             <div class="col-md-2">
                 <input name="lastName" />
-            </div>        
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Hospital</label>
+            </div>
+            <div class="col-md-2">
+                <input name="hospitalName" />
+            </div>
+            <div class="col-md-2">
+                <label>Speciality/job title</label>
+            </div>
+            <div class="col-md-2">
+                <input name="speciality" />
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
             <div class="col-md-2">
                 <button type="button" id="btnSearch" class="btn btn-default btn-success">Search</button>
             </div>
@@ -37,7 +53,7 @@
                     <option value="">Select</option>
                     @foreach(var item in Model.clinicians)
                     {
-                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY</option>
+                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.POSITION, @item.FACILITY</option>
                     }
                 </select>            
             </div>
@@ -45,7 +61,7 @@
                 <button type="button" id="btnAddToDOT" class="btn btn-default btn-success" hidden>Add to DOT</button>
             </div>
             <div class="col-md-5">
-                <label id="lblAddingCC" hidden>You will need to refresh the main DOT Edit page to see the changes.</label>
+                <label id="lblAddingCC" hidden>You will need to refresh/update the main DOT page to see CCs added from this screen.</label>
             </div>
         </div>
         
