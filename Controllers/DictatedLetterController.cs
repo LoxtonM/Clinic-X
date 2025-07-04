@@ -434,23 +434,25 @@ namespace ClinicX.Controllers
 
             if (firstName != null)
             {
-                _lvm.clinicians = _lvm.clinicians.Where(c => c.FIRST_NAME == firstName).ToList();
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.FIRST_NAME != null).ToList(); //because of course there are nulls.
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.FIRST_NAME.ToUpper() == firstName.ToUpper()).ToList();
             }
 
             if (lastName != null)
             {
-                _lvm.clinicians = _lvm.clinicians.Where(c => c.LAST_NAME == lastName).ToList();
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.LAST_NAME != null).ToList();
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.LAST_NAME.ToUpper() == lastName.ToUpper()).ToList();
             }
 
             if (hospitalName != null)
             {
-                _lvm.clinicians = _lvm.clinicians.Where(c => c.FACILITY != null).ToList(); //because of course there are nulls.
-                _lvm.clinicians = _lvm.clinicians.Where(c => c.FACILITY.Contains(hospitalName)).ToList();
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.FACILITY != null).ToList(); 
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.FACILITY.ToUpper().Contains(hospitalName.ToUpper())).ToList();
             }
 
             if (speciality != null)
-            {
-                _lvm.clinicians = _lvm.clinicians.Where(c => c.SPECIALITY == speciality || c.POSITION.Contains(speciality)).ToList();
+            {                
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.SPECIALITY.ToUpper() == speciality.ToUpper() || c.POSITION.ToUpper().Contains(speciality.ToUpper())).ToList();
             }
 
             if (!isSearchOnly)
