@@ -1,10 +1,12 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿using APIControllers.Controllers;
+using APIControllers.Data;
+//using APIControllers.Models;
+using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using Microsoft.AspNetCore.Mvc;
-using APIControllers.Controllers;
-using APIControllers.Data;
 using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using System.Security.Cryptography.Xml;
 
 
@@ -39,7 +41,10 @@ namespace ClinicX.Controllers
             Int16 result = await _api.PushPtToPhenotips(mpi); //initiates the push, returns 1 (success), 0 (already exists), or -1 (failed)
 
             if(result==1)
-            {
+            {                
+                string ptID = await _api.GetPhenotipsPatientID(mpi);
+                Patient patient = _patientData.GetPatientDetails(mpi);
+                AddPatientToPhenotipsMirrorTable(ptID, mpi, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), patient.POSTCODE, patient.SOCIAL_SECURITY);
                 isSuccess = true;
                 sMessage = "Push to Phenotips successful";
             }
@@ -54,6 +59,18 @@ namespace ClinicX.Controllers
 
             return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
         }
+
+        void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
+        {
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
+                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM-dd") + "', '" + postCode +
+                "', '" + nhsNo + "')", conn);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+
 
         public async Task<IActionResult> CreatePPQ(int mpi, string? pathway)
         {

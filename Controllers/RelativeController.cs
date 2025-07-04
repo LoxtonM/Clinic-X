@@ -202,6 +202,7 @@ namespace ClinicX.Controllers
                     deathDate = DateTime.Parse("1/1/1900");
                 }
 
+                if (title == null) { title = ""; }
                 if (forename2 == null) { forename2 = ""; }
 
                 int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, isAffected, 0, title, forename1, forename2, surname,

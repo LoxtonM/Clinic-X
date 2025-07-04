@@ -46,7 +46,7 @@
                 <div class="col-md-2"></div>
             </div>
             <div class="row mb-5">
-                <p>Enter your note and save. Click "Finalise" when done editing.</p>
+                <p id="instructions">Enter your note and save. Click "Finalise" when done editing.</p>
             </div>        
         </form>
 
@@ -77,6 +77,7 @@
             document.getElementById("txtClinicalNote").disabled = true;
             document.getElementById("btnSaveNote").hidden = true;
             document.getElementById("btnFinalise").hidden = true;
+            document.getElementById("instructions").hidden = true;            
         }                
     }
 

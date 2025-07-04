@@ -1781,29 +1781,12 @@ namespace ClinicX.Controllers
             int hig = imageSig.PixelHeight;
 
 
-            /*
-            var par = _docContext.Constants.FirstOrDefault(p => p.ConstantCode == "FilePathEDMS");
-            string filePath = par.ConstantValue;
-
-            //EDMS flename - we have to strip out the spaces that keep inserting themselves into the backend data!
-            //Also, we only have a constant value for the OPEX scanner, not the letters folder!
-            string letterFileName = filePath.Replace(" ", "") + "\\CaStdLetter-" + fileCGU + "-" + docCode + "-" + mpiString + "-0-" + refIDString + "-" + printCount.ToString() + "-" + dateTimeString + "-" + diaryIDString;
-            letterFileName = letterFileName.Replace("ScannerOPEX2", "Letters");
-            */
-            //document.Save(letterFileName + ".pdf"); - the server can't save it to the watchfolder due to permission issues.
-            //So we have to create it locally and have a scheduled job to move it instead.
-
-            //document.Save($@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{1}-{dateTimeString}-{diaryIDString}.pdf");
-
             document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf"));
 
             if (!isPreview.GetValueOrDefault())
             {
                 System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-1-{dateTimeString}-{diaryIDString}.pdf");
-
-                /*                 
-                can't actually print it because there's no way to give it your username, so it'll all be under the server's name
-                */
+                               
             }
 
             /*    

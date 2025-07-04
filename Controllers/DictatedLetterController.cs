@@ -316,6 +316,22 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-addPt" });
             }
         }
+               
+        public async Task<IActionResult> RemovePatientsFromDOT(int dotID)
+        {
+            try
+            {                
+                int success = _crud.CallStoredProcedure("Letter", "RemoveFamMembers", dotID, 0, 0, "", "", "", "", User.Identity.Name);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-removePts(SQL)" }); }
+
+                return RedirectToAction("Edit", new { id = dotID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-removePts" });
+            }
+        }
 
         //[HttpPost]
         public async Task<IActionResult> AddCCToDOT(int dID, string cc)

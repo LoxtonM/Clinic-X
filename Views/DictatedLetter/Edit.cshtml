@@ -11,7 +11,7 @@
     {
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Dictated Letters List", "Index", "DictatedLetter", new {  }, new { @class = "btn btn-success m-1" }),
-        Html.RouteLink("", "EDMS (GEMR)", new { id = "btnEDMS" })       
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
     };
 }
 
@@ -32,7 +32,7 @@
         <div class="col-md-2">
             <form id="DictatedLetterDelete" asp-action="Delete">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
-                <input type="button" class="btn btn-default btn-outline-success" value="Delete" id="btnReqDelete" />
+                <input type="button" class="btn btn-default btn-outline-danger" value="Delete" id="btnReqDelete" />
                 <div class="row mb-1 g-1" id="ConfDelete" hidden>
                     <h6>Are you sure? You won't be able to undo this.</h6>
                     <input type="button" class="btn btn-default btn-danger" value="Yes" id="btnDelete"  />
@@ -40,9 +40,11 @@
                 </div>
             </form>
         </div>
+        @*
         <div class="col-md-2">
             <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
         </div>
+        *@
     </div>
     <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden>
         <div class="col-md-2"></div>
@@ -260,6 +262,14 @@
                 <input id="txtPID" name="pID" hidden />
                 @if(Model.dictatedLettersPatients.Count > 0)
                 {
+                    <div class="row">
+                        <div class="col-md-2">
+                            <a type="button" class="btn btn-default btn-outline-danger" asp-action="RemovePatientsFromDOT" asp-route-dotID=@Model.dictatedLetters.DoTID>Remove all patients</a>
+                        </div>
+                        <div class="col-md-6">
+                            This will clear all patientsfrom the Letter Re: section.
+                        </div>
+                    </div>
                     <table class="table">
                         <thead>
                             <tr>
@@ -347,7 +357,7 @@
                                 <tr>
                                     <td>@item.CC</td>
                                     <td>
-                                        <input type="button" id=@item.CC value="Delete" class="btn btn-default btn-sm btn-success" onclick="DeleteCC(@item.CCID)" />
+                                        <input type="button" id=@item.CC value="Delete" class="btn btn-default btn-sm btn-outline-danger" onclick="DeleteCC(@item.CCID)" />
                                     </td>
                                 </tr>                        
                             }
@@ -431,21 +441,26 @@
     document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);
     document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
     document.getElementById("ddlCC").addEventListener("change", SetCCClinician);
-    document.getElementById("btnAddCC").addEventListener("click", AddCC);
+    //document.getElementById("btnAddCC").addEventListener("click", AddCC);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     //document.getElementById("btnSearch").addEventListener("click", ClinicianSearch);
     window.addEventListener("load", LoadLetter);
-    //window.addEventListener("load", LoadEDMSLink);
+    window.addEventListener("load", LoadEDMSLink);
 
     function LoadEDMSLink() 
     {
-        //document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
-        document.getElementById("btnEDMS").href = "@Model.edmsLink" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+         if ("@(Model.patientDetails.DCTM_Folder_ID)" != "")
+        {            
+            document.getElementById("btnEDMS").href = "@Model.edmsLink" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+        }
+        else
+        {
+            document.getElementById("btnEDMS").hidden = true;
+        }        
     }
 
     function LoadLetter() 
-    { 
-        
+    {        
         if (document.getElementById("ddlLetterStatus").value == "For Approval") //enable/disable fields if approved or not
         {
             document.getElementById("btnApprove").hidden = false;
