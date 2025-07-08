@@ -17,6 +17,7 @@
         Html.ActionLink("New Dictated Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Cancer Risks", "Index", "RiskAndSurveillance", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
+        Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPhenotips", target="_blank" }),
         @*Html.ActionLink("Record Cancer Risk/Surveillance", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
     };
 }
@@ -38,7 +39,7 @@
         }
     }
     <div class="row mb-5 g-2 mt-2">
-        <div class="col-md-4">
+        <div>
             @if (Model.staffMember.BILL_ID == "Technical")
             {
                 @if (Model.isPhenotipsAvailable)
@@ -58,7 +59,7 @@
                         }
                         else
                         {
-                            if (Model.isCancerPPQScheduled)
+                            if (Model.isCancerPPQScheduled && !Model.isCancerPPQComplete)
                             {
                                 @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Get Cancer PPQ URL</a>*@
                                 <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="true" >Email Cancer PPQ URL</a>
@@ -67,7 +68,7 @@
                                 <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="SendPhenotipsLetter" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Send Phenotips Letter (Cancer)</a>
                             }
 
-                            if (Model.isGeneralPPQScheduled)
+                            if (Model.isGeneralPPQScheduled && !Model.isGeneralPPQComplete)
                             {
                                 @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General"asp-route-isEmail="true">Get General PPQ URL</a>*@
                                 <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="true">Email General PPQ URL</a>
@@ -75,6 +76,20 @@
                                 <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="SendPhenotipsLetter" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Send Phenotips Letter (General)</a>
                             }
                         }
+
+                        if(Model.isCancerPPQComplete)
+                        {
+                            <div class="alert-success text-center">
+                                <h3>A Cancer PPQ has been submitted by the patient</h3>
+                            </div>                            
+                        }
+                        if(Model.isGeneralPPQComplete)
+                        {
+                            <div class="alert-success text-center">
+                                <h3>A General PPQ has been submitted by the patient</h3>
+                            </div>                            
+                        }
+
                     }
                     else
                     {
@@ -93,6 +108,7 @@
     <div class="row mb-5">
         <hr />
     </div>
+
 
     @if (Model.patientPathway != null)
     {
@@ -744,7 +760,6 @@
 
 <script type="text/javascript">
 
-    //document.getElementById("btnBack").addEventListener("click", GoBack);
     window.addEventListener("load", LoadEDMSLink);
 
     function LoadEDMSLink() 
@@ -752,18 +767,21 @@
         //only load EDMS link if there actually is one
         if ("@(Model.patient.DCTM_Folder_ID)" != "") 
         {            
-            document.getElementById("btnEDMS").href = "@Model.edmsLink" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+            document.getElementById("btnEDMS").href = "@Model.edmsLink";
         }
         else
         {
-            document.getElementById("btnEDMS").hidden = true;            
+            document.getElementById("btnEDMS").hidden = true;
+        }                
+         //also load Phenotips link if there is one
+        if("@(Model.isPatientInPhenotips)" == "True")
+        {
+            document.getElementById("btnPhenotips").href = "@Model.phenotipsLink";
         }
-    }
-
-    function GoBack() 
-    {
-        window.history.back();
-        //window.close();
-    }
+        else
+        {
+            document.getElementById("btnPhenotips").hidden = true;
+        }
+    }    
     
 </script>

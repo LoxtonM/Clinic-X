@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
-using System.Data.SqlClient;
 using APIControllers.Data;
 using APIControllers.Meta;
 using APIControllers.Models;
-using Microsoft.Extensions.Configuration;
 
 namespace APIControllers.Controllers
 {
@@ -91,15 +89,11 @@ namespace APIControllers.Controllers
 
         public async Task<Int16> PushPtToPhenotips(int id)
         {
-            var patient = _APIPatientData.GetPatientDetails(id);
-            //bool isSuccess = false;
-            //string sMessage = "";
+            var patient = _APIPatientData.GetPatientDetails(id);            
             Int16 result = 0; //if patient exists, result will remain as 0
 
             if (GetPhenotipsPatientID(id).Result == "")
             {
-                
-
                 DateTime DOB = patient.DOB.GetValueOrDefault();
                 int yob = DOB.Year;
                 int mob = DOB.Month;
@@ -345,6 +339,58 @@ namespace APIControllers.Controllers
             }
             return result;
         }
+
+        public async Task<bool> CheckPPQSubmitted(int id, string ppqType)
+        {
+            var patient = _APIPatientData.GetPatientDetails(id);
+            //bool isSuccess = false;
+            //string sMessage = "";
+            bool result = false;
+
+            string pID = "";
+            string ppqID;
+            if (ppqType == "Cancer")
+            {
+                ppqID = "bwch_cancer";
+            }
+            else
+            {
+                ppqID = "bwch_general";
+            }
+
+            pID = GetPhenotipsPatientID(id).Result;
+
+            if (pID != "" && pID != null)
+            {
+                DateTime DOB = patient.DOB.GetValueOrDefault();
+                int yob = DOB.Year;
+                int mob = DOB.Month;
+                int dob = DOB.Day;
+
+                apiURL = apiURLBase + ":443/rest/questionnaire-scheduler/search";
+                var options = new RestClientOptions(apiURL);
+                var client = new RestClient(options);
+                var request = new RestRequest("");
+                request.AddHeader("authorization", $"Basic {authKey}");
+                request.AddHeader("X-Gene42-Secret", apiKey);
+                //string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
+                string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"status\":\"submitted\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
+
+                request.AddJsonBody(apiCall, false);
+                var response = await client.PostAsync(request);
+
+                string requestResult = "";
+
+
+                if (!response.Content.Contains("{\"scheduleRequests\":[]"))
+                {
+                    result = true;
+                }
+            }
+            return result;
+        }
+
+
 
         public async Task<string> GetPPQUrl(int id, string ppqType)
         {

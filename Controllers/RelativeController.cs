@@ -233,8 +233,8 @@ namespace ClinicX.Controllers
 
                 List<APIControllers.Models.Relative> ptRels = new List<APIControllers.Models.Relative>();
 
-                TestAPIController apitest = new TestAPIController(_apiContext, _config);
-                ptRels = await apitest.ImportRelativesFromPhenotips(_rvm.patient.MPI);
+                //TestAPIController apitest = new TestAPIController(_apiContext, _config);
+                ptRels = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
 
                 _rvm.phenotipsRelativesList = new List<ClinicalXPDataConnections.Models.Relative>();
                 foreach(var r in ptRels)

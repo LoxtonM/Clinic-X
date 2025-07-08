@@ -69,7 +69,7 @@ namespace ClinicX.Controllers
             _lvm.patient = _patientData.GetPatientDetails(_lvm.referral.MPI);
 
             int mpi = _lvm.patient.MPI;
-            int diaryID = 0;            
+            int diaryID = 0;
 
 
             if (!isPreview) //don't create a diary entry for every time we preview the letter!!
@@ -80,7 +80,9 @@ namespace ClinicX.Controllers
 
                 diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID; //get the diary ID of the entry just created to add to the letter's filename
             }
-            
+
+            //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
+
             _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, "", 
                     "", null, isPreview, "", leafletID);
 

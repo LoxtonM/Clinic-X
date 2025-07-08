@@ -10,14 +10,17 @@
     ViewBag.HomeButton = new[]
     {
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Dictated Letters List", "Index", "DictatedLetter", new {  }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
+        Html.ActionLink("Dictated Letters List (full)", "Index", "DictatedLetter", new {  }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Dictated Letters List (patient)", "DictatedLettersForPatient", "DictatedLetter", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }), //gets created by JS
     };
 }
 
 <div class="container card">    
-    <div class="row mb-2 mt-2 g-2">       
-
+    <div class="row mb-2 mt-2 g-2">
+        <div class="col-md-2">
+            <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveLetter" />
+        </div>
         <div class="col-md-2">
             <form id="DictatedLetterApproval" asp-action="Approve">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
@@ -39,12 +42,7 @@
                     <input type="button" class="btn btn-default btn-primary" value="No" id="btnNoDelete"  />
                 </div>
             </form>
-        </div>
-        @*
-        <div class="col-md-2">
-            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
-        </div>
-        *@
+        </div>       
     </div>
     <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden>
         <div class="col-md-2"></div>
@@ -98,6 +96,7 @@
                 <input id="txtisAddressChanged" name="isAddresseeChanged" />
                 <input id="txtLetterToCode" name="letterToCode" />
                 <textarea rows="8" cols="40" id="txtCCAddress" name="ccAddress"></textarea>
+                <input id="txtPreview" name="doPreview" />
             </div>
 
             <div class="row mb-5 g-5">
@@ -531,8 +530,8 @@
             if (CheckFormValid())
             {
                 document.getElementById("DictatedLetterApproval").submit();        
-                //window.alert("Okay!");
             }
+
             document.getElementById("btnApprove").hidden = true;
             document.getElementById("btnUnapprove").hidden = false;
             document.getElementById("ddlLetterStatus").disabled = false;
@@ -584,7 +583,6 @@
         var _salut = document.getElementById("txtSalutation");
                 
         var sName = "";
-        var sFacility = "";
         var sAddress = "";   
         
         _salut.value = "";
@@ -858,7 +856,6 @@
     function SetCCAddress(ccCode) //sets value of CC box depending on what's chosen
     {        
         var sName = "Nobody";
-        var sFacility = "Nothing";
         var sAddress = "Nowhere";        
         
         if (ccCode == "Referrer") 
@@ -900,7 +897,6 @@
             var lastnameArray = [];
             var facilityArray = [];
             var facilityCode;
-            var _ccCode;
                                           
             @foreach(var item in Model.clinicians)
             {
@@ -921,70 +917,59 @@
                 }
             }
 
-                //and now we have to do the address... which is going to be even more fun!!!
+            //and now we have to do the address... which is going to be even more fun!!!
 
-                var facilityCodeArray = [];
-                var facilityNameArray = [];
-                var facilityAddressArray = [];
-                var facilityCityArray = [];
-                var facilityStateArray = [];
-                var facilityPostcodeArray = [];
+            var facilityCodeArray = [];
+            var facilityNameArray = [];
+            var facilityAddressArray = [];
+            var facilityCityArray = [];
+            var facilityStateArray = [];
+            var facilityPostcodeArray = [];
 
-                @foreach (var item in Model.facilities)
+            @foreach (var item in Model.facilities)
+            {
+                @:facilityCodeArray.push("@item.MasterFacilityCode");
+                @:facilityNameArray.push("@item.NAME");
+                @:facilityAddressArray.push("@item.ADDRESS");
+                @:facilityCityArray.push("@item.CITY");
+                @:facilityStateArray.push("@item.STATE");
+                @:facilityPostcodeArray.push("@item.ZIP");
+            }
+
+            for (var j = 0; j < facilityCodeArray.length; j++) 
+            {
+                var nameToTest = facilityCodeArray[j];
+                if (nameToTest == facilityCode) 
                 {
-                    @:facilityCodeArray.push("@item.MasterFacilityCode");
-                    @:facilityNameArray.push("@item.NAME");
-                    @:facilityAddressArray.push("@item.ADDRESS");
-                    @:facilityCityArray.push("@item.CITY");
-                    @:facilityStateArray.push("@item.STATE");
-                    @:facilityPostcodeArray.push("@item.ZIP");
+                    sAddress = facilityNameArray[j] + "\n" +
+                    facilityAddressArray[j] + "\n" +
+                    facilityCityArray[j] + "\n" +
+                    facilityStateArray[j] + "\n" +
+                    facilityPostcodeArray[j];                        
                 }
-
-                for (var j = 0; j < facilityCodeArray.length; j++) 
-                {
-                    var nameToTest = facilityCodeArray[j];
-                    if (nameToTest == facilityCode) 
-                    {
-                        sAddress = facilityNameArray[j] + "\n" +
-                            facilityAddressArray[j] + "\n" +
-                            facilityCityArray[j] + "\n" +
-                            facilityStateArray[j] + "\n" +
-                            facilityPostcodeArray[j];
-                        
-                    }
-                }
-            
-        }        
-
+            }            
+        }
         document.getElementById("txtCC").value = sName + "\n" + sAddress.replace("&#x27;", "'").replace("&#xD;&#xA;", " ");
     }
 
     function ClinicianSearch()
-    {
-        
+    {        
         var _cc = document.getElementById("txtCC");
-        var stringArray = _cc.value.split(/\s+/);
-
         var clinicianArray = [];
         var titleArray = [];
         var firstnameArray = [];
         var lastnameArray = [];
-        var facilityArray = [];
-        var matching = [];
-        var facilityCode;
-        var _ccCode;
-        var sName;
-                
-                        
+        var facilityArray = [];                   
+
         @foreach (var item in Model.clinicians)
         {            
             @:clinicianArray.push("@item.MasterClinicianCode");
             @:titleArray.push("@item.TITLE");
             @:firstnameArray.push("@item.FIRST_NAME");
             @:lastnameArray.push("@item.LAST_NAME");
-            @:facilityArray.push("@item.MasterFacilityCode");
-        }
-        
+            @:facilityArray.push("@item.MasterFacilityCode");        
+        }        
+
         for (var k = 0; k < clinicianArray.length; k++)
         {
             var nameToTest = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
@@ -995,10 +980,7 @@
                 facilityCode = facilityArray[k];
             }
         }
-        
-
-        window.alert(sName + ", " + facilityCode);
-        
+        //window.alert(sName + ", " + facilityCode);        
     }
 
 
@@ -1021,7 +1003,6 @@
 
     function CheckFormValid() 
     {
-        //gotta protect against those SQL injections!
         if (document.getElementById("txtLetterContent").value.match(/};.*/)) 
         {
             window.alert("Oi! Stop trying to inject SQL code into my form!");
@@ -1081,16 +1062,19 @@
     {        
         if (CheckFormValid())
         {
-            document.getElementById("Preview").submit();
+            //document.getElementById("Preview").submit();
+
+            document.getElementById("txtPreview").value = "True";
+            SaveLetter(); //a bit of a hack I know, but somebody decided they wanted it to save when they hit Preview.
         }
     }
-
 
 </script>
 
 
-@section Scripts{
+@section Scripts
+{
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-            }
+}

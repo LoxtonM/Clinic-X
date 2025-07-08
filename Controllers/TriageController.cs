@@ -131,8 +131,18 @@ namespace ClinicX.Controllers
                     _ivm.referralAgeWeeks = _ageCalculator.DateDifferenceWeek(_ivm.referralDetails.RefDate.GetValueOrDefault(), DateTime.Today);
                 }
 
+                if (_ivm.patient.DOB != null)
+                {
+                    _ivm.patientAge = _ageCalculator.DateDifferenceYear(_ivm.patient.DOB.GetValueOrDefault(), DateTime.Today);                    
+                }
+                _ivm.patientAddress = _ivm.patient.ADDRESS1; //build the address string - making sure to ignore the nulls
+                if(_ivm.patient.ADDRESS2 != null) { _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.ADDRESS2; }
+                if (_ivm.patient.ADDRESS3 != null) { _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.ADDRESS3; }
+                if (_ivm.patient.ADDRESS4 != null) { _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.ADDRESS4; }
+                
+                _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.POSTCODE;
 
-                if(DateTime.Now.AddYears(-16) < _ivm.patient.DOB) { _ivm.isChild = true; }
+                if (DateTime.Now.AddYears(-16) < _ivm.patient.DOB) { _ivm.isChild = true; }
 
                 return View(_ivm);
             }
@@ -144,7 +154,7 @@ namespace ClinicX.Controllers
         
         [HttpPost]
         public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, 
-            int? tp2nc, int? wlPriority)
+            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm)
         {
             try
             {
@@ -175,7 +185,7 @@ namespace ClinicX.Controllers
                     if (facility != null && facility != "") // && clinician != null && clinician != "")
                     {
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
-                        facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration);
+                        facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }
                         
@@ -183,7 +193,7 @@ namespace ClinicX.Controllers
                     else
                     {
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
-                        "", sApptIntent, "", comment, User.Identity.Name);
+                        "", sApptIntent, "", comment, User.Identity.Name, null, null, false, false, 0, requestPhotos, requestDevForm);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
                     }
@@ -192,15 +202,15 @@ namespace ClinicX.Controllers
                 {
                     if (facility != null && facility != "") // && clinician != null && clinician != "")
                     {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, 0, tp2,
-                        facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration);
+                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
+                        facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
                         
                     }
                     else
                     {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, 0, tp2,
+                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
                         "", sApptIntent, "", comment, User.Identity.Name);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }

@@ -6,7 +6,6 @@ using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
 
 namespace ClinicX.Controllers
 {
@@ -186,10 +185,10 @@ namespace ClinicX.Controllers
             }
         }
 
-        [HttpPost] //TODO: set up Salutation box, auto-populate with default
+        [HttpPost]
         public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
             bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments,
-            string salutation, string? ccAddress)
+            string salutation, string? ccAddress, bool? doPreview)
         {
             try
             {
@@ -217,6 +216,11 @@ namespace ClinicX.Controllers
                 if(ccAddress != null)
                 {
                     return RedirectToAction("AddCCToDOT", new { dID = dID, cc = ccAddress });
+                }
+
+                if(doPreview.GetValueOrDefault())
+                {
+                    return RedirectToAction("PreviewDOT", new { dID = dID });
                 }
 
                 return RedirectToAction("Edit", new { id = dID });
@@ -375,7 +379,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> PreviewDOT(int dID)
         {
             try
-            {                
+            {
                 _lc.PrintDOTPDF(dID, User.Identity.Name, true);
                 //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext); //for testing purposes
                 //lc.PrintDOTPDF(dID, User.Identity.Name, true); //FOR TESTING ONLY - production should use the data library instead

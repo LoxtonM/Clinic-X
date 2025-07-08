@@ -24,10 +24,13 @@ namespace ClinicX.ViewModels
         public bool isPhenotipsAvailable { get; set; }
         public int currentAge { get; set; }
         public bool isCancerPPQScheduled { get; set; }
+        public bool isCancerPPQComplete { get; set; }
         public bool isGeneralPPQScheduled { get; set; }
+        public bool isGeneralPPQComplete { get; set; }
         public bool isPatientInPhenotips { get; set; }
         public int cancerICPID { get; set; }
         public List<ICPCancer> icpCancerList { get; set; }
         public string edmsLink { get; set; }
+        public string phenotipsLink { get; set; }
     }
 }

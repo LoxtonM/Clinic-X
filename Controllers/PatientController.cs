@@ -116,6 +116,10 @@ namespace ClinicX.Controllers
                         _pvm.isPatientInPhenotips = true;
                         _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result;
                         _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
+                                                
+                        _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
+                        _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;                        
+                        _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
                     }
                 }
 
@@ -146,7 +150,7 @@ namespace ClinicX.Controllers
                     }
                 }
 
-                _pvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1); 
+                _pvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1) + _pvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
 
                 return View(_pvm);
             }
