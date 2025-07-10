@@ -99,7 +99,7 @@
                 <input id="txtPreview" name="doPreview" />
             </div>
 
-            <div class="row mb-5 g-5">
+            <div class="row mb-5 g-5">                
                 <div class="row">
                     <div class="col-md-2"></div>
                     <div class="col-md-1">
@@ -427,7 +427,7 @@
 
 <script type="text/javascript">
     
-    document.getElementById("btnSaveLetter").addEventListener("click", SaveLetter);
+    document.getElementById("btnSaveLetter").addEventListener("click", DoSave);
     document.getElementById("btnApprove").addEventListener("click", CloseReferralShow);
     document.getElementById("btnUnapprove").addEventListener("click", UnapproveLetter);
     document.getElementById("btnDelete").addEventListener("click", DeleteLetter);
@@ -497,7 +497,7 @@
         document.getElementById("ddlLetterStatus").disabled = false;     
         //if (CheckFormValid()) //validation disabled for saving - moved to submit instead
         //{
-        document.getElementById("txtCCAddress").value = document.getElementById("txtCC").value //to get the CC to save when... well, saving, it has to be part of the main form
+        document.getElementById("txtCCAddress").value = document.getElementById("txtCC").value //to get the CC to save when... well, saving, it has to be part of the main form        
         document.getElementById("DictatedLetter").submit();
         //}
         //we can't do C# validation because there's no way to display the message,
@@ -1058,14 +1058,23 @@
         return 1;
     }
 
+    function DoSave()
+    {
+        if (CheckFormValid())
+        {
+            //document.getElementById("Preview").submit();
+            document.getElementById("txtPreview").value = "false";
+            SaveLetter(); //a bit of a hack I know, but it's the best way to get it to save when they hit Preview (but not preview when they hit save).
+        }
+    }
+
     function DoPreview()
     {        
         if (CheckFormValid())
         {
-            //document.getElementById("Preview").submit();
-
-            document.getElementById("txtPreview").value = "True";
-            SaveLetter(); //a bit of a hack I know, but somebody decided they wanted it to save when they hit Preview.
+            //document.getElementById("Preview").submit();            
+            document.getElementById("txtPreview").value = "true";
+            SaveLetter();
         }
     }
 

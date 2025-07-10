@@ -109,7 +109,7 @@
                 <div class="col-md-4">
 
                     <input name="icpID" asp-for=@Model.triage.ICPID hidden />
-                    <input class="w-100" name="indicationNotes" asp-for=@Model.referralDetails.REASON_FOR_REFERRAL />
+                    <input id="txtIndicationNotes" class="w-100" name="indicationNotes" asp-for=@Model.referralDetails.REASON_FOR_REFERRAL />
                 </div>
                 <div class="col-md-2">
                     <button id="btnIndicationNotes" class="btn btn-default btn-outline-success">Save Indication Notes</button>
@@ -592,8 +592,24 @@
                 window.alert("Please enter a duration");
                 return 0;
             }
-                       
+
+            if (document.getElementById("ddlTreatPath2-Clinic").value == "3")
+            {   
+                if(!"@Model.referralDetails.REASON_FOR_REFERRAL".toUpperCase().match("Process".toUpperCase())) //check for "Process X" in indication notes (account for capitalisation)
+                {
+                    if(document.getElementById("txtIndicationNotes").value.toUpperCase().match("Process".toUpperCase()))
+                    {
+                        window.alert("You have selected a CLICS pathway without specifying a process. You might have not saved the indication notes.");
+                    }
+                    else
+                    {
+                        window.alert("You have selected a CLICS pathway without specifying a process. Please rectify.");    
+                    }
+                    return 0;
+                }
+            }
         }
+
         
         return 1;
     }
