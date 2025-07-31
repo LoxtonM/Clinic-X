@@ -21,6 +21,7 @@
         <div class="col-md-2">
             <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveLetter" />
         </div>
+        @*
         <div class="col-md-2">
             <form id="DictatedLetterApproval" asp-action="Approve">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
@@ -32,6 +33,7 @@
                 <input type="button" class="btn btn-default btn-outline-success" value="Unapprove" id="btnUnapprove" hidden />
             </form>
         </div>
+        *@
         <div class="col-md-2">
             <form id="DictatedLetterDelete" asp-action="Delete">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
@@ -44,6 +46,7 @@
             </form>
         </div>       
     </div>
+    @*
     <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden>
         <div class="col-md-2"></div>
         <div class="col-md-3">
@@ -60,6 +63,7 @@
         </div>
         <div class="col-md-4"></div>
     </div>
+    *@
     <hr />
     <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
         <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
@@ -185,7 +189,7 @@
             <div class="row mb-5 g-5">
                 <div class="col-md-2 text-right">Summary:</div>
                 <div class="col-md-10">
-                    <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold" name="letterContentBold"></textarea>
+                    <textarea id="txtLetterContentBold" rows="8" cols="50" asp-for="dictatedLetters.LetterContentBold" name="letterContentBold"></textarea>
                 </div>
                 <div class="col-md-2"></div>
             </div>
@@ -251,7 +255,7 @@
         </form>
         @*<div class="row mb-5 g-5">*@
         <div class="d-grid mb-5">
-            <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Re: Patients</button>
+            <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="true" aria-controls="collapseExample">Re: Patients (click to expand/hide)</button>
         </div>
 
         <div class="collapse" id="collapsePatientsTable">
@@ -335,10 +339,10 @@
         </div>
     
         <div class="d-grid mb-5">
-            <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseCopiesTable" aria-expanded="false" aria-controls="collapseExample">CCs</button>
+            <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseCopiesTable" aria-expanded="true" aria-controls="collapseExample">CCs (click to expand/hide)</button>
         </div>
 
-        <div class="collapse" id="collapseCopiesTable">
+        <div class="collapse show" id="collapseCopiesTable">
             <h3>CCs currently added to letter:</h3>
             <div class="row mb-5 g-5">
                 <form id="frmDeleteCC" asp-action="DeleteCCFromDOT">                
@@ -416,10 +420,44 @@
                 
             @*</form>*@
         </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="button" class="btn btn-success" id="btnPreview2">Preview</button>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-2">
-                <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveLetter" />
+                <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveLetter2" />
             </div>
+            <div class="col-md-2">
+            <form id="DictatedLetterApproval" asp-action="Approve">
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+                <input id="txtCloseReferral" name="isCloseReferral" hidden />
+                <input type="button" class="btn btn-default btn-outline-success" value="Approve" id="btnApprove" hidden />
+            </form>
+            <form id="DictatedLetterUnapproval" asp-action="Unapprove">
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+                <input type="button" class="btn btn-default btn-outline-success" value="Unapprove" id="btnUnapprove" hidden />
+            </form>
+            </div>
+        </div>
+
+        <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden>
+            <div class="col-md-2"></div>
+            <div class="col-md-3">
+                <label>Do you want to close the referral?</label>
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-default btn-success" id="btnCloseReferral" onclick="ApproveLetter(1)">Yes</button>
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-default btn-danger" id="btnDontCloseReferral" onclick="ApproveLetter(0)">No</button>
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-default btn-primary" id="btnCancel" onclick="ApproveLetter(-1)">Cancel</button>
+            </div>
+            <div class="col-md-4"></div>            
         </div>
     </div>
 </div>
@@ -428,6 +466,7 @@
 <script type="text/javascript">
     
     document.getElementById("btnSaveLetter").addEventListener("click", DoSave);
+    document.getElementById("btnSaveLetter2").addEventListener("click", DoSave);
     document.getElementById("btnApprove").addEventListener("click", CloseReferralShow);
     document.getElementById("btnUnapprove").addEventListener("click", UnapproveLetter);
     document.getElementById("btnDelete").addEventListener("click", DeleteLetter);
@@ -442,6 +481,7 @@
     document.getElementById("ddlCC").addEventListener("change", SetCCClinician);
     //document.getElementById("btnAddCC").addEventListener("click", AddCC);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
+    document.getElementById("btnPreview2").addEventListener("click", DoPreview); //because we can't have two buttons that do the same thing, oh no.
     //document.getElementById("btnSearch").addEventListener("click", ClinicianSearch);
     window.addEventListener("load", LoadLetter);
     window.addEventListener("load", LoadEDMSLink);
@@ -463,7 +503,7 @@
         if (document.getElementById("ddlLetterStatus").value == "For Approval") //enable/disable fields if approved or not
         {
             document.getElementById("btnApprove").hidden = false;
-            document.getElementById("ddlLetterStatus").disabled = true;            
+            //document.getElementById("ddlLetterStatus").disabled = true;            
         }
         else if (document.getElementById("ddlLetterStatus").value == "For Printing") 
         {
@@ -529,18 +569,17 @@
         {
             if (CheckFormValid())
             {
-                document.getElementById("DictatedLetterApproval").submit();        
+                document.getElementById("btnApprove").hidden = true;
+                document.getElementById("btnUnapprove").hidden = false;
+                document.getElementById("ddlLetterStatus").disabled = false;
+                document.getElementById("optPrint").hidden = false;
+                document.getElementById("ddlLetterStatus").value = "For Printing";
+                document.getElementById("ddlLetterStatus").disabled = true;
+                document.getElementById("txtLetterTo").disabled = true;
+                document.getElementById("txtLetterFrom").disabled = true;
+                document.getElementById("txtLetterContentBold").disabled = true;    
+                document.getElementById("DictatedLetterApproval").submit();
             }
-
-            document.getElementById("btnApprove").hidden = true;
-            document.getElementById("btnUnapprove").hidden = false;
-            document.getElementById("ddlLetterStatus").disabled = false;
-            document.getElementById("optPrint").hidden = false;
-            document.getElementById("ddlLetterStatus").value = "For Printing";
-            document.getElementById("ddlLetterStatus").disabled = true;
-            document.getElementById("txtLetterTo").disabled = true;
-            document.getElementById("txtLetterFrom").disabled = true;
-            document.getElementById("txtLetterContentBold").disabled = true;    
         }
     }
 
@@ -1060,22 +1099,22 @@
 
     function DoSave()
     {
-        if (CheckFormValid())
-        {
+        //if (CheckFormValid())
+        //{
             //document.getElementById("Preview").submit();
             document.getElementById("txtPreview").value = "false";
             SaveLetter(); //a bit of a hack I know, but it's the best way to get it to save when they hit Preview (but not preview when they hit save).
-        }
+        //}
     }
 
     function DoPreview()
     {        
-        if (CheckFormValid())
-        {
+        //if (CheckFormValid())
+        //{
             //document.getElementById("Preview").submit();            
             document.getElementById("txtPreview").value = "true";
             SaveLetter();
-        }
+        //}
     }
 
 </script>

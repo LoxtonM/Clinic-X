@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Data;
+﻿using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
+using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Data;
-using ClinicalXPDataConnections.Meta;
-using ClinicX.Meta;
 
 namespace ClinicX.Controllers
 {
@@ -20,6 +21,9 @@ namespace ClinicX.Controllers
         private readonly IClinicData _clinicData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly IOutcomeData _outcomeData;
+        private readonly IClinicVenueData _clinicVenueData;
+        private readonly IActivityTypeData _activityTypeData;
 
 
         public ClinicController(ClinicalContext context, IConfiguration config)
@@ -34,6 +38,9 @@ namespace ClinicX.Controllers
             _clinicData = new ClinicData(_clinContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
+            _outcomeData = new OutcomeData(_clinContext);
+            _clinicVenueData = new ClinicVenueData(_clinContext);
+            _activityTypeData = new ActivityTypeData(_clinContext);
         }
 
 
@@ -202,6 +209,71 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName="Clinic-edit" });
             }
-        }        
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> AddNew(int mpi)
+        {
+            _cvm.patients = _patientData.GetPatientDetails(mpi);
+            _cvm.outcomes = _outcomeData.GetOutcomeList();
+            _cvm.staffMembers = _staffUser.GetClinicalStaffList();
+            _cvm.referralsList = _referralData.GetActiveReferralsListForPatient(mpi);
+            _cvm.venueList = _clinicVenueData.GetVenueList();
+            _cvm.appTypeList = _activityTypeData.GetApptTypes();
+
+            return View(_cvm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNew(int mpi, int linkedRefID, DateTime bookedDate, DateTime bookedTime, string appType, string? outcome, string? venue, string? clinician1,
+            string? clinician2, string? clinician3, int? timeSpent, int? noPatientsSeen, string? letterReq, string? counseled, string? callersName, string? callersOrg, string? callersTelNo,
+            string? message, string? urgency, bool? isAddAsNote = false, bool? isClockStop = false)
+        {
+            int refID = 0;
+
+            if (venue == null) { venue = ""; }
+            if (clinician1 == null) { clinician1 = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE; }
+            if (noPatientsSeen == null) { noPatientsSeen = 1; }
+
+            DateTime bookedTimeEdited = DateTime.Parse("1900-01-01 " + bookedTime.Hour + ":" + bookedTime.Minute + ":" + bookedTime.Second);
+
+            int success = _crud.CallStoredProcedure("Contact", "Create", mpi, linkedRefID, timeSpent.GetValueOrDefault(), appType, venue, clinician1, "", User.Identity.Name,
+                bookedDate, bookedTimeEdited, isClockStop, false, noPatientsSeen, 0, 0, clinician2, clinician3, letterReq, 0, 0, 0, 0, 0, counseled);
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-create(SQL)" }); }
+
+            List<ActivityItem> appts = _activityData.GetActivityList(mpi).Where(a => a.BOOKED_DATE == bookedDate).OrderByDescending(a => a.RefID).ToList();
+
+            refID = appts.First().RefID;
+
+            if (appType == "Tel. Admin")
+            {
+                Patient patient = _patientData.GetPatientDetails(mpi);
+                string emailSubject = $"{patient.CGU_No} - {patient.FIRSTNAME} {patient.LASTNAME} - {urgency} Telephone Message";
+
+                string emailMessage = $"Caller - {callersName}%0D%0A%0D%0A" +
+                    $"Organisation - {callersOrg}%0D%0A%0D%0A" +
+                $"Contact Tel No - {callersTelNo}%0D%0A%0D%0A" +
+                message;
+
+                string emailBodyText = "";
+                bool isHidden = true;
+
+                if (isAddAsNote.GetValueOrDefault())
+                {
+                    emailBodyText = "A copy of this message has already been queued for creation in EDMS%0D%0A%0D%0A";
+                    isHidden = false;
+                }
+
+                _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", emailBodyText, User.Identity.Name, null, null, isHidden);
+
+                emailBodyText = emailBodyText + emailMessage;
+
+                return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
+            }
+
+            return RedirectToAction("ApptDetails", new { id = refID });
+        }
     }
 }

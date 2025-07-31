@@ -24,5 +24,8 @@ namespace ClinicX.ViewModels
         public DateTime clinicFilterDate { get; set; }
         public bool isClinicOutstanding { get; set; }
         public string seenByString { get; set; }
+        public List<Referral> referralsList { get; set; }
+        public List<ClinicVenue> venueList { get; set; }
+        public List<ActivityType> appTypeList { get; set; }
     }
 }

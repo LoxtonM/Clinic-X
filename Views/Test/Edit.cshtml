@@ -12,6 +12,8 @@
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Full Test List for " + Model.patient.CGU_No, "Index", "Test", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("All Outstanding Tests", "AllOutstandingTests", "Test", new {  }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
+        
     };
 }
 
@@ -106,7 +108,7 @@
                 <div class="col-md-2">
                     Result Given to Patient:
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <select id="ddlResultGiven">
                         <option value="No">No</option>
                         <option value="Yes">Yes</option>
@@ -121,6 +123,7 @@
                         <option value=-1>Yes</option>
                     </select>
                 </div>
+                <div class="col-md-2"><button type="button" class="btn btn-default btn-success" id="btnCompleteData">Mark as Complete</button></div>
             </div>
             <div class="row mb-5">
                 <div class="col-md-2"></div>
@@ -184,13 +187,28 @@
     window.addEventListener("load", LoadTestData);
     document.getElementById("ddlResultGiven").addEventListener("change", SetResultGiven);
     document.getElementById("btnSaveTest").addEventListener("click", SaveTest);
-    document.getElementById("btnBack").addEventListener("click", GoBack);
-   
+    document.getElementById("btnCompleteData").addEventListener("click", SetTestComplete);
+    //document.getElementById("btnEDMS").addEventListener("click", OpenGEMR);
+      
     
-    function GoBack()
+
+    function SetTestComplete() //set the "date complete" to today, and "Complete" to "Yes" (only if given to patient)
     {
-        window.history.back();
-        //window.close();
+        const today = new Date();
+        
+        if(document.getElementById("txtDateRec").value == "")
+        {
+            document.getElementById("txtDateRec").value = today.toISOString().split('T')[0];
+        }
+
+        if(document.getElementById("ddlResultGiven").value == "Yes")
+        {            
+            document.getElementById("ddlComplete").value = "-1";
+        }
+        else
+        {
+            window.alert("You have not given the result to the patient yet.");
+        }
     }
 
     function LoadTestData()   
@@ -214,6 +232,7 @@
             document.getElementById("ddlResultGiven").disabled = true;
         }
 
+       
     }
 
     function SetResultGiven()
@@ -254,6 +273,28 @@
         }
         
         return 1;
+    }
+
+    function LoadEDMSLink()
+    {
+        //only load EDMS link if there actually is one
+        if ("@(Model.patient.DCTM_Folder_ID)" != "")
+        {
+            document.getElementById("btnEDMS").href = "@Model.edmsLink";
+        }
+        else
+        {
+            document.getElementById("btnEDMS").hidden = true;
+        }
+         //also load Phenotips link if there is one
+        if("@(Model.isPatientInPhenotips)" == "True")
+        {
+            document.getElementById("btnPhenotips").href = "@Model.phenotipsLink";
+        }
+        else
+        {
+            document.getElementById("btnPhenotips").hidden = true;
+        }
     }
 
 </script>

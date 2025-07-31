@@ -14,6 +14,7 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly ClinicXContext _cXContext;
+        private readonly DocumentContext _documentContext;
         private readonly TestDiseaseVM _tvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
@@ -24,11 +25,13 @@ namespace ClinicX.Controllers
         private readonly IAgeCalculator _ageCalculator;
         private readonly IBloodFormData _bloodFormData;
         private readonly ISampleData _sampleData;
+        private readonly IConstantsData _constantsData;
 
-        public TestController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
+        public TestController(ClinicalContext context, ClinicXContext cXContext, DocumentContext documentContext, IConfiguration config)
         {
             _clinContext = context;
             _cXContext = cXContext;
+            _documentContext = documentContext;
             _config = config;
             _tvm = new TestDiseaseVM();
             _staffUser = new StaffUserData(_clinContext);
@@ -39,6 +42,7 @@ namespace ClinicX.Controllers
             _ageCalculator = new AgeCalculator();
             _bloodFormData = new BloodFormData(_cXContext);
             _sampleData = new SampleData(_cXContext);
+            _constantsData = new ConstantsData(_documentContext);
         }
 
         [Authorize]
@@ -146,6 +150,7 @@ namespace ClinicX.Controllers
                     }
                 }
                 _tvm.bloodFormList = _bloodFormData.GetBloodFormList(id);
+                _tvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1) + _tvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
 
                 return View(_tvm);
             }

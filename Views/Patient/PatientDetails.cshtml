@@ -9,6 +9,7 @@
 @{
     ViewBag.HomeButton = new[]
     {
+        Html.ActionLink("Quick Contact", "AddNew", "Clinic", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Diagnoses", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Tests", "Index", "Test", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
         Html.ActionLink("Clinical Notes", "Index", "ClinicalNote", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
