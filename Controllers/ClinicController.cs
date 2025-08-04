@@ -213,6 +213,7 @@ namespace ClinicX.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> AddNew(int mpi)
         {
             _cvm.patients = _patientData.GetPatientDetails(mpi);

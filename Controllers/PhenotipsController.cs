@@ -5,6 +5,7 @@ using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Security.Cryptography.Xml;
@@ -33,6 +34,7 @@ namespace ClinicX.Controllers
             _pvm = new PhenotipsVM();
         }
 
+        [Authorize]
         public async Task<IActionResult> PushPatientToPt(int mpi)
         {
             string sMessage = "";
@@ -71,7 +73,7 @@ namespace ClinicX.Controllers
             conn.Close();
         }
 
-
+        [Authorize]
         public async Task<IActionResult> CreatePPQ(int mpi, string? pathway)
         {
             string sMessage = "";
@@ -96,6 +98,7 @@ namespace ClinicX.Controllers
             return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
         }
 
+        [Authorize]
         public async Task<String> GetPPQURL(int mpi, string? pathway)
         {
             string sMessage = "";
@@ -106,6 +109,7 @@ namespace ClinicX.Controllers
             return result.ToString();
         }
 
+        [Authorize]
         public async Task<IActionResult> PhenotipsQRLink(int mpi, string? pathway)
         {
             string sMessage = "";
@@ -118,6 +122,7 @@ namespace ClinicX.Controllers
             return View(_pvm);
         }
 
+        [Authorize]
         public async Task<IActionResult> SendPhenotipsLetter(int mpi, string? pathway)
         {
             string sMessage = "";
@@ -156,7 +161,7 @@ namespace ClinicX.Controllers
             }
         }
 
-
+        [Authorize]
         public async Task<IActionResult> CreatePhenotipsEmail(int mpi, string pathway, bool isEmail)
         {
             Patient patient = _patientData.GetPatientDetails(mpi);
@@ -184,13 +189,13 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> PhenotipsPPQLink(int mpi, string ppqLink)
         {
             _pvm.mpi = mpi;
             _pvm.ppqURL = ppqLink;
 
             return View(_pvm); //returns the URL in a web page to copy/paste
-        }
-        
+        }        
     }
 }

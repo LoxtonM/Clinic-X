@@ -2,6 +2,7 @@
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicX.Controllers
@@ -27,8 +28,8 @@ namespace ClinicX.Controllers
             _audit = new AuditService(_config);
         }
 
-        
 
+        [Authorize]
         public IActionResult LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob)
         {
             string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
@@ -50,6 +51,7 @@ namespace ClinicX.Controllers
             return View(_lvm);
         }
 
+        [Authorize]
         public IActionResult LabReports(int intID)
         {
             _lvm.patient = _labData.GetPatientDetails(intID);
@@ -60,6 +62,7 @@ namespace ClinicX.Controllers
             return View(_lvm);
         }
 
+        [Authorize]
         public IActionResult SampleDetails(string labno)
         {
             _lvm.cytoReport = _labData.GetCytoReport(labno);
@@ -68,6 +71,7 @@ namespace ClinicX.Controllers
             return View(_lvm);
         }
 
+        [Authorize]
         public IActionResult DNALabReport(string labno, string indication, string reason) //needs more than the LabNo to get a specific report
         {            
             _lvm.dnaReportDetails = _labData.GetDNAReportDetails(labno, indication, reason);
@@ -76,6 +80,7 @@ namespace ClinicX.Controllers
             return View(_lvm);
         }
 
+        [Authorize]
         public IActionResult CytoLabReport(string labno)
         {
             _lvm.cytoReport = _labData.GetCytoReport(labno);            

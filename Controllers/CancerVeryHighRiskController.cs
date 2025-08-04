@@ -5,6 +5,7 @@ using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.Models;
 using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicX.Controllers
@@ -43,6 +44,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> VHRPro(int id, string? message, bool? success)
         {
             try
@@ -165,6 +167,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> NewUntestedVHROptions(int refid)
         {
             try

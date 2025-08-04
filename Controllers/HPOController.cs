@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Data;
-using ClinicX.ViewModels;
-using ClinicalXPDataConnections.Meta;
-using ClinicX.Meta;
-using ClinicX.Data;
-using APIControllers.Controllers;
+﻿using APIControllers.Controllers;
 using APIControllers.Data;
+using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
+using ClinicX.Data;
+using ClinicX.Meta;
+using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicX.Controllers
 {
@@ -41,6 +42,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> HPOTerm(int id, string? searchTerm)
         {
             try

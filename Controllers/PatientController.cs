@@ -90,12 +90,13 @@ namespace ClinicX.Controllers
                 }
                 _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
                 _pvm.hpoTermDetails = _hpoData.GetHPOTermsAddedList(id);
-                _pvm.referrals = _referralData.GetReferralsList(id).Where(r => r.COMPLETE == "Active").ToList();
+                _pvm.referrals = _referralData.GetActiveReferralsListForPatient(id);
                 _pvm.referrals = _pvm.referrals.Where(r => r.PATHWAY != null).ToList(); 
                 //because there are nulls in the pathway that are breaking it!! So we have to filter them out.
-                _pvm.referralsActiveGeneral = _pvm.referrals.Where(r => r.COMPLETE == "Active" && r.PATHWAY.Contains("General")).ToList();
-                _pvm.referralsActiveCancer = _pvm.referrals.Where(r => r.COMPLETE == "Active" && r.PATHWAY.Contains("Cancer")).ToList();
+                _pvm.referralsActiveGeneral = _pvm.referrals.Where(r => r.PATHWAY.Contains("General")).ToList();
+                _pvm.referralsActiveCancer = _pvm.referrals.Where(r => r.PATHWAY.Contains("Cancer")).ToList();
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
+                //_pvm.patientPathways = _pathwayData.GetPathways(id);
                 _pvm.icpCancerList = new List<ICPCancer>();
 
                 foreach (var r in _pvm.referralsActiveCancer)

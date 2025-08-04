@@ -72,6 +72,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> OtherCliniciansLetters(string? staffCode)
         {
             try
@@ -104,6 +105,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> DictatedLettersForPatient(int id)
         {
             try
@@ -132,6 +134,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {            
             try
@@ -232,6 +235,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> Create(int id)
         {
             try
@@ -258,6 +262,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> Delete(int dID)
         {
             try 
@@ -327,6 +332,7 @@ namespace ClinicX.Controllers
             }
         }
                
+        [Authorize]
         public async Task<IActionResult> RemovePatientsFromDOT(int dotID)
         {
             try
@@ -382,6 +388,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> PreviewDOT(int dID)
         {
             try
@@ -398,6 +405,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> ActivityItems(int id)
         {
             try
@@ -414,6 +422,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> NewDOTLetterPatient()
         {
             try
@@ -444,6 +453,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> SearchClinician(int dotID)
         {
             _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(dotID);

@@ -85,6 +85,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> AddNew(int id)
         {
             try
@@ -121,6 +122,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -212,6 +214,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> NewBloodForm(int testID)
         {
             _tvm.test = _testData.GetTestDetails(testID);
@@ -240,6 +243,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> BloodFormEdit(int bloodFormID) //save data to use in the blood form preview
         {
             _tvm.bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
@@ -271,7 +275,7 @@ namespace ClinicX.Controllers
             return RedirectToAction("BloodFormEdit", new { bloodFormID = bloodFormID });
         }
 
-
+        [Authorize]
         public async Task<IActionResult> DoBloodForm(int bloodFormID, string? altPatName, bool? isPreview = false) //create the blood form itself
         {
             BloodFormData bfData = new BloodFormData(_cXContext);
@@ -285,6 +289,5 @@ namespace ClinicX.Controllers
             //return RedirectToAction("Edit", new { id = testID});
             return File($"~/StandardLetterPreviews/bloodform-{User.Identity.Name}.pdf", "Application/PDF");
         }
-
     }
 }

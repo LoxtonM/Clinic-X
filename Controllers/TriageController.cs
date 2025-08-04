@@ -296,6 +296,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> CancerReview(int id, string? message, bool? success)
         {
             try
@@ -461,6 +462,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> FurtherRequest(int id)
         {
             try
@@ -562,12 +564,9 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-postclinicletter" });
             }
         }
-
-       
-
-
-
+        
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> RiskAndSurveillance(int id)
         {
             try
@@ -591,6 +590,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ChangeGeneralTriage(int id)
         {
             try
@@ -629,6 +629,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ChangeTriagePathway(int id)
         {
             try
@@ -698,8 +699,6 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-returnToCons" });
             }
-        }
-
-           
+        }           
     }
 }

@@ -105,18 +105,17 @@
     {
         <h3 class="text-center">Patient not yet made electronic - no EDMS record exists</h3>
     }
-
     <div class="row mb-5">
-        <hr />
+        <dd class="col-sm-12"><hr /></dd>    
     </div>
 
-
+    
     @if (Model.patientPathway != null)
     {
         <div class="d-grid">
             <div class="row mb-5 g-5">
                 <div class="row fw-bold">
-                    <div class="col-md-2"></div>
+                    <div class="col-md-2 text-end"></div>
                     <div class="col-md-1">Referral Date</div>
                     <div class="col-md-1">Pathway</div>
                     <div class="col-md-1">Triaged</div>            
@@ -127,6 +126,7 @@
                     <div class="col-md-1">Review Planned</div>            
                     <div class="col-md-2">18 week Clock Status</div>
                 </div>
+                
                 <div class="row"> @*Pathway Indicator - shows how far along patient is  *@
                     <div class="col-md-2 text-end"><b>Oldest active ICP:</b></div>
                     <div class="col-md-1">@Model.patientPathway.REFERRAL_DATE.ToString("dd/MM/yyyy")</div>
@@ -266,17 +266,16 @@
                     </div>
                     <div class="col-md-2">@Model.patientPathway.ClockStatus</div>        
                 </div>
-            </div>  
+            </div> 
         </div>
     }
     else
     {
         <h2 class="text-center">No active pathway exists</h2>
     }
+    
 
-    <div class="row mb-2">
-        <hr />
-    </div>
+    <dd class="col-sm-12"><hr /></dd>
 
     @if (Model.alerts.Count > 0)
     {
@@ -300,7 +299,7 @@
                                 <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
                                     <path d="M 0.053 44.915 l 33.782 -19.553 v 13.353 h 56.029 c 0.075 0 0.136 0.061 0.136 0.136 v 12.298 c 0 0.075 -0.061 0.136 -0.136 0.136 H 33.835 v 13.353 L 0.053 45.085 C -0.018 45.05 -0.018 44.95 0.053 44.915 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
                                 </g>
-                            </svg> 
+                            </svg>                            
                             @Model.previousPatient.FIRSTNAME @Model.previousPatient.LASTNAME
                         </h4>
                     </a>
@@ -319,7 +318,7 @@
                                 <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)" >
                                     <path d="M 89.947 44.915 L 56.165 25.362 v 13.353 H 0.136 C 0.061 38.715 0 38.776 0 38.851 v 12.298 c 0 0.075 0.061 0.136 0.136 0.136 h 56.029 v 13.353 l 33.782 -19.553 C 90.018 45.05 90.018 44.95 89.947 44.915 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
                                 </g>
-                            </svg>
+                            </svg>                            
                         </h4>
                     </a>
                 }
@@ -783,6 +782,6 @@
         {
             document.getElementById("btnPhenotips").hidden = true;
         }
-    }    
+    }        
     
 </script>

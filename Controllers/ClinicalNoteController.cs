@@ -63,6 +63,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Create(int id)
         {
@@ -106,6 +107,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -150,6 +152,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> ChooseAppt(int id) //before we create a note, we have to link it to either an appointment or a referral
         {
@@ -171,6 +174,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> Finalise(int id) //sets a clinical note to "final" so it appears in CGU_DB as complete
         {
             try

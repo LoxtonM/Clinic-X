@@ -3,6 +3,7 @@ using ClinicalXPDataConnections.Meta;
 using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicX.Controllers
@@ -31,6 +32,8 @@ namespace ClinicX.Controllers
             _rdvm = new RelativeDiagnosisVM();
             _audit = new AuditService(_config);
         }
+
+        [Authorize]
         public IActionResult Index(int relID)
         {
             try
@@ -50,6 +53,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> AddNew(int id)
         {
             try
@@ -93,6 +97,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             try

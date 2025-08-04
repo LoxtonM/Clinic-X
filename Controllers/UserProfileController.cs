@@ -2,6 +2,7 @@
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicX.Controllers
@@ -28,6 +29,7 @@ namespace ClinicX.Controllers
             _auditService = new AuditService(_config);
         }
 
+        [Authorize]
         public IActionResult ProfileDetails(string? message, bool? isSuccess)
         {
             try
@@ -57,6 +59,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult ChangePassword()
         {
             try
@@ -111,6 +114,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Edit()
         {
             try

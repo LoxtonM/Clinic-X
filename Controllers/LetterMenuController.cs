@@ -3,6 +3,7 @@ using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicX.Controllers
@@ -36,6 +37,7 @@ namespace ClinicX.Controllers
             _leafletData = new LeafletData(_documentContext);
         }
 
+        [Authorize]
         public IActionResult Index(int refID)
         {
             _lvm.referral = _referralData.GetReferralDetails(refID);

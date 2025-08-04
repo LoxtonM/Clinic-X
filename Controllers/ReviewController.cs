@@ -62,6 +62,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> ReviewsForPatient(int id)
         {
             try
@@ -207,6 +208,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ChooseAppt(int id)
         {
             try

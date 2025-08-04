@@ -1,6 +1,7 @@
 ﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
@@ -26,6 +27,7 @@ namespace ClinicX.Controllers
             _constantsData = new ConstantsData(_documentContext);
         }
 
+        [Authorize]
         public IActionResult PrepareRepsum(int id, int diaryID)
         {            
             DoRepsum(id, diaryID, User.Identity.Name);

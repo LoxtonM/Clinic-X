@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ClinicX.ViewModels;
-using ClinicalXPDataConnections.Data;
+﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
-using ClinicX.Meta;
-using PdfSharpCore.Pdf;
-using PdfSharpCore.Drawing;
-using PdfSharpCore.Drawing.Layout;
 using ClinicalXPDataConnections.Models;
 using ClinicX.Data;
+using ClinicX.Meta;
 using ClinicX.Models;
+using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Drawing.Layout;
+using PdfSharpCore.Pdf;
 
 namespace ClinicX.Controllers; //suspect this may be depreciated, need to confirm before deleting it
 
@@ -47,7 +48,7 @@ public class Canc1rLett1rControll1r : Controller
         _crud = new CRUD(_config);
     }
 
-    
+    [Authorize]
     public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)
     {
         try
@@ -1373,10 +1374,6 @@ public class Canc1rLett1rControll1r : Controller
             RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "StdLetter" });
         }
     }
-
-        
-    
-
 }
 
     

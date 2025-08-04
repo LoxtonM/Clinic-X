@@ -6,6 +6,7 @@ using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.Models;
 using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicX.Controllers
@@ -53,6 +54,7 @@ namespace ClinicX.Controllers
             _audit = new AuditService(_config);
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(int mpi)
         {
             try
@@ -72,6 +74,7 @@ namespace ClinicX.Controllers
             }
         }
 
+        [Authorize]
         public IActionResult RiskDetails(int id)
         {
             try
@@ -92,6 +95,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult SurvDetails(int id)
         {
             try
@@ -140,6 +144,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> AddNewRisk(int id)
         {
             try
@@ -192,6 +197,7 @@ namespace ClinicX.Controllers
         }        
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> AddNewSurveillance(int id)
         {
             try
@@ -253,6 +259,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> EditRisk(int id)
         {
             try
@@ -299,6 +306,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult EditSurveillance(int id)
         {
             try
@@ -347,6 +355,7 @@ namespace ClinicX.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> AddNewTestingEligibility(int id)
         {
             try
@@ -403,6 +412,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> EditTestingEligibilityDetails(int id)
         {
             _rsvm.eligibilityDetails = _testEligibilityData.GetTestingEligibilityDetails(id);
@@ -432,6 +442,7 @@ namespace ClinicX.Controllers
             return RedirectToAction("CancerReview", "Triage", new { id = _rsvm.icpCancer.ICP_Cancer_ID });
         }
 
+        [Authorize]
         public async Task<IActionResult> SetUsingLetter(int id, bool isUsingLetter) //to provide a quick "don't use this one!" mechanic
         {
             _rsvm.riskDetails = _riskData.GetRiskDetails(id);
