@@ -21,6 +21,7 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IDiaryData _diaryData;
         private readonly ILeafletData _leafletData;
+        private readonly IExternalClinicianData _externalClinicianData;
 
         public LetterMenuController(ClinicalContext context, DocumentContext documentContext, IConfiguration config)
         {
@@ -35,6 +36,7 @@ namespace ClinicX.Controllers
             _crud = new CRUD(_config);
             _diaryData = new DiaryData(_context);
             _leafletData = new LeafletData(_documentContext);
+            _externalClinicianData = new ExternalClinicianData(_context);
         }
 
         [Authorize]
@@ -46,6 +48,7 @@ namespace ClinicX.Controllers
             _lvm.docsListMedRec = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "MEDREC").ToList();
             _lvm.docsListDNA = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "DNATS").ToList();
             _lvm.docsListOutcome = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "Outcome").ToList();
+            _lvm.externalClinicians = _externalClinicianData.GetExternalCliniciansByType("histo");
             _lvm.leaflets = new List<Leaflet>();
             if (_lvm.referral.PATHWAY == "Cancer")
             {
@@ -64,7 +67,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult DoLetter(int refID, string docCode, bool isPreview, string? additionalText, string? enclosures, int? leafletID = 0)
+        public IActionResult DoLetter(int refID, string docCode, bool isPreview, string? additionalText, string? enclosures, string? otherClinician, int? leafletID = 0)
         {
             int docID = _documentsData.GetDocumentDetailsByDocCode(docCode).DocContentID;
             _lvm.referral = _referralData.GetReferralDetails(refID);
@@ -83,9 +86,9 @@ namespace ClinicX.Controllers
                 diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID; //get the diary ID of the entry just created to add to the letter's filename
             }
 
-            //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
+            LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
 
-            _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, "", 
+            lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician, 
                     "", null, isPreview, "", leafletID);
 
             if(isPreview)

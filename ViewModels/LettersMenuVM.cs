@@ -12,5 +12,6 @@ namespace ClinicX.ViewModels
         public Patient patient {  get; set; }
         public Referral referral { get; set; }
         public List<Leaflet> leaflets { get; set; }
+        public List<ExternalCliniciansAndFacilities> externalClinicians { get; set; }
     }
 }

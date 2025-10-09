@@ -21,6 +21,7 @@ namespace ClinicX.ViewModels
         public List<SampleRequirements> sampleRequirementList { get; set; }
         public BloodForm bloodForm { get; set; }
         public List<BloodForm> bloodFormList { get; set; }
+        public List<Referral> referralList { get; set; }
         public string edmsLink { get; set; }
         public string phenotipsLink { get; set; }
         public bool isPatientInPhenotips { get; set; }

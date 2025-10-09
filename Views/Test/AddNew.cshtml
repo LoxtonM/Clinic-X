@@ -25,6 +25,21 @@
             </div>
             <div class="row g-5 mb-5">
                 <div class="col-md-2">
+                    <label class="w-100">Linked Referral:</label>
+                </div>
+                <div class="col-md-2">
+                    <select id="ddlRefID" name="refID" class="w-100">
+                        @*<option value="" selected>select...</option>*@
+                        @foreach (var r in Model.referralList)
+                        {
+                            <option value="@r.refid">@r.RefType - @r.RefDate.Value.ToString("dd/MM/yyyy") - @r.ReferringClinician</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-5 mb-5">
+                <div class="col-md-1">
                     <label class="w-100">Test:</label>
                 </div>
                 <div class="col-md-2">
@@ -36,7 +51,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <label class="w-100">Sent to:</label>
                 </div>
                 <div class="col-md-2">
@@ -110,7 +125,12 @@
 
     function CheckFormValid() 
     { //validation to ensure all required data is entered
-        
+        if (document.getElementById("ddlRefID").value == null || document.getElementById("ddlRefID").value == "")
+        {
+            window.alert("Please select a referral.");
+            return 0;
+        }
+
         if (document.getElementById("ddlTest").value == null || document.getElementById("ddlTest").value == "") 
         {
             window.alert("Please select a test.");

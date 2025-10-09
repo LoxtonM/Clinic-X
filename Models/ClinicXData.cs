@@ -68,6 +68,8 @@ namespace ClinicX.Models
         public DateTime? ResultGivenDate { get; set; }
         public string COMPLETE { get; set; }
         public string? COMMENTS { get; set; }
+        public int? LinkedRefID { get; set; }
+        public string? LabNo { get; set; }
     }    
 
     [Table("ClinicalNoteTypes", Schema = "dbo")]//List of types of clinical note

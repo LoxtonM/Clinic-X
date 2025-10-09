@@ -26,6 +26,7 @@ namespace ClinicX.Controllers
         private readonly IBloodFormData _bloodFormData;
         private readonly ISampleData _sampleData;
         private readonly IConstantsData _constantsData;
+        private readonly IReferralData _refData;
 
         public TestController(ClinicalContext context, ClinicXContext cXContext, DocumentContext documentContext, IConfiguration config)
         {
@@ -43,6 +44,7 @@ namespace ClinicX.Controllers
             _bloodFormData = new BloodFormData(_cXContext);
             _sampleData = new SampleData(_cXContext);
             _constantsData = new ConstantsData(_documentContext);
+            _refData = new ReferralData(_clinContext);
         }
 
         [Authorize]
@@ -96,6 +98,8 @@ namespace ClinicX.Controllers
 
                 _tvm.testList = _testData.GetTestList();
                 _tvm.patient = _patientData.GetPatientDetails(id);
+                _tvm.referralList = _refData.GetActiveReferralsListForPatient(id).OrderByDescending(r => r.RefDate).ToList();
+
                 return View(_tvm);
             }
             catch (Exception ex)
@@ -105,11 +109,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int mpi, string test, string sentTo, DateTime expectedDate)
+        public async Task<IActionResult> AddNew(int mpi, string test, string sentTo, DateTime expectedDate, int refID)
         {
             try
             {                
-                int success = _crud.CallStoredProcedure("Test", "Create", mpi, 0, 0, test, sentTo, "", "", User.Identity.Name, expectedDate);
+                int success = _crud.CallStoredProcedure("Test", "Create", mpi, refID, 0, test, sentTo, "", "", User.Identity.Name, expectedDate);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-add(SQL)" }); }
 

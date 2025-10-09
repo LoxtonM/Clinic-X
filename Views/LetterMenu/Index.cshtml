@@ -84,6 +84,23 @@
 
         <div class="row mb-5 g-5">
             <div class="col-md-2">
+                <label>Recipient:</label>
+            </div>
+            <div class="col-md-4">
+                <select name="otherClinician">
+                    <option value="">Select ...</option>
+                    @foreach(var item in Model.externalClinicians)
+                    {
+                        <option value=@item.MasterClinicianCode>@item.TITLE @item.LAST_NAME - @item.FACILITY</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
                 <label>Leaflets:</label>
             </div>
             <div class="col-md-4">

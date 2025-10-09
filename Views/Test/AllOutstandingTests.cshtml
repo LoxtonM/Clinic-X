@@ -26,6 +26,7 @@
                         <th>@Html.DisplayNameFor(model => model.test.DATE_REQUESTED)</th>
                         <th>@Html.DisplayNameFor(model => model.test.ExpectedDate)</th>
                         <th>@Html.DisplayNameFor(model => model.test.DATE_RECEIVED)</th>
+                        <th>Lab Number</th>
                         <th>Comments</th>
                     </tr>
                 </thead>
@@ -59,6 +60,14 @@
                             else
                             {
                                 <td>Awaiting</td>
+                            }
+                            @if (@item.LabNo != null)
+                            {
+                                <td>@item.LabNo</td>
+                            }
+                            else
+                            {
+                                <td>Not yet assigned</td>
                             }
                             <td>@item.COMMENTS</td>
                         </tr>
