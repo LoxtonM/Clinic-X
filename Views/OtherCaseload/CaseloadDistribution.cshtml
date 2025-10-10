@@ -1,8 +1,8 @@
 ﻿@model ClinicX.ViewModels.CaseloadVM
 
 @{
-    ViewData["Title"] = "ClinicX - Other Clinicians' Caseloads";
-    ViewData["Page"] = "/ Clinic / Details";
+    ViewData["Title"] = "ClinicX - Caseload Distribution";
+    ViewData["Page"] = "/ Other Caseload / Caseload Distribution";
     ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
 
@@ -15,7 +15,7 @@
 
 <div class="container card">    
 
-    <div class="row mb-5 g-5">
+    <div class="row mb-2 g-2">
         <h1>Active Referral Distribution</h1>
     </div>
 
@@ -41,7 +41,7 @@
                     <option selected value="">All</option>
                     @foreach (var item in Model.pathways)
                     {
-                        <option value=@item>@item</option>
+                        <option value=@item.CGU_Pathway>@item.CGU_Pathway</option>
                     }
                 </select>
             </div>

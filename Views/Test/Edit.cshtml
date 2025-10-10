@@ -20,7 +20,7 @@
 <div class="container card">    
     <hr />
 
-    <h1>Edit Test for @Model.patient.FIRSTNAME @Model.patient.LASTNAME </h1>
+    <h1>Edit Test for @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h1>
     <div>
         <dl class="row mb-5">
             <dt class="col-sm-2">
@@ -232,7 +232,7 @@
             document.getElementById("ddlResultGiven").disabled = true;
         }
 
-       
+       LoadEDMSLink();
     }
 
     function SetResultGiven()

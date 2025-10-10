@@ -17,6 +17,7 @@ namespace ClinicX.Controllers
         private readonly ISupervisorData _supervisorData;
         private readonly IReferralData _referralData;
         private readonly IAreaNamesData _areaNamesData;
+        private readonly IPathwayData _pathwayData;
         private IAuditService _audit;
 
         public OtherCaseloadController(ClinicalContext context, IConfiguration config)
@@ -29,6 +30,7 @@ namespace ClinicX.Controllers
             _supervisorData = new SupervisorData(_clinContext);
             _referralData = new ReferralData(_clinContext);
             _areaNamesData = new AreaNamesData(_clinContext);
+            _pathwayData = new PathwayData(_clinContext);
             _audit = new AuditService(_config);
         }
 
@@ -78,35 +80,35 @@ namespace ClinicX.Controllers
 
                 List<Referral> referralList = _referralData.GetActiveReferralsList();
                 _cvm.years = new List<int>();
-                _cvm.pathways = new List<string>();
 
-                foreach (var r in referralList.Where(r => r.RefDate != null).OrderByDescending(r => r.RefDate))
+                IQueryable<Referral> referrals = referralList.Where(r => r.COMPLETE == "Active" && r.logicaldelete == false).AsQueryable(); 
+                //converting to lists every time is slow, so best to do it as a IQueryable, then convert to list once at the end
+
+                foreach (var r in referrals.Where(r => r.RefDate != null).OrderByDescending(r => r.RefDate))
                 {
                     int y = r.RefDate.Value.Year;
-                    string p = r.PATHWAY;
 
                     if (!_cvm.years.Contains(y))
                     {
                         _cvm.years.Add(y);
-                    }
-
-                    if (!_cvm.pathways.Contains(p))
-                    {
-                        _cvm.pathways.Add(p);
-                    }
+                    }                   
                 }
+                
+                _cvm.pathways = _pathwayData.GetPathwayList();
 
                 if (year != null)
-                {
-                    referralList = referralList.Where(r => r.RefDate >= DateTime.Parse(year + "-01-01")).ToList();
+                {                    
+                    referrals = referrals.Where(r => r.RefDate != null).Where(r => r.RefDate.Value.Year == year);
                     _cvm.yearSelected = year.GetValueOrDefault();
                 }
 
                 if(pathway != null)
-                {
-                    referralList = referralList.Where(r => r.PATHWAY == pathway).ToList();
+                {                    
+                    referrals = referrals.Where(r => r.PATHWAY == pathway);
                     _cvm.pathwaySelected = pathway;
                 }
+
+                referralList = referrals.ToList();
 
                 _cvm.clinicians = _staffUser.GetClinicalStaffList();
                 List<AreaNames> areaNamesList = _areaNamesData.GetAreaNames();
@@ -115,8 +117,7 @@ namespace ClinicX.Controllers
                 _cvm.TotalGCReferralCount = new Dictionary<string, int>();
                 _cvm.TotalAreaReferralCount = new Dictionary<string, int>();
 
-                int i = 0;
-                referralList = referralList.Where(r => r.COMPLETE == "Active" && r.logicaldelete == false).ToList();
+                int i = 0;                
                    
                 foreach (var c in _cvm.clinicians.OrderBy(c => c.NAME))
                 {
@@ -143,10 +144,9 @@ namespace ClinicX.Controllers
                     }                        
                 }
 
+                
                 foreach (var a in areaNamesList.OrderBy(a => a.AreaName))
-                {
-                    referralList = referralList.Where(r => r.PtAreaName != null).ToList();
-
+                {                
                     i = referralList.Where(r => r.PtAreaName == a.AreaName).Count();
 
                     if (!_cvm.TotalAreaReferralCount.ContainsKey(a.AreaName) && i > 0) 

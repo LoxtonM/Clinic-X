@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "ClinicX - Other Clinicians' Caseloads";
-    ViewData["Page"] = "/ Clinic / Details";
+    ViewData["Page"] = "/ Other Caseload / Index";
     ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
 
@@ -11,7 +11,7 @@
 }
 
 <div class="container card">
-    <div class="row mb-5 g-5">
+    <div class="row mb-2 g-2">
         <div class="col-md-8">
             @if(Model.caseLoad.Count() > 0)
             {

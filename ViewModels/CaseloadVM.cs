@@ -28,6 +28,6 @@ namespace ClinicX.ViewModels
         public int yearSelected { get; set; }
         public string pathwaySelected { get; set; }
         public List<int> years { get; set; }
-        public List<string> pathways { get; set; }
+        public List<Pathway> pathways { get; set; }
     }
 }
