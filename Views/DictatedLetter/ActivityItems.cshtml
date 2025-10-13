@@ -16,7 +16,7 @@
 }
 
 <div class="container card">
-    <div class="row g-5 mb-5">
+    <div class="row g-2 mb-2">
         <h2>Choose activity item to create new dictated letter for @Model.patientDetails.FIRSTNAME @Model.patientDetails.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Model.patientDetails.CGU_No</a></h2>
     </div>
 
@@ -28,6 +28,7 @@
                     <th>Type</th>
                     <th>Pathway</th>
                     <th>Referral/Booked Date</th>
+                    <th>Result</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,11 +53,18 @@
                                 <td></td>
                             }
                         }
+                        @if(item.COUNSELED != null)
+                        {
+                            <td>@item.COUNSELED</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>
+                        }
                     </tr>
                 }
             </tbody>
         </table>
-    </div>
-    
+    </div>    
 </div>
 

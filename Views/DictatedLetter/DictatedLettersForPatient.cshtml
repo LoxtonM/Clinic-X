@@ -11,7 +11,7 @@
     {
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Dictated Letters List", "Index", "DictatedLetter", new {  }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("New Dictated Letter", "NewDOTLetterPatient", "DictatedLetter", new { }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("New Dictated Letter", "ActivityItems", "DictatedLetter", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Other Clinicians' Letters", "OtherCliniciansLetters", "DictatedLetter", new { }, new { @class = "btn btn-success m-1" }),
     };
 }
@@ -62,14 +62,10 @@
                             </tr>
                         }
                     }
-
                 </tbody>
             </table>
         }
     </div>
-
-
-
 
     <div class="d-grid">
         @if (Model.dictatedLettersForPrinting.Count() == 0)
