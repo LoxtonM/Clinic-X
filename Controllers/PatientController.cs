@@ -29,6 +29,7 @@ namespace ClinicX.Controllers
         private readonly IAgeCalculator _ageCalculator;
         private readonly ITriageData _triageData;
         private readonly APIController _api;
+        private readonly PhenotipsMirrorData _phenotipsMirrorData;
 
         public PatientController(ClinicalContext context, DocumentContext docContext, APIContext apiContext, IConfiguration config)
         {
@@ -50,6 +51,7 @@ namespace ClinicX.Controllers
             _ageCalculator = new AgeCalculator();
             _triageData = new TriageData(_clinContext);
             _api = new APIController(_apiContext, _config);
+            _phenotipsMirrorData = new PhenotipsMirrorData(_clinContext);
         }
         
 
@@ -109,10 +111,16 @@ namespace ClinicX.Controllers
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
 
-                //Constants table flag decides whether Phenotips is in use or not
-                if (_constantsData.GetConstant("PhenotipsURL", 2) == "1") //pings the Phenotips API to see if a PPQ is scheduled
+                if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
                 {
-                    if (_api.GetPhenotipsPatientID(id).Result != "")
+                    _pvm.isPhenotipsAvailable = true;
+                }
+
+                //Constants table flag decides whether Phenotips is in use or not
+                if (_pvm.isPhenotipsAvailable) //pings the Phenotips API to see if a PPQ is scheduled
+                {
+                    //if (_api.GetPhenotipsPatientID(id).Result != "")
+                    if (_phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //use the mirror table rather than pinging the API every time someone checks the record!
                     {
                         _pvm.isPatientInPhenotips = true;
                         _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result;
@@ -136,10 +144,7 @@ namespace ClinicX.Controllers
                     }
                 }
 
-                if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
-                {
-                    _pvm.isPhenotipsAvailable = true;
-                }
+                
 
                 if (success.HasValue)
                 {
