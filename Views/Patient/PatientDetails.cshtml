@@ -741,7 +741,7 @@
         {
             if (Model.isPatientInPhenotips)
             {
-                <a type="button" asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-default btn-success">Import Relatives from Phenotips</a>
+                <a type="button" id="btnImportRelatives" asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-default btn-success">Import Relatives from Phenotips</a>
             }
         }
         else
@@ -781,6 +781,7 @@
         else
         {
             document.getElementById("btnPhenotips").hidden = true;
+            document.getElementById("btnImportRelatives").hidden = true;
         }
     }        
     
