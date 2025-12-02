@@ -38,9 +38,14 @@ namespace ClinicX.Controllers
 
                 if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")))
                 {
-                    if (cguNo != null)
+                    _pvm.patientsList = new List<Patient>(); //because null
+
+                    if (cguNo != null) 
                     {
-                        _pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(cguNo);
+                        if (cguNo != ".") //to stop searching everything by looking for "."
+                        {
+                            _pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(cguNo);
+                        }
                         searchTerm = "CGU_No=" + cguNo;
                         _pvm.cguNumberSearch = cguNo;
                     }

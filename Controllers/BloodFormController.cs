@@ -55,6 +55,7 @@ namespace ClinicX.Controllers
             XFont font = new XFont("Arial", 12, XFontStyle.Regular);
             XFont fontSmall = new XFont("Arial", 8, XFontStyle.Regular);
             XFont fontBold = new XFont("Arial", 12, XFontStyle.Bold);
+            XFont fontUnderlined = new XFont("Arial", 12, XFontStyle.Underline);
             XFont fontSmallBold = new XFont("Arial", 8, XFontStyle.Bold);
             XFont fontSmallUnderlined = new XFont("Arial", 8, XFontStyle.Underline);
             XFont fontLarge = new XFont("Arial", 16, XFontStyle.Regular);
@@ -306,25 +307,49 @@ namespace ClinicX.Controllers
                 tf.DrawString(bloodForm.ClinicalDetails, font, XBrushes.Black, new XRect(pageEdge + 20, totalLength, 400, 50));
             }
             totalLength += 38;
-            gfx.DrawRectangle(XBrushes.Green, new XRect(pageEdge, totalLength, pageWidth, 35));
+            gfx.DrawRectangle(XBrushes.Green, new XRect(pageEdge, totalLength, pageWidth, 55));
             totalLength += 2;
             tf.DrawString("GENOMIC TESTING REQUIRED", fontBold, XBrushes.White, new XRect(pageEdge + 10, totalLength, 200, 20));
             totalLength += 1;
-            tf.DrawString("Please refer to NHSE Test Directory (TD) code (where appropriate)", fontSmallBold, XBrushes.White, new XRect(pageEdge + 220, totalLength, 350, 20));
-            totalLength += 14;
-            tf.DrawString("https://www.england.nhs.uk/publication/national-genomic-test-directories/", fontSmallUnderlined, XBrushes.White, new XRect(pageEdge + 10, totalLength, 350, 20));
-            totalLength += 11;
+            tf.DrawString("Please include NHSE test directory (TD) indication and code and details of how the \r\npatient meets the National Genomic Test directory eligibility criteria:", fontSmallBold, XBrushes.White, new XRect(pageEdge + 220, totalLength, 350, 40));
+            totalLength += 24;
+            tf.DrawString("https://www.england.nhs.uk/publication/national-genomic-test-directories/", fontUnderlined, XBrushes.White, new XRect(pageEdge + 10, totalLength, 350, 20));
+            totalLength += 21;
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge, totalLength, pageWidth, 50));
             totalLength += 1;
             gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + 1, totalLength, pageWidth - 2, 48));
             totalLength += 4;
-            tf.DrawString("TD code(s) and indication:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 10, totalLength, 120, 20));
+            tf.DrawString("Test required and TD code(s):", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 10, totalLength, 120, 20));
             totalLength += 10;
             if (bloodForm.TestingRequirements != null)
             {
                 tf.DrawString(bloodForm.TestingRequirements, font, XBrushes.Black, new XRect(pageEdge + 20, totalLength, 400, 50));
             }
             totalLength += 34;
+            //Clinical Utility section (NEW)
+            gfx.DrawRectangle(XBrushes.Green, new XRect(pageEdge, totalLength, pageWidth, 20));
+            totalLength += 2;
+            tf.DrawString("CLINICAL UTILITY (Please provide additional information with other relevant clinical information above)", fontBold, XBrushes.White, new XRect(pageEdge + 10, totalLength, 200, 20));
+            totalLength += 18;
+            gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge, totalLength, pageWidth, 70));
+            totalLength += 1;
+            gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + 1, totalLength, pageWidth - 2, 68));
+            totalLength += 4;
+            tf.DrawString("Patient management (determining therapeutic decisions and/or clinical investigations and/or surveillance programme)", fontSmall, XBrushes.Black, new XRect(pageEdge + 40, totalLength, 500, 20));            
+            gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge + 10, totalLength, 10, 10));           
+            totalLength += 1;
+            gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + 11, totalLength, 8, 8));
+            totalLength += 20;
+            tf.DrawString("Patient, parents or adult relative reproductive decision making", fontSmall, XBrushes.Black, new XRect(pageEdge + 40, totalLength, 500, 20));            
+            gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge + 10, totalLength, 10, 10));
+            totalLength += 1;
+            gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + 11, totalLength, 8, 8));
+            totalLength += 20;
+            tf.DrawString("Unaffected relatives are seeking predictive testing", fontSmall, XBrushes.Black, new XRect(pageEdge + 40, totalLength, 500, 20));            
+            gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge + 10, totalLength, 10, 10));
+            totalLength += 1;
+            gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + 11, totalLength, 8, 8));
+            totalLength += 18;
             //tick boxes for testing requirements
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge, totalLength, pageWidth / 5, 20));
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge + pageWidth / 5, totalLength, pageWidth / 5, 20));
@@ -523,31 +548,31 @@ namespace ClinicX.Controllers
                 gfx.DrawString(tick, symbols, XBrushes.Black, pageEdge + (pageWidth / 6) * 5 + 11, totalLength + 6);
             }
             totalLength += 15;
-            gfx.DrawRectangle(XBrushes.Green, new XRect(pageEdge, totalLength, pageWidth, 20));
-            totalLength += 2;
-            tf.DrawString("FOR INTERNAL GLH LAB USE ONLY", fontBold, XBrushes.White, new XRect(pageEdge + 10, totalLength, 500, 20));
-            totalLength += 18;
-            
+            //TODO: date collected/collected by fields
 
-            gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge, totalLength, (pageWidth / 6) * 2, 60));
-            gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge + (pageWidth / 6) * 2, totalLength, (pageWidth / 6) * 3, 60));
-            gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge + (pageWidth / 6) * 5, totalLength, pageWidth / 6, 60));
-
-            totalLength += 1;
-            gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + 1, totalLength, (pageWidth / 6) * 2 - 2, 58));
-            gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + (pageWidth / 6) * 2 + 1, totalLength, (pageWidth / 6) * 3 - 2, 58));
-            gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + (pageWidth / 6) * 5 + 1, totalLength, pageWidth / 6 - 2, 58));
-            totalLength += 1;
-            tf.DrawString("Date of receipt:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 10, totalLength, 100, 20));
-            tf.DrawString("Number & volume of specific sample(s) received:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + (pageWidth / 6) * 2 + 10, totalLength, 300, 20));
-            tf.DrawString("Place lab reference sticker here:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + (pageWidth / 6) * 5 + 10, totalLength, 80, 20));
-
-
-            
 
             //PAGE 2
-
             int totalLength2 = 15;
+            gfx2.DrawRectangle(XBrushes.Green, new XRect(pageEdge, totalLength2, pageWidth, 20));
+            totalLength2 += 2;
+            tf2.DrawString("FOR INTERNAL GLH LAB USE ONLY", fontBold, XBrushes.White, new XRect(pageEdge + 10, totalLength2, 500, 20));
+            totalLength2 += 18;           
+
+            gfx2.DrawRectangle(XBrushes.Black, new XRect(pageEdge, totalLength2, (pageWidth / 6) * 2, 60));
+            gfx2.DrawRectangle(XBrushes.Black, new XRect(pageEdge + (pageWidth / 6) * 2, totalLength2, (pageWidth / 6) * 3, 60));
+            gfx2.DrawRectangle(XBrushes.Black, new XRect(pageEdge + (pageWidth / 6) * 5, totalLength2, pageWidth / 6, 60));
+
+            totalLength2 += 1;
+            gfx2.DrawRectangle(XBrushes.White, new XRect(pageEdge + 1, totalLength2, (pageWidth / 6) * 2 - 2, 58));
+            gfx2.DrawRectangle(XBrushes.White, new XRect(pageEdge + (pageWidth / 6) * 2 + 1, totalLength2, (pageWidth / 6) * 3 - 2, 58));
+            gfx2.DrawRectangle(XBrushes.White, new XRect(pageEdge + (pageWidth / 6) * 5 + 1, totalLength2, pageWidth / 6 - 2, 58));
+            totalLength2 += 1;
+            tf2.DrawString("Date of receipt:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 10, totalLength2, 100, 20));
+            tf2.DrawString("Number & volume of specific sample(s) received:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + (pageWidth / 6) * 2 + 10, totalLength2, 300, 20));
+            tf2.DrawString("Place lab reference sticker here:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + (pageWidth / 6) * 5 + 10, totalLength2, 80, 20));
+            totalLength2 += 60;
+
+
             string sampleReqs = "";
             if(bloodForm.SampleRequirements != null)
             {

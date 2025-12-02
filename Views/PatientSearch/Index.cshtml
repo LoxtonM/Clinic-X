@@ -61,7 +61,14 @@
     {
         if ((Model.cguNumberSearch != null || Model.forenameSearch != null || Model.surnameSearch != null || Model.dobSearch != DateTime.Parse("0001-01-01") || Model.nhsNoSearch != null) && Model.patientsList.Count == 0)
         {
-            <h2>No patients found</h2>
+            if ((Model.cguNumberSearch == "."))
+            {
+                <h2>You can't search for patients using just a point!</h2>
+            }
+            else
+            {
+                <h2>No patients found</h2>
+            }
         }
         else
         {

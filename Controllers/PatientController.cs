@@ -111,8 +111,8 @@ namespace ClinicX.Controllers
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
 
-                if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
-                {
+                if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0") && _constantsData.GetConstant("PhenotipsURL", 2) != "")
+                {                    
                     _pvm.isPhenotipsAvailable = true;
                 }
 
