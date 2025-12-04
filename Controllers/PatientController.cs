@@ -28,6 +28,7 @@ namespace ClinicX.Controllers
         private readonly IConstantsData _constantsData;
         private readonly IAgeCalculator _ageCalculator;
         private readonly ITriageData _triageData;
+        private readonly IClinicData _clinicData;
         private readonly APIController _api;
         private readonly PhenotipsMirrorData _phenotipsMirrorData;
 
@@ -50,6 +51,7 @@ namespace ClinicX.Controllers
             _constantsData = new ConstantsData(_docContext);
             _ageCalculator = new AgeCalculator();
             _triageData = new TriageData(_clinContext);
+            _clinicData = new ClinicData(_clinContext);
             _api = new APIController(_apiContext, _config);
             _phenotipsMirrorData = new PhenotipsMirrorData(_clinContext);
         }
@@ -97,6 +99,7 @@ namespace ClinicX.Controllers
                 //because there are nulls in the pathway that are breaking it!! So we have to filter them out.
                 _pvm.referralsActiveGeneral = _pvm.referrals.Where(r => r.PATHWAY.Contains("General")).ToList();
                 _pvm.referralsActiveCancer = _pvm.referrals.Where(r => r.PATHWAY.Contains("Cancer")).ToList();
+                _pvm.appointmentList = _clinicData.GetClinicByPatientsList(_pvm.patient.MPI);
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 //_pvm.patientPathways = _pathwayData.GetPathways(id);
                 _pvm.icpCancerList = new List<ICPCancer>();

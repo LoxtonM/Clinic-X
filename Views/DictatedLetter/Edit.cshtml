@@ -850,7 +850,7 @@
                 sAddress = sAddressArray[i];
             }
         }
-        document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
+        document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'").replace(/&#x9;/g, "");
         
         document.getElementById("txtSalutation").value = sName;
 
@@ -1111,9 +1111,31 @@
     {        
         //if (CheckFormValid())
         //{
-            //document.getElementById("Preview").submit();            
-            document.getElementById("txtPreview").value = "true";
-            SaveLetter();
+            //document.getElementById("Preview").submit();
+            var isPreviewValid = 1;
+
+            if(document.getElementById("lblLetterRe").innerHTML.match("add patients via the"))
+            {
+                window.alert("Please specify a patient before previewing the letter.");
+                isPreviewValid = 0;
+            }
+
+            if (document.getElementById("txtLetterContent").value == "")
+            {
+                window.alert("Please enter some text before previewing the letter.");
+                isPreviewValid = 0;
+            }
+            if (document.getElementById("txtLetterTo").value == "")
+            {
+                window.alert("Please choose a recipient before previewing the letter.")
+                isPreviewValid = 0;
+            }
+
+            if(isPreviewValid == 1)
+            {
+                document.getElementById("txtPreview").value = "true";
+                SaveLetter();
+            }            
         //}
     }
 

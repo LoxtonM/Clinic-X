@@ -46,7 +46,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task <IActionResult> Index(DateTime? filterDate, bool? isShowOutstanding)
+        public async Task <IActionResult> Index(DateTime? pastFilterDate, bool? isShowOutstanding, DateTime? futureFilterDate)
         {
             try
             {
@@ -60,9 +60,14 @@ namespace ClinicX.Controllers
                     IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                     _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinics", "", _ip.GetIPAddress());
 
-                    if (filterDate == null) //set default date to 30 days before today
+                    if (pastFilterDate == null) //set default date to 30 days before today
                     {
-                        filterDate = DateTime.Parse(DateTime.Now.AddDays(-90).ToString());
+                        pastFilterDate = DateTime.Parse(DateTime.Now.AddDays(-90).ToString());
+                    }
+
+                    if (futureFilterDate == null) //set default date to 30 days before today
+                    {
+                        futureFilterDate = DateTime.Parse(DateTime.Now.AddDays(90).ToString());
                     }
 
                     _cvm.pastClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE < DateTime.Today).ToList();
@@ -74,11 +79,12 @@ namespace ClinicX.Controllers
                         _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.Attendance == "NOT RECORDED").ToList();
                     }
 
-                    _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.BOOKED_DATE >= filterDate).ToList();
+                    _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.BOOKED_DATE >= pastFilterDate).ToList();
                     _cvm.pastClinicsList = _cvm.pastClinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
                     _cvm.currentClinicsList = _cvm.currentClinicsList.OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
-                    _cvm.futureClinicsList = _cvm.futureClinicsList.OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
-                    _cvm.clinicFilterDate = filterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
+                    _cvm.futureClinicsList = _cvm.futureClinicsList.Where(c => c.BOOKED_DATE <= futureFilterDate).OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                    _cvm.pastClinicFilterDate = pastFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
+                    _cvm.futureClinicFilterDate = futureFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
                     _cvm.isClinicOutstanding = isShowOutstanding.GetValueOrDefault();
 
                     return View(_cvm);

@@ -1,8 +1,6 @@
 ﻿using ClinicalXPDataConnections.ViewModels;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Models;
-using ClinicalXPDataConnections.Meta;
-using System.Text.RegularExpressions;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
 using PdfSharpCore.Drawing;
@@ -172,7 +170,7 @@ namespace ClinicalXPDataConnections.Meta
             Paragraph contentLetterContent = section.AddParagraph();
             contentLetterContent.Format.Font.Size = 10;
 
-            if (letterContent.Contains("<<strong>>")) //This is all required because there's no other way to get the bold text into the letter!!
+            if (letterContent.Contains("<<strong>>") || letterContent.Contains("<b>")) //This is all required because there's no other way to get the bold text into the letter!!
             {
                 List<string> letterContentParts = ParseBold(letterContent);
 
@@ -2103,6 +2101,27 @@ namespace ClinicalXPDataConnections.Meta
                     else if (item.Contains("<<"))
                     {
                         newText.Add(item.Replace("<<", "") + "NOTBOLD ");
+                    }
+                    else
+                    {
+                        newText.Add(item);
+                    }
+                }
+            }
+
+            if (text.Contains("<b>")) //because sometimes it's <b> and sometimes it's <strong> - don't fucking ask!!!
+            {
+                string[] textBlocks = text.Split("b>");
+
+                foreach (var item in textBlocks)
+                {
+                    if (item.Contains("</"))
+                    {
+                        newText.Add(item.Replace("</", "") + "BOLD ");
+                    }
+                    else if (item.Contains("<"))
+                    {
+                        newText.Add(item.Replace("<", "") + "NOTBOLD ");
                     }
                     else
                     {

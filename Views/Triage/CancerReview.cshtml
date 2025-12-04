@@ -140,6 +140,7 @@
                 <thead>
                     <tr>
                         <th></th>
+                        <th>Name</th>
                         <th>Calculation Tool</th>
                         <th>Gene</th>
                         <th>Score</th>
@@ -151,6 +152,7 @@
                     {
                         <tr>
                             <td><a type="button" class="btn btn-success" asp-controller="RiskAndSurveillance" asp-action="EditTestingEligibilityDetails" asp-route-id=@item.ID>Select</a></td>
+                            <td>@item.RelForename1 @item.RelSurname</td>
                             <td>@item.CalcTool</td>
                             <td>@item.TestCode (@item.TestType)</td>
                             <td>@item.Score</td>
@@ -293,7 +295,7 @@
                 <select id="ddlFinalReviewComplete" name="finalReview">
                     <option value="No">No</option>
                     <option value="Yes">Yes - complete and remove from list</option>
-                    <option value="Complete">Completed</option>
+                    @*<option value="Complete">Completed</option>*@
                 </select>
             </div>
             <div class="col-md-2">

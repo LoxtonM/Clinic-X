@@ -163,6 +163,10 @@ namespace ClinicX.Controllers
                     rowCount += 1;
                     //tableRisk.AddRow();
                     MigraDoc.DocumentObjectModel.Tables.Row rRow = tableRisk.AddRow();
+
+                    string calcTool = "Unknown"; //because of course there's fucking nulls!!!
+                    if(r.CalculationToolUsed != null) { calcTool = r.CalculationToolUsed;  }
+
                     rRow.Cells[0].AddParagraph(r.RiskDate.Value.ToString("dd/MM/yyyy"));
                     if (r.RiskName != null)
                     {
@@ -175,7 +179,7 @@ namespace ClinicX.Controllers
                     rRow.Cells[2].AddParagraph(r.LifetimeRiskPercentage.ToString());
                     rRow.Cells[3].AddParagraph(r.R30_40.ToString());
                     rRow.Cells[4].AddParagraph(r.R40_50.ToString());
-                    rRow.Cells[5].AddParagraph(r.CalculationToolUsed);
+                    rRow.Cells[5].AddParagraph(calcTool);
                     rRow.Cells[6].AddParagraph(r.SurvSite);
                     //rRow.Borders.Bottom.Visible = false;
                     if (rowCount == riskList.Count)
@@ -295,9 +299,13 @@ namespace ClinicX.Controllers
                 pTestHeader.Format.Font.Size = 12;
 
                 MigraDoc.DocumentObjectModel.Tables.Table tableTE = section.AddTable();
-                MigraDoc.DocumentObjectModel.Tables.Column sDat = tableTE.AddColumn();
-                MigraDoc.DocumentObjectModel.Tables.Column sNam = tableTE.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sGen = tableTE.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sSco = tableTE.AddColumn();
                 MigraDoc.DocumentObjectModel.Tables.Column sSta = tableTE.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sOff = tableTE.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sRel = tableTE.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column sNam = tableTE.AddColumn();
+
                 MigraDoc.DocumentObjectModel.Tables.Row sRowHead = tableTE.AddRow();
                 sRowHead.Cells[0].AddParagraph().AddFormattedText("Gene", TextFormat.Bold);
                 sRowHead.Cells[1].AddParagraph().AddFormattedText("Calc Tool", TextFormat.Bold);
@@ -509,7 +517,14 @@ namespace ClinicX.Controllers
                 {
                     rowCount += 1;
                     MigraDoc.DocumentObjectModel.Tables.Row sRow = tableDiary.AddRow();
-                    sRow.Cells[0].AddParagraph(d.DiaryDate.Value.ToString("dd/MM/yyyy"));
+                    if (d.DiaryDate.HasValue)
+                    {
+                        sRow.Cells[0].AddParagraph(d.DiaryDate.Value.ToString("dd/MM/yyyy"));
+                    }
+                    else
+                    {
+                        sRow.Cells[0].AddParagraph("Unknown");
+                    }
                     sRow.Cells[1].AddParagraph(d.DiaryAction);
                     if (d.DiaryText != null)
                     {

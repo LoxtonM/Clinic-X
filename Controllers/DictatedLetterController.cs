@@ -393,9 +393,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _lc.PrintDOTPDF(dID, User.Identity.Name, true);
-                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext); //for testing purposes
-                //lc.PrintDOTPDF(dID, User.Identity.Name, true); //FOR TESTING ONLY - production should use the data library instead
+                //_lc.PrintDOTPDF(dID, User.Identity.Name, true);
+                LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext); //for testing purposes
+                lc.PrintDOTPDF(dID, User.Identity.Name, true); //FOR TESTING ONLY - production should use the data library instead
                 
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }

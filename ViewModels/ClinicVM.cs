@@ -21,7 +21,8 @@ namespace ClinicX.ViewModels
         public List<Appointment> pastClinicsList { get; set; }
         public List<Appointment> currentClinicsList { get; set; }
         public List<Appointment> futureClinicsList { get; set; }
-        public DateTime clinicFilterDate { get; set; }
+        public DateTime pastClinicFilterDate { get; set; }
+        public DateTime futureClinicFilterDate { get; set; }
         public bool isClinicOutstanding { get; set; }
         public string seenByString { get; set; }
         public List<Referral> referralsList { get; set; }

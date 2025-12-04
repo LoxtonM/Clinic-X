@@ -14,9 +14,9 @@
 }
 
 <div class="container card">    
-
+    <div class="card-body">
     <div class="row mb-2 g-2">
-        <h1>Active Referral Distribution</h1>
+            <h1>Active Referral Distribution @if(Model.regionCodeSelected != null){ <span> - @Model.regionNameSelected</span> }</h1>
     </div>
 
     <form asp-action="CaseloadDistribution">
@@ -45,13 +45,25 @@
                     }
                 </select>
             </div>
-
-
             <div class="col-md-2">
+                <label>Region:</label>
+            </div>
+            <div class="col-md-1">
+                <select name="region" asp-for=@Model.regionCodeSelected>
+                    <option selected value="">All</option>
+                    @foreach (var item in Model.geographicalRegions)
+                    {
+                        <option value=@item.Key>@item.Value</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-1">
                 <button type="submit" class="btn btn-success">Select</button>
             </div>
         </div>
     </form>
+    </div>
 
 
     <div class="d-grid">
@@ -78,27 +90,56 @@
 
 
 <script>
-    const barColors ="blue";        
+    const barColorsGeneral ="blue";        
+    const barColorsCancer ="red";
+    const barColorsTotal ="purple";
     const consChartLabels = [];
+    const consChartValuesGeneral = [];
+    const consChartValuesCancer = [];
+    const consChartValues = [];
+
     @foreach(var item in Model.TotalConsReferralCount.Keys)
     {
-        @:consChartLabels.push("@item".replace("&#x27;", "'"));
+        @:consChartLabels.push("@item".replace("&#x27;", "'"));        
     }
-    const consChartValues = [];
+
     @foreach (var item in Model.TotalConsReferralCount.Values)
     {
         @:consChartValues.push("@item");
     }
 
+    @foreach (var item in Model.TotalConsReferralCountGeneral.Values)
+    {
+        @:consChartValuesGeneral.push("@item");
+    }
+    
+    @foreach (var item in Model.TotalConsReferralCountCancer.Values)
+    {
+        @:consChartValuesCancer.push("@item");
+    }
+
     const gcChartLabels = [];
+    const gcChartValuesGeneral = [];
+    const gcChartValuesCancer = [];
     @foreach (var item in Model.TotalGCReferralCount.Keys)
     {
         @:gcChartLabels.push("@item".replace("&#x27;", "'"));
     }
     const gcChartValues = [];
+    
     @foreach (var item in Model.TotalGCReferralCount.Values)
     {
         @:gcChartValues.push("@item");
+    }
+
+    @foreach (var item in Model.TotalGCReferralCountGeneral.Values)
+    {
+        @:gcChartValuesGeneral.push("@item");
+    }
+
+    @foreach (var item in Model.TotalGCReferralCountCancer.Values)
+    {
+        @:gcChartValuesCancer.push("@item");
     }
 
     const areaChartLabels = [];
@@ -118,12 +159,16 @@
         type: "horizontalBar",
         data: 
         {
-            labels: consChartLabels,
-            datasets:[{ backgroundColor: barColors, data: consChartValues }]
+            labels: consChartLabels,            
+            datasets:[
+                { label: "General", backgroundColor: barColorsGeneral, data: consChartValuesGeneral}, 
+                { label: "Cancer", backgroundColor: barColorsCancer, data: consChartValuesCancer},
+                { label: "Total", backgroundColor: barColorsTotal, data: consChartValues}
+            ]
         },
         options: 
         {                
-            legend: { display: false },
+            legend: { display: true },                
             responsive: true
         }
     });
@@ -134,11 +179,15 @@
         data:
         {
             labels: gcChartLabels,
-            datasets:[{ backgroundColor: barColors, data: gcChartValues }]
+            datasets:[
+                { label: "General", backgroundColor: barColorsGeneral, data: gcChartValuesGeneral },
+                { label: "Cancer", backgroundColor: barColorsCancer, data: gcChartValuesCancer },
+                { label: "Total", backgroundColor: barColorsTotal, data: gcChartValues }
+            ]
         },
         options:
         {                    
-            legend: { display: false },
+            legend: { display: true },
             responsive: true
         }
     });
@@ -149,7 +198,7 @@
         data:
         {
             labels: areaChartLabels,
-            datasets:[{ backgroundColor: barColors, data: areaChartValues }]
+            datasets:[{ backgroundColor: barColorsGeneral, data: areaChartValues }]
         },
         options:
         {            

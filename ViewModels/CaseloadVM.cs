@@ -23,11 +23,20 @@ namespace ClinicX.ViewModels
         public string dllVersion { get; set; }
         public string appVersion { get; set; }
         public Dictionary<string, int> TotalConsReferralCount { get; set; }
+        public Dictionary<string, int> TotalConsReferralCountGeneral { get; set; }
+        public Dictionary<string, int> TotalConsReferralCountCancer { get; set; }
         public Dictionary<string, int> TotalGCReferralCount { get; set; }
+        public Dictionary<string, int> TotalGCReferralCountGeneral { get; set; }
+        public Dictionary<string, int> TotalGCReferralCountCancer { get; set; }
         public Dictionary<string, int> TotalAreaReferralCount { get; set; }
+        public Dictionary<string, int> TotalAreaReferralCountGeneral { get; set; }
+        public Dictionary<string, int> TotalAreaReferralCountCancer { get; set; }
         public int yearSelected { get; set; }
         public string pathwaySelected { get; set; }
+        public string regionCodeSelected { get; set; }
+        public string regionNameSelected { get; set; }
         public List<int> years { get; set; }
         public List<Pathway> pathways { get; set; }
+        public Dictionary<string, string> geographicalRegions { get; set; }
     }
 }
