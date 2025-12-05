@@ -93,6 +93,7 @@
     const barColorsGeneral ="blue";        
     const barColorsCancer ="red";
     const barColorsTotal ="purple";
+    
     const consChartLabels = [];
     const consChartValuesGeneral = [];
     const consChartValuesCancer = [];
@@ -119,13 +120,15 @@
     }
 
     const gcChartLabels = [];
+    const gcChartValues = [];
     const gcChartValuesGeneral = [];
     const gcChartValuesCancer = [];
+
     @foreach (var item in Model.TotalGCReferralCount.Keys)
     {
         @:gcChartLabels.push("@item".replace("&#x27;", "'"));
     }
-    const gcChartValues = [];
+    
     
     @foreach (var item in Model.TotalGCReferralCount.Values)
     {
@@ -198,7 +201,7 @@
         data:
         {
             labels: areaChartLabels,
-            datasets:[{ backgroundColor: barColorsGeneral, data: areaChartValues }]
+            datasets:[{ backgroundColor: barColorsTotal, data: areaChartValues }]
         },
         options:
         {            

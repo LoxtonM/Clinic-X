@@ -1,9 +1,10 @@
 ﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
-using ClinicX.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using ClinicalXPDataConnections.Models;
+using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+//using Microsoft.Office.Interop.Outlook;
 
 namespace ClinicX.Controllers
 {
@@ -205,13 +206,17 @@ namespace ClinicX.Controllers
                         _cvm.geographicalRegions.Add(item.AreaCode, a);
                     }
                 }
+                _cvm.geographicalRegions.Add("BIR", "Birmingham (All)");
+
 
                 if (region != null)
                 {
-                    string[] groupedRegions = new string[3];
+                    string[] groupedRegions = new string[5];
                     groupedRegions[0] = region;
                     groupedRegions[1] = "";
                     groupedRegions[2] = "";
+                    groupedRegions[3] = "";
+                    groupedRegions[4] = "";
 
                     switch (region) //because of all the "DISTRICT: something" ones
                     {
@@ -258,6 +263,13 @@ namespace ClinicX.Controllers
                             break;
                         case "B14":
                             groupedRegions[1] = "B49";
+                            break;
+                        case "BIR": //all of Birmingham
+                            groupedRegions[0] = "B12";
+                            groupedRegions[1] = "A13";
+                            groupedRegions[2] = "B14";
+                            groupedRegions[3] = "B15";
+                            groupedRegions[4] = "A16";
                             break;
 
                     }
@@ -321,9 +333,14 @@ namespace ClinicX.Controllers
                 {                
                     i = referralList.Where(r => r.PtAreaName == a.AreaName).Count();
 
+                    //iGen = referralList.Where(r => r.PtAreaName == a.AreaName & r.PATHWAY.Contains("General")).Count();
+                    //iCan = referralList.Where(r => r.PtAreaName == a.AreaName & r.PATHWAY.Contains("Cancer")).Count();
+
                     if (!_cvm.TotalAreaReferralCount.ContainsKey(a.AreaName) && i > 0) 
                     {
                         _cvm.TotalAreaReferralCount.Add(a.AreaName, i);
+                        //_cvm.TotalAreaReferralCountGeneral.Add(a.AreaName, iGen);
+                        //_cvm.TotalAreaReferralCountCancer.Add(a.AreaName, iCan);
                     }
                 }
 
