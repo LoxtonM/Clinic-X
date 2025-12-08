@@ -99,7 +99,7 @@ namespace ClinicX.Controllers
                 //because there are nulls in the pathway that are breaking it!! So we have to filter them out.
                 _pvm.referralsActiveGeneral = _pvm.referrals.Where(r => r.PATHWAY.Contains("General")).ToList();
                 _pvm.referralsActiveCancer = _pvm.referrals.Where(r => r.PATHWAY.Contains("Cancer")).ToList();
-                _pvm.appointmentList = _clinicData.GetClinicByPatientsList(_pvm.patient.MPI);
+                _pvm.appointmentList = _clinicData.GetClinicByPatientsList(_pvm.patient.MPI).Distinct().ToList(); //distinct is required because of the alerts
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 //_pvm.patientPathways = _pathwayData.GetPathways(id);
                 _pvm.icpCancerList = new List<ICPCancer>();

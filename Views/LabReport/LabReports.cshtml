@@ -13,7 +13,7 @@
         <div class="row">
             <h2>Cytogenetic reports:</h2>
         </div>
-        <table class="table">
+        <table class="table" id="myTable">
             <thead>
                 <tr>
                     <th>Lab number</th>
@@ -30,7 +30,7 @@
                         <td><a type="button" class="btn btn-outline-primary" asp-controller="LabReport" asp-action="SampleDetails" asp-route-labno=@item.LABNO>@item.LABNO</a></td>
                         @if (@item.DATE_OBTAINED != null)
                         {
-                            <td>@item.DATE_OBTAINED.Value.ToString("dd/MM/yyyy")</td>
+                            <td><span hidden>@item.DATE_OBTAINED.Value.ToString("yyyyMMdd")</span>@item.DATE_OBTAINED.Value.ToString("dd/MM/yyyy")</td>
                         }
                         else
                         {
@@ -38,7 +38,7 @@
                         }
                         @if (@item.DATE_RECEIVED != null)
                         {
-                            <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
+                            <td><span hidden>@item.DATE_RECEIVED.Value.ToString("yyyyMMdd")</span>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
                         }
                         else
                         {
@@ -46,7 +46,7 @@
                         }
                         @if (@item.REPORT_DATE != null)
                         {
-                            <td>@item.REPORT_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            <td><span hidden>@item.REPORT_DATE.Value.ToString("yyyyMMdd")</span>@item.REPORT_DATE.Value.ToString("dd/MM/yyyy")</td>
                         }
                         else
                         {
@@ -72,7 +72,7 @@
             <h2>Molecular/DNA reports:</h2>
         </div>
 
-        <table class="table">
+        <table class="table" id="myTable2">
             <thead>
                 <tr>
                     <th>Lab number</th>
@@ -90,7 +90,7 @@
                         <td><a type="button" class="btn btn-outline-primary" asp-controller="LabReport" asp-action="SampleDetails" asp-route-labno=@item.LABNO>@item.LABNO</a></td>
                         @if (@item.DATEREQUESTED != null)
                         {
-                            <td>@item.DATEREQUESTED.Value.ToString("dd/MM/yyyy")</td>
+                            <td><span hidden>@item.DATEREQUESTED.Value.ToString("yyyyMMdd")</span>@item.DATEREQUESTED.Value.ToString("dd/MM/yyyy")</td>
                         }
                         else
                         {
@@ -98,7 +98,7 @@
                         }
                         @if (@item.REPORT_DATE != null)
                         {
-                            <td>@item.REPORT_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            <td><span hidden>@item.REPORT_DATE.Value.ToString("yyyyMMdd")</span>@item.REPORT_DATE.Value.ToString("dd/MM/yyyy")</td>
                         }
                         else
                         {
@@ -123,3 +123,21 @@
     <a type="button" class="btn btn-primary" asp-controller="LabReport" asp-action="LabPatientSearch">Back to search</a>
 
 </div>
+
+<script>
+
+    window.addEventListener("load", LoadTable)
+    function LoadTable()
+    {
+
+        let table = new DataTable('#myTable',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });
+        let table2 = new DataTable('#myTable2',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });       
+    }
+
+</script>

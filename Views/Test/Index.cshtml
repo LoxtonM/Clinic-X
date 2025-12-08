@@ -21,7 +21,7 @@
         <h1 class="text-center">Tests for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.patient.CGU_No</a></h1>
 
         <div class="d-grid">
-            <table class="table">
+            <table class="table" id="myTable">
                 <thead>
                     <tr>
                         <th></th>
@@ -44,7 +44,7 @@
                             <td>@item.NAME</td>                           
                             @if (item.DATE_REQUESTED.HasValue)
                             {
-                                <td>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
+                                <td><span hidden>@item.DATE_REQUESTED.Value.ToString("yyyyMMdd")</span>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
                             }
                             else
                             {
@@ -52,7 +52,7 @@
                             }
                             @if (@item.ExpectedDate.HasValue)
                             {
-                                <td>@item.ExpectedDate.Value.ToString("dd/MM/yyyy")</td>
+                                <td><span hidden>@item.ExpectedDate.Value.ToString("yyyyMMdd")</span>@item.ExpectedDate.Value.ToString("dd/MM/yyyy")</td>
                             }
                             else
                             {
@@ -60,7 +60,7 @@
                             }
                             @if (@item.DATE_RECEIVED.HasValue)
                             {
-                                <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
+                                <td><span hidden>@item.DATE_RECEIVED.Value.ToString("yyyyMMdd")</span>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
                             }
                             else
                             {
@@ -105,12 +105,16 @@
 <script type="text/javascript">
 
     //document.getElementById("btnBack").addEventListener("click", GoBack);
-    document.getElementById("btnAddNew").addEventListener("click", OpenTestForm);
-    window.addEventListener("load", LoadPage);
+    //document.getElementById("btnAddNew").addEventListener("click", OpenTestForm);    
+    window.addEventListener("load", LoadTable);
 
-    function LoadPage() {        
+    function LoadTable()
+    {
 
-        document.getElementById("metadata").hidden = true;
+        let table = new DataTable('#myTable',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });
     }
 
     function GoBack() {
@@ -119,7 +123,8 @@
     }
 
 
-    function OpenTestForm() {
+    function OpenTestForm() 
+    {
         //this incredibly round-about method is necessary because apparently it is impossible to simply pass the URL parameter into the button!
         var surl = "http://" + document.getElementById("thehost").innerHTML + document.getElementById("theurl").innerHTML;
         //surl = surl.replace("Index", "AddNew");

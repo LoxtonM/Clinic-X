@@ -17,7 +17,7 @@
         <h1>Outstanding results</h1>
 
         <div class="d-grid">
-            <table class="table">
+            <table class="table" id="myTable">
                 <thead>
                     <tr>
                         <th></th>
@@ -39,7 +39,7 @@
                             <td>@item.FIRSTNAME @item.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@item.MPI>@item.CGU_No</a></td>
                             @if (@item.DATE_REQUESTED.HasValue)
                             {
-                                <td>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
+                                <td><span hidden>@item.DATE_REQUESTED.Value.ToString("yyyyMMdd")</span>@item.DATE_REQUESTED.Value.ToString("dd/MM/yyyy")</td>
                             }
                             else
                             {
@@ -47,7 +47,7 @@
                             }
                             @if (@item.ExpectedDate.HasValue)
                             {
-                                <td>@item.ExpectedDate.Value.ToString("dd/MM/yyyy")</td>
+                                <td><span hidden>@item.ExpectedDate.Value.ToString("yyyyMMdd")</span>@item.ExpectedDate.Value.ToString("dd/MM/yyyy")</td>
                             }
                             else
                             {
@@ -55,7 +55,7 @@
                             }
                             @if (@item.DATE_RECEIVED.HasValue)
                             {
-                                <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
+                                <td><span hidden>@item.DATE_RECEIVED.Value.ToString("yyyyMMdd")</span>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
                             }
                             else
                             {
@@ -86,9 +86,15 @@
 
 <script type="text/javascript">        
 
-    function LoadPage() 
+    window.addEventListener("load", LoadTable)
+        
+    function LoadTable()
     {
-        document.getElementById("metadata").hidden = true;
+
+        let table = new DataTable('#myTable',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });
     }
 
     function GoBack() 

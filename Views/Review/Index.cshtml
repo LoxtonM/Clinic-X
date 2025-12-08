@@ -13,7 +13,7 @@
     </div>
 
     <div class="d-grid">
-        <table class="table">
+        <table class="table" id="myTable">
             <thead>
                 <tr>
                     <th></th>
@@ -34,7 +34,7 @@
                         <td>@item.Category</td>
                         @if (@item.Planned_Date != null)
                         {
-                            <td>@item.Planned_Date.Value.ToString("dd/MM/yyyy")</td>
+                            <td><span hidden>@item.Planned_Date.Value.ToString("yyyyMMdd")</span>@item.Planned_Date.Value.ToString("dd/MM/yyyy")</td>
                         }
                         else
                         {
@@ -48,3 +48,17 @@
     </div>
     
 </div>
+
+<script>
+
+    window.addEventListener("load", LoadTable)
+    function LoadTable()
+    {
+
+        let table = new DataTable('#myTable',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });
+    }
+
+</script>

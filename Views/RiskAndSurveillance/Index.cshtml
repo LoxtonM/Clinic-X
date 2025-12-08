@@ -17,7 +17,7 @@
 <div class="container">
     @if (Model.riskList.Count() > 0)
     {
-        <table class="table">
+        <table class="table" id="myTable">
             <thead>
                 <tr>
                     <td></td>
@@ -43,7 +43,7 @@
                         <td>@item.Clinician</td>
                         @if(item.RiskDate.HasValue)
                         {
-                            <td>@item.RiskDate.Value.ToString("dd/MM/yyyy")</td>
+                            <td><span hidden>@item.RiskDate.Value.ToString("yyyyMMdd")</span>@item.RiskDate.Value.ToString("dd/MM/yyyy")</td>
                         }
                         <td>@item.LifetimeRiskPercentage</td>
                         <td>@item.R25_29</td>
@@ -74,3 +74,17 @@
         <h2>There are no risk items added</h2>
     }
 </div>
+
+<script>
+
+    window.addEventListener("load", LoadTable)
+    function LoadTable()
+    {
+
+        let table = new DataTable('#myTable',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });
+    }
+
+</script>

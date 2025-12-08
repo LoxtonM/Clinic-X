@@ -20,7 +20,7 @@
         <h1 class="text-center">Diagnoses for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME</a></h1>
 
         <div class="d-grid">
-            <table class="table">
+            <table class="table" id="myTable">
                 <thead>
                     <tr>
                         <th></th>
@@ -59,3 +59,18 @@
         <div col-md-8></div>
     </div>    
 </div>
+
+<script>
+
+    window.addEventListener("load", LoadTable)
+
+    function LoadTable()
+    {
+
+        let table = new DataTable('#myTable',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });
+    }
+
+</script>

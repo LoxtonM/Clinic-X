@@ -16,7 +16,8 @@ namespace ClinicX.Controllers
         private readonly IConfiguration _config;
         private readonly IRelativeData _relativeData;
         private readonly IRelativeDiagnosisData _relativeDiagnosisData;
-        private readonly IStaffUserData _staffUser;        
+        private readonly IStaffUserData _staffUser;
+        private readonly IPatientData _patientData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         
@@ -28,6 +29,7 @@ namespace ClinicX.Controllers
             _relativeData = new RelativeData(_clinContext);
             _relativeDiagnosisData = new RelativeDiagnosisData(_clinContext);
             _staffUser = new StaffUserData(_clinContext);
+            _patientData = new PatientData(_clinContext);
             _crud = new CRUD(_config);
             _rdvm = new RelativeDiagnosisVM();
             _audit = new AuditService(_config);
@@ -43,6 +45,7 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relative Diagnoses", "ID=" + relID.ToString(), _ip.GetIPAddress());
 
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(relID);
+                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
                 _rdvm.relativesDiagnosisList = _relativeDiagnosisData.GetRelativeDiagnosisList(relID);                
                 return View(_rdvm);
             }

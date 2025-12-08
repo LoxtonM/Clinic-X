@@ -17,7 +17,7 @@
     </div>
 
     <div class="d-grid">
-        <table class="table">
+        <table class="table" id="myTable">
             <thead>
                 <tr>
                     <th></th>
@@ -39,7 +39,7 @@
                         <td>@item.Name</td>
                         @if(item.RefDate.HasValue)
                         {
-                            <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                            <td><span hidden>@item.RefDate.Value.ToString("yyyyMMdd")</span>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
                         }
                         else
                         {
@@ -58,7 +58,7 @@
         </div>
 
         <div class="d-grid">
-            <table class="table">
+            <table class="table" id="myTable2">
                 <thead>
                     <tr>
                         <th></th>
@@ -78,7 +78,7 @@
                             <td>@item.FIRSTNAME @item.LASTNAME</td>
                             @if(item.REFERRAL_DATE.HasValue)
                             {
-                                <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                <td><span hidden>@item.REFERRAL_DATE.Value.ToString("yyyyMMdd")</span>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
                             }
                             else
                             {
@@ -97,7 +97,7 @@
         </div>
 
         <div class="d-grid">
-            <table class="table">
+            <table class="table" id="myTable3">
                 <thead>
                     <tr>
                         <th></th>
@@ -117,7 +117,7 @@
                             <td>@item.FIRSTNAME @item.LASTNAME</td>
                             @if(item.REFERRAL_DATE.HasValue)
                             {
-                                <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                <td><span hidden>@item.REFERRAL_DATE.Value.ToString("yyyyMMdd")</span>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
                             }
                             else
                             {
@@ -132,3 +132,25 @@
         </div>        
     }
 </div>
+
+<script>
+
+    window.addEventListener("load", LoadTable)
+    function LoadTable()
+    {
+
+        let table = new DataTable('#myTable',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });
+        let table2 = new DataTable('#myTable2',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });
+        let table3 = new DataTable('#myTable3',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });
+    }
+
+</script>

@@ -31,7 +31,7 @@
         <h1>There are no clinical notes for this patient.</h1>    
     }
     <div class="d-grid">
-        <table class="table">
+        <table class="table" id="myTable">
             <thead>
                 <tr>
                     <th></th>
@@ -50,7 +50,7 @@
                         <td>@item.RefID</td>
                         @if(item.CreatedDate != null)
                         {
-                            <td>@item.CreatedDate.Value.ToString("dd/MM/yyyy")</td>
+                            <td><span hidden>@item.CreatedDate.Value.ToString("yyyyMMdd")</span>@item.CreatedDate.Value.ToString("dd/MM/yyyy")</td>
                         }
                         else
                         {
@@ -70,3 +70,17 @@
         </table>      
     </div>
 </div>
+
+<script>
+
+    window.addEventListener("load", LoadTable)
+    function LoadTable()
+    {
+
+        let table = new DataTable('#myTable',
+        {
+            "order": [] //disable initial sorting and allow the data sorting in the back-end
+        });       
+    }
+
+</script>
