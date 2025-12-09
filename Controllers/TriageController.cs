@@ -413,9 +413,9 @@ namespace ClinicX.Controllers
                     else
                     {
                         
-                        LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+                        //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
 
-                        lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0,
+                        _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, _referralData.GetReferralDetails(refID).ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0,
                             "", "", null, false, "", leafletID);
                     }
 

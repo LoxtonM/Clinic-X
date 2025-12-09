@@ -220,19 +220,22 @@ namespace ClinicX.Controllers
 
                 int rowCount = 0;
 
-                foreach (var s in survList)
+                if (survList.Count > 0)
                 {
-                    rowCount += 1;
-                    MigraDoc.DocumentObjectModel.Tables.Row sRow = tableSurv.AddRow();
-                    sRow.Cells[0].AddParagraph(s.SurvSite);
-                    sRow.Cells[1].AddParagraph(s.SurvStartAge.ToString());
-                    sRow.Cells[2].AddParagraph(s.SurvStopAge.ToString());
-                    sRow.Cells[3].AddParagraph(s.SurvFreq);
-                    sRow.Cells[4].AddParagraph(s.SurvType);
-
-                    if (rowCount == survList.Count)
+                    foreach (var s in survList)
                     {
-                        sRow.Borders.Bottom.Width = 0.25;
+                        rowCount += 1;
+                        MigraDoc.DocumentObjectModel.Tables.Row sRow = tableSurv.AddRow();                        
+                        sRow.Cells[0].AddParagraph(s.SurvSite);
+                        if (s.SurvStartAge != null) { sRow.Cells[1].AddParagraph(s.SurvStartAge.ToString()); }
+                        if (s.SurvStopAge != null) { sRow.Cells[2].AddParagraph(s.SurvStopAge.ToString()); }
+                        sRow.Cells[3].AddParagraph(s.SurvFreq);
+                        sRow.Cells[4].AddParagraph(s.SurvType);
+
+                        if (rowCount == survList.Count)
+                        {
+                            sRow.Borders.Bottom.Width = 0.25;
+                        }
                     }
                 }
 
@@ -321,7 +324,7 @@ namespace ClinicX.Controllers
                 {
                     rowCount += 1;
                     MigraDoc.DocumentObjectModel.Tables.Row sRow = tableTE.AddRow();
-                    sRow.Cells[0].AddParagraph(s.Gene.ToString());
+                    if (s.Gene != null) { sRow.Cells[0].AddParagraph(s.Gene.ToString()); }
                     sRow.Cells[1].AddParagraph(s.CalcTool);
                     sRow.Cells[2].AddParagraph(s.Score);
                     sRow.Cells[3].AddParagraph(s.OfferTesting);
