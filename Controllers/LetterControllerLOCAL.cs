@@ -291,9 +291,6 @@ namespace ClinicalXPDataConnections.Meta
             string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
             int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false, string? qrCodeText = "", int? leafletID = 0)
         {
-
-            /*try
-            {*/
             _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
             _lvm.patient = _patientData.GetPatientDetails(mpi);
             _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
@@ -319,6 +316,9 @@ namespace ClinicalXPDataConnections.Meta
             string quoteRef = "";
             string signOff = "";
             string sigFilename = "";
+            bool hasPhenotipsQRCode = false;
+
+            hasPhenotipsQRCode = _lvm.documentsContent.hasPhenotipsPPQ; //because you KNOW there's gonna somehow be a null!
 
             if (docCode.Contains("CF"))
             {
@@ -327,7 +327,6 @@ namespace ClinicalXPDataConnections.Meta
             }
             else
             {
-
                 MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
                 Section section = document.AddSection();
 
@@ -1500,11 +1499,124 @@ namespace ClinicalXPDataConnections.Meta
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
+                if (docCode == "ClicsMR01")
+                {
+                    content1 = _lvm.documentsContent.Para1;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para8;
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+                    content3 = _lvm.documentsContent.Para3;
+                    Paragraph letterContent3 = section.AddParagraph();
+                    letterContent3.AddFormattedText(content3, TextFormat.Bold);
+                    spacer = section.AddParagraph();
+                    content4 = _lvm.documentsContent.Para4;
+                    Paragraph letterContent4 = section.AddParagraph(content4);
+                    spacer = section.AddParagraph();
+                    content5 = _lvm.documentsContent.Para5;
+                    Paragraph letterContent5 = section.AddParagraph(content5);
+                    spacer = section.AddParagraph();
+
+                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                }
+
+                if (docCode == "ClicsMR03")
+                {
+                    content1 = _lvm.documentsContent.Para5;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para6;
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+                    content3 = _lvm.documentsContent.Para7;
+                    Paragraph letterContent3 = section.AddParagraph(content3);
+                    spacer = section.AddParagraph();
+                    if (additionalText != null && additionalText != "")
+                    {
+                        Paragraph addText = section.AddParagraph(additionalText);
+                        spacer = section.AddParagraph();
+                    }
+                    content4 = _lvm.documentsContent.Para8;
+                    Paragraph letterContent4 = section.AddParagraph(content4);
+                    spacer = section.AddParagraph();
+                    content5 = _lvm.documentsContent.Para9;
+                    Paragraph letterContent5 = section.AddParagraph(content5);
+                    spacer = section.AddParagraph();
+
+                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                }
+
+                if (docCode == "ClicsMRR")
+                {
+                    content1 = _lvm.documentsContent.Para1;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para2;
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+                    content3 = _lvm.documentsContent.Para3;
+                    Paragraph letterContent3 = section.AddParagraph();
+                    letterContent3.AddFormattedText(content3);
+                    spacer = section.AddParagraph();
+                    content4 = _lvm.documentsContent.Para4;
+                    Paragraph letterContent4 = section.AddParagraph(content4);
+
+                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                }
+
+                //DNA letters
+                if (docCode == "DNAp")
+                {
+                    content1 = _lvm.documentsContent.Para1 + freeText1 + " on " + freeText2 + _lvm.documentsContent.Para2;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para3;
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+
+                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                }
+
+
+                if (docCode == "DNAr")
+                {
+                    Paragraph letterContentPt = section.AddParagraph();
+                    letterContentPt.AddFormattedText(patName + ", " + patDOB, TextFormat.Bold);
+                    spacer = section.AddParagraph();
+
+                    content1 = _lvm.documentsContent.Para1 + _lvm.patient.SALUTATION + _lvm.documentsContent.Para2;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para3 + _lvm.patient.SALUTATION + _lvm.documentsContent.Para4;
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    content3 = _lvm.documentsContent.Para5;
+                    Paragraph letterContent3 = section.AddParagraph(content3);
+
+                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                }
+
+                if (hasPhenotipsQRCode) //checks for Phenotips QR code flag and creates the QR code if needed
+                {
+                    if (qrCodeText != "")
+                    {
+                        CreateQRImageFile(qrCodeText, user);
+
+                        spacer = section.AddParagraph();
+                        Paragraph contentQRText = section.AddParagraph("Please scan the QR code below to access the online pre-clinic questionaire. If you would prefer to " +
+                            "receive an emailed link, let us know by contacting the department using the details above.");
+                        spacer = section.AddParagraph();
+                        Paragraph contentQR = section.AddParagraph();
+                        MigraDoc.DocumentObjectModel.Shapes.Image imgQRCode = contentQR.AddImage($"wwwroot\\Images\\qrCode-{user}.jpg");
+                        imgQRCode.ScaleWidth = new Unit(1.5, UnitType.Point);
+                        imgQRCode.ScaleHeight = new Unit(1.5, UnitType.Point);
+                        contentQR.Format.Alignment = ParagraphAlignment.Center;
+                    }
+                }
+
                 //tf.DrawString("Letter code: " + docCode, font, XBrushes.Black, new XRect(400, 800, 500, 20));
                 spacer = section.AddParagraph();
 
                 sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
-
 
                 Paragraph contentSignOff = section.AddParagraph("Yours sincerely,");
                 //contentSignOff.Format.Font.Size = 10;

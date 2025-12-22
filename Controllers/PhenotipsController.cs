@@ -1,6 +1,5 @@
 ﻿using APIControllers.Controllers;
 using APIControllers.Data;
-//using APIControllers.Models;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
@@ -8,7 +7,6 @@ using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using System.Security.Cryptography.Xml;
 
 
 namespace ClinicX.Controllers
@@ -139,7 +137,6 @@ namespace ClinicX.Controllers
 
             if (referral != null)
             {
-
                 if (pathway == "Cancer") //sends either ClicsFHF or Kc letter
                 {
                     let.DoPDF(156, mpi, referral.refid, User.Identity.Name, referral.ReferrerCode, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, true, result);
@@ -170,7 +167,6 @@ namespace ClinicX.Controllers
 
             if (isEmail)
             {
-
                 if (patient.EmailAddress == null)
                 {
                     return RedirectToAction("PatientDetails", "Patient", new { id = patient.MPI, message = "No email address recorded.", success = false });
@@ -179,7 +175,6 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("PatientDetails", "Patient", new { id = patient.MPI, message = "Not a valid email address.", success = false });
                 }
-
 
                 return Redirect("mailto:" + patient.EmailAddress + "?subject=Phenotips PPQ&body=Here is your Phenotips PPQ link:%0D%0A%0D%0A" + ppqURL + "%0D%0A%0D%0APlease complete this asap.");
             }
