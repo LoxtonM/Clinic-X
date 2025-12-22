@@ -4,7 +4,7 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    interface IGeneChangeData
+    public interface IGeneChangeData
     {
         public List<GeneChange> GetGeneChangeList();
     }

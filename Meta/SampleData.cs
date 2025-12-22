@@ -4,7 +4,7 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    interface ISampleData
+    public interface ISampleData
     {
         public List<SampleTypes> GetSampleTypeList();
         public List<SampleRequirements> GetSampleRequirementsList();

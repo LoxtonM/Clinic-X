@@ -4,7 +4,7 @@ using ClinicX.Models;
 
 namespace ClinicX.Meta
 {
-    interface IBloodFormData
+    public interface IBloodFormData
     {        
         public BloodForm GetBloodFormDetails(int id);
         public List<BloodForm> GetBloodFormList(int id);

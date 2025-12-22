@@ -5,7 +5,7 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    interface ITestData
+    public interface ITestData
     {
         public List<TestType> GetTestList();
         public List<Test> GetTestListByUser(string username);

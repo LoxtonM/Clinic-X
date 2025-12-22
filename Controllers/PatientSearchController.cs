@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Data;
+//using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Meta;
@@ -9,7 +9,7 @@ namespace ClinicX.Controllers
 {
     public class PatientSearchController : Controller
     {
-        private readonly ClinicalContext _clinContext;
+        //private readonly ClinicalContext _clinContext;
         private readonly PatientSearchVM _pvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
@@ -17,18 +17,21 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         
 
-        public PatientSearchController(ClinicalContext context, IConfiguration config)
+        public PatientSearchController(IConfiguration config, IStaffUserData staffUserData, IPatientSearchData patientSearchData, IAuditService auditService)
         {
-            _clinContext = context;
+            //_clinContext = context;
             _config = config;
             _pvm = new PatientSearchVM();
-            _staffUser = new StaffUserData(_clinContext);
-            _patientSearchData = new PatientSearchData(_clinContext);            
-            _audit = new AuditService(_config);
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            //_patientSearchData = new PatientSearchData(_clinContext);            
+            _patientSearchData = patientSearchData;
+            //_audit = new AuditService(_config);
+            _audit = auditService;
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob)
+        public IActionResult Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob)
         {
             try
             {
@@ -119,7 +122,7 @@ namespace ClinicX.Controllers
             }
         }    
         
-        public async Task<IActionResult> ViewAllMyPatients(string staffCode)
+        public IActionResult ViewAllMyPatients(string staffCode)
         {
             _pvm.patientsList = _patientSearchData.GetPatientsListByStaffCode(staffCode).DistinctBy(p => p.MPI).ToList();
 

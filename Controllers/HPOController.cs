@@ -1,8 +1,8 @@
 ﻿using APIControllers.Controllers;
-using APIControllers.Data;
-using ClinicalXPDataConnections.Data;
+//using APIControllers.Data;
+//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
-using ClinicX.Data;
+//using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -12,9 +12,9 @@ namespace ClinicX.Controllers
 {
     public class HPOController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
-        private readonly APIContext _apiContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly ClinicXContext _cXContext;
+        //private readonly APIContext _apiContext;
         private readonly HPOVM _hpo;
         private readonly IStaffUserData _staffUser;
         private readonly IConfiguration _config;        
@@ -25,20 +25,28 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         private readonly APIController _api;
 
-        public HPOController(ClinicalContext context, ClinicXContext cXContext, APIContext apiContext, IConfiguration config)
+        public HPOController(IConfiguration config, IStaffUserData staffUserData, IHPOCodeData hPOCodeData, IClinicalNoteData clinicalNoteData, ICRUD crud, IMiscData miscData,
+            IAuditService audit, APIController aPIController)
         {
-            _clinContext = context;
-            _cXContext = cXContext;
-            _apiContext = apiContext;
+            //_clinContext = context;
+            //_cXContext = cXContext;
+            //_apiContext = apiContext;
             _config = config;
-            _staffUser = new StaffUserData(_clinContext);
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
             _hpo = new HPOVM();
-            _hpoData = new HPOCodeData(_clinContext);
-            _clinicaNoteData = new ClinicalNoteData(_cXContext);
-            _crud = new CRUD(_config);
-            _misc = new MiscData(_config);
-            _audit = new AuditService(_config);
-            _api = new APIController(_apiContext, _config);
+            //_hpoData = new HPOCodeData(_clinContext);
+            _hpoData = hPOCodeData;
+            //_clinicaNoteData = new ClinicalNoteData(_cXContext);
+            _clinicaNoteData = clinicalNoteData;
+            //_crud = new CRUD(_config);
+            _crud = crud;
+            //_misc = new MiscData(_config);
+            _misc = miscData;
+            //_audit = new AuditService(_config);
+            _audit = audit;
+            //_api = new APIController(_apiContext, _config);
+            _api = aPIController;
         }
 
         [HttpGet]
@@ -117,7 +125,7 @@ namespace ClinicX.Controllers
         }
                 
         [HttpPost]
-        public async Task<IActionResult> AddHPOTermFromText(int termID, int noteID) //add a HPO term found in the text
+        public IActionResult AddHPOTermFromText(int termID, int noteID) //add a HPO term found in the text
         {
             try
             {
@@ -136,7 +144,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteHPOTermFromNote(int id)
+        public IActionResult DeleteHPOTermFromNote(int id)
         {
             try
             {

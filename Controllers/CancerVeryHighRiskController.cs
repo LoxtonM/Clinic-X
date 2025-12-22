@@ -1,7 +1,7 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using ClinicX.Data;
+//using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.Models;
 using ClinicX.ViewModels;
@@ -12,9 +12,9 @@ namespace ClinicX.Controllers
 {
     public class CancerVeryHighRiskController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
-        private readonly DocumentContext _docContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly ClinicXContext _cXContext;
+        //private readonly DocumentContext _docContext;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly IReferralData _referralData;
@@ -25,27 +25,34 @@ namespace ClinicX.Controllers
         private readonly IPatientData _patientData;
         private readonly IUntestedVHRGroupData _untestedVHRGroupData;
         private readonly CancerVeryHighRiskVM _cvm;
+        private readonly IScreeningServiceData _ssData;
+        private readonly VHRController _vhrc;
 
-        public CancerVeryHighRiskController(ClinicalContext clinContext, ClinicXContext cxContext, DocumentContext docContext, IConfiguration config)
+        public CancerVeryHighRiskController(IConfiguration config, IStaffUserData staffUserData, IReferralData referralData, ITriageData triageData, IDiaryData diaryData, ICRUD crud, 
+            IAuditService auditService, IPatientData patientData, IUntestedVHRGroupData untestedVHRGroupData, IScreeningServiceData ssData, VHRController vhrc)
         {
             _config = config;
-            _clinContext = clinContext;
-            _cXContext = cxContext;
-            _docContext = docContext;
-            _staffUser = new StaffUserData(_clinContext);
-            _referralData = new ReferralData(_clinContext);
-            _triageData = new TriageData(_clinContext);
-            _diaryData = new DiaryData(_clinContext);
-            _crud = new CRUD(_config);
-            _audit = new AuditService(_config);
-            _patientData = new PatientData(_clinContext);
-            _untestedVHRGroupData = new UntestedVHRGroupData(_cXContext);
+            //_clinContext = clinContext;
+            //_cXContext = cxContext;
+            //_docContext = docContext;
+            _staffUser = staffUserData;
+            _referralData = referralData;
+            _triageData = triageData;
+            _diaryData = diaryData;
+            _crud = crud;
+            _audit = auditService;
+            _patientData = patientData;
+            _untestedVHRGroupData = untestedVHRGroupData;
             _cvm = new CancerVeryHighRiskVM();
+            _ssData = ssData;
+            _vhrc = vhrc;
+            //ScreeningServiceData _ssData = new ScreeningServiceData(_cXContext);
+            //VHRController _vhrc = new VHRController(_clinContext, _cXContext, _docContext, _config);
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> VHRPro(int id, string? message, bool? success)
+        public IActionResult VHRPro(int id, string? message, bool? success)
         {
             try
             {
@@ -59,7 +66,7 @@ namespace ClinicX.Controllers
                 
                 var icpDetails = _triageData.GetICPDetails(_cvm.icpCancer.ICPID);
 
-                ScreeningServiceData _ssData = new ScreeningServiceData(_cXContext);
+                
                 _cvm.screeningCoordinators = _ssData.GetScreeningServiceList();
 
                 int mpi = icpDetails.MPI;                
@@ -85,7 +92,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> VHRPro(int id, string? freeText, string? screeningService, bool? isPreview = false)
+        public IActionResult VHRPro(int id, string? freeText, string? screeningService, bool? isPreview = false)
         {
             try
             {
@@ -102,7 +109,7 @@ namespace ClinicX.Controllers
                 int refID = icpDetails.REFID;
                 
 
-                VHRController _vhrc = new VHRController(_clinContext, _cXContext, _docContext, _config);
+                
 
                 if (isPreview.GetValueOrDefault())
                 {
@@ -140,7 +147,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditUntestedVHROptions(int id, int? thresholdAge, bool below30, bool below50, bool other, bool notID)
+        public IActionResult EditUntestedVHROptions(int id, int? thresholdAge, bool below30, bool below50, bool other, bool notID)
         {
             try
             {                
@@ -168,7 +175,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> NewUntestedVHROptions(int refid)
+        public IActionResult NewUntestedVHROptions(int refid)
         {
             try
             {
@@ -187,7 +194,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> NewUntestedVHROptions(int refid, int? thresholdAge, bool below30, bool below50, bool other, bool notID)
+        public IActionResult NewUntestedVHROptions(int refid, int? thresholdAge, bool below30, bool below50, bool other, bool notID)
         {
             try
             {

@@ -3,7 +3,7 @@ using ClinicX.Models;
 
 namespace ClinicX.Meta
 {
-    interface IStaffOptionsData
+    public interface IStaffOptionsData
     {
         StaffOptions GetStaffOptions(string staffCode);
     }

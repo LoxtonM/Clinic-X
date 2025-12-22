@@ -1,20 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Data;
+//using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
 using System.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
-using ClinicX.Data;
+//using ClinicX.Data;
 using ClinicX.Models;
+using Microsoft.Office.Interop.Outlook;
 
 namespace ClinicX.Controllers
 {
     public class TestController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
-        private readonly DocumentContext _documentContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly ClinicXContext _cXContext;
+        //private readonly DocumentContext _documentContext;
         private readonly TestDiseaseVM _tvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
@@ -27,28 +28,42 @@ namespace ClinicX.Controllers
         private readonly ISampleData _sampleData;
         private readonly IConstantsData _constantsData;
         private readonly IReferralData _refData;
+        private readonly BloodFormController _bfc;
 
-        public TestController(ClinicalContext context, ClinicXContext cXContext, DocumentContext documentContext, IConfiguration config)
+        public TestController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, ITestData testData, ICRUD crud, IAuditService audit, IAgeCalculator ageCalculator, 
+            IBloodFormData bloodFormData, ISampleData sampleData, IConstantsData constantsData, IReferralData referralData, BloodFormController bloodFormController)
         {
-            _clinContext = context;
-            _cXContext = cXContext;
-            _documentContext = documentContext;
+            //_clinContext = context;
+            //_cXContext = cXContext;
+            //_documentContext = documentContext;
             _config = config;
             _tvm = new TestDiseaseVM();
-            _staffUser = new StaffUserData(_clinContext);
-            _patientData = new PatientData(_clinContext);
-            _testData = new TestData(_clinContext, _cXContext);
-            _crud = new CRUD(_config);
-            _audit = new AuditService(_config);
-            _ageCalculator = new AgeCalculator();
-            _bloodFormData = new BloodFormData(_cXContext);
-            _sampleData = new SampleData(_cXContext);
-            _constantsData = new ConstantsData(_documentContext);
-            _refData = new ReferralData(_clinContext);
+            _staffUser = staffUserData;
+            //_staffUser = new StaffUserData(_clinContext);
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            //_testData = new TestData(_clinContext, _cXContext);
+            _testData = testData;
+            //_crud = new CRUD(_config);
+            _crud = crud;
+            //_audit = new AuditService(_config);
+            _audit = audit;
+            //_ageCalculator = new AgeCalculator();
+            _ageCalculator = ageCalculator;
+            //_bloodFormData = new BloodFormData(_cXContext);
+            _bloodFormData = bloodFormData;
+            //_sampleData = new SampleData(_cXContext);
+            _sampleData = sampleData;
+            //_constantsData = new ConstantsData(_documentContext);
+            _constantsData = constantsData;
+            //_refData = new ReferralData(_clinContext);
+            _refData = referralData;
+            //BloodFormController bfc = new BloodFormController(_clinContext, _cXContext);
+            _bfc = bloodFormController;
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(int id)
+        public IActionResult Index(int id)
         {
             try
             {
@@ -61,14 +76,14 @@ namespace ClinicX.Controllers
 
                 return View(_tvm);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test" });
             }
         }
 
         [Authorize]
-        public async Task<IActionResult> AllOutstandingTests()
+        public IActionResult AllOutstandingTests()
         {
             try
             {
@@ -80,7 +95,7 @@ namespace ClinicX.Controllers
 
                 return View(_tvm);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "TestAll" });
             }
@@ -88,7 +103,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddNew(int id)
+        public IActionResult AddNew(int id)
         {
             try
             {
@@ -102,14 +117,14 @@ namespace ClinicX.Controllers
 
                 return View(_tvm);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test-add" });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int mpi, string test, string sentTo, DateTime expectedDate, int refID)
+        public IActionResult AddNew(int mpi, string test, string sentTo, DateTime expectedDate, int refID)
         {
             try
             {                
@@ -119,7 +134,7 @@ namespace ClinicX.Controllers
 
                 return RedirectToAction("Index", new { id = mpi });
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test-add" });
             }
@@ -127,7 +142,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {
             try
             {
@@ -160,14 +175,14 @@ namespace ClinicX.Controllers
 
                 return View(_tvm);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test-edit" });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int testID, string result, string comments, string receivedDate, string givenDate, int complete)
+        public IActionResult Edit(int testID, string result, string comments, string receivedDate, string givenDate, int complete)
         {
             try
             {
@@ -211,7 +226,7 @@ namespace ClinicX.Controllers
 
                 return RedirectToAction("AllOutstandingTests");
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Test-edit" });
             }
@@ -219,7 +234,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> NewBloodForm(int testID)
+        public IActionResult NewBloodForm(int testID)
         {
             _tvm.test = _testData.GetTestDetails(testID);
             _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);            
@@ -230,7 +245,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> NewBloodForm(int testID, int iSampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
+        public IActionResult NewBloodForm(int testID, int iSampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
             DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails, bool isInpatient, string? relNumber,
             bool isPrenatal, bool isPresymptomatic, bool isDiagnostic, bool isCarrier, string? prenatalType, string? prenatalRisk, int? gestation)
         {
@@ -248,7 +263,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> BloodFormEdit(int bloodFormID) //save data to use in the blood form preview
+        public IActionResult BloodFormEdit(int bloodFormID) //save data to use in the blood form preview
         {
             _tvm.bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
             _tvm.test = _testData.GetTestDetails(_tvm.bloodForm.TestID);
@@ -261,7 +276,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> BloodFormEdit(int bloodFormID, string sampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
+        public IActionResult BloodFormEdit(int bloodFormID, string sampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
             DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails, bool isInpatient, string? relNumber,
             bool isPrenatal, bool isPresymptomatic, bool isDiagnostic, bool isCarrier, string? prenatalType, string? prenatalRisk, int? gestation)
         {
@@ -280,15 +295,15 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> DoBloodForm(int bloodFormID, string? altPatName, bool? isPreview = false) //create the blood form itself
+        public IActionResult DoBloodForm(int bloodFormID, string? altPatName, bool? isPreview = false) //create the blood form itself
         {
-            BloodFormData bfData = new BloodFormData(_cXContext);
-            BloodForm bf = bfData.GetBloodFormDetails(bloodFormID);
+            //BloodFormData bfData = new BloodFormData(_cXContext);
+            BloodForm bf = _bloodFormData.GetBloodFormDetails(bloodFormID);
             int testID = bf.TestID;
 
-            BloodFormController bfc = new BloodFormController(_clinContext, _cXContext);
+            
 
-            bfc.CreateBloodForm(bloodFormID, User.Identity.Name, altPatName, isPreview);
+            _bfc.CreateBloodForm(bloodFormID, User.Identity.Name, altPatName, isPreview);
 
             //return RedirectToAction("Edit", new { id = testID});
             return File($"~/StandardLetterPreviews/bloodform-{User.Identity.Name}.pdf", "Application/PDF");

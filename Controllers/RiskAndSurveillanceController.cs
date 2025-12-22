@@ -1,10 +1,10 @@
-﻿using APIControllers.Models;
-using ClinicalXPDataConnections.Data;
+﻿//using APIControllers.Models;
+//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using ClinicX.Data;
+//using ClinicX.Data;
 using ClinicX.Meta;
-using ClinicX.Models;
+//using ClinicX.Models;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +13,8 @@ namespace ClinicX.Controllers
 {
     public class RiskAndSurveillanceController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly ClinicXContext _cXContext;
         private readonly RiskSurveillanceVM _rsvm;
         private readonly IConfiguration _config;        
         private readonly IPatientData _patientData;
@@ -32,30 +32,46 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public RiskAndSurveillanceController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
+        public RiskAndSurveillanceController(IConfiguration config, IPatientData patientData, IStaffUserData staffUserData, ITriageData triageData, IRiskData riskData, 
+            ISurveillanceData surveillanceData, IRiskCodesData riskCodesData, ISurveillanceCodesData surveillanceCodesData, ITestEligibilityData testEligibilityData,
+            IMiscData miscData, IGeneChangeData geneChangeData, IGeneCodeData geneCodeData, IRelativeData relativeData, ICRUD crud,IAuditService auditService)
         {
-            _clinContext = context;
-            _cXContext = cXContext;
+            //_clinContext = context;
+            //_cXContext = cXContext;
             _config = config;
             _rsvm = new RiskSurveillanceVM();
-            _patientData = new PatientData(_clinContext);
-            _staffUser = new StaffUserData(_clinContext);
-            _triageData = new TriageData(_clinContext);
-            _riskData = new RiskData(_clinContext);
-            _survData = new SurveillanceData(_clinContext);
-            _riskCodesData = new RiskCodesData(_cXContext);
-            _survCodesData = new SurveillanceCodesData(_cXContext);
-            _testEligibilityData = new TestEligibilityData(_clinContext);
-            _misc = new MiscData(_config);
-            _geneChange = new GeneChangeData(_cXContext);
-            _geneCode = new GeneCodeData(_cXContext);
-            _relData = new RelativeData(_clinContext);
-            _crud = new CRUD(_config);
-            _audit = new AuditService(_config);
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            //_triageData = new TriageData(_clinContext);
+            _triageData = triageData;
+            //_riskData = new RiskData(_clinContext);
+            _riskData = riskData;
+            //_survData = new SurveillanceData(_clinContext);
+            _survData = surveillanceData;
+            //_riskCodesData = new RiskCodesData(_cXContext);
+            _riskCodesData = riskCodesData;
+            //_survCodesData = new SurveillanceCodesData(_cXContext);
+            _survCodesData = surveillanceCodesData;
+            //_testEligibilityData = new TestEligibilityData(_clinContext);
+            _testEligibilityData = testEligibilityData;
+            //_misc = new MiscData(_config);
+            _misc = miscData;
+            //_geneChange = new GeneChangeData(_cXContext);
+            _geneChange = geneChangeData;
+            //_geneCode = new GeneCodeData(_cXContext);
+            _geneCode = geneCodeData;
+            //_relData = new RelativeData(_clinContext);
+            _relData = relativeData;
+            //_crud = new CRUD(_config);
+            _crud = crud;
+            //_audit = new AuditService(_config);
+            _audit = auditService;
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(int mpi)
+        public IActionResult Index(int mpi)
         {
             try
             {
@@ -145,7 +161,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddNewRisk(int id)
+        public IActionResult AddNewRisk(int id)
         {
             try
             {
@@ -172,7 +188,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddNewRisk(int refID, string riskCode, string siteCode, string clinCode, 
+        public IActionResult AddNewRisk(int refID, string riskCode, string siteCode, string clinCode, 
             DateTime riskDate, float lifetimePercent, string comments, float f2529, float f3040, float f4050, 
             float f5060, bool isUseLetter, string tool)
         {
@@ -198,7 +214,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddNewSurveillance(int id)
+        public IActionResult AddNewSurveillance(int id)
         {
             try
             {
@@ -238,7 +254,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddNewSurveillance(int riskID, string siteCode, string typeCode, string clinCode, 
+        public IActionResult AddNewSurveillance(int riskID, string siteCode, string typeCode, string clinCode, 
             DateTime recDate, int startAge, int endAge, string frequency, bool isUseLetter, bool isYN, string? discReason)
         {
             try
@@ -260,7 +276,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> EditRisk(int id)
+        public IActionResult EditRisk(int id)
         {
             try
             {
@@ -284,7 +300,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditRisk(int id, string riskCode, string siteCode, string clinCode,
+        public IActionResult EditRisk(int id, string riskCode, string siteCode, string clinCode,
             DateTime riskDate, float lifetimePercent, string comments, float f2529, float f3040, float f4050,
             float f5060, bool isUseLetter, string tool)
         {
@@ -382,7 +398,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewTestingEligibility(int refID, int gene, string tool, string score, string offerTest, int? relative=0)
+        public IActionResult AddNewTestingEligibility(int refID, int gene, string tool, string score, string offerTest, int? relative=0)
         {
             try
             {
@@ -413,7 +429,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> EditTestingEligibilityDetails(int id)
+        public IActionResult EditTestingEligibilityDetails(int id)
         {
             _rsvm.eligibilityDetails = _testEligibilityData.GetTestingEligibilityDetails(id);
             _rsvm.patient = _patientData.GetPatientDetails(_rsvm.eligibilityDetails.MPI);            
@@ -427,7 +443,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditTestingEligibilityDetails(int id, int gene, string tool, string score, string offerTest)
+        public IActionResult EditTestingEligibilityDetails(int id, int gene, string tool, string score, string offerTest)
         {
             _rsvm.eligibilityDetails = _testEligibilityData.GetTestingEligibilityDetails(id);
             ICP icp = _triageData.GetICPDetailsByRefID(_rsvm.eligibilityDetails.RefID);
@@ -443,7 +459,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> SetUsingLetter(int id, bool isUsingLetter) //to provide a quick "don't use this one!" mechanic
+        public IActionResult SetUsingLetter(int id, bool isUsingLetter) //to provide a quick "don't use this one!" mechanic
         {
             _rsvm.riskDetails = _riskData.GetRiskDetails(id);
             int icpID = _rsvm.riskDetails.ICP_Cancer_ID;

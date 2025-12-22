@@ -11,8 +11,8 @@ namespace ClinicX.Controllers
     public class LetterMenuController : Controller
     {
         private readonly IConfiguration _config;
-        private readonly ClinicalContext _context;
-        private readonly DocumentContext _documentContext;
+        //private readonly ClinicalContext _context;
+        //private readonly DocumentContext _documentContext;
         private readonly IDocumentsData _documentsData;
         private readonly IPatientData _patientData;
         private readonly IReferralData _referralData;
@@ -23,20 +23,29 @@ namespace ClinicX.Controllers
         private readonly ILeafletData _leafletData;
         private readonly IExternalClinicianData _externalClinicianData;
 
-        public LetterMenuController(ClinicalContext context, DocumentContext documentContext, IConfiguration config)
+        public LetterMenuController(IConfiguration config, IDocumentsData documentsData, IPatientData patientData, IReferralData referralData, LetterController letterController, ICRUD crud,
+            IDiaryData diaryData, ILeafletData leafletData, IExternalClinicianData externalClinicianData) 
         {
             _config = config;   
-            _context = context;
-            _documentContext = documentContext;
-            _documentsData = new DocumentsData(_documentContext);
-            _patientData = new PatientData(_context);
-            _referralData = new ReferralData(_context);
+            //_context = context;
+            //_documentContext = documentContext;
+            //_documentsData = new DocumentsData(_documentContext);
+            _documentsData = documentsData;
+            //_patientData = new PatientData(_context);
+            _patientData = patientData;
+            //_referralData = new ReferralData(_context);
+            _referralData = referralData;
             _lvm = new LettersMenuVM();
-            _lc = new LetterController(_context, _documentContext);
-            _crud = new CRUD(_config);
-            _diaryData = new DiaryData(_context);
-            _leafletData = new LeafletData(_documentContext);
-            _externalClinicianData = new ExternalClinicianData(_context);
+            //_lc = new LetterController(_context, _documentContext);
+            _lc = letterController;
+            //_crud = new CRUD(_config);
+            _crud = crud;
+            //_diaryData = new DiaryData(_context);
+            _diaryData = diaryData;
+            //_leafletData = new LeafletData(_documentContext);
+            _leafletData = leafletData;
+            //_externalClinicianData = new ExternalClinicianData(_context);
+            _externalClinicianData = externalClinicianData;
         }
 
         [Authorize]
@@ -86,9 +95,9 @@ namespace ClinicX.Controllers
                 diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID; //get the diary ID of the entry just created to add to the letter's filename
             }
 
-            LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
+            //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
 
-            lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician, 
+            _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician, 
                     "", null, isPreview, "", leafletID);
 
             if(isPreview)

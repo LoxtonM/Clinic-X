@@ -1,6 +1,6 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
-using ClinicX.Data;
+//using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -10,8 +10,8 @@ namespace ClinicX.Controllers
 {
     public class RelativeDiagnosisController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly ClinicXContext _cXContext;
         private readonly RelativeDiagnosisVM _rdvm;
         private readonly IConfiguration _config;
         private readonly IRelativeData _relativeData;
@@ -21,18 +21,25 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         
-        public RelativeDiagnosisController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config) 
+        public RelativeDiagnosisController(IConfiguration config, IRelativeData relativeData, IRelativeDiagnosisData relativeDiagnosisData, IStaffUserData staffUserData, IPatientData patientData,
+            ICRUD crud, IAuditService auditService) 
         {
-            _clinContext = context;
-            _cXContext = cXContext;
+            //_clinContext = context;
+            //_cXContext = cXContext;
             _config = config;                        
-            _relativeData = new RelativeData(_clinContext);
-            _relativeDiagnosisData = new RelativeDiagnosisData(_clinContext);
-            _staffUser = new StaffUserData(_clinContext);
-            _patientData = new PatientData(_clinContext);
-            _crud = new CRUD(_config);
+            //_relativeData = new RelativeData(_clinContext);
+            _relativeData = relativeData;
+            //_relativeDiagnosisData = new RelativeDiagnosisData(_clinContext);
+            _relativeDiagnosisData = relativeDiagnosisData;
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            //_crud = new CRUD(_config);
+            _crud = crud;
             _rdvm = new RelativeDiagnosisVM();
-            _audit = new AuditService(_config);
+            //_audit = new AuditService(_config);
+            _audit = auditService;
         }
 
         [Authorize]
@@ -57,7 +64,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddNew(int id)
+        public IActionResult AddNew(int id)
         {
             try
             {
@@ -80,7 +87,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int id, string diagnosis, string? age, string? hospital, string? cRegCode, DateTime? dateRequested,
+        public IActionResult AddNew(int id, string diagnosis, string? age, string? hospital, string? cRegCode, DateTime? dateRequested,
             string? consultant, string? status, string? consent, DateTime? dateReceived)
         {
             try
@@ -101,7 +108,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {
             try
             {
@@ -122,7 +129,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int tumourID, string? consent="", DateTime? dateReceived=null, string? confirmed="",
+        public IActionResult Edit(int tumourID, string? consent="", DateTime? dateReceived=null, string? confirmed="",
             DateTime? confDiagDate=null, string? confDiagAge="", string? siteCode="", string? latCode="", string? grade="", 
             string? dukes="", string? morphCode="", string? histologyNumber="", string? notes="")
         {

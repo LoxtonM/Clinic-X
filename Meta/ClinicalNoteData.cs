@@ -4,7 +4,7 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    interface IClinicalNoteData
+    public interface IClinicalNoteData
     {
         public Note GetClinicalNoteDetails(int? noteID);
         public List<Note> GetClinicalNoteList(int? mpi);

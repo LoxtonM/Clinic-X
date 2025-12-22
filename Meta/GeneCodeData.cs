@@ -4,7 +4,7 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    interface IGeneCodeData
+    public interface IGeneCodeData
     {
         public List<GeneCode> GetGeneCodeList();
     }

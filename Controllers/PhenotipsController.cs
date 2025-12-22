@@ -1,35 +1,42 @@
 ﻿using APIControllers.Controllers;
-using APIControllers.Data;
-using ClinicalXPDataConnections.Data;
+//using APIControllers.Data;
+//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System.Runtime.CompilerServices;
 
 
 namespace ClinicX.Controllers
 {
     public class PhenotipsController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly DocumentContext _docContext;
-        private readonly APIContext _apiContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly DocumentContext _docContext;
+        //private readonly APIContext _apiContext;
         private readonly IConfiguration _config;
         private readonly APIController _api;
         private readonly IPatientData _patientData;
+        private readonly IReferralData _referralData;
         private readonly PhenotipsVM _pvm;
+        private readonly LetterController _lc;
 
-        public PhenotipsController(ClinicalContext clinContext, DocumentContext docContext, APIContext apiContext, IConfiguration config)
+        public PhenotipsController(IConfiguration config, APIController aPIController, IPatientData patientData, IReferralData referralData, LetterController lc)
         {
-            _clinContext = clinContext;
-            _docContext = docContext;
-            _apiContext = apiContext;
+            //_clinContext = clinContext;
+            //_docContext = docContext;
+            //_apiContext = apiContext;
             _config = config;
-            _api = new APIController(_apiContext, _config);
-            _patientData = new PatientData(_clinContext);
+            //_api = new APIController(_apiContext, _config);
+            _api = aPIController;
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            _referralData = referralData;
             _pvm = new PhenotipsVM();
+            _lc = lc;
         }
 
         [Authorize]
@@ -97,7 +104,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<String> GetPPQURL(int mpi, string? pathway)
+        public String GetPPQURL(int mpi, string? pathway)
         {
             string sMessage = "";
             bool isSuccess = false;
@@ -108,7 +115,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> PhenotipsQRLink(int mpi, string? pathway)
+        public IActionResult PhenotipsQRLink(int mpi, string? pathway)
         {
             string sMessage = "";
             bool isSuccess = false;
@@ -121,7 +128,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> SendPhenotipsLetter(int mpi, string? pathway)
+        public IActionResult SendPhenotipsLetter(int mpi, string? pathway)
         {
             string sMessage = "";
             bool isSuccess = false;
@@ -130,20 +137,20 @@ namespace ClinicX.Controllers
 
             _pvm.ppqQR = result.ToString(); //fetches the QR code string
 
-            LetterController let = new LetterController(_clinContext, _docContext);
+            //LetterController let = new LetterController(_clinContext, _docContext);
             
-            ReferralData refer = new ReferralData(_clinContext);
-            Referral referral = refer.GetActiveReferralsListForPatient(mpi).OrderByDescending(r => r.RefDate).FirstOrDefault();
+            //ReferralData refer = new ReferralData(_clinContext);
+            Referral referral = _referralData.GetActiveReferralsListForPatient(mpi).OrderByDescending(r => r.RefDate).FirstOrDefault();
 
             if (referral != null)
             {
                 if (pathway == "Cancer") //sends either ClicsFHF or Kc letter
                 {
-                    let.DoPDF(156, mpi, referral.refid, User.Identity.Name, referral.ReferrerCode, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, true, result);
+                    _lc.DoPDF(156, mpi, referral.refid, User.Identity.Name, referral.ReferrerCode, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, true, result);
                 }
                 else
                 {
-                    let.DoPDF(191, mpi, referral.refid, User.Identity.Name, referral.ReferrerCode, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, true, result);
+                    _lc.DoPDF(191, mpi, referral.refid, User.Identity.Name, referral.ReferrerCode, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, true, result);
                 }
 
                 System.IO.File.Delete($"wwwroot\\Images\\qrCode-{user}.jpg");
@@ -159,7 +166,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> CreatePhenotipsEmail(int mpi, string pathway, bool isEmail)
+        public IActionResult CreatePhenotipsEmail(int mpi, string pathway, bool isEmail)
         {
             Patient patient = _patientData.GetPatientDetails(mpi);
 
@@ -185,7 +192,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> PhenotipsPPQLink(int mpi, string ppqLink)
+        public IActionResult PhenotipsPPQLink(int mpi, string ppqLink)
         {
             _pvm.mpi = mpi;
             _pvm.ppqURL = ppqLink;

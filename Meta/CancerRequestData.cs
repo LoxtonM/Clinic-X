@@ -4,7 +4,7 @@ using System.Data;
 
 namespace ClinicX.Meta
 {
-    interface ICancerRequestData
+    public interface ICancerRequestData
     {
         public List<CancerRequests> GetCancerRequestsList();
         public CancerRequests GetCancerRequestDetail(int id);

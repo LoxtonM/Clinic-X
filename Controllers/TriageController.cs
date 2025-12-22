@@ -1,7 +1,7 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using ClinicX.Data;
+//using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -12,9 +12,9 @@ namespace ClinicX.Controllers
 {
     public class TriageController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
-        private readonly DocumentContext _docContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly ClinicXContext _cXContext;
+        //private readonly DocumentContext _docContext;
         private readonly ICPVM _ivm;
         private readonly LetterController _lc;
         private readonly IConfiguration _config;
@@ -41,40 +41,45 @@ namespace ClinicX.Controllers
         private readonly IConstantsData _constantsData;
         private readonly IStaffOptionsData _staffOptionsData;
 
-        public TriageController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
+        public TriageController(IConfiguration config, IStaffUserData staffUserData, IPathwayData pathwayData, IPriorityData priorityData, IReferralData referralData, ITriageData triageData,
+            IICPActionData iCPActionData, IRiskData riskData, ISurveillanceData surveillanceData, ITestEligibilityData testEligibilityData, IDiaryData diaryData, IRelativeData relativeData, 
+            ICancerRequestData cancerRequestData, IExternalClinicianData externalClinicianData, IRelativeDiagnosisData relativeDiagnosisData, IDocumentsData documentsData, ICRUD crud, 
+            LetterController letterController, IAuditService auditService, IAgeCalculator ageCalculator, IPatientData patientData, ILeafletData leafletData, IConstantsData constantsData, 
+            IStaffOptionsData staffOptionsData)
         {
-            _clinContext = clinContext;
-            _cXContext = cXContext;
-            _docContext = docContext;
+            //_clinContext = clinContext;
+            //_cXContext = cXContext;
+            //_docContext = docContext;
             _config = config;
             _ivm = new ICPVM();
-            _staffUser = new StaffUserData(_clinContext);
-            _pathwayData = new PathwayData(_clinContext);
-            _priorityData = new PriorityData(_clinContext);
-            _referralData = new ReferralData(_clinContext);
-            _triageData = new TriageData(_clinContext);
-            _icpActionData = new ICPActionData(_clinContext);
-            _riskData = new RiskData(_clinContext);
-            _survData = new SurveillanceData(_clinContext);
-            _testEligibilityData = new TestEligibilityData(_clinContext);
-            _diaryData = new DiaryData(_clinContext);
-            _relativeData = new RelativeData(_clinContext);
-            _cancerRequestData = new CancerRequestData(_cXContext);
-            _clinicianData = new ExternalClinicianData(_clinContext);
-            _relDiagData = new RelativeDiagnosisData(_clinContext);
-            _documentsData = new DocumentsData(_docContext);
-            _crud = new CRUD(_config);
-            _lc = new LetterController(_clinContext, _docContext);
-            _audit = new AuditService(_config);
-            _ageCalculator = new AgeCalculator();
-            _patientData = new PatientData(_clinContext);
-            _leafletData = new LeafletData(_docContext);
-            _constantsData = new ConstantsData(_docContext);
-            _staffOptionsData = new StaffOptionsData(_cXContext);
+            _staffUser = staffUserData;
+            _pathwayData = pathwayData;
+            _priorityData = priorityData;
+            _referralData = referralData;
+            _triageData = triageData;
+            _icpActionData = iCPActionData;
+            _riskData = riskData;
+            _survData = surveillanceData;
+            _testEligibilityData = testEligibilityData;
+            _diaryData = diaryData;
+            _relativeData = relativeData;
+            _cancerRequestData = cancerRequestData;
+            _clinicianData = externalClinicianData;
+            _relDiagData = relativeDiagnosisData;
+            _documentsData = documentsData;
+            _crud = crud;            
+            _audit = auditService;
+            _ageCalculator = ageCalculator;
+            _patientData = patientData;
+            _leafletData = leafletData;
+            _constantsData = constantsData;
+            _staffOptionsData = staffOptionsData;
+            _lc = letterController;
+            //LetterController _lc = new LetterController(_clinContext, _docContext);
         }
 
         [Authorize]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             try
             {       
@@ -95,7 +100,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> ICPDetails(int id)
+        public IActionResult ICPDetails(int id)
         {
             try
             {
@@ -153,7 +158,7 @@ namespace ClinicX.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, 
+        public IActionResult DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, 
             int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm)
         {
             try
@@ -256,7 +261,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DoCancerTriage(int icpID, int action)
+        public IActionResult DoCancerTriage(int icpID, int action)
         {
             try
             {
@@ -280,7 +285,7 @@ namespace ClinicX.Controllers
                     int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
                     int diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
 
-                    LetterController _lc = new LetterController(_clinContext, _docContext);
+                    
                     _lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID);
                 }
 
@@ -297,7 +302,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> CancerReview(int id, string? message, bool? success)
+        public IActionResult CancerReview(int id, string? message, bool? success)
         {
             try
             {
@@ -371,7 +376,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CancerReview(int id, string finalReview, string? clinician = "", string? clinic = "", string? comments = "", 
+        public IActionResult CancerReview(int id, string finalReview, string? clinician = "", string? clinic = "", string? comments = "", 
             string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "", string? freeText1="", int? leafletID = 0) //, 
             
         {
@@ -463,7 +468,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> FurtherRequest(int id)
+        public IActionResult FurtherRequest(int id)
         {
             try
             {
@@ -498,7 +503,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> FurtherRequest(int id, int request, string? freeText = "", int? relID = 0, string? clinicianCode = "", string? siteText = "",
+        public IActionResult FurtherRequest(int id, int request, string? freeText = "", int? relID = 0, string? clinicianCode = "", string? siteText = "",
             string? freeText1="", string? freeText2="", string? additionalText="", DateTime? diagDate = null, bool? isPreview=false)
         {
             try
@@ -567,7 +572,7 @@ namespace ClinicX.Controllers
         
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> RiskAndSurveillance(int id)
+        public IActionResult RiskAndSurveillance(int id)
         {
             try
             {
@@ -591,7 +596,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ChangeGeneralTriage(int id)
+        public IActionResult ChangeGeneralTriage(int id)
         {
             try
             {
@@ -611,7 +616,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeGeneralTriage(int icpId, string newConsultant, string newGC)
+        public IActionResult ChangeGeneralTriage(int icpId, string newConsultant, string newGC)
         {
             try
             {
@@ -630,7 +635,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ChangeTriagePathway(int id)
+        public IActionResult ChangeTriagePathway(int id)
         {
             try
             {
@@ -650,7 +655,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeTriagePathway(int id, string newPathway)
+        public IActionResult ChangeTriagePathway(int id, string newPathway)
         {
             try
             {
@@ -668,7 +673,7 @@ namespace ClinicX.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> ReturnToConsultant(int icpId)
+        public IActionResult ReturnToConsultant(int icpId)
         {
             try
             {                
@@ -685,7 +690,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveIndicationNotes(int icpID, string indicationNotes)
+        public IActionResult SaveIndicationNotes(int icpID, string indicationNotes)
         {
             try
             {

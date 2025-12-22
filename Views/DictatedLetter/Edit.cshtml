@@ -10,6 +10,7 @@
     ViewBag.HomeButton = new[]
     {
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Tests", "Index", "Test", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Dictated Letters List (full)", "Index", "DictatedLetter", new {  }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Dictated Letters List (patient)", "DictatedLettersForPatient", "DictatedLetter", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }), //gets created by JS

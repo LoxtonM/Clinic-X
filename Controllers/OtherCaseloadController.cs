@@ -1,4 +1,4 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using ClinicX.ViewModels;
@@ -10,7 +10,7 @@ namespace ClinicX.Controllers
 {
     public class OtherCaseloadController : Controller
     {
-        private readonly ClinicalContext _clinContext;
+        //private readonly ClinicalContext _clinContext;
         private readonly CaseloadVM _cvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
@@ -21,18 +21,26 @@ namespace ClinicX.Controllers
         private readonly IPathwayData _pathwayData;
         private IAuditService _audit;
 
-        public OtherCaseloadController(ClinicalContext context, IConfiguration config)
+        public OtherCaseloadController(IConfiguration config, IStaffUserData staffUserData, ICaseloadData caseloadData, ISupervisorData supervisorData, IReferralData referralData,
+            IPathwayData pathwayData, IAuditService auditService, IAreaNamesData areaNamesData)
         {
-            _clinContext = context;
+            //_clinContext = context;
             _config = config;
             _cvm = new CaseloadVM();            
-            _staffUser = new StaffUserData(_clinContext);
-            _caseloadData = new CaseloadData(_clinContext);
-            _supervisorData = new SupervisorData(_clinContext);
-            _referralData = new ReferralData(_clinContext);
-            _areaNamesData = new AreaNamesData(_clinContext);
-            _pathwayData = new PathwayData(_clinContext);
-            _audit = new AuditService(_config);
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            //_caseloadData = new CaseloadData(_clinContext);
+            _caseloadData = caseloadData;
+            //_supervisorData = new SupervisorData(_clinContext);
+            _supervisorData = supervisorData;
+            //_referralData = new ReferralData(_clinContext);
+            _referralData = referralData;
+            //_areaNamesData = new AreaNamesData(_clinContext);
+            _areaNamesData = areaNamesData;
+            //_pathwayData = new PathwayData(_clinContext);
+            _pathwayData = pathwayData;
+            //_audit = new AuditService(_config);
+            _audit = auditService;
         }
 
         [Authorize]

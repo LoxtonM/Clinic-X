@@ -3,7 +3,7 @@ using ClinicX.Models;
 
 namespace ClinicX.Meta
 {
-    interface IBreastHistoryData
+    public interface IBreastHistoryData
     {
         public BreastSurgeryHistory GetBreastSurgeryHistory(int mpi);
     }

@@ -1,11 +1,12 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Models;
 using ClinicalXPDataConnections.Meta;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using ClinicX.Models;
 using ClinicX.Meta;
-using ClinicX.Data;
+using System.Net.NetworkInformation;
+//using ClinicX.Data;
 
 
 
@@ -13,8 +14,8 @@ namespace ClinicX.Controllers
 {
     public class BloodFormController 
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cxContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly ClinicXContext _cxContext;
         private readonly IPatientData _patientData;
         private readonly IBloodFormData _bloodFormData;
         private readonly IStaffUserData _staffUser;
@@ -22,15 +23,15 @@ namespace ClinicX.Controllers
         private readonly IClinicData _clinicData;
         
 
-        public BloodFormController(ClinicalContext clinContext, ClinicXContext cxContext)
+        public BloodFormController(IConfiguration config, IPatientData patientData, IBloodFormData bloodFormData, IStaffUserData staffUserData, ITestData testData, IClinicData clinicData)
         {
-            _clinContext = clinContext;  
-            _cxContext = cxContext;            
-            _patientData = new PatientData(_clinContext);
-            _bloodFormData = new BloodFormData(_cxContext);   
-            _staffUser = new StaffUserData(_clinContext);
-            _testData = new TestData(_clinContext, _cxContext);
-            _clinicData = new ClinicData(_clinContext);
+            //_clinContext = clinContext;  
+            //_cxContext = cxContext;            
+            _patientData = patientData;
+            _bloodFormData = bloodFormData;
+            _staffUser = staffUserData;
+            _testData = testData;
+            _clinicData = clinicData;
         }
 
 

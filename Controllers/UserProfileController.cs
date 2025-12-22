@@ -1,4 +1,4 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
@@ -10,7 +10,7 @@ namespace ClinicX.Controllers
     
     public class UserProfileController : Controller
     {
-        private readonly ClinicalContext _context;
+        //private readonly ClinicalContext _context;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUserData;
         private readonly ITitleData _titleData;
@@ -18,15 +18,15 @@ namespace ClinicX.Controllers
         private readonly IAuditService _auditService;
         private readonly ProfileVM _pvm;
 
-        public UserProfileController(ClinicalContext context, IConfiguration config)
+        public UserProfileController(IConfiguration config, IStaffUserData staffUserData, ITitleData titleData, ICRUD crud, IAuditService auditService)
         {
-            _context = context;
+            //_context = context;
             _config = config;
-            _staffUserData = new StaffUserData(_context);
-            _titleData = new TitleData(_context);
+            _staffUserData = staffUserData;
+            _titleData = titleData;
             _pvm = new ProfileVM();
-            _crud = new CRUD(_config);
-            _auditService = new AuditService(_config);
+            _crud = crud;
+            _auditService = auditService;
         }
 
         [Authorize]

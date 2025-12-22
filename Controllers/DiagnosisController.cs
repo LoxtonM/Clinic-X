@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Data;
+//using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
 using ClinicalXPDataConnections.Models;
 using ClinicalXPDataConnections.Meta;
@@ -10,7 +10,7 @@ namespace ClinicX.Controllers
 {
     public class DiagnosisController : Controller
     {
-        private readonly ClinicalContext _clinContext;
+        //private readonly ClinicalContext _clinContext;
         private readonly TestDiseaseVM _dvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
@@ -19,20 +19,25 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit; 
 
-        public DiagnosisController(ClinicalContext context, IConfiguration config)
+        public DiagnosisController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IDiseaseData diseaseData, ICRUD crud, IAuditService auditService)
         {
-            _clinContext = context;
+            //_clinContext = context;
             _config = config;
-            _staffUser = new StaffUserData(_clinContext);
-            _dvm = new TestDiseaseVM();            
-            _patientData = new PatientData(_clinContext);
-            _diseaseData = new DiseaseData(_clinContext);
-            _crud = new CRUD(_config);
-            _audit = new AuditService(_config);
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            _dvm = new TestDiseaseVM();
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            //_diseaseData = new DiseaseData(_clinContext);
+            _diseaseData = diseaseData;
+            //_crud = new CRUD(_config);
+            _crud = crud;
+            //_audit = new AuditService(_config);
+            _audit = auditService;
         }
 
         [Authorize]
-        public async Task <IActionResult> Index(int id)
+        public IActionResult Index(int id)
         {
             try
             {
@@ -52,7 +57,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddNew(int id, string? searchTerm)
+        public IActionResult AddNew(int id, string? searchTerm)
         {
             try
             {
@@ -78,7 +83,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int mpi, string diseaseCode, string status, string comments)
+        public IActionResult AddNew(int mpi, string diseaseCode, string status, string comments)
         {
             try
             {
@@ -99,7 +104,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {
             try
             {
@@ -119,7 +124,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int diagID, string status, string comments)
+        public IActionResult Edit(int diagID, string status, string comments)
         {
             try
             {

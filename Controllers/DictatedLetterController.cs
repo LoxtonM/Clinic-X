@@ -1,7 +1,7 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using ClinicX.Data;
+//using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -11,8 +11,8 @@ namespace ClinicX.Controllers
 {
     public class DictatedLetterController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly DocumentContext _docContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly DocumentContext _docContext;
         private readonly LetterController _lc;
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;        
@@ -26,26 +26,38 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         private readonly IConstantsData _constantsData;
 
-        public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext, ClinicXContext cXContext)
+        public DictatedLetterController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IActivityData activityData, IDictatedLetterData dictatedLetterData, 
+            IExternalClinicianData externalClinicianData, IExternalFacilityData externalFacilityData, ICRUD crud, IConstantsData constantsData, LetterController letterController, 
+            IAuditService auditService)
         {
-            _clinContext = clinContext;
-            _docContext = docContext;
+            //_clinContext = clinContext;
+            //_docContext = docContext;
             _config = config;
             _lvm = new DictatedLetterVM();
-            _staffUser = new StaffUserData(_clinContext);
-            _patientData = new PatientData(_clinContext);
-            _activityData = new ActivityData(_clinContext);
-            _dictatedLetterData = new DictatedLetterData(_clinContext);
-            _externalClinicianData = new ExternalClinicianData(_clinContext);
-            _externalFacilityData = new ExternalFacilityData(_clinContext);
-            _crud = new CRUD(_config);
-            _lc = new LetterController(_clinContext, _docContext);
-            _audit = new AuditService(_config);
-            _constantsData = new ConstantsData(_docContext);
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            //_activityData = new ActivityData(_clinContext);
+            _activityData = activityData;
+            //_dictatedLetterData = new DictatedLetterData(_clinContext);
+            _dictatedLetterData = dictatedLetterData;
+            //_externalClinicianData = new ExternalClinicianData(_clinContext);
+            _externalClinicianData = externalClinicianData;
+            //_externalFacilityData = new ExternalFacilityData(_clinContext);
+            _externalFacilityData = externalFacilityData;
+            //_crud = new CRUD(_config);
+            _crud = crud;
+            //_lc = new LetterController(_clinContext, _docContext);
+            _lc = letterController;
+            //_audit = new AuditService(_config);
+            _audit = auditService;
+            //_constantsData = new ConstantsData(_docContext);
+            _constantsData = constantsData;
         }
 
         [Authorize]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             try
             {
@@ -72,7 +84,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> OtherCliniciansLetters(string? staffCode)
+        public IActionResult OtherCliniciansLetters(string? staffCode)
         {
             try
             {
@@ -105,7 +117,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> DictatedLettersForPatient(int id)
+        public IActionResult DictatedLettersForPatient(int id)
         {
             try
             {
@@ -134,7 +146,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {            
             try
             {
@@ -190,7 +202,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
+        public IActionResult Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
             bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments,
             string salutation, string? ccAddress, bool? doPreview)
         {
@@ -236,7 +248,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Create(int id)
+        public IActionResult Create(int id)
         {
             try
             {
@@ -263,7 +275,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Delete(int dID)
+        public IActionResult Delete(int dID)
         {
             try 
             {
@@ -280,7 +292,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Approve(int dID, bool? isCloseReferral=false)
+        public IActionResult Approve(int dID, bool? isCloseReferral=false)
         {
             try
             {                
@@ -298,7 +310,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Unapprove(int dID)
+        public IActionResult Unapprove(int dID)
         {
             try
             {
@@ -316,7 +328,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPatientToDOT(int pID, int dID)
+        public IActionResult AddPatientToDOT(int pID, int dID)
         {
             try
             {                
@@ -333,7 +345,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> RemovePatientsFromDOT(int dotID)
+        public IActionResult RemovePatientsFromDOT(int dotID)
         {
             try
             {
@@ -350,7 +362,7 @@ namespace ClinicX.Controllers
         }
 
         //[HttpPost]
-        public async Task<IActionResult> AddCCToDOT(int dID, string cc)
+        public IActionResult AddCCToDOT(int dID, string cc)
         {
             try
             {                
@@ -367,7 +379,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteCCFromDOT(int id)
+        public IActionResult DeleteCCFromDOT(int id)
         {
             try
             {   
@@ -389,7 +401,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> PreviewDOT(int dID)
+        public IActionResult PreviewDOT(int dID)
         {
             try
             {
@@ -406,7 +418,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> ActivityItems(int id)
+        public IActionResult ActivityItems(int id)
         {
             try
             {
@@ -423,7 +435,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> NewDOTLetterPatient()
+        public IActionResult NewDOTLetterPatient()
         {
             try
             {
@@ -438,7 +450,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> NewDOTLetterPatient(string cguNo)
+        public IActionResult NewDOTLetterPatient(string cguNo)
         {
             try
             {
@@ -454,7 +466,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> SearchClinician(int dotID)
+        public IActionResult SearchClinician(int dotID)
         {
             _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(dotID);
             _lvm.clinicians = new List<ExternalCliniciansAndFacilities>(); //because we have to have something or it throws a fit
@@ -463,7 +475,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SearchClinician(int dotID, string firstName, string lastName, string hospitalName, string speciality, string? addressToAdd, bool isSearchOnly)
+        public IActionResult SearchClinician(int dotID, string firstName, string lastName, string hospitalName, string speciality, string? addressToAdd, bool isSearchOnly)
         {
             _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(dotID);
             _lvm.clinicians = _externalClinicianData.GetClinicianList();            

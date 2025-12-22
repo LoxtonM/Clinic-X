@@ -10,21 +10,57 @@ namespace ClinicX.Controllers
 {
     public class RepsumController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly DocumentContext _documentContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly DocumentContext _documentContext;
+        private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
         private readonly IReferralData _referralData;
         private readonly IConstantsData _constantsData;
+        private readonly IRiskData _riskData;
+        private readonly ITriageData _triageData;
+        private readonly ISurveillanceData _survData;
+        private readonly IStudyData _studyData;
+        private readonly ITestEligibilityData _teData;
+        private readonly IClinicData _appData;
+        private readonly IWaitingListData _wlData;
+        private readonly IDiaryData _dData;
+        private readonly IRelativeData _relData;
+        private readonly IRelativeDiaryData _relDiaryData;
+        private readonly IFHSummaryData _famData;
 
-        public RepsumController(ClinicalContext context, DocumentContext documentContext)
+        public RepsumController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IReferralData referralData, IConstantsData constantsData, IRiskData riskData,
+            ITriageData triageData, ISurveillanceData surveillanceData, IStudyData studyData, ITestEligibilityData testEligibilityData, IClinicData clinicData, IWaitingListData waitingListData, 
+            IDiaryData diaryData, IRelativeData relativeData, IRelativeDiaryData relativeDiaryData, IFHSummaryData fHSummaryData)
         {
-            _clinContext = context;
-            _documentContext = documentContext;
-            _staffUser = new StaffUserData(_clinContext);
-            _patientData = new PatientData(_clinContext);
-            _referralData = new ReferralData(_clinContext);
-            _constantsData = new ConstantsData(_documentContext);
+            //_clinContext = context;
+            //_documentContext = documentContext;
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            //_referralData = new ReferralData(_clinContext);
+            _referralData = referralData;
+            //_constantsData = new ConstantsData(_documentContext);
+            _constantsData = constantsData;
+            _riskData = riskData;      
+            _triageData = triageData;
+            //SurveillanceData survData = new SurveillanceData(_clinContext);
+            _survData = surveillanceData;
+            //StudyData studyData = new StudyData(_clinContext);
+            _studyData = studyData;
+            //TestEligibilityData teData = new TestEligibilityData(_clinContext);
+            _teData = testEligibilityData;
+            //ClinicData appData = new ClinicData(_clinContext);
+            _appData = clinicData;
+            //WaitingListData wlData = new WaitingListData(_clinContext);
+            _wlData = waitingListData;
+            //DiaryData dData = new DiaryData(_clinContext);
+            _dData = diaryData;
+            _relData = relativeData;
+            _relDiaryData = relativeDiaryData;
+            //FHSummaryData famData = new FHSummaryData(_clinContext);
+            _famData = fHSummaryData;
         }
 
         [Authorize]
@@ -42,9 +78,9 @@ namespace ClinicX.Controllers
             staffMember = _staffUser.GetStaffMemberDetails(user);
             Patient patient = new Patient();
 
-            ITriageData triageData = new TriageData(_clinContext);
-            ICPCancer icpc = triageData.GetCancerICPDetails(icpID);
-            ICP icp = triageData.GetICPDetails(icpc.ICPID);
+            //ITriageData triageData = new TriageData(_clinContext);
+            ICPCancer icpc = _triageData.GetCancerICPDetails(icpID);
+            ICP icp = _triageData.GetICPDetails(icpc.ICPID);
             Referral referral = _referralData.GetReferralDetails(icp.REFID);
             patient = _patientData.GetPatientDetails(referral.MPI);
             
@@ -130,8 +166,8 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
 
-            RiskData riskData = new RiskData(_clinContext);
-            List<Risk> riskList = riskData.GetRiskListForPatient(patient.MPI);
+            //RiskData riskData = new RiskData(_clinContext);
+            List<Risk> riskList = _riskData.GetRiskListForPatient(patient.MPI);
             if (riskList.Count > 0)
             {
                 Paragraph pRiskHeader = section.AddParagraph();
@@ -195,8 +231,8 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
 
-            SurveillanceData survData = new SurveillanceData(_clinContext);
-            List<Surveillance> survList = survData.GetSurveillanceList(patient.MPI);
+            
+            List<Surveillance> survList = _survData.GetSurveillanceList(patient.MPI);
             if (survList.Count > 0)
             {
                 Paragraph pSurvHeader = section.AddParagraph();
@@ -245,8 +281,8 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
 
-            StudyData studyData = new StudyData(_clinContext);
-            List<Study> studyList = studyData.GetStudiesList(patient.MPI);
+            
+            List<Study> studyList = _studyData.GetStudiesList(patient.MPI);
             if (studyList.Count > 0)
             {
                 Paragraph pStudiesHeader = section.AddParagraph();
@@ -293,8 +329,8 @@ namespace ClinicX.Controllers
 
             spacer = section.AddParagraph();
 
-            TestEligibilityData teData = new TestEligibilityData(_clinContext);
-            List<Eligibility> teList = teData.GetTestingEligibilityList(patient.MPI);
+            
+            List<Eligibility> teList = _teData.GetTestingEligibilityList(patient.MPI);
             if (teList.Count > 0)
             {
                 Paragraph pTestHeader = section.AddParagraph();
@@ -355,8 +391,8 @@ namespace ClinicX.Controllers
 
             spacer = section.AddParagraph();
 
-            ClinicData appData = new ClinicData(_clinContext);
-            List<Appointment> appList = appData.GetClinicByPatientsList(patient.MPI);
+            
+            List<Appointment> appList = _appData.GetClinicByPatientsList(patient.MPI);
             if (appList.Count > 0)
             {
                 Paragraph pAppHeader = section.AddParagraph();
@@ -404,8 +440,8 @@ namespace ClinicX.Controllers
 
             spacer = section.AddParagraph();
 
-            WaitingListData wlData = new WaitingListData(_clinContext);
-            List<WaitingList> wlList = wlData.GetWaitingListByCGUNo(patient.CGU_No);
+            
+            List<WaitingList> wlList = _wlData.GetWaitingListByCGUNo(patient.CGU_No);
             if (wlList.Count > 0)
             {
                 Paragraph pWaitHeader = section.AddParagraph();
@@ -456,20 +492,17 @@ namespace ClinicX.Controllers
 
             spacer = section.AddParagraph();
 
-            DiaryData dData = new DiaryData(_clinContext);
-            List<Diary> dList = dData.GetDiaryList(patient.MPI);
-            RelativeData relData = new RelativeData(_clinContext);
-            List<Relative> rList = relData.GetRelativesList(patient.MPI).DistinctBy(r => r.relsid).ToList();
+            
+            List<Diary> dList = _dData.GetDiaryList(patient.MPI);            
+            List<Relative> rList = _relData.GetRelativesList(patient.MPI).DistinctBy(r => r.relsid).ToList();
 
             int rdCount = 0;
 
             if (rList.Count > 0)
-            {
-                RelativeDiaryData relDiaryData = new RelativeDiaryData(_clinContext);
-
+            {                
                 foreach (var rel in rList)
                 {
-                    List<RelativeDiary> rdList = relDiaryData.GetRelativeDiaryList(rel.relsid);
+                    List<RelativeDiary> rdList = _relDiaryData.GetRelativeDiaryList(rel.relsid);
 
                     if (rdList.Count > 0)
                     {
@@ -548,11 +581,9 @@ namespace ClinicX.Controllers
 
                 if (rList.Count > 0)
                 {
-                    RelativeDiaryData relDiaryData = new RelativeDiaryData(_clinContext);
-
                     foreach (var rel in rList)
                     {
-                        List<RelativeDiary> rdList = relDiaryData.GetRelativeDiaryList(rel.relsid);
+                        List<RelativeDiary> rdList = _relDiaryData.GetRelativeDiaryList(rel.relsid);
 
                         if (rdList.Count > 0)
                         {
@@ -612,8 +643,8 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
             spacer = section.AddParagraph();
-            FHSummaryData famData = new FHSummaryData(_clinContext);
-            List<FHSummary> famList = famData.GetFHSummaryList(patient.MPI);
+            
+            List<FHSummary> famList = _famData.GetFHSummaryList(patient.MPI);
 
             if (famList.Count > 0)
             {

@@ -3,7 +3,7 @@ using ClinicX.Models;
 
 namespace ClinicX.Meta
 {
-    interface IScreeningServiceData
+    public interface IScreeningServiceData
     {
         public ScreeningService GetScreeningServiceDetails(string gpCode);
         public ScreeningService GetScreeningServiceDetailsByCode(string ssCode);

@@ -1,21 +1,21 @@
-﻿using ClinicalXPDataConnections.Data;
-using ClinicX.Data;
+﻿//using ClinicalXPDataConnections.Data;
+//using ClinicX.Data;
 using Microsoft.AspNetCore.Mvc;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Authorization;
 using ClinicX.ViewModels;
 using ClinicX.Meta;
 using APIControllers.Controllers;
-using APIControllers.Data;
+//using APIControllers.Data;
 
 namespace ClinicX.Controllers
 {
     public class RelativeController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
-        private readonly DocumentContext _docContext;
-        private readonly APIContext _apiContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly ClinicXContext _cXContext;
+        //private readonly DocumentContext _docContext;
+        //private readonly APIContext _apiContext;
         private readonly RelativeDiagnosisVM _rdvm;
         private readonly RelativeVM _rvm;
         private readonly IConfiguration _config;
@@ -26,21 +26,27 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public RelativeController(ClinicalContext context, ClinicXContext cXContext, DocumentContext docContext, APIContext apiContext, IConfiguration config)
+        public RelativeController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IRelativeData relativeData, ICRUD crud, APIController api, IAuditService audit)
         {
-            _clinContext = context;
-            _cXContext = cXContext;
-            _docContext = docContext;
-            _apiContext = apiContext;
+            //_clinContext = context;
+            //_cXContext = cXContext;
+            //_docContext = docContext;
+            //_apiContext = apiContext;
             _config = config;
-            _crud = new CRUD(_config);
-            _staffUser = new StaffUserData(_clinContext);
-            _patientData = new PatientData(_clinContext);
-            _relativeData = new RelativeData(_clinContext);
+            //_crud = new CRUD(_config);
+            _crud = crud;
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            //_relativeData = new RelativeData(_clinContext);
+            _relativeData = relativeData;
             _rdvm = new RelativeDiagnosisVM();
             _rvm = new RelativeVM();
-            _api = new APIController(_apiContext, _config);
-            _audit = new AuditService(_config);
+            //_api = new APIController(_apiContext, _config);
+            _api = api;
+            //_audit = new AuditService(_config);
+            _audit = audit;
         }
 
         [Authorize]
@@ -62,7 +68,7 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> RelativeDetails(int id)
+        public IActionResult RelativeDetails(int id)
         {
             try
             {
@@ -83,7 +89,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {
             try
             {
@@ -105,7 +111,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, string title, string forename1,
+        public IActionResult Edit(int id, string title, string forename1,
             string forename2, string surname, string relation, string dob, string dod,
             int isAffected, string sex)
         {
@@ -155,7 +161,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddNew(int wmfacsid)
+        public IActionResult AddNew(int wmfacsid)
         {
             try
             {
@@ -176,7 +182,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int wmfacsid, string title, string forename1, 
+        public IActionResult AddNew(int wmfacsid, string title, string forename1, 
             string forename2, string surname, string relation, string sDOB, string sDOD, 
             int isAffected, string sex)
         {
@@ -257,7 +263,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ImportRelatives(int wmfacsid, string firstname, string lastname, DateTime dob, 
+        public IActionResult ImportRelatives(int wmfacsid, string firstname, string lastname, DateTime dob, 
             DateTime dod, string sex, string relation)
         {
             try

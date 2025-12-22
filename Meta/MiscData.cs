@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClinicX.Meta
 {
-    interface IMiscData
+    public interface IMiscData
     {
         public int GetClinicalNoteID(int refID);
         public int GetRiskID(int refID);

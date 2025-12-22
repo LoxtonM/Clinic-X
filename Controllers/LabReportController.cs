@@ -1,4 +1,4 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using ClinicX.ViewModels;
@@ -9,23 +9,26 @@ namespace ClinicX.Controllers
 {
     public class LabReportController : Controller
     {
-        private readonly LabContext _context;
-        private readonly ClinicalContext _clinContext;
+        //private readonly LabContext _context;
+        //private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
         private readonly ILabData _labData;
         private readonly LabReportVM _lvm;
-        private readonly StaffUserData _staff;
-        private readonly AuditService _audit;
+        private readonly IStaffUserData _staff;
+        private readonly IAuditService _audit;
 
-        public LabReportController(LabContext context, ClinicalContext clinContext, IConfiguration config)
+        public LabReportController(IConfiguration config, IStaffUserData staffUserData, IAuditService auditService, ILabData labData)
         {
-            _context = context;
-            _clinContext = clinContext;
+            //_context = context;
+            //_clinContext = clinContext;
             _config = config;
-            _labData = new LabReportData(_context);
+            //_labData = new LabReportData(_context);
+            _labData = labData;
             _lvm = new LabReportVM();
-            _staff = new StaffUserData(_clinContext);
-            _audit = new AuditService(_config);
+            //_staff = new StaffUserData(_clinContext);
+            _staff = staffUserData;
+            //_audit = new AuditService(_config);
+            _audit = auditService;
         }
 
 

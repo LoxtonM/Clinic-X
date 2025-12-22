@@ -1847,7 +1847,7 @@ namespace ClinicalXPDataConnections.Meta
             string content6 = "";
             string freetext = freeText1;
             string quoteRef = "";
-            string signOff = "";
+            //string signOff = "";
             string sigFilename = "";
 
             //WHY IS THERE ALWAYS A NULL SOMEWHWERE?????????

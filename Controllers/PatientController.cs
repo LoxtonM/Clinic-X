@@ -11,9 +11,9 @@ namespace ClinicX.Controllers
 {
     public class PatientController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly DocumentContext _docContext;
-        private readonly APIContext _apiContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly DocumentContext _docContext;
+        //private readonly APIContext _apiContext;
         private readonly PatientVM _pvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;        
@@ -30,35 +30,37 @@ namespace ClinicX.Controllers
         private readonly ITriageData _triageData;
         private readonly IClinicData _clinicData;
         private readonly APIController _api;
-        private readonly PhenotipsMirrorData _phenotipsMirrorData;
+        private readonly IPhenotipsMirrorData _phenotipsMirrorData;
 
-        public PatientController(ClinicalContext context, DocumentContext docContext, APIContext apiContext, IConfiguration config)
+        public PatientController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IRelativeData relativeData, IPathwayData pathwayData, IAlertData alertData, 
+            IReferralData referralData, IDiaryData diaryData, IHPOCodeData hPOCodeData, IAuditService auditService, IConstantsData constantsData, IAgeCalculator ageCalculator,
+            ITriageData triageData, IClinicData clinicData, APIController aPIController, IPhenotipsMirrorData phenotipsMirrorData)
         {
-            _clinContext = context;
-            _docContext = docContext;
-            _apiContext = apiContext;
+            //_clinContext = context;
+            //_docContext = docContext;
+            //_apiContext = apiContext;
             _config = config;
             _pvm = new PatientVM();
-            _staffUser = new StaffUserData(_clinContext);
-            _patientData = new PatientData(_clinContext);
-            _relativeData = new RelativeData(_clinContext);
-            _pathwayData = new PathwayData(_clinContext);
-            _alertData = new AlertData(_clinContext);
-            _referralData = new ReferralData(_clinContext);
-            _diaryData = new DiaryData(_clinContext);
-            _hpoData = new HPOCodeData(_clinContext);
-            _audit = new AuditService(_config);
-            _constantsData = new ConstantsData(_docContext);
-            _ageCalculator = new AgeCalculator();
-            _triageData = new TriageData(_clinContext);
-            _clinicData = new ClinicData(_clinContext);
-            _api = new APIController(_apiContext, _config);
-            _phenotipsMirrorData = new PhenotipsMirrorData(_clinContext);
+            _staffUser = staffUserData;
+            _patientData = patientData;
+            _relativeData = relativeData;
+            _pathwayData = pathwayData;
+            _alertData = alertData;
+            _referralData = referralData;
+            _diaryData = diaryData;
+            _hpoData = hPOCodeData;
+            _audit = auditService;
+            _constantsData = constantsData;
+            _ageCalculator = ageCalculator;
+            _triageData = triageData;
+            _clinicData = clinicData;
+            _api = aPIController;
+            _phenotipsMirrorData = phenotipsMirrorData;
         }
         
 
         [Authorize]
-        public async Task<IActionResult> PatientDetails(int id, bool? success, string? message)
+        public IActionResult PatientDetails(int id, bool? success, string? message)
         {
             try
             {
@@ -68,7 +70,12 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
                 _pvm.patient = _patientData.GetPatientDetails(id);
-                
+
+                if (_pvm.patient == null)
+                {
+                    return RedirectToAction("NotFound", "WIP");
+                }
+
                 List<Patient> patients = new List<Patient>(); //patients in the pedigree
                 patients = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
 
@@ -86,18 +93,14 @@ namespace ClinicX.Controllers
                         _pvm.nextPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + nextRegNo.ToString());
                     }                    
                 }
-
-                if (_pvm.patient == null)
-                {
-                    return RedirectToAction("NotFound", "WIP");
-                }
-                _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
+                
+                _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList(); //because there are dupes.
                 _pvm.hpoTermDetails = _hpoData.GetHPOTermsAddedList(id);
                 _pvm.referrals = _referralData.GetActiveReferralsListForPatient(id);
-                _pvm.referrals = _pvm.referrals.Where(r => r.PATHWAY != null).ToList(); 
+                IEnumerable<Referral> referrals = _pvm.referrals.Where(r => r.PATHWAY != null);
                 //because there are nulls in the pathway that are breaking it!! So we have to filter them out.
-                _pvm.referralsActiveGeneral = _pvm.referrals.Where(r => r.PATHWAY.Contains("General")).ToList();
-                _pvm.referralsActiveCancer = _pvm.referrals.Where(r => r.PATHWAY.Contains("Cancer")).ToList();
+                _pvm.referralsActiveGeneral = referrals.Where(r => r.PATHWAY.Contains("General")).ToList();
+                _pvm.referralsActiveCancer = referrals.Where(r => r.PATHWAY.Contains("Cancer")).ToList();
                 _pvm.appointmentList = _clinicData.GetClinicByPatientsList(_pvm.patient.MPI).Distinct().ToList(); //distinct is required because of the alerts
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 //_pvm.patientPathways = _pathwayData.GetPathways(id);

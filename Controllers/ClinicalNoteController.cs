@@ -11,8 +11,8 @@ namespace ClinicX.Controllers
 {
     public class ClinicalNoteController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _cXContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly ClinicXContext _cXContext;
         private readonly ClinicalNoteVM _cvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
@@ -25,25 +25,35 @@ namespace ClinicX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public ClinicalNoteController(ClinicalContext context, ClinicXContext cXContext, IConfiguration config)
+        public ClinicalNoteController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IActivityData activityData, IClinicalNoteData clinicalNoteData,
+            IClinicData clinicData, IReferralData referralData, ICRUD crud, IMiscData miscData, IAuditService auditService)
         {
-            _clinContext = context;
-            _cXContext = cXContext;
+            //_clinContext = context;
+            //_cXContext = cXContext;
             _config = config;
-            _staffUser = new StaffUserData(_clinContext);
-            _patientData = new PatientData(_clinContext);
-            _activityData = new ActivityData(_clinContext);
-            _clinicalNoteData = new ClinicalNoteData(_cXContext);
-            _clinicData = new ClinicData(_clinContext);
-            _referralData = new ReferralData(_clinContext);
-            _crud = new CRUD(_config);
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            //_activityData = new ActivityData(_clinContext);
+            _activityData = activityData;
+            //_clinicalNoteData = new ClinicalNoteData(_cXContext);
+            _clinicalNoteData = clinicalNoteData;
+            //_clinicData = new ClinicData(_clinContext);
+            _clinicData = clinicData;
+            //_referralData = new ReferralData(_clinContext);
+            _referralData = referralData;
+            //_crud = new CRUD(_config);
+            _crud = crud;
             _cvm = new ClinicalNoteVM();
-            _misc = new MiscData(_config);
-            _audit = new AuditService(_config);
+            //_misc = new MiscData(_config);
+            _misc = miscData;
+            //_audit = new AuditService(_config);
+            _audit = auditService;
         }       
         
         [Authorize]
-        public async Task<IActionResult> Index(int id)
+        public IActionResult Index(int id)
         {
             try
             {
@@ -65,7 +75,7 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Create(int id)
+        public IActionResult Create(int id)
         {
             try
             {
@@ -86,7 +96,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int mpi, int refID, string noteType, string clinicalNote)
+        public IActionResult Create(int mpi, int refID, string noteType, string clinicalNote)
         {
             try
             {                                
@@ -109,7 +119,7 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {
             try
             {
@@ -183,7 +193,8 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
-                var note = await _cXContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
+                //var note = await _cXContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
+                var note = _clinicalNoteData.GetClinicalNoteDetails(id);
 
                 return RedirectToAction("Index", new { id = note.MPI });
             }

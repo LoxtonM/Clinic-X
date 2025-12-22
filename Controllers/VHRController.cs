@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ClinicX.ViewModels;
-using ClinicalXPDataConnections.Data;
+//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
-using ClinicX.Data;
+//using ClinicX.Data;
 using ClinicX.Models;
 using ClinicalXPDataConnections.Models;
 
@@ -16,9 +16,9 @@ namespace ClinicX.Controllers;
 public class VHRController : Controller
 {
     private readonly IConfiguration _config;
-    private readonly ClinicalContext _clinContext;
-    private readonly ClinicXContext _cXContext;
-    private readonly DocumentContext _docContext;
+    //private readonly ClinicalContext _clinContext;
+    //private readonly ClinicXContext _cXContext;
+    //private readonly DocumentContext _docContext;
     private readonly LetterVM _lvm;
     private readonly IPatientData _patientData;
     private readonly IStaffUserData _staffUser;
@@ -32,24 +32,26 @@ public class VHRController : Controller
     private readonly IUntestedVHRGroupData _uVHRData;
     private readonly IConstantsData _constantsData;
 
-    public VHRController(ClinicalContext clinContext, ClinicXContext cXContext, DocumentContext docContext, IConfiguration config)
+    public VHRController(IConfiguration config, IPatientData patientData, IStaffUserData staffUserData, IDocumentsData documentsData, IExternalClinicianData externalClinicianData,
+        IExternalFacilityData externalFacilityData, IScreeningServiceData screeningServiceData, ITriageData triageData, ISurveillanceData surveillanceData, IBreastHistoryData breastHistoryData, 
+        IUntestedVHRGroupData untestedVHRGroupData, IConstantsData constantsData)
     {
         _config = config;
-        _clinContext = clinContext;
-        _cXContext = cXContext;
-        _docContext = docContext;
-        _lvm = new LetterVM();        
-        _patientData = new PatientData(_clinContext);
-        _staffUser = new StaffUserData(_clinContext);
-        _documentsData = new DocumentsData(_docContext);
-        _externalClinicianData = new ExternalClinicianData(_clinContext);
-        _externalFacilityData = new ExternalFacilityData(_clinContext);
-        _screenData = new ScreeningServiceData(_cXContext);
-        _triageData = new TriageData(_clinContext);
-        _survData = new SurveillanceData(_clinContext);
-        _bhsData = new BreastHistoryData(_cXContext);
-        _uVHRData = new UntestedVHRGroupData(cXContext);
-        _constantsData = new ConstantsData(docContext);
+        //_clinContext = clinContext;
+        //_cXContext = cXContext;
+        //_docContext = docContext;
+        _lvm = new LetterVM();
+        _patientData = patientData;
+        _staffUser = staffUserData;
+        _documentsData = documentsData;
+        _externalClinicianData = externalClinicianData;
+        _externalFacilityData = externalFacilityData;
+        _screenData = screeningServiceData;
+        _triageData = triageData;
+        _survData = surveillanceData;
+        _bhsData = breastHistoryData;
+        _uVHRData = untestedVHRGroupData;
+        _constantsData = constantsData;
     }
 
     /*
@@ -102,19 +104,19 @@ public class VHRController : Controller
             XImage image = XImage.FromFile(@"wwwroot\Letterhead.jpg");
             
             string patName = "";
-            string address = "";
+            //string address = "";
             string patAddress = "";
-            string salutation = "";            
+            //string salutation = "";            
             DateTime patDOB = DateTime.Now;
 
             string content1 = "";
             string content2 = "";
             string content3 = "";
             string content4 = "";
-            string content5 = "";
-            string content6 = "";           
-            string quoteRef = "";
-            string signOff = "";
+            //string content5 = "";
+            //string content6 = "";           
+            //string quoteRef = "";
+            //string signOff = "";
             string sigFilename = "";
             int printCount = 1;
 

@@ -1,4 +1,4 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using ClinicalXPDataConnections.Meta;
@@ -9,7 +9,7 @@ namespace ClinicX.Controllers
 {
     public class ReviewController : Controller
     {
-        private readonly ClinicalContext _clinContext;
+        //private readonly ClinicalContext _clinContext;
         private readonly ReviewVM _rvm;
         private readonly IConfiguration _config;
         private readonly IActivityData _activityData;        
@@ -22,24 +22,34 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
         private readonly IAgeCalculator _ageCalculator;
 
-        public ReviewController(ClinicalContext context, IConfiguration config)
+        public ReviewController(IConfiguration config, IPatientData patientData, IActivityData activityData, IStaffUserData staffUserData, IReviewData reviewData, IReferralData referralData, 
+            IAppointmentData appointmentData, ICRUD crud, IAuditService auditService, IAgeCalculator ageCalculator)
         {
-            _clinContext = context;
+            //_clinContext = context;
             _config = config;
             _rvm = new ReviewVM();
-            _patientData = new PatientData(_clinContext);
-            _activityData = new ActivityData(_clinContext);
-            _staffUser = new StaffUserData(_clinContext);
-            _reviewData = new ReviewData(_clinContext);
-            _referralData = new ReferralData(_clinContext);
-            _appointmentData = new AppointmentData(_clinContext);
-            _crud = new CRUD(_config);
-            _audit = new AuditService(_config);
-            _ageCalculator = new AgeCalculator();
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            //_activityData = new ActivityData(_clinContext);
+            _activityData = activityData;
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            //_reviewData = new ReviewData(_clinContext);
+            _reviewData = reviewData;
+            //_referralData = new ReferralData(_clinContext);
+            _referralData = referralData;
+            //_appointmentData = new AppointmentData(_clinContext);
+            _appointmentData = appointmentData;
+            //_crud = new CRUD(_config);
+            _crud = crud;
+            //_audit = new AuditService(_config);
+            _audit = auditService;
+            //_ageCalculator = new AgeCalculator();
+            _ageCalculator = ageCalculator;
         }
 
         [Authorize]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             try
             {
@@ -63,7 +73,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> ReviewsForPatient(int id)
+        public IActionResult ReviewsForPatient(int id)
         {
             try
             {
@@ -89,7 +99,7 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Create(int id)
+        public IActionResult Create(int id)
         {
             try
             {
@@ -111,7 +121,7 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create(int mpi, int refID, string pathway, string category, string revDate, string comments, string? recipient)
+        public IActionResult Create(int mpi, int refID, string pathway, string category, string revDate, string comments, string? recipient)
         {
             try
             {
@@ -144,7 +154,7 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Edit (int id)
+        public IActionResult Edit (int id)
         {
             try
             {
@@ -177,7 +187,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, string status, string comments, string revDate)
+        public IActionResult Edit(int id, string status, string comments, string revDate)
         {
             try
             {
@@ -209,7 +219,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ChooseAppt(int id)
+        public IActionResult ChooseAppt(int id)
         {
             try
             {

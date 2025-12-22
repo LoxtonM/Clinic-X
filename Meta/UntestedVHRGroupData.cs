@@ -3,7 +3,7 @@ using ClinicX.Models;
 
 namespace ClinicX.Meta
 {
-    interface IUntestedVHRGroupData
+    public interface IUntestedVHRGroupData
     {
         public UntestedVHRGroup GetUntestedVHRGroupData(int refid);
         public UntestedVHRGroup GetUntestedVHRGroupDataByRefID(int refid);

@@ -1,4 +1,4 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using ClinicX.Meta;
@@ -11,7 +11,7 @@ namespace ClinicX.Controllers
 {
     public class ClinicController : Controller
     {
-        private readonly ClinicalContext _clinContext;
+       // private readonly ClinicalContext _clinContext;
         private readonly ClinicVM _cvm;
         private readonly IConfiguration _config;        
         private readonly IPatientData _patientData;
@@ -26,69 +26,74 @@ namespace ClinicX.Controllers
         private readonly IActivityTypeData _activityTypeData;
 
 
-        public ClinicController(ClinicalContext context, IConfiguration config)
+        public ClinicController(IConfiguration config, IPatientData patientData, IReferralData referralData, IActivityData activityData, IStaffUserData staffUserData, 
+            IClinicData clinicData, ICRUD crud, IAuditService auditService, IOutcomeData outcomeData, IClinicVenueData clinicVenueData, IActivityTypeData activityTypeData)
         {
-            _clinContext = context;
+            //_clinContext = context;
             _config = config;
             _cvm = new ClinicVM();
-            _patientData = new PatientData(_clinContext);
-            _referralData = new ReferralData(_clinContext);
-            _activityData = new ActivityData(_clinContext);
-            _staffUser = new StaffUserData(_clinContext);
-            _clinicData = new ClinicData(_clinContext);
-            _crud = new CRUD(_config);
-            _audit = new AuditService(_config);
-            _outcomeData = new OutcomeData(_clinContext);
-            _clinicVenueData = new ClinicVenueData(_clinContext);
-            _activityTypeData = new ActivityTypeData(_clinContext);
+            //_patientData = new PatientData(_clinContext);
+            _patientData = patientData;
+            //_referralData = new ReferralData(_clinContext);
+            _referralData = referralData;
+            //_activityData = new ActivityData(_clinContext);
+            _activityData = activityData;
+            //_staffUser = new StaffUserData(_clinContext);
+            _staffUser = staffUserData;
+            //_clinicData = new ClinicData(_clinContext);
+            _clinicData = clinicData;
+            //_crud = new CRUD(_config);
+            _crud = crud;
+            //_audit = new AuditService(_config);
+            _audit = auditService;
+            //_outcomeData = new OutcomeData(_clinContext);
+            _outcomeData = outcomeData;
+            //_clinicVenueData = new ClinicVenueData(_clinContext);
+            _clinicVenueData = clinicVenueData;
+            //_activityTypeData = new ActivityTypeData(_clinContext);
+            _activityTypeData = activityTypeData;
         }
 
 
         [HttpGet]
         [Authorize]
-        public async Task <IActionResult> Index(DateTime? pastFilterDate, bool? isShowOutstanding, DateTime? futureFilterDate)
+        public IActionResult Index(DateTime? pastFilterDate, bool? isShowOutstanding, DateTime? futureFilterDate)
         {
             try
-            {
-                if (User.Identity.Name is null)
+            {                
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinics", "", _ip.GetIPAddress());
+
+                if (pastFilterDate == null) //set default date to 30 days before today
                 {
-                    return RedirectToAction("NotFound", "WIP");
+                    pastFilterDate = DateTime.Parse(DateTime.Now.AddDays(-90).ToString());
                 }
-                else
+
+                if (futureFilterDate == null) //set default date to 30 days before today
                 {
-                    string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                    IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-                    _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinics", "", _ip.GetIPAddress());
-
-                    if (pastFilterDate == null) //set default date to 30 days before today
-                    {
-                        pastFilterDate = DateTime.Parse(DateTime.Now.AddDays(-90).ToString());
-                    }
-
-                    if (futureFilterDate == null) //set default date to 30 days before today
-                    {
-                        futureFilterDate = DateTime.Parse(DateTime.Now.AddDays(90).ToString());
-                    }
-
-                    _cvm.pastClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE < DateTime.Today).ToList();
-                    _cvm.currentClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE == DateTime.Today).ToList();
-                    _cvm.futureClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE > DateTime.Today).ToList();
-
-                    if (isShowOutstanding.GetValueOrDefault())
-                    {
-                        _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.Attendance == "NOT RECORDED").ToList();
-                    }
-
-                    _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.BOOKED_DATE >= pastFilterDate).ToList();
-                    _cvm.pastClinicsList = _cvm.pastClinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
-                    _cvm.currentClinicsList = _cvm.currentClinicsList.OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
-                    _cvm.futureClinicsList = _cvm.futureClinicsList.Where(c => c.BOOKED_DATE <= futureFilterDate).OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
-                    _cvm.pastClinicFilterDate = pastFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
-                    _cvm.futureClinicFilterDate = futureFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
-                    _cvm.isClinicOutstanding = isShowOutstanding.GetValueOrDefault();
-
-                    return View(_cvm);
+                    futureFilterDate = DateTime.Parse(DateTime.Now.AddDays(90).ToString());
                 }
+
+                _cvm.pastClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE < DateTime.Today).ToList();
+                _cvm.currentClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE == DateTime.Today).ToList();
+                _cvm.futureClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE > DateTime.Today).ToList();
+
+                if (isShowOutstanding.GetValueOrDefault())
+                {
+                    _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.Attendance == "NOT RECORDED").ToList();
+                }
+
+                _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.BOOKED_DATE >= pastFilterDate).ToList();
+                _cvm.pastClinicsList = _cvm.pastClinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                _cvm.currentClinicsList = _cvm.currentClinicsList.OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                _cvm.futureClinicsList = _cvm.futureClinicsList.Where(c => c.BOOKED_DATE <= futureFilterDate).OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                _cvm.pastClinicFilterDate = pastFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
+                _cvm.futureClinicFilterDate = futureFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
+                _cvm.isClinicOutstanding = isShowOutstanding.GetValueOrDefault();
+
+                return View(_cvm);
+               
             }
             catch (Exception ex)
             {

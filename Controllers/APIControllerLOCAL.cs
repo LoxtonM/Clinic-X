@@ -509,7 +509,7 @@ namespace APIControllers.Controllers
                 request.AddHeader("authorization", authKey);
                 request.AddHeader("X-Gene42-Secret", apiKey);
                 request.AddJsonBody("{\"owner\":{\"id\":\"xwiki:XWiki." + userName + "\"}}", false);
-                var response = client.PutAsync(request);
+                var response = await client.PutAsync(request);
             }
         }
 
