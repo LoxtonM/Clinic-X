@@ -56,7 +56,6 @@
     </Reference>
     <Reference Include="ClinicalXPDataConnections">
       <HintPath>G:\Technical Improvements Group\C# Libraries\ClinicalXPDataConnections.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
 

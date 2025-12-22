@@ -6,6 +6,7 @@ using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 namespace ClinicX.Controllers
 {
@@ -148,7 +149,6 @@ namespace ClinicX.Controllers
                 List<DictatedLettersPatient> dlp = new List<DictatedLettersPatient>();
                 dlp = _dictatedLetterData.GetDictatedLettersPatientsList(id).ToList();
                 _lvm.dictatedLettersPatients = new List<Patient>();
-                
                 foreach(var p in dlp) //to add additional family members to the "Re:" list
                 {
                     Patient pat = _patientData.GetPatientDetails(p.MPI);
@@ -331,12 +331,12 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-addPt" });
             }
         }
-
+               
         [Authorize]
         public async Task<IActionResult> RemovePatientsFromDOT(int dotID)
         {
             try
-            {
+            {                
                 int success = _crud.CallStoredProcedure("Letter", "RemoveFamMembers", dotID, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-removePts(SQL)" }); }
@@ -393,9 +393,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _lc.PrintDOTPDF(dID, User.Identity.Name, true);
-                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext); //for testing purposes
-                //lc.PrintDOTPDF(dID, User.Identity.Name, true); //FOR TESTING ONLY - production should use the data library instead
+                //_lc.PrintDOTPDF(dID, User.Identity.Name, true);
+                LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext); //for testing purposes
+                lc.PrintDOTPDF(dID, User.Identity.Name, true); //FOR TESTING ONLY - production should use the data library instead
                 
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
@@ -498,6 +498,7 @@ namespace ClinicX.Controllers
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addCC(SQL)" }); }
                 
             }
+
 
             return View(_lvm);
         }

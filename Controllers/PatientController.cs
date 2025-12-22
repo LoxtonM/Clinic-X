@@ -84,7 +84,8 @@ namespace ClinicX.Controllers
 
                         _pvm.previousPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + prevRegNo.ToString());
                         _pvm.nextPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + nextRegNo.ToString());
-                    }                    
+                    }
+                    
                 }
 
                 if (_pvm.patient == null)
@@ -119,10 +120,9 @@ namespace ClinicX.Controllers
                 }
 
                 //Constants table flag decides whether Phenotips is in use or not
-                if (_pvm.isPhenotipsAvailable)
+                if (_pvm.isPhenotipsAvailable) //pings the Phenotips API to see if a PPQ is scheduled
                 {
                     //if (_api.GetPhenotipsPatientID(id).Result != "")
-                    
                     if (_phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //use the mirror table rather than pinging the API every time someone checks the record!
                     {
                         _pvm.isPatientInPhenotips = true;
@@ -133,7 +133,6 @@ namespace ClinicX.Controllers
                         _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;                        
                         _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
                     }
-                    
                 }
 
                 if (_pvm.patient.DOB != null) //yes we do actually have null birth dates!
@@ -147,6 +146,8 @@ namespace ClinicX.Controllers
                         _pvm.currentAge = _ageCalculator.DateDifferenceYear(_pvm.patient.DOB.GetValueOrDefault(), DateTime.Today);
                     }
                 }
+
+                
 
                 if (success.HasValue)
                 {
@@ -167,5 +168,7 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
             }
         }
+        
+        
     }
 }
