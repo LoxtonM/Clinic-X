@@ -5,7 +5,6 @@ using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using ClinicX.Models;
 using ClinicX.Meta;
-using System.Net.NetworkInformation;
 //using ClinicX.Data;
 
 
@@ -16,14 +15,14 @@ namespace ClinicX.Controllers
     {
         //private readonly ClinicalContext _clinContext;
         //private readonly ClinicXContext _cxContext;
-        private readonly IPatientData _patientData;
-        private readonly IBloodFormData _bloodFormData;
-        private readonly IStaffUserData _staffUser;
-        private readonly ITestData _testData;
-        private readonly IClinicData _clinicData;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IBloodFormDataAsync _bloodFormData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly ITestDataAsync _testData;
+        private readonly IClinicDataAsync _clinicData;
         
 
-        public BloodFormController(IConfiguration config, IPatientData patientData, IBloodFormData bloodFormData, IStaffUserData staffUserData, ITestData testData, IClinicData clinicData)
+        public BloodFormController(IConfiguration config, IPatientDataAsync patientData, IBloodFormDataAsync bloodFormData, IStaffUserDataAsync staffUserData, ITestDataAsync testData, IClinicDataAsync clinicData)
         {
             //_clinContext = clinContext;  
             //_cxContext = cxContext;            
@@ -36,12 +35,12 @@ namespace ClinicX.Controllers
 
 
 
-        public void CreateBloodForm(int bloodFormID, string user, string? altPatName = "", bool? isPreview = false)
+        public async Task CreateBloodForm(int bloodFormID, string user, string? altPatName = "", bool? isPreview = false)
         {
-            StaffMember staffMember = _staffUser.GetStaffMemberDetails(user);
-            BloodForm bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
-            Test test = _testData.GetTestDetails(bloodForm.TestID);
-            Patient patient = _patientData.GetPatientDetails(test.MPI);
+            StaffMember staffMember = await _staffUser.GetStaffMemberDetails(user);
+            BloodForm bloodForm = await _bloodFormData.GetBloodFormDetails(bloodFormID);
+            Test test = await _testData.GetTestDetails(bloodForm.TestID);
+            Patient patient = await _patientData.GetPatientDetails(test.MPI);
             
             //creates a new PDF document
             PdfSharpCore.Pdf.PdfDocument document = new PdfSharpCore.Pdf.PdfDocument();
@@ -280,8 +279,9 @@ namespace ClinicX.Controllers
             tf.DrawString("Date of next appointment:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 290, totalLength, 150, 20));
 
             string dtString="N/A";
-            List<Appointment> apptList = _clinicData.GetClinicByPatientsList(patient.MPI).Where(a => a.Attendance == "NOT RECORDED").OrderBy(a => a.BOOKED_DATE).ToList();
-            apptList = apptList.Where(a => a.BOOKED_DATE > DateTime.Now).ToList();
+            List<Appointment> apptList = await _clinicData.GetClinicByPatientsList(patient.MPI);
+            apptList = apptList.Where(a => a.Attendance == "NOT RECORDED" && a.BOOKED_DATE > DateTime.Now).OrderBy(a => a.BOOKED_DATE).ToList();
+            //apptList = apptList.Where(a => a.BOOKED_DATE > DateTime.Now).ToList();
             
             
             if (apptList.Count > 0)

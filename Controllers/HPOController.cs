@@ -16,36 +16,29 @@ namespace ClinicX.Controllers
         //private readonly ClinicXContext _cXContext;
         //private readonly APIContext _apiContext;
         private readonly HPOVM _hpo;
-        private readonly IStaffUserData _staffUser;
+        private readonly IStaffUserDataAsync _staffUser;
         private readonly IConfiguration _config;        
-        private readonly IHPOCodeData _hpoData;
-        private readonly IClinicalNoteData _clinicaNoteData;        
+        private readonly IHPOCodeDataAsync _hpoData;
+        private readonly IClinicalNoteDataAsync _clinicaNoteData;        
         private readonly IMiscData _misc;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         private readonly APIController _api;
 
-        public HPOController(IConfiguration config, IStaffUserData staffUserData, IHPOCodeData hPOCodeData, IClinicalNoteData clinicalNoteData, ICRUD crud, IMiscData miscData,
+        public HPOController(IConfiguration config, IStaffUserDataAsync staffUserData, IHPOCodeDataAsync hPOCodeData, IClinicalNoteDataAsync clinicalNoteData, ICRUD crud, IMiscData miscData,
             IAuditService audit, APIController aPIController)
         {
             //_clinContext = context;
             //_cXContext = cXContext;
             //_apiContext = apiContext;
             _config = config;
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
             _hpo = new HPOVM();
-            //_hpoData = new HPOCodeData(_clinContext);
             _hpoData = hPOCodeData;
-            //_clinicaNoteData = new ClinicalNoteData(_cXContext);
             _clinicaNoteData = clinicalNoteData;
-            //_crud = new CRUD(_config);
             _crud = crud;
-            //_misc = new MiscData(_config);
             _misc = miscData;
-            //_audit = new AuditService(_config);
             _audit = audit;
-            //_api = new APIController(_apiContext, _config);
             _api = aPIController;
         }
 
@@ -55,14 +48,14 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _hpo.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _hpo.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _hpo.staffMember.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - HPO", "ID=" + id.ToString(), _ip.GetIPAddress());
                 
-                _hpo.clinicalNote = _clinicaNoteData.GetClinicalNoteDetails(id);
-                _hpo.hpoTermDetails = _hpoData.GetExistingHPOTermsList(id);                
-                _hpo.hpoExtractedTerms = _hpoData.GetExtractedTermsList(id, _config);
+                _hpo.clinicalNote = await _clinicaNoteData.GetClinicalNoteDetails(id);
+                _hpo.hpoTermDetails = await _hpoData.GetExistingHPOTermsList(id);                
+                _hpo.hpoExtractedTerms = await _hpoData.GetExtractedTermsList(id, _config);
 
                 if(searchTerm != null) 
                 {
@@ -90,7 +83,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _hpo.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _hpo.staffMember.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - HPO", "NoteID=" + noteID.ToString(), _ip.GetIPAddress());
                 //check if code exists, add it if it doesn't
@@ -100,7 +94,7 @@ namespace ClinicX.Controllers
                     _hpoData.AddHPOTermToDatabase(termCode, term.Term, staffCode, _config);
 
                     //and add its synonyms as well
-                    ClinicalXPDataConnections.Models.HPOTerm termAdded = _hpoData.GetHPOTermByTermCode(termCode);
+                    ClinicalXPDataConnections.Models.HPOTerm termAdded = await _hpoData.GetHPOTermByTermCode(termCode);
                     int hpoTermID = termAdded.ID;
 
                     List<string> synonymsToAdd = new List<string>();
@@ -125,11 +119,13 @@ namespace ClinicX.Controllers
         }
                 
         [HttpPost]
-        public IActionResult AddHPOTermFromText(int termID, int noteID) //add a HPO term found in the text
+        public async Task<IActionResult> AddHPOTermFromText(int termID, int noteID) //add a HPO term found in the text
         {
             try
             {
-                string termCode = _hpoData.GetHPOTermByID(termID).TermCode;
+                var term = await _hpoData.GetHPOTermByID(termID);
+                string termCode = term.TermCode;
+
 
                 int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, 0, 0, termCode, "", "", "", User.Identity.Name);
 

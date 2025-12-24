@@ -20,21 +20,21 @@ public class VHRController : Controller
     //private readonly ClinicXContext _cXContext;
     //private readonly DocumentContext _docContext;
     private readonly LetterVM _lvm;
-    private readonly IPatientData _patientData;
-    private readonly IStaffUserData _staffUser;
-    private readonly IDocumentsData _documentsData;
-    private readonly IExternalClinicianData _externalClinicianData;
-    private readonly IExternalFacilityData _externalFacilityData;
-    private readonly IScreeningServiceData _screenData;
-    private readonly ITriageData _triageData;
-    private readonly ISurveillanceData _survData;
-    private readonly IBreastHistoryData _bhsData;
-    private readonly IUntestedVHRGroupData _uVHRData;
-    private readonly IConstantsData _constantsData;
+    private readonly IPatientDataAsync _patientData;
+    private readonly IStaffUserDataAsync _staffUser;
+    private readonly IDocumentsDataAsync _documentsData;
+    private readonly IExternalClinicianDataAsync _externalClinicianData;
+    private readonly IExternalFacilityDataAsync _externalFacilityData;
+    private readonly IScreeningServiceDataAsync _screenData;
+    private readonly ITriageDataAsync _triageData;
+    private readonly ISurveillanceDataAsync _survData;
+    private readonly IBreastHistoryDataAsync _bhsData;
+    private readonly IUntestedVHRGroupDataAsync _uVHRData;
+    private readonly IConstantsDataAsync _constantsData;
 
-    public VHRController(IConfiguration config, IPatientData patientData, IStaffUserData staffUserData, IDocumentsData documentsData, IExternalClinicianData externalClinicianData,
-        IExternalFacilityData externalFacilityData, IScreeningServiceData screeningServiceData, ITriageData triageData, ISurveillanceData surveillanceData, IBreastHistoryData breastHistoryData, 
-        IUntestedVHRGroupData untestedVHRGroupData, IConstantsData constantsData)
+    public VHRController(IConfiguration config, IPatientDataAsync patientData, IStaffUserDataAsync staffUserData, IDocumentsDataAsync documentsData, IExternalClinicianDataAsync externalClinicianData,
+        IExternalFacilityDataAsync externalFacilityData, IScreeningServiceDataAsync screeningServiceData, ITriageDataAsync triageData, ISurveillanceDataAsync surveillanceData, IBreastHistoryDataAsync breastHistoryData,
+        IUntestedVHRGroupDataAsync untestedVHRGroupData, IConstantsDataAsync constantsData)
     {
         _config = config;
         //_clinContext = clinContext;
@@ -76,17 +76,19 @@ public class VHRController : Controller
 
 
         
-    public void DoVHRPro(int id, int mpi, int icpCancerID, string user, string referrer, string screeningService, string? additionalText = "", int? diaryID = 0, bool? isPreview = false)
+    public async Task DoVHRPro(int id, int mpi, int icpCancerID, string user, string referrer, string screeningService, string? additionalText = "", int? diaryID = 0, bool? isPreview = false)
     {
         try
         {
-            _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
-            _lvm.patient = _patientData.GetPatientDetails(mpi);
-            _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
-            _lvm.referrer = _externalClinicianData.GetClinicianDetails(referrer);
+            _lvm.staffMember = await _staffUser.GetStaffMemberDetails(user);
+            _lvm.patient = await _patientData.GetPatientDetails(mpi);
+            _lvm.documentsContent = await _documentsData.GetDocumentDetails(id);
+            _lvm.referrer = await _externalClinicianData.GetClinicianDetails(referrer);
 
-            int icpID = _triageData.GetCancerICPDetails(icpCancerID).ICPID;
-            int refID = _triageData.GetICPDetails(icpID).REFID;
+            var icpc = await _triageData.GetCancerICPDetails(icpCancerID);
+            int icpID = icpc.ICPID;
+            var refer = await _triageData.GetICPDetails(icpID);
+            int refID = refer.REFID;
                         
             string docCode = _lvm.documentsContent.DocCode;
             //creates a new PDF document            
@@ -161,8 +163,8 @@ public class VHRController : Controller
             patAddress = _lvm.patient.ADDRESS1;
             if (_lvm.patient.ADDRESS3 != null) { patAddress = patAddress + ", " + _lvm.patient.ADDRESS3; }
 
-            var gp = _externalClinicianData.GetClinicianDetails(_lvm.patient.GP_Code);
-            var gpFac = _externalFacilityData.GetFacilityDetails(_lvm.patient.GP_Facility_Code);            
+            var gp = await _externalClinicianData.GetClinicianDetails(_lvm.patient.GP_Code);
+            var gpFac = await _externalFacilityData.GetFacilityDetails(_lvm.patient.GP_Facility_Code);            
             string gpDets = gp.TITLE + " " + gp.FIRST_NAME + " " + gp.NAME + ", " + gpFac.NAME;
 
             content1 = "Name:" + patName + Environment.NewLine + "Address:" + patAddress + Environment.NewLine +
@@ -186,7 +188,7 @@ public class VHRController : Controller
             vhrTf.DrawString(content3, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 120));
             totalLengthVHR += 20;
 
-            ScreeningService sServ = _screenData.GetScreeningServiceDetails(_lvm.patient.GP_Facility_Code);
+            ScreeningService sServ = await _screenData.GetScreeningServiceDetails(_lvm.patient.GP_Facility_Code);
 
             content4 = "Referee name:" + sServ.Contact + Environment.NewLine +
                 "Address: " + sServ.Add1 + ", " + sServ.Add2 + ", " + sServ.Add3 + ", " + sServ.Add4;
@@ -204,7 +206,7 @@ public class VHRController : Controller
             vhrGfx.DrawRectangle(pen, new XRect(45, totalLengthVHR, 500, 120)); //"Previous history of breast cancer" etc
             totalLengthVHR += 10;
 
-            BreastSurgeryHistory bhd = _bhsData.GetBreastSurgeryHistory(mpi);
+            BreastSurgeryHistory bhd = await _bhsData.GetBreastSurgeryHistory(mpi);
             
             if(bhd == null)
             {
@@ -291,7 +293,7 @@ public class VHRController : Controller
             }
 
             UntestedVHRGroup uvg = new UntestedVHRGroup();
-            uvg = _uVHRData.GetUntestedVHRGroupDataByRefID(refID);
+            uvg = await _uVHRData.GetUntestedVHRGroupDataByRefID(refID);
             bool isUntestedGroupTicked = false;
             if (uvg != null)
             {
@@ -308,7 +310,7 @@ public class VHRController : Controller
             vhrTf.DrawString("For completion by referring clinical genetics services only", fontBold, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 40));
             totalLengthVHR += 35;
             
-            List<Surveillance> surv = _survData.GetSurveillanceList(mpi);
+            List<Surveillance> surv = await _survData.GetSurveillanceList(mpi);
 
             vhrGfx.DrawRectangle(pen, new XRect(45, totalLengthVHR, pageWidth, 40 + surv.Count * 10));
             totalLengthVHR += 5;
@@ -575,7 +577,7 @@ public class VHRController : Controller
                 bool isLive = bool.Parse(_config.GetValue("IsLive", ""));
                 if (isLive)
                 {
-                    string edmsPath = _constantsData.GetConstant("PrintPathEDMS", 1);
+                    string edmsPath = await _constantsData.GetConstant("PrintPathEDMS", 1);
                     System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\VHRPropreview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
                 }
                 else
@@ -594,18 +596,20 @@ public class VHRController : Controller
 
 
 
-    public void DoVHRProCoverLetter(int id, int mpi, int icpCancerID, string user, string referrer, string screeningService, string? additionalText = "", int? diaryID = 0)
+    public async Task DoVHRProCoverLetter(int id, int mpi, int icpCancerID, string user, string referrer, string screeningService, string? additionalText = "", int? diaryID = 0)
     {
         try
         {
-            _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
-            _lvm.patient = _patientData.GetPatientDetails(mpi);
-            _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
-            _lvm.gp = _externalClinicianData.GetClinicianDetails(_lvm.patient.GP_Code);
-            _lvm.facility = _externalFacilityData.GetFacilityDetails(_lvm.gp.FACILITY);
+            _lvm.staffMember = await _staffUser.GetStaffMemberDetails(user);
+            _lvm.patient = await _patientData.GetPatientDetails(mpi);
+            _lvm.documentsContent = await _documentsData.GetDocumentDetails(id);
+            _lvm.gp = await _externalClinicianData.GetClinicianDetails(_lvm.patient.GP_Code);
+            _lvm.facility = await _externalFacilityData.GetFacilityDetails(_lvm.gp.FACILITY);
 
-            int icpID = _triageData.GetCancerICPDetails(icpCancerID).ICPID;
-            int refID = _triageData.GetICPDetails(icpID).REFID;
+            var icpc = await _triageData.GetCancerICPDetails(icpCancerID);
+            int icpID = icpc.ICPID;
+            var refer = await _triageData.GetICPDetails(icpID);
+            int refID = refer.REFID;
 
             //string docCode = _lvm.documentsContent.DocCode;
             string docCode = _lvm.documentsContent.DocCode;
@@ -665,7 +669,7 @@ public class VHRController : Controller
             }
             vhrTf.Alignment = XParagraphAlignment.Left;
 
-            ScreeningService ss = _screenData.GetScreeningServiceDetailsByCode(screeningService);
+            ScreeningService ss = await _screenData.GetScreeningServiceDetailsByCode(screeningService);
 
             name = ss.Contact;
             address = ss.Add1 + Environment.NewLine;
@@ -753,7 +757,7 @@ public class VHRController : Controller
             bool isLive = bool.Parse(_config.GetValue("IsLive", ""));
             if (isLive)
             {
-                string edmsPath = _constantsData.GetConstant("PrintPathEDMS", 1);
+                string edmsPath = await _constantsData.GetConstant("PrintPathEDMS", 1);
                 System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\VHRProCpreview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
             }
             else

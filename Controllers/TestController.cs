@@ -7,7 +7,7 @@ using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 //using ClinicX.Data;
 using ClinicX.Models;
-using Microsoft.Office.Interop.Outlook;
+//using Microsoft.Office.Interop.Outlook;
 
 namespace ClinicX.Controllers
 {
@@ -18,20 +18,20 @@ namespace ClinicX.Controllers
         //private readonly DocumentContext _documentContext;
         private readonly TestDiseaseVM _tvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
-        private readonly IPatientData _patientData;
-        private readonly ITestData _testData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IPatientDataAsync _patientData;
+        private readonly ITestDataAsync _testData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         private readonly IAgeCalculator _ageCalculator;
-        private readonly IBloodFormData _bloodFormData;
-        private readonly ISampleData _sampleData;
-        private readonly IConstantsData _constantsData;
-        private readonly IReferralData _refData;
+        private readonly IBloodFormDataAsync _bloodFormData;
+        private readonly ISampleDataAsync _sampleData;
+        private readonly IConstantsDataAsync _constantsData;
+        private readonly IReferralDataAsync _refData;
         private readonly BloodFormController _bfc;
 
-        public TestController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, ITestData testData, ICRUD crud, IAuditService audit, IAgeCalculator ageCalculator, 
-            IBloodFormData bloodFormData, ISampleData sampleData, IConstantsData constantsData, IReferralData referralData, BloodFormController bloodFormController)
+        public TestController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, ITestDataAsync testData, ICRUD crud, IAuditService audit, IAgeCalculator ageCalculator,
+            IBloodFormDataAsync bloodFormData, ISampleDataAsync sampleData, IConstantsDataAsync constantsData, IReferralDataAsync referralData, BloodFormController bloodFormController)
         {
             //_clinContext = context;
             //_cXContext = cXContext;
@@ -39,40 +39,31 @@ namespace ClinicX.Controllers
             _config = config;
             _tvm = new TestDiseaseVM();
             _staffUser = staffUserData;
-            //_staffUser = new StaffUserData(_clinContext);
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
-            //_testData = new TestData(_clinContext, _cXContext);
             _testData = testData;
-            //_crud = new CRUD(_config);
             _crud = crud;
-            //_audit = new AuditService(_config);
             _audit = audit;
-            //_ageCalculator = new AgeCalculator();
             _ageCalculator = ageCalculator;
-            //_bloodFormData = new BloodFormData(_cXContext);
             _bloodFormData = bloodFormData;
-            //_sampleData = new SampleData(_cXContext);
             _sampleData = sampleData;
-            //_constantsData = new ConstantsData(_documentContext);
             _constantsData = constantsData;
-            //_refData = new ReferralData(_clinContext);
             _refData = referralData;
-            //BloodFormController bfc = new BloodFormController(_clinContext, _cXContext);
             _bfc = bloodFormController;
         }
 
         [Authorize]
-        public IActionResult Index(int id)
+        public async Task<IActionResult> Index(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Tests", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
-                _tvm.patient = _patientData.GetPatientDetails(id);
-                _tvm.tests = _testData.GetTestListByPatient(id).OrderBy(t => t.ExpectedDate).ToList();
+                _tvm.patient = await _patientData.GetPatientDetails(id);
+                _tvm.tests = await _testData.GetTestListByPatient(id);
+                _tvm.tests = _tvm.tests.OrderBy(t => t.ExpectedDate).ToList();
 
                 return View(_tvm);
             }
@@ -83,15 +74,17 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult AllOutstandingTests()
+        public async Task<IActionResult> AllOutstandingTests()
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - All Tests", "", _ip.GetIPAddress());
 
-                _tvm.tests = _testData.GetTestListByUser(User.Identity.Name).OrderBy(t => t.ExpectedDate).ToList();
+                _tvm.tests = await _testData.GetTestListByUser(User.Identity.Name);
+                _tvm.tests = _tvm.tests.OrderBy(t => t.ExpectedDate).ToList();
 
                 return View(_tvm);
             }
@@ -103,17 +96,19 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddNew(int id)
+        public async Task<IActionResult> AddNew(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Test", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
-                _tvm.testList = _testData.GetTestList();
-                _tvm.patient = _patientData.GetPatientDetails(id);
-                _tvm.referralList = _refData.GetActiveReferralsListForPatient(id).OrderByDescending(r => r.RefDate).ToList();
+                _tvm.testList = await _testData.GetTestList();
+                _tvm.patient = await _patientData.GetPatientDetails(id);
+                _tvm.referralList = await _refData.GetActiveReferralsListForPatient(id);
+                _tvm.referralList = _tvm.referralList.OrderByDescending(r => r.RefDate).ToList();
 
                 return View(_tvm);
             }
@@ -142,22 +137,23 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Test", "ID=" + id.ToString(), _ip.GetIPAddress());
 
-                _tvm.test = _testData.GetTestDetails(id);
+                _tvm.test = await _testData.GetTestDetails(id);
                 if (_tvm.test == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
                 else
                 {
-                    _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);
+                    _tvm.patient = await _patientData.GetPatientDetails(_tvm.test.MPI);
                     if (_tvm.test.DATE_REQUESTED != null)
                     {
                         if (_tvm.test.DATE_RECEIVED == null)
@@ -170,7 +166,7 @@ namespace ClinicX.Controllers
                         }
                     }
                 }
-                _tvm.bloodFormList = _bloodFormData.GetBloodFormList(id);
+                _tvm.bloodFormList = await _bloodFormData.GetBloodFormList(id);
                 _tvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1) + _tvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
 
                 return View(_tvm);
@@ -182,7 +178,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int testID, string result, string comments, string receivedDate, string givenDate, int complete)
+        public async Task<IActionResult> Edit(int testID, string result, string comments, string receivedDate, string givenDate, int complete)
         {
             try
             {
@@ -218,7 +214,8 @@ namespace ClinicX.Controllers
 
                 if (comments == null) { comments = ""; }
 
-                int mpi = _testData.GetTestDetails(testID).MPI;
+                var tser = await _testData.GetTestDetails(testID);
+                int mpi = tser.MPI; //obviously we can't do it immediately.
 
                 int success = _crud.CallStoredProcedure("Test", "Update", testID, complete, 0, result, "", "", comments, User.Identity.Name, dateReceived, dateGiven);
 
@@ -234,18 +231,18 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult NewBloodForm(int testID)
+        public async Task<IActionResult> NewBloodForm(int testID)
         {
-            _tvm.test = _testData.GetTestDetails(testID);
-            _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);            
-            _tvm.sampleTypes = _sampleData.GetSampleTypeList();
-            _tvm.sampleRequirementList = _sampleData.GetSampleRequirementsList();
+            _tvm.test = await _testData.GetTestDetails(testID);
+            _tvm.patient = await _patientData.GetPatientDetails(_tvm.test.MPI);            
+            _tvm.sampleTypes = await _sampleData.GetSampleTypeList();
+            _tvm.sampleRequirementList = await _sampleData.GetSampleRequirementsList();
 
             return View(_tvm);
         }
 
         [HttpPost]
-        public IActionResult NewBloodForm(int testID, int iSampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
+        public async Task<IActionResult> NewBloodForm(int testID, int iSampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
             DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails, bool isInpatient, string? relNumber,
             bool isPrenatal, bool isPresymptomatic, bool isDiagnostic, bool isCarrier, string? prenatalType, string? prenatalRisk, int? gestation)
         {
@@ -255,37 +252,37 @@ namespace ClinicX.Controllers
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-edit(SQL)" }); }
 
-            int iBloodFormID = _bloodFormData.GetBloodFormList(testID).OrderByDescending(f => f.BloodFormID).First().BloodFormID;
-
+            var bf = await _bloodFormData.GetBloodFormList(testID);
+            int iBloodFormID = bf.OrderByDescending(f => f.BloodFormID).First().BloodFormID;
 
             return RedirectToAction("BloodFormEdit", new { bloodFormID = iBloodFormID });
         }
 
         [HttpGet]
         [Authorize]
-        public IActionResult BloodFormEdit(int bloodFormID) //save data to use in the blood form preview
+        public async Task<IActionResult> BloodFormEdit(int bloodFormID) //save data to use in the blood form preview
         {
-            _tvm.bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
-            _tvm.test = _testData.GetTestDetails(_tvm.bloodForm.TestID);
-            _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);
+            _tvm.bloodForm = await _bloodFormData.GetBloodFormDetails(bloodFormID);
+            _tvm.test = await _testData.GetTestDetails(_tvm.bloodForm.TestID);
+            _tvm.patient = await _patientData.GetPatientDetails(_tvm.test.MPI);
             
-            _tvm.sampleTypes = _sampleData.GetSampleTypeList();
-            _tvm.sampleRequirementList = _sampleData.GetSampleRequirementsList();
+            _tvm.sampleTypes = await _sampleData.GetSampleTypeList();
+            _tvm.sampleRequirementList = await _sampleData.GetSampleRequirementsList();
 
             return View(_tvm);
         }
 
         [HttpPost]
-        public IActionResult BloodFormEdit(int bloodFormID, string sampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
+        public async Task<IActionResult> BloodFormEdit(int bloodFormID, string sampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
             DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails, bool isInpatient, string? relNumber,
             bool isPrenatal, bool isPresymptomatic, bool isDiagnostic, bool isCarrier, string? prenatalType, string? prenatalRisk, int? gestation)
         {
-            _tvm.bloodForm = _bloodFormData.GetBloodFormDetails(bloodFormID);
-            _tvm.test = _testData.GetTestDetails(_tvm.bloodForm.TestID);
-            _tvm.patient = _patientData.GetPatientDetails(_tvm.test.MPI);
+            _tvm.bloodForm = await _bloodFormData.GetBloodFormDetails(bloodFormID);
+            _tvm.test = await _testData.GetTestDetails(_tvm.bloodForm.TestID);
+            _tvm.patient = await _patientData.GetPatientDetails(_tvm.test.MPI);
 
-            _tvm.sampleTypes = _sampleData.GetSampleTypeList();
-            _tvm.sampleRequirementList = _sampleData.GetSampleRequirementsList();
+            _tvm.sampleTypes = await _sampleData.GetSampleTypeList();
+            _tvm.sampleRequirementList = await _sampleData.GetSampleRequirementsList();
 
             int iSuccess = _crud.CallPatientBloodFormCRUD("Edit", bloodFormID, 0, gestation.GetValueOrDefault(), 0, 0, 0, 0, clinicalDetails, testingRequirements,
                 sampleType, relativeDetails, User.Identity.Name, prenatalType, prenatalRisk, relname, relNumber, sampleRequirements, nextAppDate, relDOB, isNHS, isUrgent, isInpatient,
@@ -295,10 +292,10 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult DoBloodForm(int bloodFormID, string? altPatName, bool? isPreview = false) //create the blood form itself
+        public async Task<IActionResult> DoBloodForm(int bloodFormID, string? altPatName, bool? isPreview = false) //create the blood form itself
         {
             //BloodFormData bfData = new BloodFormData(_cXContext);
-            BloodForm bf = _bloodFormData.GetBloodFormDetails(bloodFormID);
+            BloodForm bf = await _bloodFormData.GetBloodFormDetails(bloodFormID);
             int testID = bf.TestID;
 
             

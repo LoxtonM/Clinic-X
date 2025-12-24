@@ -372,7 +372,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddNewTestingEligibility(int id)
+        public IActionResult AddNewTestingEligibility(int id)
         {
             try
             {

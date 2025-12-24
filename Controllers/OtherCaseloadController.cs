@@ -13,59 +13,60 @@ namespace ClinicX.Controllers
         //private readonly ClinicalContext _clinContext;
         private readonly CaseloadVM _cvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
-        private readonly ICaseloadData _caseloadData;
-        private readonly ISupervisorData _supervisorData;
-        private readonly IReferralData _referralData;
-        private readonly IAreaNamesData _areaNamesData;
-        private readonly IPathwayData _pathwayData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly ICaseloadDataAsync _caseloadData;
+        private readonly ISupervisorDataAsync _supervisorData;
+        private readonly IReferralDataAsync _referralData;
+        private readonly IAreaNamesDataAsync _areaNamesData;
+        private readonly IPathwayDataAsync _pathwayData;
         private IAuditService _audit;
 
-        public OtherCaseloadController(IConfiguration config, IStaffUserData staffUserData, ICaseloadData caseloadData, ISupervisorData supervisorData, IReferralData referralData,
-            IPathwayData pathwayData, IAuditService auditService, IAreaNamesData areaNamesData)
+        public OtherCaseloadController(IConfiguration config, IStaffUserDataAsync staffUserData, ICaseloadDataAsync caseloadData, ISupervisorDataAsync supervisorData, IReferralDataAsync referralData,
+            IPathwayDataAsync pathwayData, IAuditService auditService, IAreaNamesDataAsync areaNamesData)
         {
             //_clinContext = context;
             _config = config;
             _cvm = new CaseloadVM();            
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
-            //_caseloadData = new CaseloadData(_clinContext);
             _caseloadData = caseloadData;
-            //_supervisorData = new SupervisorData(_clinContext);
             _supervisorData = supervisorData;
-            //_referralData = new ReferralData(_clinContext);
             _referralData = referralData;
-            //_areaNamesData = new AreaNamesData(_clinContext);
             _areaNamesData = areaNamesData;
-            //_pathwayData = new PathwayData(_clinContext);
             _pathwayData = pathwayData;
-            //_audit = new AuditService(_config);
             _audit = auditService;
         }
 
         [Authorize]
-        public IActionResult Index(string? staffCode)
+        public async Task<IActionResult> Index(string? staffCode)
         {
             try
             {
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string userStaffCode = user.STAFF_CODE;
+                
                 if (staffCode == null)
                 {
-                    staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                    staffCode = userStaffCode;
                 }
+
                 _cvm.isSupervisor = false;
-                string userStaffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;                
+                
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);                
                 _audit.CreateUsageAuditEntry(userStaffCode, "ClinicX - Caseloads", "StaffCode=" + staffCode, _ip.GetIPAddress());
 
                 _cvm.staffCode = staffCode;
-                _cvm.caseLoad = _caseloadData.GetCaseloadList(staffCode).OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();
-                _cvm.clinicians = _staffUser.GetClinicalStaffList();
+                _cvm.caseLoad = await _caseloadData.GetCaseloadList(staffCode);
+                _cvm.caseLoad = _cvm.caseLoad.OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();
+                _cvm.clinicians = await _staffUser.GetClinicalStaffList();
                 if (_cvm.caseLoad.Count() > 0)
                 {
                     _cvm.name = _cvm.caseLoad.FirstOrDefault().Clinician;
                 }
 
-                if(_supervisorData.GetIsConsSupervisor(staffCode) || _supervisorData.GetIsGCSupervisor(staffCode))
+                bool isConsSup = await _supervisorData.GetIsConsSupervisor(userStaffCode);
+                bool isGCSup = await _supervisorData.GetIsGCSupervisor(userStaffCode);
+
+                if (isConsSup || isGCSup)
                 {
                     _cvm.isSupervisor = true; //only supervisors should be able to see certain functions
                 }
@@ -79,15 +80,17 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult CaseloadDistribution(int? year, string? pathway, string? region) //telemetry - shows distribution of referrals across clinicians
+        public async Task<IActionResult> CaseloadDistribution(int? year, string? pathway, string? region) //telemetry - shows distribution of referrals across clinicians
         {
             try
             {
-                string userStaffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string userStaffCode = user.STAFF_CODE;
+
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(userStaffCode, "ClinicX - CaseloadDistribution", "", _ip.GetIPAddress());
 
-                List<Referral> referralList = _referralData.GetActiveReferralsList();
+                List<Referral> referralList = await _referralData.GetActiveReferralsList();
                 _cvm.years = new List<int>();
 
                 IQueryable<Referral> referrals = referralList.Where(r => r.COMPLETE == "Active" && r.logicaldelete == false).AsQueryable(); 
@@ -103,7 +106,7 @@ namespace ClinicX.Controllers
                     }                   
                 }
                 
-                _cvm.pathways = _pathwayData.GetPathwayList();
+                _cvm.pathways = await _pathwayData.GetPathwayList();
 
                 if (year != null)
                 {                    
@@ -119,8 +122,8 @@ namespace ClinicX.Controllers
 
                 referralList = referrals.Where(r => r.PATHWAY != null).ToList();                
 
-                _cvm.clinicians = _staffUser.GetClinicalStaffList();
-                List<AreaNames> areaNamesList = _areaNamesData.GetAreaNames();
+                _cvm.clinicians = await _staffUser.GetClinicalStaffList();
+                List<AreaNames> areaNamesList = await _areaNamesData.GetAreaNames();
                 _cvm.geographicalRegions = new Dictionary<string, string>();
 
                 foreach (var item in areaNamesList)

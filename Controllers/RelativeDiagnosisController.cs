@@ -14,46 +14,42 @@ namespace ClinicX.Controllers
         //private readonly ClinicXContext _cXContext;
         private readonly RelativeDiagnosisVM _rdvm;
         private readonly IConfiguration _config;
-        private readonly IRelativeData _relativeData;
-        private readonly IRelativeDiagnosisData _relativeDiagnosisData;
-        private readonly IStaffUserData _staffUser;
-        private readonly IPatientData _patientData;
+        private readonly IRelativeDataAsync _relativeData;
+        private readonly IRelativeDiagnosisDataAsync _relativeDiagnosisData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IPatientDataAsync _patientData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         
-        public RelativeDiagnosisController(IConfiguration config, IRelativeData relativeData, IRelativeDiagnosisData relativeDiagnosisData, IStaffUserData staffUserData, IPatientData patientData,
+        public RelativeDiagnosisController(IConfiguration config, IRelativeDataAsync relativeData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData,
             ICRUD crud, IAuditService auditService) 
         {
             //_clinContext = context;
             //_cXContext = cXContext;
             _config = config;                        
-            //_relativeData = new RelativeData(_clinContext);
             _relativeData = relativeData;
-            //_relativeDiagnosisData = new RelativeDiagnosisData(_clinContext);
             _relativeDiagnosisData = relativeDiagnosisData;
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
-            //_crud = new CRUD(_config);
             _crud = crud;
             _rdvm = new RelativeDiagnosisVM();
-            //_audit = new AuditService(_config);
             _audit = auditService;
         }
 
         [Authorize]
-        public IActionResult Index(int relID)
+        public async Task<IActionResult> Index(int relID)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relative Diagnoses", "ID=" + relID.ToString(), _ip.GetIPAddress());
 
-                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(relID);
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
-                _rdvm.relativesDiagnosisList = _relativeDiagnosisData.GetRelativeDiagnosisList(relID);                
+                _rdvm.relativeDetails = await _relativeData.GetRelativeDetails(relID);
+                var pat = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
+                _rdvm.MPI = pat.MPI;
+                _rdvm.relativesDiagnosisList = await _relativeDiagnosisData.GetRelativeDiagnosisList(relID);                
                 return View(_rdvm);
             }
             catch (Exception ex)
@@ -64,19 +60,20 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddNew(int id)
+        public async Task<IActionResult> AddNew(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative Diagnosis", "ID=" + id.ToString(), _ip.GetIPAddress());
 
-                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
-                _rdvm.cancerRegList = _relativeDiagnosisData.GetCancerRegList();
-                _rdvm.requestStatusList = _relativeDiagnosisData.GetRequestStatusList();     
-                _rdvm.staffList = _staffUser.GetStaffMemberList();
-                _rdvm.clinicianList = _staffUser.GetClinicalStaffList();
+                _rdvm.relativeDetails = await _relativeData.GetRelativeDetails(id);
+                _rdvm.cancerRegList = await _relativeDiagnosisData.GetCancerRegList();
+                _rdvm.requestStatusList = await _relativeDiagnosisData.GetRequestStatusList();     
+                _rdvm.staffList = await _staffUser.GetStaffMemberList();
+                _rdvm.clinicianList = await _staffUser.GetClinicalStaffList();
 
                 return View(_rdvm);
             }
@@ -108,17 +105,18 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Relative Diagnosis", "ID=" + id.ToString());
 
-                _rdvm.relativesDiagnosis = _relativeDiagnosisData.GetRelativeDiagnosisDetails(id);               
-                _rdvm.tumourSiteList = _relativeDiagnosisData.GetTumourSiteList();
-                _rdvm.tumourLatList = _relativeDiagnosisData.GetTumourLatList();
-                _rdvm.tumourMorphList = _relativeDiagnosisData.GetTumourMorphList();                
+                _rdvm.relativesDiagnosis = await _relativeDiagnosisData.GetRelativeDiagnosisDetails(id);               
+                _rdvm.tumourSiteList = await _relativeDiagnosisData.GetTumourSiteList();
+                _rdvm.tumourLatList = await _relativeDiagnosisData.GetTumourLatList();
+                _rdvm.tumourMorphList = await _relativeDiagnosisData.GetTumourMorphList();                
 
                 return View(_rdvm);
             }
@@ -129,16 +127,16 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int tumourID, string? consent="", DateTime? dateReceived=null, string? confirmed="",
+        public async Task<IActionResult> Edit(int tumourID, string? consent="", DateTime? dateReceived=null, string? confirmed="",
             DateTime? confDiagDate=null, string? confDiagAge="", string? siteCode="", string? latCode="", string? grade="", 
             string? dukes="", string? morphCode="", string? histologyNumber="", string? notes="")
         {
             try
             {
-                _rdvm.relativesDiagnosis = _relativeDiagnosisData.GetRelativeDiagnosisDetails(tumourID);
-                _rdvm.tumourSiteList = _relativeDiagnosisData.GetTumourSiteList();
-                _rdvm.tumourLatList = _relativeDiagnosisData.GetTumourLatList();
-                _rdvm.tumourMorphList = _relativeDiagnosisData.GetTumourMorphList();
+                _rdvm.relativesDiagnosis = await _relativeDiagnosisData.GetRelativeDiagnosisDetails(tumourID);
+                _rdvm.tumourSiteList = await _relativeDiagnosisData.GetTumourSiteList();
+                _rdvm.tumourLatList = await _relativeDiagnosisData.GetTumourLatList();
+                _rdvm.tumourMorphList = await _relativeDiagnosisData.GetTumourMorphList();
 
                 string data = "ConfDiagAge:" + confDiagAge + ",Grade:" + grade + ",Dukes:" + dukes + ",HistologyNumber:" + histologyNumber;               
                 //there are too many strings, so I need to concatenate them all to send them to the SP

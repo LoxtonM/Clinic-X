@@ -14,54 +14,45 @@ namespace ClinicX.Controllers
        // private readonly ClinicalContext _clinContext;
         private readonly ClinicVM _cvm;
         private readonly IConfiguration _config;        
-        private readonly IPatientData _patientData;
-        private readonly IReferralData _referralData;
-        private readonly IActivityData _activityData;
-        private readonly IStaffUserData _staffUser;
-        private readonly IClinicData _clinicData;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IReferralDataAsync _referralData;
+        private readonly IActivityDataAsync _activityData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IClinicDataAsync _clinicData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
-        private readonly IOutcomeData _outcomeData;
-        private readonly IClinicVenueData _clinicVenueData;
-        private readonly IActivityTypeData _activityTypeData;
+        private readonly IOutcomeDataAsync _outcomeData;
+        private readonly IClinicVenueDataAsync _clinicVenueData;
+        private readonly IActivityTypeDataAsync _activityTypeData;
 
 
-        public ClinicController(IConfiguration config, IPatientData patientData, IReferralData referralData, IActivityData activityData, IStaffUserData staffUserData, 
-            IClinicData clinicData, ICRUD crud, IAuditService auditService, IOutcomeData outcomeData, IClinicVenueData clinicVenueData, IActivityTypeData activityTypeData)
+        public ClinicController(IConfiguration config, IPatientDataAsync patientData, IReferralDataAsync referralData, IActivityDataAsync activityData, IStaffUserDataAsync staffUserData,
+            IClinicDataAsync clinicData, ICRUD crud, IAuditService auditService, IOutcomeDataAsync outcomeData, IClinicVenueDataAsync clinicVenueData, IActivityTypeDataAsync activityTypeData)
         {
             //_clinContext = context;
             _config = config;
             _cvm = new ClinicVM();
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
-            //_referralData = new ReferralData(_clinContext);
             _referralData = referralData;
-            //_activityData = new ActivityData(_clinContext);
             _activityData = activityData;
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
-            //_clinicData = new ClinicData(_clinContext);
             _clinicData = clinicData;
-            //_crud = new CRUD(_config);
             _crud = crud;
-            //_audit = new AuditService(_config);
             _audit = auditService;
-            //_outcomeData = new OutcomeData(_clinContext);
             _outcomeData = outcomeData;
-            //_clinicVenueData = new ClinicVenueData(_clinContext);
             _clinicVenueData = clinicVenueData;
-            //_activityTypeData = new ActivityTypeData(_clinContext);
             _activityTypeData = activityTypeData;
         }
 
 
         [HttpGet]
         [Authorize]
-        public IActionResult Index(DateTime? pastFilterDate, bool? isShowOutstanding, DateTime? futureFilterDate)
+        public async Task<IActionResult> Index(DateTime? pastFilterDate, bool? isShowOutstanding, DateTime? futureFilterDate)
         {
             try
-            {                
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            {
+                _cvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _cvm.staffMember?.STAFF_CODE ?? string.Empty;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinics", "", _ip.GetIPAddress());
 
@@ -75,9 +66,11 @@ namespace ClinicX.Controllers
                     futureFilterDate = DateTime.Parse(DateTime.Now.AddDays(90).ToString());
                 }
 
-                _cvm.pastClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE < DateTime.Today).ToList();
-                _cvm.currentClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE == DateTime.Today).ToList();
-                _cvm.futureClinicsList = _clinicData.GetClinicList(User.Identity.Name).Where(c => c.BOOKED_DATE > DateTime.Today).ToList();
+                var clinicListAll = await _clinicData.GetClinicList(User.Identity.Name);
+
+                _cvm.pastClinicsList = clinicListAll.Where(c => c.BOOKED_DATE < DateTime.Today).ToList();
+                _cvm.currentClinicsList = clinicListAll.Where(c => c.BOOKED_DATE == DateTime.Today).ToList();
+                _cvm.futureClinicsList = clinicListAll.Where(c => c.BOOKED_DATE > DateTime.Today).ToList();
 
                 if (isShowOutstanding.GetValueOrDefault())
                 {
@@ -92,8 +85,7 @@ namespace ClinicX.Controllers
                 _cvm.futureClinicFilterDate = futureFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
                 _cvm.isClinicOutstanding = isShowOutstanding.GetValueOrDefault();
 
-                return View(_cvm);
-               
+                return View(_cvm);               
             }
             catch (Exception ex)
             {
@@ -112,12 +104,13 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _cvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _cvm.staffMember?.STAFF_CODE ?? string.Empty;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinic Details", "RefID=" + id.ToString(), _ip.GetIPAddress());
 
-                _cvm.Clinic = _clinicData.GetClinicDetails(id);
-                _cvm.linkedReferral = _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
+                _cvm.Clinic = await _clinicData.GetClinicDetails(id);
+                _cvm.linkedReferral = await _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
 
                 if(_cvm.Clinic.Attendance.Contains("Att")) //show "seen by" details for completed appts
                 {
@@ -160,17 +153,18 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _cvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _cvm.staffMember?.STAFF_CODE ?? string.Empty;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinic", "RefID=" + id.ToString(), _ip.GetIPAddress());
 
-                _cvm.staffMembers = _staffUser.GetClinicalStaffList();
-                _cvm.activityItems = _activityData.GetClinicDetailsList(id);
-                _cvm.activityItem = _activityData.GetActivityDetails(id);
-                _cvm.outcomes = _clinicData.GetOutcomesList();
-                _cvm.ethnicities = _clinicData.GetEthnicitiesList();
+                _cvm.staffMembers = await _staffUser.GetClinicalStaffList();
+                _cvm.activityItems = await _activityData.GetClinicDetailsList(id);
+                _cvm.activityItem = await _activityData.GetActivityDetails(id);
+                _cvm.outcomes = await _clinicData.GetOutcomesList();
+                _cvm.ethnicities = await _clinicData.GetEthnicitiesList();
                 int mpi = _cvm.activityItem.MPI;
-                _cvm.patients = _patientData.GetPatientDetails(mpi);
+                _cvm.patient = await _patientData.GetPatientDetails(mpi);
 
                 return View(_cvm);
             }
@@ -182,7 +176,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, string? ethnicity, bool? isComplete = false, string? seenBy2="", string? seenBy3="")
+        public IActionResult Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, string? ethnicity, bool? isComplete = false, string? seenBy2="", string? seenBy3="")
         {
             try
             {
@@ -227,12 +221,12 @@ namespace ClinicX.Controllers
         [Authorize]
         public async Task<IActionResult> AddNew(int mpi)
         {
-            _cvm.patients = _patientData.GetPatientDetails(mpi);
-            _cvm.outcomes = _outcomeData.GetOutcomeList();
-            _cvm.staffMembers = _staffUser.GetClinicalStaffList();
-            _cvm.referralsList = _referralData.GetActiveReferralsListForPatient(mpi);
-            _cvm.venueList = _clinicVenueData.GetVenueList();
-            _cvm.appTypeList = _activityTypeData.GetApptTypes();
+            _cvm.patient = await _patientData.GetPatientDetails(mpi);
+            _cvm.outcomes = await _outcomeData.GetOutcomeList();
+            _cvm.staffMembers = await _staffUser.GetClinicalStaffList();
+            _cvm.referralsList = await _referralData.GetActiveReferralsListForPatient(mpi);
+            _cvm.venueList = await _clinicVenueData.GetVenueList();
+            _cvm.appTypeList = await _activityTypeData.GetApptTypes();
 
             return View(_cvm);
         }
@@ -245,7 +239,7 @@ namespace ClinicX.Controllers
             int refID = 0;
 
             if (venue == null) { venue = ""; }
-            if (clinician1 == null) { clinician1 = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE; }
+            if (clinician1 == null) { clinician1 = _staffUser.GetStaffMemberDetails(User.Identity.Name).Result.STAFF_CODE; }
             if (noPatientsSeen == null) { noPatientsSeen = 1; }
 
             DateTime bookedTimeEdited = DateTime.Parse("1900-01-01 " + bookedTime.Hour + ":" + bookedTime.Minute + ":" + bookedTime.Second);
@@ -255,13 +249,14 @@ namespace ClinicX.Controllers
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-create(SQL)" }); }
 
-            List<ActivityItem> appts = _activityData.GetActivityList(mpi).Where(a => a.BOOKED_DATE == bookedDate).OrderByDescending(a => a.RefID).ToList();
+            List<ActivityItem> appts = await _activityData.GetActivityList(mpi);
+            appts = appts.Where(a => a.BOOKED_DATE == bookedDate).OrderByDescending(a => a.RefID).ToList();
 
             refID = appts.First().RefID;
 
             if (appType == "Tel. Admin")
             {
-                Patient patient = _patientData.GetPatientDetails(mpi);
+                Patient patient = await _patientData.GetPatientDetails(mpi);
                 string emailSubject = $"{patient.CGU_No} - {patient.FIRSTNAME} {patient.LASTNAME} - {urgency} Telephone Message";
 
                 string emailMessage = $"Caller - {callersName}%0D%0A%0D%0A" +

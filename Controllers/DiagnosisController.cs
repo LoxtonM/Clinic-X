@@ -13,39 +13,35 @@ namespace ClinicX.Controllers
         //private readonly ClinicalContext _clinContext;
         private readonly TestDiseaseVM _dvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
-        private readonly IPatientData _patientData;
-        private readonly IDiseaseData _diseaseData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IDiseaseDataAsync _diseaseData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit; 
 
-        public DiagnosisController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IDiseaseData diseaseData, ICRUD crud, IAuditService auditService)
+        public DiagnosisController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IDiseaseDataAsync diseaseData, ICRUD crud, IAuditService auditService)
         {
             //_clinContext = context;
             _config = config;
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
             _dvm = new TestDiseaseVM();
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
-            //_diseaseData = new DiseaseData(_clinContext);
             _diseaseData = diseaseData;
-            //_crud = new CRUD(_config);
             _crud = crud;
-            //_audit = new AuditService(_config);
             _audit = auditService;
         }
 
         [Authorize]
-        public IActionResult Index(int id)
+        public async Task<IActionResult> Index(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Diagnosis", "", _ip.GetIPAddress());
-                _dvm.diagnosisList = _diseaseData.GetDiseaseListByPatient(id);
-                _dvm.patient = _patientData.GetPatientDetails(id);
+                _dvm.diagnosisList = await _diseaseData.GetDiseaseListByPatient(id);
+                _dvm.patient = await _patientData.GetPatientDetails(id);
 
                 return View(_dvm);
             }
@@ -57,16 +53,17 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddNew(int id, string? searchTerm)
+        public async Task<IActionResult> AddNew(int id, string? searchTerm)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add New Diagnosis", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _dvm.diseaseList = _diseaseData.GetDiseaseList();
-                _dvm.patient = _patientData.GetPatientDetails(id);
-                _dvm.statusList = _diseaseData.GetStatusList();
+                _dvm.diseaseList = await _diseaseData.GetDiseaseList();
+                _dvm.patient = await _patientData.GetPatientDetails(id);
+                _dvm.statusList = await _diseaseData.GetStatusList();
 
                 if (searchTerm != null)
                 {
@@ -104,16 +101,17 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Diagnosis", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _dvm.diagnosis = _diseaseData.GetDiagnosisDetails(id);               
-                _dvm.patient = _patientData.GetPatientDetails(_dvm.diagnosis.MPI);
-                _dvm.statusList = _diseaseData.GetStatusList();
+                _dvm.diagnosis = await _diseaseData.GetDiagnosisDetails(id);               
+                _dvm.patient = await _patientData.GetPatientDetails(_dvm.diagnosis.MPI);
+                _dvm.statusList = await _diseaseData.GetStatusList();
 
                 return View(_dvm);
             }
@@ -124,7 +122,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int diagID, string status, string comments)
+        public async Task<IActionResult> Edit(int diagID, string status, string comments)
         {
             try
             {
@@ -136,7 +134,7 @@ namespace ClinicX.Controllers
                 //we simply can't send a null parameter to the SQL, so we have to convert it to an empty string and then back again
                 if (comments == null) { comments = ""; }
 
-                Diagnosis diag = _diseaseData.GetDiagnosisDetails(diagID);
+                Diagnosis diag = await _diseaseData.GetDiagnosisDetails(diagID);
                 int mpi = diag.MPI;
                                 
                 int success = _crud.CallStoredProcedure("Diagnosis", "Update", diagID, 0, 0, status, "", "", comments, User.Identity.Name);

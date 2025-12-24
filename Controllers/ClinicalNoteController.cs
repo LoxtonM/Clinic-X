@@ -15,54 +15,46 @@ namespace ClinicX.Controllers
         //private readonly ClinicXContext _cXContext;
         private readonly ClinicalNoteVM _cvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
-        private readonly IPatientData _patientData;
-        private readonly IActivityData _activityData;
-        private readonly IClinicalNoteData _clinicalNoteData;        
-        private readonly IClinicData _clinicData;
-        private readonly IReferralData _referralData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IActivityDataAsync _activityData;
+        private readonly IClinicalNoteDataAsync _clinicalNoteData;        
+        private readonly IClinicDataAsync _clinicData;
+        private readonly IReferralDataAsync _referralData;
         private readonly IMiscData _misc;        
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public ClinicalNoteController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IActivityData activityData, IClinicalNoteData clinicalNoteData,
-            IClinicData clinicData, IReferralData referralData, ICRUD crud, IMiscData miscData, IAuditService auditService)
+        public ClinicalNoteController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IActivityDataAsync activityData, IClinicalNoteDataAsync clinicalNoteData,
+            IClinicDataAsync clinicData, IReferralDataAsync referralData, ICRUD crud, IMiscData miscData, IAuditService auditService)
         {
             //_clinContext = context;
             //_cXContext = cXContext;
             _config = config;
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
-            //_activityData = new ActivityData(_clinContext);
             _activityData = activityData;
-            //_clinicalNoteData = new ClinicalNoteData(_cXContext);
             _clinicalNoteData = clinicalNoteData;
-            //_clinicData = new ClinicData(_clinContext);
             _clinicData = clinicData;
-            //_referralData = new ReferralData(_clinContext);
             _referralData = referralData;
-            //_crud = new CRUD(_config);
             _crud = crud;
             _cvm = new ClinicalNoteVM();
-            //_misc = new MiscData(_config);
             _misc = miscData;
-            //_audit = new AuditService(_config);
             _audit = auditService;
         }       
         
         [Authorize]
-        public IActionResult Index(int id)
+        public async Task<IActionResult> Index(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _cvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _cvm.staffMember?.STAFF_CODE ?? string.Empty;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinical Notes", "", _ip.GetIPAddress());
 
-                _cvm.clinicalNotesList = _clinicalNoteData.GetClinicalNoteList(id);
-                _cvm.patient = _patientData.GetPatientDetails(id);
+                _cvm.clinicalNotesList = await _clinicalNoteData.GetClinicalNoteList(id);
+                _cvm.patient = await _patientData.GetPatientDetails(id);
                 _cvm.noteCount = _cvm.clinicalNotesList.Count();                
 
                 return View(_cvm);
@@ -75,16 +67,17 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult Create(int id)
+        public async Task<IActionResult> Create(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _cvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _cvm.staffMember?.STAFF_CODE ?? string.Empty;                
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Clinical Note", "ClinicalNoteID=" + id.ToString(), _ip.GetIPAddress());
 
-                _cvm.activityItem = _activityData.GetActivityDetails(id);
-                _cvm.noteTypeList = _clinicalNoteData.GetNoteTypesList();
+                _cvm.activityItem = await _activityData.GetActivityDetails(id);
+                _cvm.noteTypeList = await _clinicalNoteData.GetNoteTypesList();
 
                 return View(_cvm);
             }
@@ -119,16 +112,18 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _cvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _cvm.staffMember?.STAFF_CODE ?? string.Empty;
+
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinical Note", "ClinicalNoteID=" + id.ToString(), _ip.GetIPAddress());
 
-                _cvm.clinicalNote = _clinicalNoteData.GetClinicalNoteDetails(id);
-                _cvm.patient = _patientData.GetPatientDetails(_cvm.clinicalNote.MPI.GetValueOrDefault());
+                _cvm.clinicalNote = await _clinicalNoteData.GetClinicalNoteDetails(id);
+                _cvm.patient = await _patientData.GetPatientDetails(_cvm.clinicalNote.MPI.GetValueOrDefault());
 
                 return View(_cvm);
             }
@@ -140,7 +135,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]        
-        public async Task<IActionResult> Edit(int noteID, string clinicalNote)
+        public IActionResult Edit(int noteID, string clinicalNote)
         {
             try
             {
@@ -168,13 +163,15 @@ namespace ClinicX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _cvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _cvm.staffMember?.STAFF_CODE ?? string.Empty;
+
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinical Notes Choose Appt", id.ToString(), _ip.GetIPAddress());
 
-                _cvm.patient = _patientData.GetPatientDetails(id);
-                _cvm.Clinics = _clinicData.GetClinicByPatientsList(id);
-                _cvm.Referrals = _referralData.GetActiveReferralsListForPatient(id);
+                _cvm.patient = await _patientData.GetPatientDetails(id);
+                _cvm.Clinics = await _clinicData.GetClinicByPatientsList(id);
+                _cvm.Referrals = await _referralData.GetActiveReferralsListForPatient(id);
 
                 return View(_cvm);
             }
@@ -194,7 +191,7 @@ namespace ClinicX.Controllers
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 
                 //var note = await _cXContext.NoteItems.FirstOrDefaultAsync(c => c.ClinicalNoteID == id);
-                var note = _clinicalNoteData.GetClinicalNoteDetails(id);
+                var note = await _clinicalNoteData.GetClinicalNoteDetails(id);
 
                 return RedirectToAction("Index", new { id = note.MPI });
             }

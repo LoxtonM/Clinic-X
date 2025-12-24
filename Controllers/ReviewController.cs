@@ -12,44 +12,35 @@ namespace ClinicX.Controllers
         //private readonly ClinicalContext _clinContext;
         private readonly ReviewVM _rvm;
         private readonly IConfiguration _config;
-        private readonly IActivityData _activityData;        
-        private readonly IPatientData _patientData;
-        private readonly IStaffUserData _staffUser;
-        private readonly IReviewData _reviewData;
-        private readonly IReferralData _referralData;
-        private readonly IAppointmentData _appointmentData;
+        private readonly IActivityDataAsync _activityData;        
+        private readonly IPatientDataAsync _patientData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IReviewDataAsync _reviewData;
+        private readonly IReferralDataAsync _referralData;
+        private readonly IAppointmentDataAsync _appointmentData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         private readonly IAgeCalculator _ageCalculator;
 
-        public ReviewController(IConfiguration config, IPatientData patientData, IActivityData activityData, IStaffUserData staffUserData, IReviewData reviewData, IReferralData referralData, 
-            IAppointmentData appointmentData, ICRUD crud, IAuditService auditService, IAgeCalculator ageCalculator)
+        public ReviewController(IConfiguration config, IPatientDataAsync patientData, IActivityDataAsync activityData, IStaffUserDataAsync staffUserData, IReviewDataAsync reviewData, IReferralDataAsync referralData,
+            IAppointmentDataAsync appointmentData, ICRUD crud, IAuditService auditService, IAgeCalculator ageCalculator)
         {
             //_clinContext = context;
             _config = config;
             _rvm = new ReviewVM();
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
-            //_activityData = new ActivityData(_clinContext);
             _activityData = activityData;
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
-            //_reviewData = new ReviewData(_clinContext);
             _reviewData = reviewData;
-            //_referralData = new ReferralData(_clinContext);
             _referralData = referralData;
-            //_appointmentData = new AppointmentData(_clinContext);
             _appointmentData = appointmentData;
-            //_crud = new CRUD(_config);
             _crud = crud;
-            //_audit = new AuditService(_config);
             _audit = auditService;
-            //_ageCalculator = new AgeCalculator();
             _ageCalculator = ageCalculator;
         }
 
         [Authorize]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
@@ -58,11 +49,12 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Reviews", "", _ip.GetIPAddress());
 
-                _rvm.reviewList = _reviewData.GetReviewsList(User.Identity.Name);
+                _rvm.reviewList = await _reviewData.GetReviewsList(User.Identity.Name);
 
                 return View(_rvm);
             }
@@ -73,7 +65,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult ReviewsForPatient(int id)
+        public async Task<IActionResult> ReviewsForPatient(int id)
         {
             try
             {
@@ -82,12 +74,13 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Reviews", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
-                _rvm.reviewList = _reviewData.GetReviewsListForPatient(id);
-                _rvm.patient = _patientData.GetPatientDetails(id);
+                _rvm.reviewList = await _reviewData.GetReviewsListForPatient(id);
+                _rvm.patient = await _patientData.GetPatientDetails(id);
 
                 return View(_rvm);
             }
@@ -99,17 +92,18 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult Create(int id)
+        public async Task<IActionResult> Create(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
-                _rvm.referral = _activityData.GetActivityDetails(id);
-                _rvm.staffMembers = _staffUser.GetClinicalStaffList();
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
+                _rvm.referral = await _activityData.GetActivityDetails(id);
+                _rvm.staffMembers = await _staffUser.GetClinicalStaffList();
+                _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
                
                 return View(_rvm);
             }
@@ -154,16 +148,17 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult Edit (int id)
+        public async Task<IActionResult> Edit (int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
-                _rvm.review = _reviewData.GetReviewDetails(id);
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);
+                _rvm.review = await _reviewData.GetReviewDetails(id);
+                _rvm.patient = await _patientData.GetPatientDetails(_rvm.review.MPI);
                 if (_rvm.review.Planned_Date != null) //show days remaining/overdue
                 {
                     _rvm.daysToReview = _ageCalculator.DateDifferenceDay(DateTime.Now, _rvm.review.Planned_Date.GetValueOrDefault());
@@ -187,11 +182,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, string status, string comments, string revDate)
+        public async Task<IActionResult> Edit(int id, string status, string comments, string revDate)
         {
             try
             {
-                _rvm.review = _reviewData.GetReviewDetails(id);
+                _rvm.review = await _reviewData.GetReviewDetails(id);
 
                 DateTime reviewDate = new DateTime();
 
@@ -219,17 +214,18 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult ChooseAppt(int id)
+        public async Task<IActionResult> ChooseAppt(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinical Notes Choose Appt", id.ToString(), _ip.GetIPAddress());
 
-                _rvm.patient = _patientData.GetPatientDetails(id);
-                _rvm.appointmentList = _appointmentData.GetAppointmentListByPatient(id);
-                _rvm.referralList = _referralData.GetActiveReferralsListForPatient(id);
+                _rvm.patient = await _patientData.GetPatientDetails(id);
+                _rvm.appointmentList = await _appointmentData.GetAppointmentListByPatient(id);
+                _rvm.referralList = await _referralData.GetActiveReferralsListForPatient(id);
 
                 return View(_rvm);
             }

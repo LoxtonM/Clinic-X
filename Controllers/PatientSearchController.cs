@@ -12,30 +12,28 @@ namespace ClinicX.Controllers
         //private readonly ClinicalContext _clinContext;
         private readonly PatientSearchVM _pvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
-        private readonly IPatientSearchData _patientSearchData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IPatientSearchDataAsync _patientSearchData;
         private readonly IAuditService _audit;
         
 
-        public PatientSearchController(IConfiguration config, IStaffUserData staffUserData, IPatientSearchData patientSearchData, IAuditService auditService)
+        public PatientSearchController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientSearchDataAsync patientSearchData, IAuditService auditService)
         {
             //_clinContext = context;
             _config = config;
             _pvm = new PatientSearchVM();
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
-            //_patientSearchData = new PatientSearchData(_clinContext);            
             _patientSearchData = patientSearchData;
-            //_audit = new AuditService(_config);
             _audit = auditService;
         }
 
         [Authorize]
-        public IActionResult Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob)
+        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 string searchTerm = "";
                 _pvm.staffCode = staffCode;
 
@@ -47,7 +45,7 @@ namespace ClinicX.Controllers
                     {
                         if (cguNo != ".") //to stop searching everything by looking for "."
                         {
-                            _pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(cguNo);
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByCGUNo(cguNo);
                         }
                         searchTerm = "CGU_No=" + cguNo;
                         _pvm.cguNumberSearch = cguNo;
@@ -56,7 +54,7 @@ namespace ClinicX.Controllers
                     {
                         if (searchTerm == "")
                         {
-                            _pvm.patientsList = _patientSearchData.GetPatientsListByNHS(nhsNo);
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByNHS(nhsNo);
                         }
                         else
                         {
@@ -70,7 +68,7 @@ namespace ClinicX.Controllers
                     {
                         if (searchTerm == "")
                         {
-                            _pvm.patientsList = _patientSearchData.GetPatientsListByName(null, lastname);
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByName(null, lastname);
                         }
                         else
                         {
@@ -84,7 +82,7 @@ namespace ClinicX.Controllers
                     {
                         if (searchTerm == "")
                         {
-                            _pvm.patientsList = _patientSearchData.GetPatientsListByName(firstname, null);
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByName(firstname, null);
                         }
                         else
                         {
@@ -98,7 +96,7 @@ namespace ClinicX.Controllers
                     {
                         if (searchTerm == "")
                         {
-                            _pvm.patientsList = _patientSearchData.GetPatientsListByDOB(dob.GetValueOrDefault());
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByDOB(dob.GetValueOrDefault());
                         }
                         else
                         {
@@ -122,9 +120,10 @@ namespace ClinicX.Controllers
             }
         }    
         
-        public IActionResult ViewAllMyPatients(string staffCode)
+        public async Task<IActionResult> ViewAllMyPatients(string staffCode)
         {
-            _pvm.patientsList = _patientSearchData.GetPatientsListByStaffCode(staffCode).DistinctBy(p => p.MPI).ToList();
+            _pvm.patientsList = await _patientSearchData.GetPatientsListByStaffCode(staffCode);
+            _pvm.patientsList = _pvm.patientsList.DistinctBy(p => p.MPI).ToList();
 
             return View(_pvm);
         }        

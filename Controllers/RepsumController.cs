@@ -1,4 +1,4 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,76 +13,65 @@ namespace ClinicX.Controllers
         //private readonly ClinicalContext _clinContext;
         //private readonly DocumentContext _documentContext;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
-        private readonly IPatientData _patientData;
-        private readonly IReferralData _referralData;
-        private readonly IConstantsData _constantsData;
-        private readonly IRiskData _riskData;
-        private readonly ITriageData _triageData;
-        private readonly ISurveillanceData _survData;
-        private readonly IStudyData _studyData;
-        private readonly ITestEligibilityData _teData;
-        private readonly IClinicData _appData;
-        private readonly IWaitingListData _wlData;
-        private readonly IDiaryData _dData;
-        private readonly IRelativeData _relData;
-        private readonly IRelativeDiaryData _relDiaryData;
-        private readonly IFHSummaryData _famData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IReferralDataAsync _referralData;
+        private readonly IConstantsDataAsync _constantsData;
+        private readonly IRiskDataAsync _riskData;
+        private readonly ITriageDataAsync _triageData;
+        private readonly ISurveillanceDataAsync _survData;
+        private readonly IStudyDataAsync _studyData;
+        private readonly ITestEligibilityDataAsync _teData;
+        private readonly IClinicDataAsync _appData;
+        private readonly IWaitingListDataAsync _wlData;
+        private readonly IDiaryDataAsync _dData;
+        private readonly IRelativeDataAsync _relData;
+        private readonly IRelativeDiaryDataAsync _relDiaryData;
+        private readonly IFHSummaryDataAsync _famData;
 
-        public RepsumController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IReferralData referralData, IConstantsData constantsData, IRiskData riskData,
-            ITriageData triageData, ISurveillanceData surveillanceData, IStudyData studyData, ITestEligibilityData testEligibilityData, IClinicData clinicData, IWaitingListData waitingListData, 
-            IDiaryData diaryData, IRelativeData relativeData, IRelativeDiaryData relativeDiaryData, IFHSummaryData fHSummaryData)
+        public RepsumController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IReferralDataAsync referralData, IConstantsDataAsync constantsData, IRiskDataAsync riskData,
+            ITriageDataAsync triageData, ISurveillanceDataAsync surveillanceData, IStudyDataAsync studyData, ITestEligibilityDataAsync testEligibilityData, IClinicDataAsync clinicData, IWaitingListDataAsync waitingListData,
+            IDiaryDataAsync diaryData, IRelativeDataAsync relativeData, IRelativeDiaryDataAsync relativeDiaryData, IFHSummaryDataAsync fHSummaryData)
         {
             //_clinContext = context;
             //_documentContext = documentContext;
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
-            //_referralData = new ReferralData(_clinContext);
             _referralData = referralData;
-            //_constantsData = new ConstantsData(_documentContext);
             _constantsData = constantsData;
             _riskData = riskData;      
             _triageData = triageData;
-            //SurveillanceData survData = new SurveillanceData(_clinContext);
             _survData = surveillanceData;
-            //StudyData studyData = new StudyData(_clinContext);
             _studyData = studyData;
-            //TestEligibilityData teData = new TestEligibilityData(_clinContext);
             _teData = testEligibilityData;
-            //ClinicData appData = new ClinicData(_clinContext);
             _appData = clinicData;
-            //WaitingListData wlData = new WaitingListData(_clinContext);
             _wlData = waitingListData;
-            //DiaryData dData = new DiaryData(_clinContext);
             _dData = diaryData;
             _relData = relativeData;
             _relDiaryData = relativeDiaryData;
-            //FHSummaryData famData = new FHSummaryData(_clinContext);
             _famData = fHSummaryData;
         }
 
         [Authorize]
-        public IActionResult PrepareRepsum(int id, int diaryID)
+        public async Task<IActionResult> PrepareRepsum(int id, int diaryID)
         {            
-            DoRepsum(id, diaryID, User.Identity.Name);
+            await DoRepsum(id, diaryID, User.Identity.Name);
 
             return RedirectToAction("CancerReview", "Triage", new { id = id });
         }
 
 
-        public void DoRepsum(int icpID, int diaryID, string user)
+        public async Task DoRepsum(int icpID, int diaryID, string user)
         {
             StaffMember staffMember = new StaffMember();
-            staffMember = _staffUser.GetStaffMemberDetails(user);
+            staffMember = await _staffUser.GetStaffMemberDetails(user);
             Patient patient = new Patient();
 
             //ITriageData triageData = new TriageData(_clinContext);
-            ICPCancer icpc = _triageData.GetCancerICPDetails(icpID);
-            ICP icp = _triageData.GetICPDetails(icpc.ICPID);
-            Referral referral = _referralData.GetReferralDetails(icp.REFID);
-            patient = _patientData.GetPatientDetails(referral.MPI);
+            ICPCancer icpc = await _triageData.GetCancerICPDetails(icpID);
+            ICP icp = await _triageData.GetICPDetails(icpc.ICPID);
+            Referral referral = await _referralData.GetReferralDetails(icp.REFID);
+            patient = await _patientData.GetPatientDetails(referral.MPI);
             
             MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
 
@@ -143,14 +132,16 @@ namespace ClinicX.Controllers
             string reviewByDetails = "";
             if (icpc.ReviewedBy != null)
             {
-                reviewByDetails = $"{_staffUser.GetStaffMemberDetailsByStaffCode(icpc.ReviewedBy).NAME} on {icpc.ReviewedDate.Value.ToString("dd/MM/yyyy")}";
+                var staffmember = await _staffUser.GetStaffMemberDetailsByStaffCode(icpc.ReviewedBy);
+                reviewByDetails = $"{staffmember.NAME} on {icpc.ReviewedDate.Value.ToString("dd/MM/yyyy")}";
             }
             row2_3.Cells[1].AddParagraph(reviewByDetails);
             row2_4.Cells[0].AddParagraph().AddFormattedText("Final Review:", TextFormat.Bold);
             string finalReviewDetails = "";
             if (icpc.FinalReviewedBy != null)
             {
-                finalReviewDetails = $"{_staffUser.GetStaffMemberDetailsByStaffCode(icpc.FinalReviewedBy).NAME} on {icpc.FinalReviewedDate.Value.ToString("dd/MM/yyyy")}";
+                var staffmember = await _staffUser.GetStaffMemberDetailsByStaffCode(icpc.ReviewedBy);
+                finalReviewDetails = $"{staffmember.NAME} on {icpc.FinalReviewedDate.Value.ToString("dd/MM/yyyy")}";
             }
             row2_4.Cells[1].AddParagraph(finalReviewDetails);
             Paragraph p1 = section.AddParagraph();
@@ -167,7 +158,7 @@ namespace ClinicX.Controllers
 
 
             //RiskData riskData = new RiskData(_clinContext);
-            List<Risk> riskList = _riskData.GetRiskListForPatient(patient.MPI);
+            List<Risk> riskList = await _riskData.GetRiskListForPatient(patient.MPI);
             if (riskList.Count > 0)
             {
                 Paragraph pRiskHeader = section.AddParagraph();
@@ -232,7 +223,7 @@ namespace ClinicX.Controllers
 
 
             
-            List<Surveillance> survList = _survData.GetSurveillanceList(patient.MPI);
+            List<Surveillance> survList = await _survData.GetSurveillanceList(patient.MPI);
             if (survList.Count > 0)
             {
                 Paragraph pSurvHeader = section.AddParagraph();
@@ -282,7 +273,7 @@ namespace ClinicX.Controllers
 
 
             
-            List<Study> studyList = _studyData.GetStudiesList(patient.MPI);
+            List<Study> studyList = await _studyData.GetStudiesList(patient.MPI);
             if (studyList.Count > 0)
             {
                 Paragraph pStudiesHeader = section.AddParagraph();
@@ -330,7 +321,7 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
             
-            List<Eligibility> teList = _teData.GetTestingEligibilityList(patient.MPI);
+            List<Eligibility> teList = await _teData.GetTestingEligibilityList(patient.MPI);
             if (teList.Count > 0)
             {
                 Paragraph pTestHeader = section.AddParagraph();
@@ -392,7 +383,7 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
             
-            List<Appointment> appList = _appData.GetClinicByPatientsList(patient.MPI);
+            List<Appointment> appList = await _appData.GetClinicByPatientsList(patient.MPI);
             if (appList.Count > 0)
             {
                 Paragraph pAppHeader = section.AddParagraph();
@@ -441,7 +432,7 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
             
-            List<WaitingList> wlList = _wlData.GetWaitingListByCGUNo(patient.CGU_No);
+            List<WaitingList> wlList = await _wlData.GetWaitingListByCGUNo(patient.CGU_No);
             if (wlList.Count > 0)
             {
                 Paragraph pWaitHeader = section.AddParagraph();
@@ -493,8 +484,9 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
             
-            List<Diary> dList = _dData.GetDiaryList(patient.MPI);            
-            List<Relative> rList = _relData.GetRelativesList(patient.MPI).DistinctBy(r => r.relsid).ToList();
+            List<Diary> dList = await _dData.GetDiaryList(patient.MPI);
+            List<Relative> rList = await _relData.GetRelativesList(patient.MPI);
+            rList = rList.DistinctBy(r => r.relsid).ToList();
 
             int rdCount = 0;
 
@@ -502,7 +494,7 @@ namespace ClinicX.Controllers
             {                
                 foreach (var rel in rList)
                 {
-                    List<RelativeDiary> rdList = _relDiaryData.GetRelativeDiaryList(rel.relsid);
+                    List<RelativeDiary> rdList = await _relDiaryData.GetRelativeDiaryList(rel.relsid);
 
                     if (rdList.Count > 0)
                     {
@@ -583,7 +575,7 @@ namespace ClinicX.Controllers
                 {
                     foreach (var rel in rList)
                     {
-                        List<RelativeDiary> rdList = _relDiaryData.GetRelativeDiaryList(rel.relsid);
+                        List<RelativeDiary> rdList = await _relDiaryData.GetRelativeDiaryList(rel.relsid);
 
                         if (rdList.Count > 0)
                         {
@@ -644,7 +636,7 @@ namespace ClinicX.Controllers
 
             spacer = section.AddParagraph();
             
-            List<FHSummary> famList = _famData.GetFHSummaryList(patient.MPI);
+            List<FHSummary> famList = await _famData.GetFHSummaryList(patient.MPI);
 
             if (famList.Count > 0)
             {
@@ -795,7 +787,7 @@ namespace ClinicX.Controllers
             //if (!isPreview.GetValueOrDefault())
             //{
             //System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
-            string edmsPath = _constantsData.GetConstant("PrintPathEDMS", 1);
+            string edmsPath = await _constantsData.GetConstant("PrintPathEDMS", 1);
 
             System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
             //}

@@ -19,20 +19,18 @@ namespace ClinicX.Controllers
         //private readonly APIContext _apiContext;
         private readonly IConfiguration _config;
         private readonly APIController _api;
-        private readonly IPatientData _patientData;
-        private readonly IReferralData _referralData;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IReferralDataAsync _referralData;
         private readonly PhenotipsVM _pvm;
         private readonly LetterController _lc;
 
-        public PhenotipsController(IConfiguration config, APIController aPIController, IPatientData patientData, IReferralData referralData, LetterController lc)
+        public PhenotipsController(IConfiguration config, APIController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController lc)
         {
             //_clinContext = clinContext;
             //_docContext = docContext;
             //_apiContext = apiContext;
             _config = config;
-            //_api = new APIController(_apiContext, _config);
             _api = aPIController;
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
             _referralData = referralData;
             _pvm = new PhenotipsVM();
@@ -50,8 +48,8 @@ namespace ClinicX.Controllers
             if(result==1)
             {                
                 string ptID = await _api.GetPhenotipsPatientID(mpi);
-                Patient patient = _patientData.GetPatientDetails(mpi);
-                AddPatientToPhenotipsMirrorTable(ptID, mpi, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), patient.POSTCODE, patient.SOCIAL_SECURITY);
+                Patient patient = await _patientData.GetPatientDetails(mpi);
+                await AddPatientToPhenotipsMirrorTable(ptID, mpi, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), patient.POSTCODE, patient.SOCIAL_SECURITY);
                 isSuccess = true;
                 sMessage = "Push to Phenotips successful";
             }
@@ -67,14 +65,14 @@ namespace ClinicX.Controllers
             return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
         }
 
-        void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
+        async Task AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
         {
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
             SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
                 + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM-dd") + "', '" + postCode +
                 "', '" + nhsNo + "')", conn);
-            cmd.ExecuteNonQuery();
+            await cmd.ExecuteNonQueryAsync();
             conn.Close();
         }
 
@@ -128,7 +126,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult SendPhenotipsLetter(int mpi, string? pathway)
+        public async Task<IActionResult> SendPhenotipsLetter(int mpi, string? pathway)
         {
             string sMessage = "";
             bool isSuccess = false;
@@ -138,9 +136,10 @@ namespace ClinicX.Controllers
             _pvm.ppqQR = result.ToString(); //fetches the QR code string
 
             //LetterController let = new LetterController(_clinContext, _docContext);
-            
+
             //ReferralData refer = new ReferralData(_clinContext);
-            Referral referral = _referralData.GetActiveReferralsListForPatient(mpi).OrderByDescending(r => r.RefDate).FirstOrDefault();
+            List<Referral> referrals = await _referralData.GetActiveReferralsListForPatient(mpi);
+            Referral referral = referrals.OrderByDescending(r => r.RefDate).FirstOrDefault();
 
             if (referral != null)
             {
@@ -166,9 +165,9 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult CreatePhenotipsEmail(int mpi, string pathway, bool isEmail)
+        public async Task<IActionResult> CreatePhenotipsEmail(int mpi, string pathway, bool isEmail)
         {
-            Patient patient = _patientData.GetPatientDetails(mpi);
+            Patient patient = await _patientData.GetPatientDetails(mpi);
 
             string ppqURL = _api.GetPPQUrl(mpi, pathway).Result; //fetches the URL
 

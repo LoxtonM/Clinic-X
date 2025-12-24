@@ -65,7 +65,7 @@
                     Ethnicity:
                 </div>
                 <div class="col-md-4">
-                    <select asp-for=@Model.patients.EthnicCode id="ddlEthnicity" name="ethnicity" class="w-100">
+                    <select asp-for=@Model.patient.EthnicCode id="ddlEthnicity" name="ethnicity" class="w-100">
                         <option value="" selected>select...</option>
                         @foreach(var e in Model.ethnicities)
                         {

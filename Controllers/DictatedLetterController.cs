@@ -6,6 +6,7 @@ using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ClinicX.Controllers
 {
@@ -16,48 +17,38 @@ namespace ClinicX.Controllers
         private readonly LetterController _lc;
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;        
-        private readonly IPatientData _patientData;
-        private readonly IStaffUserData _staffUser;
-        private readonly IActivityData _activityData;
-        private readonly IDictatedLetterData _dictatedLetterData;
-        private readonly IExternalClinicianData _externalClinicianData;
-        private readonly IExternalFacilityData _externalFacilityData;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IActivityDataAsync _activityData;
+        private readonly IDictatedLetterDataAsync _dictatedLetterData;
+        private readonly IExternalClinicianDataAsync _externalClinicianData;
+        private readonly IExternalFacilityDataAsync _externalFacilityData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
-        private readonly IConstantsData _constantsData;
+        private readonly IConstantsDataAsync _constantsData;
 
-        public DictatedLetterController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IActivityData activityData, IDictatedLetterData dictatedLetterData, 
-            IExternalClinicianData externalClinicianData, IExternalFacilityData externalFacilityData, ICRUD crud, IConstantsData constantsData, LetterController letterController, 
+        public DictatedLetterController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IActivityDataAsync activityData, IDictatedLetterDataAsync dictatedLetterData,
+            IExternalClinicianDataAsync externalClinicianData, IExternalFacilityDataAsync externalFacilityData, ICRUD crud, IConstantsDataAsync constantsData, LetterController letterController, 
             IAuditService auditService)
         {
             //_clinContext = clinContext;
             //_docContext = docContext;
             _config = config;
             _lvm = new DictatedLetterVM();
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
-            //_activityData = new ActivityData(_clinContext);
             _activityData = activityData;
-            //_dictatedLetterData = new DictatedLetterData(_clinContext);
             _dictatedLetterData = dictatedLetterData;
-            //_externalClinicianData = new ExternalClinicianData(_clinContext);
             _externalClinicianData = externalClinicianData;
-            //_externalFacilityData = new ExternalFacilityData(_clinContext);
             _externalFacilityData = externalFacilityData;
-            //_crud = new CRUD(_config);
             _crud = crud;
-            //_lc = new LetterController(_clinContext, _docContext);
             _lc = letterController;
-            //_audit = new AuditService(_config);
             _audit = auditService;
-            //_constantsData = new ConstantsData(_docContext);
             _constantsData = constantsData;
         }
 
         [Authorize]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
@@ -66,11 +57,11 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
-                var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Letters", "", _ip.GetIPAddress());
 
-                var letters = _dictatedLetterData.GetDictatedLettersList(user.STAFF_CODE);
+                var letters = await _dictatedLetterData.GetDictatedLettersList(user.STAFF_CODE);
 
                 _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
                 _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
@@ -84,7 +75,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult OtherCliniciansLetters(string? staffCode)
+        public async Task<IActionResult> OtherCliniciansLetters(string? staffCode)
         {
             try
             {
@@ -93,17 +84,17 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
-                var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Letters", "", _ip.GetIPAddress());
 
-                _lvm.staffMemberList = _staffUser.GetClinicalStaffList();
+                _lvm.staffMemberList = await _staffUser.GetClinicalStaffList();
 
                 if(staffCode == null) {  staffCode = user.STAFF_CODE; }//default to logged on user
 
-                _lvm.staffUser = _staffUser.GetStaffMemberDetailsByStaffCode(staffCode);
+                _lvm.staffUser = await _staffUser.GetStaffMemberDetailsByStaffCode(staffCode);
 
-                var letters = _dictatedLetterData.GetDictatedLettersList(staffCode);
+                var letters = await _dictatedLetterData.GetDictatedLettersList(staffCode);
 
                 _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
                 _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
@@ -117,7 +108,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult DictatedLettersForPatient(int id)
+        public async Task<IActionResult> DictatedLettersForPatient(int id)
         {
             try
             {
@@ -126,12 +117,12 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
-                var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(user.STAFF_CODE, "ClinicX - Letters", "", _ip.GetIPAddress());
 
-                _lvm.patientDetails = _patientData.GetPatientDetails(id);
-                var letters = _dictatedLetterData.GetDictatedLettersForPatient(id);
+                _lvm.patientDetails = await _patientData.GetPatientDetails(id);
+                var letters = await _dictatedLetterData.GetDictatedLettersForPatient(id);
 
                 _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
                 _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
@@ -146,52 +137,55 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {            
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Letter", "ID=" + id.ToString(), _ip.GetIPAddress());                
-                _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(id);
+                _lvm.dictatedLetters = await _dictatedLetterData.GetDictatedLetterDetails(id);
                 
-                _lvm.dictatedLettersCopies = _dictatedLetterData.GetDictatedLettersCopiesList(id);
-                _lvm.patients = _dictatedLetterData.GetDictatedLetterPatientsList(id);
+                _lvm.dictatedLettersCopies = await _dictatedLetterData.GetDictatedLettersCopiesList(id);
+                _lvm.patients = await _dictatedLetterData.GetDictatedLetterPatientsList(id);
                 List<DictatedLettersPatient> dlp = new List<DictatedLettersPatient>();
-                dlp = _dictatedLetterData.GetDictatedLettersPatientsList(id).ToList();
+                dlp = await _dictatedLetterData.GetDictatedLettersPatientsList(id);
                 _lvm.dictatedLettersPatients = new List<Patient>();
                 
                 foreach(var p in dlp) //to add additional family members to the "Re:" list
                 {
-                    Patient pat = _patientData.GetPatientDetails(p.MPI);
+                    Patient pat = await _patientData.GetPatientDetails(p.MPI);
                     _lvm.dictatedLettersPatients.Add(pat);
                     _lvm.patients.Remove(pat);
                 }
 
-                _lvm.staffMemberList = _staffUser.GetClinicalStaffList();
+                _lvm.staffMemberList = await _staffUser.GetClinicalStaffList();
                 int? mpi = _lvm.dictatedLetters.MPI;
                 int? refID = _lvm.dictatedLetters.RefID;
-                _lvm.patientDetails = _patientData.GetPatientDetails(mpi.GetValueOrDefault());
-                _lvm.activityDetails = _activityData.GetActivityDetails(refID.GetValueOrDefault());
+                _lvm.patientDetails = await _patientData.GetPatientDetails(mpi.GetValueOrDefault());
+                _lvm.activityDetails = await _activityData.GetActivityDetails(refID.GetValueOrDefault());
                 string sGPCode = _lvm.patientDetails.GP_Facility_Code;
                 if (sGPCode == null ) { sGPCode = "Unknown1"; } //because obviously there are people with nulls in the GP field.
                 string sRefFacCode = _lvm.activityDetails.REF_FAC;
                 if (sRefFacCode == null) { sRefFacCode = "Unknown"; } 
                 string sRefPhysCode = _lvm.activityDetails.REF_PHYS;
                 if (sRefPhysCode == null) { sRefPhysCode = "Unknown"; }
-                _lvm.referrerFacility = _externalFacilityData.GetFacilityDetails(sRefFacCode);                
-                _lvm.referrer = _externalClinicianData.GetClinicianDetails(sRefPhysCode);                
-                _lvm.GPFacility = _externalFacilityData.GetFacilityDetails(sGPCode);
-                _lvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList(); 
+                _lvm.referrerFacility = await _externalFacilityData.GetFacilityDetails(sRefFacCode);                
+                _lvm.referrer = await _externalClinicianData.GetClinicianDetails(sRefPhysCode);                
+                _lvm.GPFacility = await _externalFacilityData.GetFacilityDetails(sGPCode);
+                _lvm.facilities = await _externalFacilityData.GetFacilityList();
+                _lvm.facilities = _lvm.facilities.Where(f => f.IS_GP_SURGERY == 0).ToList();
                 //including all clinicians will slow it down too much, so I'm taking a leap of logic here and assuming one wouldn't want to 
                 //write to a GP other than the one registered for the patient (or the one who did the referral).
-                _lvm.clinicians = _externalClinicianData.GetClinicianList().Where(c => c.Is_GP == 0 && c.LAST_NAME != null && c.FACILITY != null).ToList();
-                List<ExternalCliniciansAndFacilities> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();                
-                _lvm.consultants = _staffUser.GetConsultantsList().ToList();
-                _lvm.gcs = _staffUser.GetGCList().ToList();
-                _lvm.secteams = _staffUser.GetSecTeamsList();
-                _lvm.specialities = _externalClinicianData.GetClinicianTypeList();
-                _lvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1); //set web link to EDMS
+                _lvm.clinicians = await _externalClinicianData.GetClinicianList();
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.Is_GP == 0 && c.LAST_NAME != null && c.FACILITY != null).ToList();
+                //List<ExternalCliniciansAndFacilities> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList(); //what is this actually for??
+                _lvm.consultants = await _staffUser.GetConsultantsList();
+                _lvm.gcs = await _staffUser.GetGCList();
+                _lvm.secteams = await _staffUser.GetSecTeamsList();
+                _lvm.specialities = await _externalClinicianData.GetClinicianTypeList();
+                _lvm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1); //set web link to EDMS
 
                 return View(_lvm);
             }
@@ -248,19 +242,22 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult Create(int id)
+        public async Task<IActionResult> Create(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 int success = _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", staffCode, "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
-                                
-                List<DictatedLetter> dotList = _dictatedLetterData.GetDictatedLettersList(staffCode).Where(l => l.RefID == id).OrderByDescending(l => l.CreatedDate).ToList();
+
+                List<DictatedLetter> dotList = await _dictatedLetterData.GetDictatedLettersList(staffCode);
+                dotList = dotList.Where(l => l.RefID == id).OrderByDescending(l => l.CreatedDate).ToList();
                 DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
                 int dID = dot.DoTID;
-                int mpi = _dictatedLetterData.GetDictatedLetterDetails(dID).MPI.GetValueOrDefault();
+                var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);
+                int mpi = letter.MPI.GetValueOrDefault(); //because clearly we can't do it in one line, that would be way too fucking convenient!!!
 
                 int success2 = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
 
@@ -379,11 +376,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteCCFromDOT(int id)
+        public async Task<IActionResult> DeleteCCFromDOT(int id)
         {
             try
             {   
-                var letter = _dictatedLetterData.GetDictatedLetterCopyDetails(id);
+                var letter = await _dictatedLetterData.GetDictatedLetterCopyDetails(id);
                 
                 int dID = letter.DotID;
 
@@ -418,12 +415,12 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult ActivityItems(int id)
+        public async Task<IActionResult> ActivityItems(int id)
         {
             try
             {
-                _lvm.patientDetails = _patientData.GetPatientDetails(id);
-                _lvm.activities = _activityData.GetActivityList(id);
+                _lvm.patientDetails = await _patientData.GetPatientDetails(id);
+                _lvm.activities = await _activityData.GetActivityList(id);
                 
                 return View(_lvm);
             }
@@ -450,11 +447,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult NewDOTLetterPatient(string cguNo)
+        public async Task<IActionResult> NewDOTLetterPatient(string cguNo)
         {
             try
             {
-                _lvm.patientList = _patientData.GetPatientsInPedigree(cguNo);
+                _lvm.patientList = await _patientData.GetPatientsInPedigree(cguNo);
                 
                 return View(_lvm);
             }
@@ -466,19 +463,19 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult SearchClinician(int dotID)
+        public async Task<IActionResult> SearchClinician(int dotID)
         {
-            _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(dotID);
+            _lvm.dictatedLetters = await _dictatedLetterData.GetDictatedLetterDetails(dotID);
             _lvm.clinicians = new List<ExternalCliniciansAndFacilities>(); //because we have to have something or it throws a fit
 
             return View(_lvm);
         }
 
         [HttpPost]
-        public IActionResult SearchClinician(int dotID, string firstName, string lastName, string hospitalName, string speciality, string? addressToAdd, bool isSearchOnly)
+        public async Task<IActionResult> SearchClinician(int dotID, string firstName, string lastName, string hospitalName, string speciality, string? addressToAdd, bool isSearchOnly)
         {
-            _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(dotID);
-            _lvm.clinicians = _externalClinicianData.GetClinicianList();            
+            _lvm.dictatedLetters = await _dictatedLetterData.GetDictatedLetterDetails(dotID);
+            _lvm.clinicians = await _externalClinicianData.GetClinicianList();            
 
             if (firstName != null)
             {

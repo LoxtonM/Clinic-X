@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Data;
-using Microsoft.AspNetCore.Authorization;
-using ClinicX.ViewModels;
+﻿using APIControllers.Controllers;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using APIControllers.Controllers;
-using APIControllers.Data;
+using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace ClinicX.Controllers
 {
@@ -16,25 +16,25 @@ namespace ClinicX.Controllers
         //private readonly APIContext _apiContext;
         private readonly PatientVM _pvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;        
-        private readonly IPatientData _patientData;
-        private readonly IRelativeData _relativeData;
-        private readonly IPathwayData _pathwayData;
-        private readonly IAlertData _alertData;
-        private readonly IReferralData _referralData;
-        private readonly IDiaryData _diaryData;
-        private readonly IHPOCodeData _hpoData;
+        private readonly IStaffUserDataAsync _staffUser;        
+        private readonly IPatientDataAsync _patientData;
+        private readonly IRelativeDataAsync _relativeData;
+        private readonly IPathwayDataAsync _pathwayData;
+        private readonly IAlertDataAsync _alertData;
+        private readonly IReferralDataAsync _referralData;
+        private readonly IDiaryDataAsync _diaryData;
+        private readonly IHPOCodeDataAsync _hpoData;
         private readonly IAuditService _audit;
-        private readonly IConstantsData _constantsData;
+        private readonly IConstantsDataAsync _constantsData;
         private readonly IAgeCalculator _ageCalculator;
-        private readonly ITriageData _triageData;
-        private readonly IClinicData _clinicData;
+        private readonly ITriageDataAsync _triageData;
+        private readonly IClinicDataAsync _clinicData;
         private readonly APIController _api;
-        private readonly IPhenotipsMirrorData _phenotipsMirrorData;
+        private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
 
-        public PatientController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IRelativeData relativeData, IPathwayData pathwayData, IAlertData alertData, 
-            IReferralData referralData, IDiaryData diaryData, IHPOCodeData hPOCodeData, IAuditService auditService, IConstantsData constantsData, IAgeCalculator ageCalculator,
-            ITriageData triageData, IClinicData clinicData, APIController aPIController, IPhenotipsMirrorData phenotipsMirrorData)
+        public PatientController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, IPathwayDataAsync pathwayData, IAlertDataAsync alertData, 
+            IReferralDataAsync referralData, IDiaryDataAsync diaryData, IHPOCodeDataAsync hPOCodeData, IAuditService auditService, IConstantsDataAsync constantsData, IAgeCalculator ageCalculator,
+            ITriageDataAsync triageData, IClinicDataAsync clinicData, APIController aPIController, IPhenotipsMirrorDataAsync phenotipsMirrorData)
         {
             //_clinContext = context;
             //_docContext = docContext;
@@ -60,108 +60,131 @@ namespace ClinicX.Controllers
         
 
         [Authorize]
-        public IActionResult PatientDetails(int id, bool? success, string? message)
+        public async Task<IActionResult> PatientDetails(int id, bool? success, string? message)
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                string staffCode = _pvm.staffMember.STAFF_CODE;                
+                var sw = Stopwatch.StartNew();
+
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember?.STAFF_CODE ?? string.Empty;
+
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);                
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
-                _pvm.patient = _patientData.GetPatientDetails(id);
+                _pvm.patient = await _patientData.GetPatientDetails(id);
 
                 if (_pvm.patient == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                List<Patient> patients = new List<Patient>(); //patients in the pedigree
-                patients = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
+                var patientsInPedigree = await _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
 
-                if (patients.Count > 0) //to do the fwd and back buttons across the pedigree
-                {
-                    int regNo;
+                _pvm.relatives = await _relativeData.GetRelativesList(id);
+                _pvm.hpoTermDetails = await _hpoData.GetHPOTermsAddedList(id);
+                _pvm.referrals = await _referralData.GetActiveReferralsListForPatient(id);
+                _pvm.appointmentList = await _clinicData.GetClinicByPatientsList(_pvm.patient.MPI); //.GroupBy(a => a.RefID).Select(g => g.First()).ToList();                
+                _pvm.patientPathway = await _pathwayData.GetPathwayDetails(id);
+                _pvm.alerts = await _alertData.GetAlertsList(id);
+                _pvm.diary = await _diaryData.GetDiaryList(id);
+
+                _pvm.relatives = _pvm.relatives.Distinct().ToList(); //because there are dupes.
+                _pvm.appointmentList = _pvm.appointmentList.Distinct().ToList();
+                _pvm.icpCancerList = new List<ICPCancer>();                                
+
+                if (patientsInPedigree.Count > 1 && !string.IsNullOrWhiteSpace(_pvm.patient.CGU_No)) //to do the fwd and back buttons across the pedigree
+                {                    
                     string cguno = _pvm.patient.CGU_No;
+                    var pointNo = cguno.LastIndexOf('.');
 
-                    if (Int32.TryParse(cguno.Substring(cguno.LastIndexOf('.') + 1), out regNo))
+                    if (Int32.TryParse(cguno.Substring(pointNo + 1), out int regNo))
                     {
                         int prevRegNo = regNo - 1;
                         int nextRegNo = regNo + 1;
 
-                        _pvm.previousPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + prevRegNo.ToString());
-                        _pvm.nextPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + nextRegNo.ToString());
+                        _pvm.previousPatient = await _patientData.GetPatientDetailsByCGUNo($"{_pvm.patient.PEDNO}.{prevRegNo}");
+                        _pvm.nextPatient = await _patientData.GetPatientDetailsByCGUNo($"{_pvm.patient.PEDNO}.{nextRegNo}");
                     }                    
                 }
                 
-                _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList(); //because there are dupes.
-                _pvm.hpoTermDetails = _hpoData.GetHPOTermsAddedList(id);
-                _pvm.referrals = _referralData.GetActiveReferralsListForPatient(id);
-                IEnumerable<Referral> referrals = _pvm.referrals.Where(r => r.PATHWAY != null);
+
+                IEnumerable<Referral> referrals = _pvm.referrals.Where(r => !string.IsNullOrWhiteSpace(r.PATHWAY));
+                Console.WriteLine("Referrals without null pw in  " +  sw.ElapsedMilliseconds);
                 //because there are nulls in the pathway that are breaking it!! So we have to filter them out.
-                _pvm.referralsActiveGeneral = referrals.Where(r => r.PATHWAY.Contains("General")).ToList();
-                _pvm.referralsActiveCancer = referrals.Where(r => r.PATHWAY.Contains("Cancer")).ToList();
-                _pvm.appointmentList = _clinicData.GetClinicByPatientsList(_pvm.patient.MPI).Distinct().ToList(); //distinct is required because of the alerts
-                _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
-                //_pvm.patientPathways = _pathwayData.GetPathways(id);
-                _pvm.icpCancerList = new List<ICPCancer>();
+                _pvm.referralsActiveGeneral = referrals.Where(r => r.PATHWAY.Contains("General", StringComparison.OrdinalIgnoreCase)).ToList();
+                _pvm.referralsActiveCancer = referrals.Where(r => r.PATHWAY.Contains("Cancer", StringComparison.OrdinalIgnoreCase)).ToList();
+
+                List<ICPCancer> icpCancerList = new List<ICPCancer>();
 
                 foreach (var r in _pvm.referralsActiveCancer)
                 {   
-                    ICP icp = _triageData.GetICPDetailsByRefID(r.refid);
-                    ICPCancer icpc = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
-                    _pvm.icpCancerList.Add(icpc);
+                    ICP icp = await _triageData.GetICPDetailsByRefID(r.refid);
+                    if (icp != null)
+                    {
+                        ICPCancer icpc = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+                        if (icpc != null) { _pvm.icpCancerList.Add(icpc); }
+                    }
                 }
 
-                _pvm.alerts = _alertData.GetAlertsList(id);
-                _pvm.diary = _diaryData.GetDiaryList(id);
+                var phenotipsAvailableFlag = await _constantsData.GetConstant("PhenotipsURL", 2);
+                _pvm.isPhenotipsAvailable = !string.IsNullOrEmpty(phenotipsAvailableFlag) && !phenotipsAvailableFlag.Contains("0", StringComparison.Ordinal);
 
-                if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0") && _constantsData.GetConstant("PhenotipsURL", 2) != "")
-                {                    
-                    _pvm.isPhenotipsAvailable = true;
-                }
 
                 //Constants table flag decides whether Phenotips is in use or not
                 if (_pvm.isPhenotipsAvailable)
                 {
-                    //if (_api.GetPhenotipsPatientID(id).Result != "")
-                    
-                    if (_phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //use the mirror table rather than pinging the API every time someone checks the record!
+                    var mirror = _phenotipsMirrorData.GetPhenotipsPatientByID(id);
+
+                    if (mirror != null) //use the mirror table rather than pinging the API every time someone checks the record!
                     {
                         _pvm.isPatientInPhenotips = true;
-                        _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result;
-                        _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
-                                                
-                        _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
-                        _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;                        
-                        _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
+                        
+                        var cancerPPQExists = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer");
+                        var generalPPQExists = _api.CheckPPQExists(_pvm.patient.MPI, "General");
+                        var cancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer");
+                        var generalPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General");
+                        var phenotipsID = _api.GetPhenotipsPatientID(id);
+
+                        await Task.WhenAll(cancerPPQExists, generalPPQExists, cancerPPQComplete, generalPPQComplete, phenotipsID);
+
+                        //Task.WaitAll(cancerPPQExists, generalPPQExists, cancerPPQComplete, generalPPQComplete, phenotipsID);
+
+                        _pvm.isCancerPPQScheduled = await cancerPPQExists;
+                        _pvm.isGeneralPPQScheduled = await generalPPQExists;
+                        _pvm.isCancerPPQComplete = await cancerPPQComplete;
+                        _pvm.isGeneralPPQComplete = await generalPPQComplete;
+                        string ptID = await phenotipsID;
+
+                        string baseURL = await _constantsData.GetConstant("PhenotipsURL", 1);
+
+                        if(!string.IsNullOrWhiteSpace(baseURL) && !string.IsNullOrWhiteSpace(ptID)) { _pvm.phenotipsLink = baseURL.TrimEnd('/') + "/" + ptID; }
                     }
-                    
+
                 }
 
-                if (_pvm.patient.DOB != null) //yes we do actually have null birth dates!
+                if (_pvm.patient.DOB.HasValue) //yes we do actually have null birth dates!
                 {                    
-                    if (_pvm.patient.DECEASED != 0)
-                    {
-                        _pvm.currentAge = _ageCalculator.DateDifferenceYear(_pvm.patient.DOB.GetValueOrDefault(), _pvm.patient.DECEASED_DATE.GetValueOrDefault());
-                    }
-                    else
-                    {
-                        _pvm.currentAge = _ageCalculator.DateDifferenceYear(_pvm.patient.DOB.GetValueOrDefault(), DateTime.Today);
-                    }
+                    var endDate = (_pvm.patient.DECEASED != 0 && _pvm.patient.DECEASED_DATE.HasValue) ? _pvm.patient.DECEASED_DATE.Value : DateTime.Today;
+
+                    _pvm.currentAge = _ageCalculator.DateDifferenceYear(_pvm.patient.DOB.Value, endDate);
+
                 }
 
                 if (success.HasValue)
                 {
-                    _pvm.ptSuccess = success.GetValueOrDefault();
+                    _pvm.ptSuccess = success.Value;
                                         
-                    if (message != null)
-                    {
-                        _pvm.message = message;
-                    }
+                    if (!string.IsNullOrEmpty(message)) { _pvm.message = message; }
                 }
 
-                _pvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1) + _pvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
+                //EDMS link
+                string edmsBaseURL = await _constantsData.GetConstant("GEMRLink", 1);
+
+                if (!string.IsNullOrWhiteSpace(edmsBaseURL) && !string.IsNullOrWhiteSpace(_pvm.patient.DCTM_Folder_ID))
+                {
+                    _pvm.edmsLink = edmsBaseURL + _pvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
+                }
 
                 return View(_pvm);
             }
@@ -169,6 +192,6 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
             }
-        }
+        }        
     }
 }

@@ -19,42 +19,35 @@ namespace ClinicX.Controllers
         private readonly RelativeDiagnosisVM _rdvm;
         private readonly RelativeVM _rvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
-        private readonly IPatientData _patientData;
-        private readonly IRelativeData _relativeData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IRelativeDataAsync _relativeData;
         private readonly APIController _api;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public RelativeController(IConfiguration config, IStaffUserData staffUserData, IPatientData patientData, IRelativeData relativeData, ICRUD crud, APIController api, IAuditService audit)
+        public RelativeController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, ICRUD crud, APIController api, IAuditService audit)
         {
             //_clinContext = context;
             //_cXContext = cXContext;
-            //_docContext = docContext;
-            //_apiContext = apiContext;
             _config = config;
-            //_crud = new CRUD(_config);
             _crud = crud;
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
-            //_relativeData = new RelativeData(_clinContext);
             _relativeData = relativeData;
             _rdvm = new RelativeDiagnosisVM();
             _rvm = new RelativeVM();
-            //_api = new APIController(_apiContext, _config);
             _api = api;
-            //_audit = new AuditService(_config);
             _audit = audit;
         }
 
         [Authorize]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relatives", "", _ip.GetIPAddress());
 
@@ -68,16 +61,17 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult RelativeDetails(int id)
+        public async Task<IActionResult> RelativeDetails(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - View Relative", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
+                _rdvm.relativeDetails = await _relativeData.GetRelativeDetails(id);
+                var pat = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
+                _rdvm.MPI = pat.MPI;
                 
                 return View(_rdvm);
             }
@@ -89,18 +83,21 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Relative", "ID=" + id.ToString(), _ip.GetIPAddress());
 
-                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
-                _rdvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
-                _rdvm.genderList = _relativeData.GetGenderList();
+                _rdvm.relativeDetails = await _relativeData.GetRelativeDetails(id);
+                var pat = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
+                _rdvm.MPI = pat.MPI;
+                _rdvm.relationList = await _relativeData.GetRelationsList();
+                _rdvm.relationList = _rdvm.relationList.OrderBy(r => r.ReportOrder).ToList();
+                _rdvm.genderList = await _relativeData.GetGenderList();
 
                 return View(_rdvm);
             }
@@ -111,13 +108,13 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, string title, string forename1,
+        public async Task<IActionResult> Edit(int id, string title, string forename1,
             string forename2, string surname, string relation, string dob, string dod,
             int isAffected, string sex)
         {
             try
             {
-                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
+                _rdvm.relativeDetails = await _relativeData.GetRelativeDetails(id);
 
                 //making sure all the nulls have values
 
@@ -161,18 +158,21 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddNew(int wmfacsid)
+        public async Task<IActionResult> AddNew(int wmfacsid)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative", "WMFACSID=" + wmfacsid.ToString(), _ip.GetIPAddress());
 
                 _rdvm.WMFACSID = wmfacsid;
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
-                _rdvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
-                _rdvm.genderList = _relativeData.GetGenderList();
+                var pat = await _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
+                _rdvm.MPI = pat.MPI;
+                _rdvm.relationList = await _relativeData.GetRelationsList();
+                _rdvm.relationList = _rdvm.relationList.OrderBy(r => r.ReportOrder).ToList();
+                _rdvm.genderList = await _relativeData.GetGenderList();
                 return View(_rdvm);
             }
             catch (Exception ex)
@@ -182,13 +182,14 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNew(int wmfacsid, string title, string forename1, 
+        public async Task<IActionResult> AddNew(int wmfacsid, string title, string forename1, 
             string forename2, string surname, string relation, string sDOB, string sDOD, 
             int isAffected, string sex)
         {
             try
             {
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
+                var pat = await _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
+                _rdvm.MPI = pat.MPI;
                 DateTime birthDate = new DateTime();
                 DateTime deathDate = new DateTime();
 
@@ -234,11 +235,12 @@ namespace ClinicX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Import Relatives", "WMFACSID=" + id.ToString(), _ip.GetIPAddress());
-                _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(id);
-                _rvm.cgudbRelativesList = _relativeData.GetRelativesList(_rvm.patient.MPI);
+                _rvm.patient = await _patientData.GetPatientDetailsByWMFACSID(id);
+                _rvm.cgudbRelativesList = await _relativeData.GetRelativesList(_rvm.patient.MPI);
 
                 List<APIControllers.Models.Relative> ptRels = new List<APIControllers.Models.Relative>();
 
@@ -252,7 +254,7 @@ namespace ClinicX.Controllers
                         RelForename1 = r.RelForename1, RelSurname = r.RelSurname, DOD = r.DOD, RelSex = r.RelSex, WMFACSID = r.WMFACSID });
                 }
 
-                _rvm.relationslist = _relativeData.GetRelationsList();
+                _rvm.relationslist = await _relativeData.GetRelationsList();
 
                 return View(_rvm);
             }

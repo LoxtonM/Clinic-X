@@ -7,6 +7,7 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class ClinicalNoteVM
     {
+        public StaffMember staffMember { get; set; }
         public ActivityItem activityItem { get; set; }
         public List<ActivityItem> activityItems { get; set; }    
         public Appointment Clinic { get; set; }

@@ -12,30 +12,28 @@ namespace ClinicX.Controllers
         //private readonly LabContext _context;
         //private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly ILabData _labData;
+        private readonly ILabDataAsync _labData;
         private readonly LabReportVM _lvm;
-        private readonly IStaffUserData _staff;
+        private readonly IStaffUserDataAsync _staff;
         private readonly IAuditService _audit;
 
-        public LabReportController(IConfiguration config, IStaffUserData staffUserData, IAuditService auditService, ILabData labData)
+        public LabReportController(IConfiguration config, IStaffUserDataAsync staffUserData, IAuditService auditService, ILabDataAsync labData)
         {
             //_context = context;
             //_clinContext = clinContext;
             _config = config;
-            //_labData = new LabReportData(_context);
             _labData = labData;
             _lvm = new LabReportVM();
-            //_staff = new StaffUserData(_clinContext);
             _staff = staffUserData;
-            //_audit = new AuditService(_config);
             _audit = auditService;
         }
 
 
         [Authorize]
-        public IActionResult LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob)
+        public async Task<IActionResult> LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob)
         {
-            string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            var user = await _staff.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = user.STAFF_CODE;
             IPAddressFinder _ip = new IPAddressFinder(HttpContext);
             _audit.CreateUsageAuditEntry(staffCode, "ClinicX - LabReports", "", _ip.GetIPAddress());
 
@@ -43,7 +41,7 @@ namespace ClinicX.Controllers
 
             if (firstname != null || lastname != null || nhsno != null || postcode != null || dob != null)
             {
-                _lvm.patientsList = _labData.GetPatients(firstname, lastname, nhsno, postcode, dob);
+                _lvm.patientsList = await _labData.GetPatients(firstname, lastname, nhsno, postcode, dob);
                 _lvm.searchTerms = "Firstname:" + firstname + ",Lastname:" + lastname + ",NHSNo:" + nhsno + ",Postcode:" + postcode;
                 if(dob != null)
                 {
@@ -55,38 +53,38 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult LabReports(int intID)
+        public async Task<IActionResult> LabReports(int intID)
         {
-            _lvm.patient = _labData.GetPatientDetails(intID);
-            _lvm.cytoReportsList = _labData.GetCytoReportsList(intID);
+            _lvm.patient = await _labData.GetPatientDetails(intID);
+            _lvm.cytoReportsList = await _labData.GetCytoReportsList(intID);
             //_lvm.dnaReportsList = _labData.GetDNAReportsList(intID);
-            _lvm.labDNALabDataList = _labData.GetDNALabDataList(intID);
+            _lvm.labDNALabDataList = await _labData.GetDNALabDataList(intID);
 
             return View(_lvm);
         }
 
         [Authorize]
-        public IActionResult SampleDetails(string labno)
+        public async Task<IActionResult> SampleDetails(string labno)
         {
-            _lvm.cytoReport = _labData.GetCytoReport(labno);
-            _lvm.dnaReport = _labData.GetDNAReport(labno);            
+            _lvm.cytoReport = await _labData.GetCytoReport(labno);
+            _lvm.dnaReport = await _labData.GetDNAReport(labno);            
 
             return View(_lvm);
         }
 
         [Authorize]
-        public IActionResult DNALabReport(string labno, string indication, string reason) //needs more than the LabNo to get a specific report
+        public async Task<IActionResult> DNALabReport(string labno, string indication, string reason) //needs more than the LabNo to get a specific report
         {            
-            _lvm.dnaReportDetails = _labData.GetDNAReportDetails(labno, indication, reason);
-            _lvm.dnaReport = _labData.GetDNAReport(labno);            
+            _lvm.dnaReportDetails = await _labData.GetDNAReportDetails(labno, indication, reason);
+            _lvm.dnaReport = await _labData.GetDNAReport(labno);            
     
             return View(_lvm);
         }
 
         [Authorize]
-        public IActionResult CytoLabReport(string labno)
+        public async Task<IActionResult> CytoLabReport(string labno)
         {
-            _lvm.cytoReport = _labData.GetCytoReport(labno);            
+            _lvm.cytoReport = await _labData.GetCytoReport(labno);
 
             return View(_lvm);
         }

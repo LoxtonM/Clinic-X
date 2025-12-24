@@ -7,6 +7,7 @@ namespace ClinicX.ViewModels
     [Keyless]
     public class ClinicVM
     {
+        public StaffMember staffMember { get; set; }
         public List<StaffMember> staffMembers { get; set; }
         public List<ActivityItem> activityItems { get; set; }
         public ActivityItem activityItem { get; set; }
@@ -17,7 +18,7 @@ namespace ClinicX.ViewModels
         public Note clinicalNotes { get; set; }
         public List<Note> clinicalNotesList { get; set; }
         public List<Ethnicity> ethnicities { get; set; }
-        public Patient patients { get; set; }        
+        public Patient patient { get; set; }        
         public List<Appointment> pastClinicsList { get; set; }
         public List<Appointment> currentClinicsList { get; set; }
         public List<Appointment> futureClinicsList { get; set; }
