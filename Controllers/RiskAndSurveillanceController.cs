@@ -17,70 +17,57 @@ namespace ClinicX.Controllers
         //private readonly ClinicXContext _cXContext;
         private readonly RiskSurveillanceVM _rsvm;
         private readonly IConfiguration _config;        
-        private readonly IPatientData _patientData;
-        private readonly IStaffUserData _staffUser;
-        private readonly ITriageData _triageData;
-        private readonly IRiskData _riskData;
-        private readonly ISurveillanceData _survData;
-        private readonly IRiskCodesData _riskCodesData;
-        private readonly ISurveillanceCodesData _survCodesData;
-        private readonly ITestEligibilityData _testEligibilityData;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly ITriageDataAsync _triageData;
+        private readonly IRiskDataAsync _riskData;
+        private readonly ISurveillanceDataAsync _survData;
+        private readonly IRiskCodesDataAsync _riskCodesData;
+        private readonly ISurveillanceCodesDataAsync _survCodesData;
+        private readonly ITestEligibilityDataAsync _testEligibilityData;
         private readonly IMiscData _misc;
-        private readonly IGeneChangeData _geneChange;
-        private readonly IGeneCodeData _geneCode;
-        private readonly IRelativeData _relData;
+        private readonly IGeneChangeDataAsync _geneChange;
+        private readonly IGeneCodeDataAsync _geneCode;
+        private readonly IRelativeDataAsync _relData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public RiskAndSurveillanceController(IConfiguration config, IPatientData patientData, IStaffUserData staffUserData, ITriageData triageData, IRiskData riskData, 
-            ISurveillanceData surveillanceData, IRiskCodesData riskCodesData, ISurveillanceCodesData surveillanceCodesData, ITestEligibilityData testEligibilityData,
-            IMiscData miscData, IGeneChangeData geneChangeData, IGeneCodeData geneCodeData, IRelativeData relativeData, ICRUD crud,IAuditService auditService)
+        public RiskAndSurveillanceController(IConfiguration config, IPatientDataAsync patientData, IStaffUserDataAsync staffUserData, ITriageDataAsync triageData, IRiskDataAsync riskData,
+            ISurveillanceDataAsync surveillanceData, IRiskCodesDataAsync riskCodesData, ISurveillanceCodesDataAsync surveillanceCodesData, ITestEligibilityDataAsync testEligibilityData,
+            IMiscData miscData, IGeneChangeDataAsync geneChangeData, IGeneCodeDataAsync geneCodeData, IRelativeDataAsync relativeData, ICRUD crud,IAuditService auditService)
         {
             //_clinContext = context;
             //_cXContext = cXContext;
             _config = config;
             _rsvm = new RiskSurveillanceVM();
-            //_patientData = new PatientData(_clinContext);
             _patientData = patientData;
-            //_staffUser = new StaffUserData(_clinContext);
             _staffUser = staffUserData;
-            //_triageData = new TriageData(_clinContext);
             _triageData = triageData;
-            //_riskData = new RiskData(_clinContext);
             _riskData = riskData;
-            //_survData = new SurveillanceData(_clinContext);
             _survData = surveillanceData;
-            //_riskCodesData = new RiskCodesData(_cXContext);
             _riskCodesData = riskCodesData;
-            //_survCodesData = new SurveillanceCodesData(_cXContext);
             _survCodesData = surveillanceCodesData;
-            //_testEligibilityData = new TestEligibilityData(_clinContext);
             _testEligibilityData = testEligibilityData;
-            //_misc = new MiscData(_config);
             _misc = miscData;
-            //_geneChange = new GeneChangeData(_cXContext);
             _geneChange = geneChangeData;
-            //_geneCode = new GeneCodeData(_cXContext);
             _geneCode = geneCodeData;
-            //_relData = new RelativeData(_clinContext);
             _relData = relativeData;
-            //_crud = new CRUD(_config);
             _crud = crud;
-            //_audit = new AuditService(_config);
             _audit = auditService;
         }
 
         [Authorize]
-        public IActionResult Index(int mpi)
+        public async Task<IActionResult> Index(int mpi)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk List", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
-                _rsvm.patient = _patientData.GetPatientDetails(mpi);
-                _rsvm.riskList = _riskData.GetRiskListForPatient(mpi);                
+                _rsvm.patient = await _patientData.GetPatientDetails(mpi);
+                _rsvm.riskList = await _riskData.GetRiskListForPatient(mpi);                
 
                 return View(_rsvm);
             }
@@ -91,17 +78,18 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult RiskDetails(int id)
+        public async Task<IActionResult> RiskDetails(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rsvm.geneChange = _geneChange.GetGeneChangeList();
-                _rsvm.riskDetails = _riskData.GetRiskDetails(id);
-                _rsvm.surveillanceList = _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
-                _rsvm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
+                _rsvm.geneChange = await _geneChange.GetGeneChangeList();
+                _rsvm.riskDetails = await _riskData.GetRiskDetails(id);
+                _rsvm.surveillanceList = await _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
+                _rsvm.eligibilityList = await _testEligibilityData.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
                 return View(_rsvm);
             }
             catch (Exception ex)
@@ -112,19 +100,20 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult SurvDetails(int id)
+        public async Task<IActionResult> SurvDetails(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rsvm.geneChange= _geneChange.GetGeneChangeList();
-                _rsvm.surveillanceDetails = _survData.GetSurvDetails(id);
-                _rsvm.riskDetails = _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
+                _rsvm.geneChange= await _geneChange.GetGeneChangeList();
+                _rsvm.surveillanceDetails = await _survData.GetSurvDetails(id);
+                _rsvm.riskDetails = await _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
                 int mpi = _rsvm.surveillanceDetails.MPI;
 
-                _rsvm.patient = _patientData.GetPatientDetails(mpi);
+                _rsvm.patient = await _patientData.GetPatientDetails(mpi);
                 
                 return View(_rsvm);
             }
@@ -135,15 +124,16 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult SurvDetails(int survID, int geneChange)
+        public async Task<IActionResult> SurvDetails(int survID, int geneChange)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + survID.ToString(), _ip.GetIPAddress());                
-
-                int riskID = _survData.GetSurvDetails(survID).RiskID;                
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + survID.ToString(), _ip.GetIPAddress());
+                var risk = await _survData.GetSurvDetails(survID);
+                int riskID = risk.RiskID;                
 
                 int success = _crud.CallStoredProcedure("Surveillance", "Add Gene Change", survID, geneChange, 0, "", "", "", "",
                     User.Identity.Name, null, null, false, false);
@@ -161,23 +151,25 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddNewRisk(int id)
+        public async Task<IActionResult> AddNewRisk(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Risk", "ICPID=" + id.ToString(), _ip.GetIPAddress());
 
-                _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(id);
-                _rsvm.riskDetails = _riskData.GetRiskDetails(id);
-                _rsvm.patient = _patientData.GetPatientDetails(_rsvm.icpCancer.MPI);
-                _rsvm.refID = _triageData.GetICPDetails(id).REFID;
-                _rsvm.riskCodes = _riskCodesData.GetRiskCodesList();
-                _rsvm.survSiteCodes = _survCodesData.GetSurvSiteCodesList();
-                _rsvm.staffMembersList = _staffUser.GetClinicalStaffList();
+                _rsvm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(id);
+                _rsvm.riskDetails = await _riskData.GetRiskDetails(id);
+                _rsvm.patient = await _patientData.GetPatientDetails(_rsvm.icpCancer.MPI);
+                var refer = await _triageData.GetICPDetails(id);
+                _rsvm.refID = refer.REFID;
+                _rsvm.riskCodes = await _riskCodesData.GetRiskCodesList();
+                _rsvm.survSiteCodes = await _survCodesData.GetSurvSiteCodesList();
+                _rsvm.staffMembersList = await _staffUser.GetClinicalStaffList();
                 _rsvm.staffCode = staffCode;
-                _rsvm.calculationTools = _riskCodesData.GetCalculationToolsList();
+                _rsvm.calculationTools = await _riskCodesData.GetCalculationToolsList();
                 return View(_rsvm);
             }
             catch (Exception ex)
@@ -188,7 +180,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddNewRisk(int refID, string riskCode, string siteCode, string clinCode, 
+        public async Task<IActionResult> AddNewRisk(int refID, string riskCode, string siteCode, string clinCode, 
             DateTime riskDate, float lifetimePercent, string comments, float f2529, float f3040, float f4050, 
             float f5060, bool isUseLetter, string tool)
         {
@@ -201,8 +193,10 @@ namespace ClinicX.Controllers
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addRisk(QSL)" }); }
 
                 int riskID = _misc.GetRiskID(refID); //this function simply gets the latest RiskID related to the RefID
-                int icpID = _riskData.GetRiskDetails(riskID).ICPID;
-                int icpCancerID = _triageData.GetCancerICPDetailsByICPID(icpID).ICP_Cancer_ID; //this is all just to get the ICPCancerID!
+                var risk = await _riskData.GetRiskDetails(riskID);
+                int icpID = risk.ICPID;
+                var icpc = await _triageData.GetCancerICPDetailsByICPID(icpID);
+                int icpCancerID = icpc.ICP_Cancer_ID; //this is all just to get the ICPCancerID!
 
                 return RedirectToAction("CancerReview", "Triage", new { id = icpCancerID });
             }
@@ -214,22 +208,23 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddNewSurveillance(int id)
+        public async Task<IActionResult> AddNewSurveillance(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Surveillance", "RiskID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rsvm.riskID = id;
-                _rsvm.riskDetails = _riskData.GetRiskDetails(id);
-                _rsvm.patient = _patientData.GetPatientDetails(_rsvm.riskDetails.MPI);
-                _rsvm.survSiteCodes = _survCodesData.GetSurvSiteCodesList();
-                _rsvm.survTypeCodes = _survCodesData.GetSurvTypeCodesList();
-                _rsvm.survFreqCodes = _survCodesData.GetSurvFreqCodesList();
-                _rsvm.discontinuedReasonCodes = _survCodesData.GetDiscReasonCodesList();
-                _rsvm.staffMembersList = _staffUser.GetClinicalStaffList();
+                _rsvm.riskDetails = await _riskData.GetRiskDetails(id);
+                _rsvm.patient = await _patientData.GetPatientDetails(_rsvm.riskDetails.MPI);
+                _rsvm.survSiteCodes = await _survCodesData.GetSurvSiteCodesList();
+                _rsvm.survTypeCodes = await _survCodesData.GetSurvTypeCodesList();
+                _rsvm.survFreqCodes = await _survCodesData.GetSurvFreqCodesList();
+                _rsvm.discontinuedReasonCodes = await _survCodesData.GetDiscReasonCodesList();
+                _rsvm.staffMembersList = await _staffUser.GetClinicalStaffList();
 
                 AgeCalculator ageCalc = new AgeCalculator(); //to display patient's current age (requested feature)
 
@@ -276,21 +271,22 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult EditRisk(int id)
+        public async Task<IActionResult> EditRisk(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rsvm.geneChange = _geneChange.GetGeneChangeList();
-                _rsvm.riskDetails = _riskData.GetRiskDetails(id);
-                _rsvm.surveillanceList = _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
-                _rsvm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
-                _rsvm.riskCodes = _riskCodesData.GetRiskCodesList();
-                _rsvm.survSiteCodes = _survCodesData.GetSurvSiteCodesList();
-                _rsvm.calculationTools = _riskCodesData.GetCalculationToolsList();
-                _rsvm.staffMembersList = _staffUser.GetClinicalStaffList();
+                _rsvm.geneChange = await _geneChange.GetGeneChangeList();
+                _rsvm.riskDetails = await _riskData.GetRiskDetails(id);
+                _rsvm.surveillanceList = await _survData.GetSurveillanceListByRiskID(_rsvm.riskDetails.RiskID);
+                _rsvm.eligibilityList = await _testEligibilityData.GetTestingEligibilityList(_rsvm.riskDetails.MPI);
+                _rsvm.riskCodes = await _riskCodesData.GetRiskCodesList();
+                _rsvm.survSiteCodes = await _survCodesData.GetSurvSiteCodesList();
+                _rsvm.calculationTools = await _riskCodesData.GetCalculationToolsList();
+                _rsvm.staffMembersList = await _staffUser.GetClinicalStaffList();
                 return View(_rsvm);
             }
             catch (Exception ex)
@@ -300,13 +296,14 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditRisk(int id, string riskCode, string siteCode, string clinCode,
+        public async Task<IActionResult> EditRisk(int id, string riskCode, string siteCode, string clinCode,
             DateTime riskDate, float lifetimePercent, string comments, float f2529, float f3040, float f4050,
             float f5060, bool isUseLetter, string tool)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
 
@@ -323,21 +320,22 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult EditSurveillance(int id)
+        public async Task<IActionResult> EditSurveillance(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rsvm.geneChange = _geneChange.GetGeneChangeList();
-                _rsvm.surveillanceDetails = _survData.GetSurvDetails(id);
-                _rsvm.riskDetails = _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
-                _rsvm.survFreqCodes = _survCodesData.GetSurvFreqCodesList();
-                _rsvm.discontinuedReasonCodes = _survCodesData.GetDiscReasonCodesList();
+                _rsvm.geneChange = await _geneChange.GetGeneChangeList();
+                _rsvm.surveillanceDetails = await _survData.GetSurvDetails(id);
+                _rsvm.riskDetails = await _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
+                _rsvm.survFreqCodes = await _survCodesData.GetSurvFreqCodesList();
+                _rsvm.discontinuedReasonCodes = await _survCodesData.GetDiscReasonCodesList();
                 int mpi = _rsvm.surveillanceDetails.MPI;
 
-                _rsvm.patient = _patientData.GetPatientDetails(mpi);
+                _rsvm.patient = await _patientData.GetPatientDetails(mpi);
 
                 return View(_rsvm);
             }
@@ -348,11 +346,12 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditSurveillance(int id, string geneChange, DateTime discDate, int startAge, int endAge, string frequency, bool isDisc, string? discReason)
+        public async Task<IActionResult> EditSurveillance(int id, string geneChange, DateTime discDate, int startAge, int endAge, string frequency, bool isDisc, string? discReason)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
 
@@ -372,22 +371,23 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddNewTestingEligibility(int id)
+        public async Task<IActionResult> AddNewTestingEligibility(int id)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Risk", "ICPID=" + id.ToString(), _ip.GetIPAddress());
 
-                _rsvm.icpCancer = _triageData.GetCancerICPDetails(id);
-                _rsvm.patient = _patientData.GetPatientDetails(_rsvm.icpCancer.MPI);
-                _rsvm.eligibilityList = _testEligibilityData.GetTestingEligibilityList(_rsvm.patient.MPI);
+                _rsvm.icpCancer = await _triageData.GetCancerICPDetails(id);
+                _rsvm.patient = await _patientData.GetPatientDetails(_rsvm.icpCancer.MPI);
+                _rsvm.eligibilityList = await _testEligibilityData.GetTestingEligibilityList(_rsvm.patient.MPI);
                 _rsvm.refID = _rsvm.icpCancer.RefID;                
-                _rsvm.geneCode = _geneCode.GetGeneCodeList();
+                _rsvm.geneCode = await _geneCode.GetGeneCodeList();
                 _rsvm.staffCode = staffCode;
-                _rsvm.calculationTools = _riskCodesData.GetCalculationToolsList();
-                _rsvm.relatives = _relData.GetRelativesList(_rsvm.patient.MPI);
+                _rsvm.calculationTools = await _riskCodesData.GetCalculationToolsList();
+                _rsvm.relatives = await _relData.GetRelativesList(_rsvm.patient.MPI);
                 
                 return View(_rsvm);
             }
@@ -398,16 +398,17 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNewTestingEligibility(int refID, int gene, string tool, string score, string offerTest, int? relative=0)
+        public async Task<IActionResult> AddNewTestingEligibility(int refID, int gene, string tool, string score, string offerTest, int? relative=0)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Testing Eligibility", "", _ip.GetIPAddress());
 
-                ICP icp = _triageData.GetICPDetailsByRefID(refID);
-                _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+                ICP icp = await _triageData.GetICPDetailsByRefID(refID);
+                _rsvm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
                                 
                 bool isRelative = false; //set a bool based in an int
                 if(relative != 0) { isRelative = true; }
@@ -429,25 +430,25 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult EditTestingEligibilityDetails(int id)
+        public async Task<IActionResult> EditTestingEligibilityDetails(int id)
         {
-            _rsvm.eligibilityDetails = _testEligibilityData.GetTestingEligibilityDetails(id);
-            _rsvm.patient = _patientData.GetPatientDetails(_rsvm.eligibilityDetails.MPI);            
-            _rsvm.relatives = _relData.GetRelativesList(_rsvm.patient.MPI);
-            ICP icp = _triageData.GetICPDetailsByRefID(_rsvm.eligibilityDetails.RefID);
-            _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
-            _rsvm.geneCode = _geneCode.GetGeneCodeList();
-            _rsvm.calculationTools = _riskCodesData.GetCalculationToolsList();
+            _rsvm.eligibilityDetails = await _testEligibilityData.GetTestingEligibilityDetails(id);
+            _rsvm.patient = await _patientData.GetPatientDetails(_rsvm.eligibilityDetails.MPI);            
+            _rsvm.relatives = await _relData.GetRelativesList(_rsvm.patient.MPI);
+            ICP icp = await _triageData.GetICPDetailsByRefID(_rsvm.eligibilityDetails.RefID);
+            _rsvm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+            _rsvm.geneCode = await _geneCode.GetGeneCodeList();
+            _rsvm.calculationTools = await _riskCodesData.GetCalculationToolsList();
 
             return View(_rsvm);
         }
 
         [HttpPost]
-        public IActionResult EditTestingEligibilityDetails(int id, int gene, string tool, string score, string offerTest)
+        public async Task<IActionResult> EditTestingEligibilityDetails(int id, int gene, string tool, string score, string offerTest)
         {
-            _rsvm.eligibilityDetails = _testEligibilityData.GetTestingEligibilityDetails(id);
-            ICP icp = _triageData.GetICPDetailsByRefID(_rsvm.eligibilityDetails.RefID);
-            _rsvm.icpCancer = _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+            _rsvm.eligibilityDetails = await _testEligibilityData.GetTestingEligibilityDetails(id);
+            ICP icp = await _triageData.GetICPDetailsByRefID(_rsvm.eligibilityDetails.RefID);
+            _rsvm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
 
             int success = _crud.CallStoredProcedure("TestEligibility", "Edit", id, gene, 0, tool, score, offerTest, "",
                 User.Identity.Name);
@@ -459,9 +460,9 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult SetUsingLetter(int id, bool isUsingLetter) //to provide a quick "don't use this one!" mechanic
+        public async Task<IActionResult> SetUsingLetter(int id, bool isUsingLetter) //to provide a quick "don't use this one!" mechanic
         {
-            _rsvm.riskDetails = _riskData.GetRiskDetails(id);
+            _rsvm.riskDetails = await _riskData.GetRiskDetails(id);
             int icpID = _rsvm.riskDetails.ICP_Cancer_ID;
 
             _crud.CallStoredProcedure("Risk", "Set Use Letter", id, 0, 0, "", "", "", "", User.Identity.Name, null, null, isUsingLetter, false);

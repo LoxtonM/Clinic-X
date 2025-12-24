@@ -12,13 +12,13 @@ namespace ClinicX.Controllers
     {
         //private readonly ClinicalContext _context;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUserData;
-        private readonly ITitleData _titleData;
+        private readonly IStaffUserDataAsync _staffUserData;
+        private readonly ITitleDataAsync _titleData;
         private readonly ICRUD _crud;
         private readonly IAuditService _auditService;
         private readonly ProfileVM _pvm;
 
-        public UserProfileController(IConfiguration config, IStaffUserData staffUserData, ITitleData titleData, ICRUD crud, IAuditService auditService)
+        public UserProfileController(IConfiguration config, IStaffUserDataAsync staffUserData, ITitleDataAsync titleData, ICRUD crud, IAuditService auditService)
         {
             //_context = context;
             _config = config;
@@ -30,7 +30,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult ProfileDetails(string? message, bool? isSuccess)
+        public async Task<IActionResult> ProfileDetails(string? message, bool? isSuccess)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                    _pvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                     IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                     _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Staff Profile", "Staffcode=" + _pvm.staffMember.STAFF_CODE, _ip.GetIPAddress());
                     if (message != null)
@@ -60,7 +60,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult ChangePassword()
+        public async Task<IActionResult> ChangePassword()
         {
             try
             {
@@ -70,7 +70,7 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                    _pvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                     IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                     _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Change Password", "", _ip.GetIPAddress());
 
@@ -84,7 +84,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult ChangePassword(string curPassword, string newPassword, string newPasswordConf)
+        public async Task<IActionResult> ChangePassword(string curPassword, string newPassword, string newPasswordConf)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                    _pvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                     _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Change Password", "Staffcode=" + _pvm.staffMember.STAFF_CODE);
 
                     if (curPassword == _pvm.staffMember.PASSWORD && newPassword == newPasswordConf)
@@ -115,7 +115,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Edit()
+        public async Task<IActionResult> Edit()
         {
             try
             {
@@ -125,10 +125,10 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                    _pvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                     IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                     _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Update Details", "", _ip.GetIPAddress());
-                    _pvm.titles = _titleData.GetTitlesList();
+                    _pvm.titles = await _titleData.GetTitlesList();
 
                     return View(_pvm);
                 }
@@ -140,7 +140,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(string title, string forename, string surname, string position, string telephone, string email, string gmcnumber)
+        public async Task<IActionResult> Edit(string title, string forename, string surname, string position, string telephone, string email, string gmcnumber)
         {
             try
             {
@@ -150,7 +150,7 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    _pvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                    _pvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                     _auditService.CreateUsageAuditEntry(_pvm.staffMember.STAFF_CODE, "Update Details", "Staffcode=" + _pvm.staffMember.STAFF_CODE);
 
                     if (!email.Contains("@")) //we can't validate the email address in the front end, because there is no way to escape the @, so it has to be done here.

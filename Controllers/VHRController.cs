@@ -54,28 +54,7 @@ public class VHRController : Controller
         _constantsData = constantsData;
     }
 
-    /*
-    public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)
-    {
-        try
-        {            
-            _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
-            _lvm.patient = _patientData.GetPatientDetails(mpi);
-            _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
-            _lvm.referrer = _externalClinicianData.GetClinicianDetails(referrer);
-
-            return View(_lvm);
-        }
-        catch (Exception ex)
-        {
-            return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Letter" });
-        }
-    }
-    */
-
-
-
-        
+           
     public async Task DoVHRPro(int id, int mpi, int icpCancerID, string user, string referrer, string screeningService, string? additionalText = "", int? diaryID = 0, bool? isPreview = false)
     {
         try
