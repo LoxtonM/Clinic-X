@@ -50,7 +50,19 @@ namespace ClinicX.Controllers
             _lvm.docsListMedRec = docList.Where(d => d.DocGroup == "MEDREC").ToList();
             _lvm.docsListDNA = docList.Where(d => d.DocGroup == "DNATS").ToList();
             _lvm.docsListOutcome = docList.Where(d => d.DocGroup == "Outcome").ToList();
-            _lvm.externalClinicians = await _externalClinicianData.GetExternalCliniciansByType("histo");
+            _lvm.docContentList = await _documentsData.GetDocumentsContentList();
+            //_lvm.clinicianList = new List<ExternalCliniciansAndFacilities>();
+            var clinList = await _externalClinicianData.GetClinicianList();
+            var clins = new List<ExternalCliniciansAndFacilities>();
+            _lvm.patGP = await _externalClinicianData.GetPatientGPReferrer(_lvm.referral.MPI);
+            clins.Add(_lvm.patGP);
+            _lvm.externalClinicians = clins;
+            _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
+            _lvm.breastList = clinList.Where(c => c.POSITION.Contains("Breast") || c.SPECIALITY.Contains("Breast")).ToList();
+            _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).ToList();
+
+
+
             _lvm.leaflets = new List<Leaflet>();
             if (_lvm.referral.PATHWAY == "Cancer")
             {

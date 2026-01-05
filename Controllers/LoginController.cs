@@ -17,11 +17,9 @@ namespace ClinicX.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UserLogin([Bind] UserDetails user)
-        {            
-           
+        {           
             if (ModelState.IsValid)
-            {
-               
+            {               
                 string LoginStatus = objUser.ValidateLogin(user);
                
                 if (LoginStatus == "Success") 

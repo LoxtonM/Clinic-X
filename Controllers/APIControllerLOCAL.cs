@@ -1,18 +1,44 @@
-﻿using Newtonsoft.Json;
-using RestSharp;
-using APIControllers.Data;
+﻿using APIControllers.Data;
 using APIControllers.Meta;
 using APIControllers.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using RestSharp;
 
 namespace APIControllers.Controllers
 {
-    public class APIControllerLOCAL
+    public interface IApiControllerLocal
+    {
+        bool CheckResponseValid(string response); //checks for a valid response
+        Task<string> GetPhenotipsPatientID(int id); //gets Phenotips ID from an existing patient (takes MPI)
+        Task<string> GetPhenotipsFamilyID(int id); //gets Phenotips ID from an existing patient (takes MPI)
+        Task<Int16> PushPtToPhenotips(int id); //pushes patient record into Phenotips
+        Task<string> CreatePhenotipsFamily(int id); //creates the family record in Phenotips
+        Task<string> GetFamilyIdFromPedno(string pedno); //cycles through 100 familes and finds one with the matching external ID
+        Task<Int16> SynchroniseMirrorWithPhenotips(int id); //checks PhenotipsPatients table and synchs with Phenotips records
+        Task<List<Relative>> ImportRelativesFromPhenotips(int id); //creates a list of relatives currently in the Phenotips pedigree, to be displayed/imported
+        Task<bool> PostJsonFileToPhenotips(string jsonString, string familyID); //takes a json string and pushes it into Phenotips family record to create the pedigree
+        Task<Int16> SchedulePPQ(int id, string ppqType); //creates the PPQ for the patient in Phenotips (takes MPI and "cancer" or "general")
+        Task<bool> CheckPPQExists(int id, string ppqType); //checks if a PPQ of a specified type exists for a patient (takes MPI and "cancer" or "general")
+        Task<bool> CheckPPQSubmitted(int id, string ppqType);
+        Task<string> GetPPQUrl(int id, string ppqType); //gets the patient facing URL of the PPQ
+        Task<string> GetPPQQRCode(int id, string ppqType); //gets the patient facing QR code of the PPQ
+        void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo); //adds patient to the Clinical_XP mirror table
+        Task<List<HPOTerm>> GetHPOCodes(string searchTerm); //gets matching HPO codes
+        Task<HPOTerm> GetHPODataByTermCode(string hpoTermCode); //gets the HPO entry details from the code
+        Task<List<string>> GetHPOSynonymsByTermCode(string hpoTermCode); //gets matching HPO synonyms from the code
+        Task<string> GetAllHPOTerms(string userName); //gets all current HPO codes from the website and updates Clinical_XP table
+    }
+
+    public class APIControllerLOCAL : IApiControllerLocal
     {
         private readonly APIContext _context;
         
         private readonly IConfiguration _config;
         private readonly IAPIPatientData _APIPatientData;
         private readonly IAPIConstantsData _constants;
+        private readonly IAPIPhenotipsMirrorData _phenotipsMirrorData;
         private readonly APIHPOCodeData _hpo;
         private string apiURLBase;
         private string apiURL;
@@ -25,6 +51,7 @@ namespace APIControllers.Controllers
             _APIPatientData = new APIPatientData(_context);
             _constants = new APIConstantsData(_context);
             _hpo = new APIHPOCodeData(_context);
+            _phenotipsMirrorData = new APIPhenotipsMirrorData(_context);
             apiURLBase = _constants.GetConstant("PhenotipsURL", 1).Trim();
             authKey = _constants.GetConstant("PhenotipsAPIAuthKey", 1).Trim();
             apiKey = _constants.GetConstant("PhenotipsAPIAuthKey", 2).Trim();
@@ -107,34 +134,202 @@ namespace APIControllers.Controllers
                 request.AddHeader("X-Gene42-Secret", apiKey);
                 string apiCall = "{\"patient_name\":{\"first_name\":\"" + $"{patient.FIRSTNAME}" + "\",\"last_name\":\"" + $"{patient.LASTNAME}" + "\"}";
                 apiCall = apiCall + ",\"date_of_birth\":{\"year\":" + yob.ToString() + ",\"month\":" + mob.ToString() + ",\"day\":" + dob.ToString() + "}";
-                apiCall = apiCall + ",\"sex\":\"" + $"{patient.SEX.Substring(0, 1)}" + "\",\"external_id\":\"" + $"{patient.CGU_No}" + "\"}";
+                apiCall = apiCall + ",\"sex\":\"" + $"{patient.SEX.Substring(0, 1)}" + "\",\"external_id\":\"" + $"{patient.CGU_No}" + "\"";
+                apiCall = apiCall + ",\"labeled_eids\":[{\"label\":\"NHS Number\",\"value\":\"" + $"{patient.SOCIAL_SECURITY}" + "\"}";
+                apiCall = apiCall + ",{\"label\":\"MPI\",\"value\":\"" + $"{patient.MPI}" + "\"}]";
+                apiCall = apiCall + "}";
 
                 request.AddJsonBody(apiCall, false);
                 var response = await client.PostAsync(request);
-
-                //SetPhenotipsOwner(patient.MPI, User.Identity.Name); - not currently necessary
                                 
                 if (response.Content == "")
                 {
-                    //isSuccess = true;
-                    //sMessage = "Push to Phenotips successful";
                     result = 1; //success result
-
-                    string ptID = await GetPhenotipsPatientID(patient.MPI);
-                    //AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), 
-                    //    patient.POSTCODE, patient.SOCIAL_SECURITY);
                 }
                 else
                 {
                     result = -1; //failure result
-                    //sMessage = "Push to Phenotips failed :(";
                 }
             }            
             return result;
         }
 
-       
+        public async Task<string> CreatePhenotipsFamily(int id)
+        {
+            string famID = "";
+            var patient = _APIPatientData.GetPatientDetails(id);
+            string pednum = patient.PEDNO;            
 
+            string apiURL = apiURLBase + ":443/rest/families";
+            var options = new RestClientOptions(apiURL);
+            var client = new RestClient(options);
+            var request = new RestRequest("");
+            request.AddHeader("authorization", $"Basic {authKey}");
+            request.AddHeader("X-Gene42-Secret", apiKey);
+            string apiCall = "{\"externalId\":\"" + pednum + "\"}";
+
+            request.AddJsonBody(apiCall, false);
+            var response = await client.PostAsync(request);
+
+            var location = response.Headers;
+
+            if (location.Count > 0)
+            {
+                foreach (var loc in location)
+                {
+                    if (loc.Value.Contains("http"))
+                    {
+                        int totalength = loc.Value.Length - (loc.Value.IndexOf("families/") + 9);
+                        famID = loc.Value.Substring(loc.Value.IndexOf("families/") + 9, totalength);
+                    }
+                }
+            }
+
+            return famID;
+        }
+
+        public async Task<string> GetFamilyIdFromPedno(string pedno)
+        {
+            string famID = "";
+
+            string apiURL = apiURLBase + ":443/rest/families?number=100&orderField=eid&order=desc";
+
+            var options = new RestClientOptions(apiURL);
+            var client = new RestClient(options);
+            var request = new RestRequest("");
+            request.AddHeader("authorization", $"Basic {authKey}");
+            request.AddHeader("X-Gene42-Secret", apiKey);
+
+            var response = await client.GetAsync(request);
+
+            if (!response.Content.Contains("Not Found"))
+            {
+                dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
+
+                foreach (var item in dynJson.data) //the only way to get familyID from the externalID is by looping through them all!
+                {
+                    if (item.ContainsKey("externalId"))
+                    {
+                        if (item.externalId == pedno)
+                        {
+                            famID = item.id;
+                            return famID;
+                        }
+                    }
+                }
+            }
+            return famID;
+        }
+
+        public async Task<Int16> SynchroniseMirrorWithPhenotips(int id)
+        {
+            Int16 result = 0;
+            var patient = _APIPatientData.GetPatientDetails(id);
+
+            PhenotipsPatient ptpt = _phenotipsMirrorData.GetPhenotipsPatientByID(patient.MPI);
+
+            apiURL = apiURLBase + $":443/rest/patients/eid/{patient.CGU_No}";
+            var options = new RestClientOptions(apiURL);
+            var client = new RestClient(options);
+            var request = new RestRequest("");
+            request.AddHeader("accept", "application/json");
+            request.AddHeader("authorization", "Basic " + authKey);
+            request.AddHeader("X-Gene42-Secret", apiKey);
+            var response = await client.GetAsync(request);
+
+            if (CheckResponseValid(response.Content))
+            {
+                SqlConnection con = new SqlConnection(_config.GetConnectionString("ConString"));
+                SqlCommand com = new SqlCommand("", con);
+                dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
+
+                string ptID = dynJson.id;
+                string famID = dynJson.family_id;
+                if (famID != null)
+                {
+                    famID = famID.Substring(famID.Length - 10); //because it puts "xwiki..." at the start
+                }
+                string firstName = dynJson.patient_name.first_name;
+                string lastName = dynJson.patient_name.last_name;
+
+                int dobYear = dynJson.date_of_birth.year;
+                int dobMonth = dynJson.date_of_birth.month;
+                int dobDay = dynJson.date_of_birth.day;
+                DateTime dob = DateTime.Parse(dobYear + "-" + dobMonth + "-" + dobDay);
+
+                string nhsNo = "";
+
+                if (dynJson.ContainsKey("labeled_eids"))
+                {
+                    foreach (var item in dynJson.labeled_eids)
+                    {
+                        if (item.label == "NHS Number")
+                        {
+                            nhsNo = item.value;
+                        }
+                    }
+                }
+
+                nhsNo = nhsNo.Replace(" ", "");
+
+                if (firstName == patient.FIRSTNAME && lastName == patient.LASTNAME && dob == patient.DOB && nhsNo == patient.SOCIAL_SECURITY)
+                {
+                    result = 1; //check if PT result matches CGU_DB records
+                }
+
+                if (ptpt == null) //check if patient in PT Mirror table, add if not, modify accordingly if required
+                {
+                    con.Open();
+                    com.CommandText = $"insert into PhenotipsPatients (FirstName, LastName, DOB, NHSNo, MPI, CGUNumber, PhenotipsID, FamilyID) " +
+                        $"values ('{firstName}', '{lastName}', '{dob.ToString("yyyy-MM-dd")}', '{nhsNo}', {id}, '{patient.CGU_No}', '{ptID}', '{famID}')";
+                    com.ExecuteNonQuery();
+                    con.Close();
+
+                    ptpt = _phenotipsMirrorData.GetPhenotipsPatientByID(patient.MPI); //once pt added, have to get the patient again
+                }
+
+                if (ptpt.FirstName != firstName || ptpt.LastName != lastName || ptpt.DOB != dob || ptpt.NHSNo != nhsNo || ptpt.NHSNo == "")
+                {
+                    con.Open();
+                    if (nhsNo == null || nhsNo == "")
+                    {
+                        com.CommandText = $"Update PhenotipsPatients set FirstName='{firstName}', LastName='{lastName}', DOB='{dob.ToString("yyyy-MM-dd")}', NHSNo=null " +
+                            $"where MPI={id}";
+                    }
+                    else
+                    {
+                        com.CommandText = $"Update PhenotipsPatients set FirstName='{firstName}', LastName='{lastName}', DOB='{dob.ToString("yyyy-MM-dd")}', NHSNo='{nhsNo}' " +
+                            $"where MPI={id}";
+                    }
+                    com.ExecuteNonQuery();
+                    con.Close();
+                } //update mirror table to match Phenotips
+
+                if (ptpt.PhenotipsID != ptID)
+                {
+                    con.Open();
+                    com.CommandText = $"Update PhenotipsPatients set PhenotipsID='{ptID}' where MPI={id}";
+                    com.ExecuteNonQuery();
+                    con.Close();
+                }
+
+                if (ptpt.FamilyID != famID)
+                {
+                    con.Open();
+                    if (famID == null)
+                    {
+                        com.CommandText = $"Update PhenotipsPatients set FamilyID=null where MPI={id}";
+                    }
+                    else
+                    {
+                        com.CommandText = $"Update PhenotipsPatients set FamilyID='{famID}' where MPI={id}";
+                    }
+                    com.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+            return result;
+        }
 
         public async Task<List<Relative>> ImportRelativesFromPhenotips(int id)
         {
@@ -224,16 +419,34 @@ namespace APIControllers.Controllers
                         });
                     }
                 }
-            }            
-
+            }
             return relatives.ToList();
+        }
+
+        public async Task<bool> PostJsonFileToPhenotips(string jsonString, string familyID)
+        {
+            bool result = false;
+            string apiURL = apiURL = apiURLBase + $":443/get/PhenoTips/FamilyPedigreeInterface?action=save";
+            var options = new RestClientOptions(apiURL);
+            var client = new RestClient(options);
+            var request = new RestRequest("");
+            request.AddHeader("accept", "application/json");
+            request.AddHeader("authorization", "Basic " + authKey);
+            request.AddHeader("X-Gene42-Secret", apiKey);
+            request.AddParameter("family_id", familyID);
+            request.AddParameter("json", jsonString);
+            var response = await client.PostAsync(request);
+
+            if (!response.Content.Contains("NotFound") && !response.Content.Contains("error") && !response.Content.Contains("{\"sheduleRequests\":[]"))
+            {
+                result = true;
+            }
+            return result;
         }
 
         public async Task<Int16> SchedulePPQ(int id, string ppqType)
         {
             var patient = _APIPatientData.GetPatientDetails(id);
-            //bool isSuccess = false;
-            //string sMessage = "";
             Int16 result = 0;
 
             string pID = "";
@@ -292,20 +505,18 @@ namespace APIControllers.Controllers
 
         public async Task<bool> CheckPPQExists(int id, string ppqType)
         {
-            var patient = _APIPatientData.GetPatientDetails(id);
-            //bool isSuccess = false;
-            //string sMessage = "";
+            var patient = _APIPatientData.GetPatientDetails(id);            
             bool result = false;
 
             string pID = "";
             string ppqID;
             if (ppqType == "Cancer")
             {
-                ppqID = "bwch_cancer";
+                ppqID = "cancer";
             }
             else
             {
-                ppqID = "bwch_general";
+                ppqID = "general";
             }
 
             pID = GetPhenotipsPatientID(id).Result;
@@ -323,7 +534,6 @@ namespace APIControllers.Controllers
                 var request = new RestRequest("");
                 request.AddHeader("authorization", $"Basic {authKey}");
                 request.AddHeader("X-Gene42-Secret", apiKey);
-                //string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
                 string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"status\":\"active\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
 
                 request.AddJsonBody(apiCall, false);
@@ -343,19 +553,17 @@ namespace APIControllers.Controllers
         public async Task<bool> CheckPPQSubmitted(int id, string ppqType)
         {
             var patient = _APIPatientData.GetPatientDetails(id);
-            //bool isSuccess = false;
-            //string sMessage = "";
             bool result = false;
 
             string pID = "";
             string ppqID;
             if (ppqType == "Cancer")
             {
-                ppqID = "bwch_cancer";
+                ppqID = "cancer";
             }
             else
             {
-                ppqID = "bwch_general";
+                ppqID = "general";
             }
 
             pID = GetPhenotipsPatientID(id).Result;
@@ -372,8 +580,7 @@ namespace APIControllers.Controllers
                 var client = new RestClient(options);
                 var request = new RestRequest("");
                 request.AddHeader("authorization", $"Basic {authKey}");
-                request.AddHeader("X-Gene42-Secret", apiKey);
-                //string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
+                request.AddHeader("X-Gene42-Secret", apiKey);                
                 string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"status\":\"submitted\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
 
                 request.AddJsonBody(apiCall, false);
@@ -390,24 +597,20 @@ namespace APIControllers.Controllers
             return result;
         }
 
-
-
         public async Task<string> GetPPQUrl(int id, string ppqType)
         {
             var patient = _APIPatientData.GetPatientDetails(id);
-            //bool isSuccess = false;
-            //string sMessage = "";
             string result = "";
 
             string pID = "";
             string ppqID;
             if (ppqType == "Cancer")
             {
-                ppqID = "bwch_cancer";
+                ppqID = "cancer";
             }
             else
             {
-                ppqID = "bwch_general";
+                ppqID = "general";
             }
 
             pID = GetPhenotipsPatientID(id).Result;
@@ -446,19 +649,17 @@ namespace APIControllers.Controllers
         public async Task<string> GetPPQQRCode(int id, string ppqType)
         {
             var patient = _APIPatientData.GetPatientDetails(id);
-            //bool isSuccess = false;
-            //string sMessage = "";
             string result = "";
 
             string pID = "";
             string ppqID;
             if (ppqType == "Cancer")
             {
-                ppqID = "bwch_cancer";
+                ppqID = "cancer";
             }
             else
             {
-                ppqID = "bwch_general";
+                ppqID = "general";
             }
 
             pID = GetPhenotipsPatientID(id).Result;
@@ -494,7 +695,6 @@ namespace APIControllers.Controllers
             return result;
         }
 
-
         public async Task SetPhenotipsOwner(int id, string userName) //might not be necessary anymore...
         {
             if (id != null && id != 0)
@@ -513,9 +713,16 @@ namespace APIControllers.Controllers
             }
         }
 
-
-        
-               
+        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
+        {
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
+                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM-dd") + "', '" + postCode +
+                "', '" + nhsNo + "')", conn);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
 
         public async Task<List<HPOTerm>> GetHPOCodes(string searchTerm)
         {
@@ -660,8 +867,6 @@ namespace APIControllers.Controllers
                     }
                 }
             }
-
-            //return RedirectToAction("Index", "Home");
             return "success";
         }
 

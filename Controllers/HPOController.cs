@@ -23,10 +23,10 @@ namespace ClinicX.Controllers
         private readonly IMiscData _misc;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
-        private readonly APIController _api;
+        private readonly IApiController _api;
 
         public HPOController(IConfiguration config, IStaffUserDataAsync staffUserData, IHPOCodeDataAsync hPOCodeData, IClinicalNoteDataAsync clinicalNoteData, ICRUD crud, IMiscData miscData,
-            IAuditService audit, APIController aPIController)
+            IAuditService audit, IApiController aPIController)
         {
             //_clinContext = context;
             //_cXContext = cXContext;

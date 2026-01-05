@@ -57,8 +57,7 @@ namespace ClinicX.Controllers
                 _cvm.isLive = _config.GetValue<bool>("IsLive");
                 _cvm.name = user.NAME;
 
-                return View(_cvm);
-                
+                return View(_cvm);                
             }
             catch (Exception ex)
             {

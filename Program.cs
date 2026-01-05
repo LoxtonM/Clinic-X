@@ -79,7 +79,6 @@ builder.Services.AddScoped<IRelativeDiagnosisDataAsync, RelativeDiagnosisDataAsy
 builder.Services.AddScoped<IAlertData, AlertData>();
 builder.Services.AddScoped<IAlertDataAsync, AlertDataAsync>();
 builder.Services.AddScoped<IAgeCalculator, AgeCalculator>();
-builder.Services.AddScoped<IAgeCalculatorAsync, AgeCalculatorAsync>();
 builder.Services.AddScoped<ITriageData, TriageData>();
 builder.Services.AddScoped<ITriageDataAsync, TriageDataAsync>();
 builder.Services.AddScoped<IPhenotipsMirrorData, PhenotipsMirrorData>();
@@ -136,7 +135,7 @@ builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<ICRUD, CRUD>();
 builder.Services.AddScoped<VHRController>();
 builder.Services.AddScoped<LetterController>();
-builder.Services.AddScoped<APIController>();
+builder.Services.AddScoped<IApiController, APIController>();
 builder.Services.AddScoped<BloodFormController>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

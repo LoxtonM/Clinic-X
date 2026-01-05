@@ -22,11 +22,11 @@ namespace ClinicX.Controllers
         private readonly IStaffUserDataAsync _staffUser;
         private readonly IPatientDataAsync _patientData;
         private readonly IRelativeDataAsync _relativeData;
-        private readonly APIController _api;
+        private readonly IApiController _api;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public RelativeController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, ICRUD crud, APIController api, IAuditService audit)
+        public RelativeController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, ICRUD crud, IApiController api, IAuditService audit)
         {
             //_clinContext = context;
             //_cXContext = cXContext;

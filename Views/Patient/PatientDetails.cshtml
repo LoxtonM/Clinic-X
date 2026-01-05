@@ -19,6 +19,7 @@
         Html.ActionLink("Cancer Risks", "Index", "RiskAndSurveillance", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
         Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPhenotips", target="_blank" }),
+        Html.ActionLink("Open Pedigree Assistant", "PedigreeAssistant", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPedigree" }),
         @*Html.ActionLink("Record Cancer Risk/Surveillance", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
     };
 }
@@ -836,8 +837,13 @@
         }
         else
         {
-            document.getElementById("btnPhenotips").hidden = true;
+            document.getElementById("btnPhenotips").hidden = true;            
             document.getElementById("btnImportRelatives").hidden = true;
+        }
+
+        if("@(Model.isPhenotipsAvailable)" == "True")
+        {
+            document.getElementById("btnPedigree").hidden = true; //don't show the PA button if Phenotips is available
         }
     }        
     

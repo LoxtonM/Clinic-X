@@ -29,12 +29,12 @@ namespace ClinicX.Controllers
         private readonly IAgeCalculator _ageCalculator;
         private readonly ITriageDataAsync _triageData;
         private readonly IClinicDataAsync _clinicData;
-        private readonly APIController _api;
+        private readonly IApiController _api;
         private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
 
         public PatientController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, IPathwayDataAsync pathwayData, IAlertDataAsync alertData, 
             IReferralDataAsync referralData, IDiaryDataAsync diaryData, IHPOCodeDataAsync hPOCodeData, IAuditService auditService, IConstantsDataAsync constantsData, IAgeCalculator ageCalculator,
-            ITriageDataAsync triageData, IClinicDataAsync clinicData, APIController aPIController, IPhenotipsMirrorDataAsync phenotipsMirrorData)
+            ITriageDataAsync triageData, IClinicDataAsync clinicData, IApiController aPIController, IPhenotipsMirrorDataAsync phenotipsMirrorData)
         {
             //_clinContext = context;
             //_docContext = docContext;
@@ -106,8 +106,7 @@ namespace ClinicX.Controllers
                         _pvm.previousPatient = await _patientData.GetPatientDetailsByCGUNo($"{_pvm.patient.PEDNO}.{prevRegNo}");
                         _pvm.nextPatient = await _patientData.GetPatientDetailsByCGUNo($"{_pvm.patient.PEDNO}.{nextRegNo}");
                     }                    
-                }
-                
+                }                
 
                 IEnumerable<Referral> referrals = _pvm.referrals.Where(r => !string.IsNullOrWhiteSpace(r.PATHWAY));
                 Console.WriteLine("Referrals without null pw in  " +  sw.ElapsedMilliseconds);
@@ -129,7 +128,6 @@ namespace ClinicX.Controllers
 
                 var phenotipsAvailableFlag = await _constantsData.GetConstant("PhenotipsURL", 2);
                 _pvm.isPhenotipsAvailable = !string.IsNullOrEmpty(phenotipsAvailableFlag) && !phenotipsAvailableFlag.Contains("0", StringComparison.Ordinal);
-
 
                 //Constants table flag decides whether Phenotips is in use or not
                 if (_pvm.isPhenotipsAvailable)
@@ -160,7 +158,6 @@ namespace ClinicX.Controllers
 
                         if(!string.IsNullOrWhiteSpace(baseURL) && !string.IsNullOrWhiteSpace(ptID)) { _pvm.phenotipsLink = baseURL.TrimEnd('/') + "/" + ptID; }
                     }
-
                 }
 
                 if (_pvm.patient.DOB.HasValue) //yes we do actually have null birth dates!
@@ -192,6 +189,20 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
             }
-        }        
+        }
+
+        [HttpGet]
+        public IActionResult PedigreeAssistant(int id)
+        {
+            RunPedigreeAssistant();
+
+            return RedirectToAction("PatientDetails", new { id = id });
+        }
+
+        public void RunPedigreeAssistant()
+        {
+            //Process.Start($"G:\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
+            Process.Start($"\\\\zion.matrix.local\\dfsrootbwh\\cling\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
+        }
     }
 }

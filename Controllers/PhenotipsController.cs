@@ -18,13 +18,13 @@ namespace ClinicX.Controllers
         //private readonly DocumentContext _docContext;
         //private readonly APIContext _apiContext;
         private readonly IConfiguration _config;
-        private readonly APIController _api;
+        private readonly IApiController _api;
         private readonly IPatientDataAsync _patientData;
         private readonly IReferralDataAsync _referralData;
         private readonly PhenotipsVM _pvm;
         private readonly LetterController _lc;
 
-        public PhenotipsController(IConfiguration config, APIController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController lc)
+        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController lc)
         {
             //_clinContext = clinContext;
             //_docContext = docContext;
