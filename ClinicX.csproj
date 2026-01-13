@@ -52,11 +52,10 @@
 
   <ItemGroup>
     <Reference Include="APIControllers">
-      <HintPath>G:\Technical Improvements Group\C# Libraries\APIControllers.dll</HintPath>
+      <HintPath>..\APIControllers\APIControllers\bin\Debug\net8.0\APIControllers.dll</HintPath>
     </Reference>
     <Reference Include="ClinicalXPDataConnections">
-      <HintPath>G:\Technical Improvements Group\C# Libraries\ClinicalXPDataConnections.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ClinicalXPDataConnections\bin\Debug\net8.0\ClinicalXPDataConnections.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -84,7 +84,7 @@ namespace ClinicX.Controllers
             try
             {
                 var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                string staffCode = user.STAFF_CODE;
+                _ivm.staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(_ivm.staffCode, "ClinicX - Triage", "", _ip.GetIPAddress());
 
