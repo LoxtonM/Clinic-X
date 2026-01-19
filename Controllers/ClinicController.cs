@@ -125,7 +125,17 @@ namespace ClinicX.Controllers
                         _cvm.seenByString = _cvm.seenByString + $", {_cvm.Clinic.SeenByClinician3}";
                     }
 
-                    _cvm.seenByString = _cvm.seenByString + $" on {_cvm.Clinic.BOOKED_DATE.Value.ToString("dd/MM/yyyy")} at {_cvm.Clinic.ArrivalTime.Value.ToString("HH:mm")}";
+                    string arrivalTime = "";
+                    if(_cvm.Clinic.ArrivalTime.HasValue)
+                    {
+                        arrivalTime = _cvm.Clinic.ArrivalTime.Value.ToString("HH:mm"); //because yep, you guessed it... there's a null!!!
+                    }
+                    else
+                    {
+                        arrivalTime = _cvm.Clinic.BOOKED_TIME.Value.ToString("HH:mm");
+                    }
+
+                    _cvm.seenByString = _cvm.seenByString + $" on {_cvm.Clinic.BOOKED_DATE.Value.ToString("dd/MM/yyyy")} at {arrivalTime}";
                 }                
 
 

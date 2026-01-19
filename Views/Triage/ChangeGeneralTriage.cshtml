@@ -1,27 +1,35 @@
 ﻿@model ClinicX.ViewModels.ICPVM
 
 @{
-    ViewData["Title"] = "ClinicX - Change Triaging Clinician(s)";
-    ViewData["Page"] = "/ Triage / Change General Triage";
+    ViewData["Title"] = "Clinic-X - Change Triaging Clinician";
+}
+
+@{
+    ViewData["Title"] = "ClinicX - Change Triaging Clinician";
+    ViewData["Page"] = "/ Triage / Change Triaging Clinician";
     ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
 }
 
 @{
     ViewBag.HomeButton = new[]
-    {        
-        Html.ActionLink("Back to Triage Details", "ICPDetails", "Triage", new { id=Model.icpGeneral.ICPID }, new { @class = "btn btn-success m-1" }),
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Triage", "ICPDetails", "Triage", new { id=Model.triage.ICPID }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Triage Index", "Index", "Triage", new { }, new { @class = "btn btn-success m-1" }),
     };
 }
 
 <div class="container card">
-    
-        <h1>Change Triaging Clinicians</h1>
-    
+
+    <h1>Change Triaging Clinicians</h1>
+
 
     <div class="row mb-5 g-5">
         <form asp-action="ChangeGeneralTriage">
             <div class="row" hidden>
-                <input name="icpId" asp-for=@Model.icpGeneral.ICPID />
+                @*<input name="icpId" asp-for=@Model.icpGeneral.ICPID />*@
+                <input name="icpId" asp-for=@Model.triage.ICPID />
+
             </div>
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
@@ -29,12 +37,12 @@
                 </div>
                 <div class="col-md-4">
                     <select id="ddlCons" asp-for=@Model.triage.ConsultantCode name="newConsultant">
-                        @foreach(var item in Model.consultants)
+                        @foreach (var item in Model.consultants)
                         {
                             <option value=@item.STAFF_CODE>@item.NAME</option>
                         }
                     </select>
-                </div>            
+                </div>
                 <div class="col-md-2">
                     <label>GC:</label>
                 </div>
@@ -46,7 +54,7 @@
                         }
                     </select>
                 </div>
-            </div>            
+            </div>
 
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
@@ -61,23 +69,31 @@
                     <button type="submit" class="btn btn-outline-success">Return Case to Consultant</button>
                 </div>
                 <div class="col-md-2">
-                    <input asp-for=@Model.icpGeneral.ICPID name="icpId" hidden="true" />
+                    @*<input asp-for=@Model.icpGeneral.ICPID name="icpId" hidden="true" />*@
+                    <input asp-for=@Model.triage.ICPID name="icpId" hidden="true" />
                 </div>
             </div>
-        </form>       
+        </form>
     </div>
 </div>
+
 
 <script>
     window.addEventListener("load", LoadICPDet);
 
-    function LoadICPDet() 
-    { 
-        if(@Model.icpGeneral.TreatPath != null)
+    function LoadICPDet()
+    {
+
+        var icpGeneralExists = @((Model.icpGeneral != null).ToString().ToLower());
+        var treatPathExists = @((Model.icpGeneral?.TreatPath != null).ToString().ToLower());
+
+        if (icpGeneralExists && treatPathExists) 
         {
             document.getElementById("ddlCons").disabled = true;
         }
-    }   
-   
+
+    }
+    
+
 
 </script>

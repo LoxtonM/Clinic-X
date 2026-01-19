@@ -9,7 +9,8 @@ namespace ClinicX.ViewModels
     {
         public StaffMember staffMember { get; set; }
         public ActivityItem activityItem { get; set; }
-        public List<ActivityItem> activityItems { get; set; }    
+        public List<ActivityItem> activityItems { get; set; }
+        public List<ActivityItem> tempRegs { get; set; }
         public Appointment Clinic { get; set; }
         public List<Appointment> Clinics { get; set; }
         public List<Referral> Referrals { get; set; }

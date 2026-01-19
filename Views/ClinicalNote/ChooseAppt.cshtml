@@ -65,5 +65,31 @@
                 }
             </tbody>
         </table>
+
+        @if (Model.Referrals.Count == 0 && Model.Clinics.Count == 0 && Model.tempRegs.Count > 0)
+        {
+            <h3>No referrals - Temp Reg only available</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Type</th>
+                        <th>Referral Date</th>
+                        <th>Referred By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.tempRegs)
+                    {
+                        <tr>
+                            <td><a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Create" asp-route-id=@item.RefID>Select</a></td>
+                            <td>@item.TYPE</td>
+                            <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            <td>@item.REF_FAC</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
     </div>
 </div>

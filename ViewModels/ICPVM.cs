@@ -11,6 +11,8 @@ namespace ClinicX.ViewModels
         public List<StaffMember> staffMembers { get; set; }
         public List<StaffMember> consultants { get; set; }
         public List<StaffMember> GCs { get; set; }
+        public List<StaffMember> GAs { get; set; }
+        public List<StaffMember> GenPs { get; set; }
         public List<Triage> triages { get; set; }
         public List<ICPCancer> icpCancerListOwn { get; set; }
         public List<ICPCancer> icpCancerListOther { get; set; }

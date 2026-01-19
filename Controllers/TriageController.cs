@@ -7,6 +7,7 @@ using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using System.Linq;
 
 namespace ClinicX.Controllers
 {
@@ -88,7 +89,8 @@ namespace ClinicX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(_ivm.staffCode, "ClinicX - Triage", "", _ip.GetIPAddress());
 
-                _ivm.triages = await _triageData.GetTriageList(User.Identity.Name);
+                var triages = await _triageData.GetTriageList(User.Identity.Name);
+                _ivm.triages = triages.OrderBy(t => t.RefDate).ToList();
                 var icpCancerList = await _triageData.GetCancerICPList(User.Identity.Name);
                 _ivm.icpCancerListOwn = icpCancerList.Where(r => r.GC_CODE == _ivm.staffCode).ToList();
                 _ivm.icpCancerListOther = icpCancerList.Where(r => r.ToBeReviewedby == User.Identity.Name.ToUpper() && r.FinalReviewed == null).ToList();
@@ -136,7 +138,11 @@ namespace ClinicX.Controllers
                 _ivm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1);
                 _ivm.dobAt16 = DateTime.Now.AddYears(-16);
                 _ivm.staffOptions = await _staffOptionsData.GetStaffOptions(staffCode);
-                
+                var clins = await _staffUser.GetClinicalStaffList();
+                clins = clins.Where(s => s.POSITION.Contains("Genomic") && !s.POSITION.Contains("Nurse")).ToList(); //because sometimes they spell it without the s (and we have to filter out the hbopathy nurses too)
+                _ivm.GAs = clins.Where(s => s.POSITION.Contains("Associate")).ToList();
+                _ivm.GenPs = clins.Where(s => s.POSITION.Contains("Practitioner")).ToList();
+
                 if (_ivm.referralDetails.RefDate != null)
                 {
                     _ivm.referralAgeDays = _ageCalculator.DateDifferenceDay(_ivm.referralDetails.RefDate.GetValueOrDefault(), DateTime.Today);
@@ -166,7 +172,7 @@ namespace ClinicX.Controllers
         
         [HttpPost]
         public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, 
-            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm)
+            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm, string? ga, string? genp)
         {
             try
             {
@@ -179,6 +185,8 @@ namespace ClinicX.Controllers
                 string referrer = referral.ReferrerCode;
                 string sApptIntent = "";
                 string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;
+                if(ga == null) { ga = ""; }
+                if(genp == null) { genp = ""; }
 
                 if (comment == null) { comment = ""; }
 
@@ -197,7 +205,7 @@ namespace ClinicX.Controllers
                     if (facility != null && facility != "") // && clinician != null && clinician != "")
                     {
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
-                        facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm);
+                        facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm, ga, genp);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }
                         
@@ -205,7 +213,7 @@ namespace ClinicX.Controllers
                     else
                     {
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
-                        "", sApptIntent, "", comment, User.Identity.Name, null, null, false, false, 0, requestPhotos, requestDevForm);
+                        "", sApptIntent, "", comment, User.Identity.Name, null, null, false, false, 0, requestPhotos, requestDevForm, ga, genp);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
                     }
@@ -245,7 +253,7 @@ namespace ClinicX.Controllers
                     int diaryID = diary.DiaryID;
                     
                     _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
-                }
+                }                
 
                 if (tp2 == 6) //Dictate letter
                 { 
@@ -602,8 +610,9 @@ namespace ClinicX.Controllers
                 string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change General Triage", "ID=" + id.ToString(), _ip.GetIPAddress());
-
+                _ivm.triage = await _triageData.GetTriageDetails(id);
                 _ivm.icpGeneral = await _triageData.GetGeneralICPDetailsByICPID(id);
+
                 var staffList = await _staffUser.GetClinicalStaffList();
                 _ivm.consultants = staffList.Where(s => s.CLINIC_SCHEDULER_GROUPS == "Consultant").ToList();
                 _ivm.GCs = staffList.Where(s => s.CLINIC_SCHEDULER_GROUPS == "GC").ToList();

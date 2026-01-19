@@ -172,6 +172,8 @@ namespace ClinicX.Controllers
                 _cvm.patient = await _patientData.GetPatientDetails(id);
                 _cvm.Clinics = await _clinicData.GetClinicByPatientsList(id);
                 _cvm.Referrals = await _referralData.GetActiveReferralsListForPatient(id);
+                var activities = await _activityData.GetActivityList(id);
+                _cvm.tempRegs = activities.Where(a => a.TYPE == "Temp_RegOnly").ToList();
 
                 return View(_cvm);
             }
@@ -182,10 +184,14 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Finalise(int id) //sets a clinical note to "final" so it appears in CGU_DB as complete
+        public async Task<IActionResult> Finalise(int id, bool isSaved = false) //sets a clinical note to "final" so it appears in CGU_DB as complete
         {
             try
             {
+                if (!isSaved)
+                {
+                    return RedirectToAction("Edit", new { id = id });
+                }
                 int success = _crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }

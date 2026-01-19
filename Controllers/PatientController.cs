@@ -164,7 +164,8 @@ namespace ClinicX.Controllers
                 {                    
                     var endDate = (_pvm.patient.DECEASED != 0 && _pvm.patient.DECEASED_DATE.HasValue) ? _pvm.patient.DECEASED_DATE.Value : DateTime.Today;
 
-                    _pvm.currentAge = _ageCalculator.DateDifferenceYear(_pvm.patient.DOB.Value, endDate);
+                    //_pvm.currentAge = _ageCalculator.DateDifferenceYear(_pvm.patient.DOB.Value, endDate);
+                    _pvm.currentAge = _ageCalculator.DateDifferenceDay(_pvm.patient.DOB.Value, endDate) / 365;
 
                 }
 

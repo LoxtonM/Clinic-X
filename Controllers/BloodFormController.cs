@@ -957,7 +957,10 @@ namespace ClinicX.Controllers
                     }
                     votFolder = votFolder + staffMember.StaffForename + " " + staffMember.StaffSurname;
                 }
-                System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\bloodform-{user}.pdf", $@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Blood Form_{patient.CGU_No}.pdf");
+                if (!File.Exists($@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Blood Form_{patient.CGU_No}.pdf"))
+                {
+                    System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\bloodform-{user}.pdf", $@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Blood Form_{patient.CGU_No}.pdf");
+                }
             }
         }
     }

@@ -220,8 +220,8 @@
             <button type="button" class="btn btn-success" id="DoFormLinkNameChangePreview" hidden>Preview Blood Form for manual printing</button>
         </div>
         <div class="col-md-2">
-            <a type="button" class="btn btn-success" id="DoFormLinkStandard" asp-action="DoBloodForm" asp-route-bloodFormID=@Model.bloodForm.BloodFormID asp-route-isPreview=false>Print Blood Form to VOT</a>
-            <button type="button" class="btn btn-success" id="DoFormLinkNameChange" hidden>Print Blood Form to VOT</button>
+            <a type="button" class="btn btn-success" id="DoFormLinkStandard" asp-action="DoBloodForm" asp-route-bloodFormID=@Model.bloodForm.BloodFormID>Print Blood Form to VOT</a>
+            <button type="button" class="btn btn-success" id="DoFormLinkNameChange" hidden>Print Blood Form to VOT</button> @*because for some reason, if I specify "isPreview=false" it throws a fit and won't call the task!!*@
         </div>
     </div>
 </div>

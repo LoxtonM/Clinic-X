@@ -102,7 +102,7 @@
             </dd>
         </dl>
         <form id="formIndicationNotes" asp-action="SaveIndicationNotes">
-            <div class="row">
+            <div class="row mb-2 g-2">
                 <div class="col-md-2">
                     <b>Indication Notes:</b>
                 </div>
@@ -206,6 +206,35 @@
             <div class="row mb-5 g-5">
                 <h5 id="lblWaitingList">Waiting list details:</h5>
             </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-4">
+                    <label for="ddlGa" id="lblGa">Genomics Associate:</label>
+                </div>
+                <div class="col-md-4">
+                    <select id="ddlGa" name="ga">
+                        <option value="" selected></option>
+                        @foreach (var c in Model.GAs)
+                        {
+                            <option value=@c.STAFF_CODE>@c.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-4">                    
+                    <label for="ddlGenP" id="lblGenP">Genomics Practitioner:</label>
+                </div>
+                <div class="col-md-4">
+                    <select id="ddlGenP" name="genp">
+                        <option value="" selected></option>
+                        @foreach (var c in Model.GenPs)
+                        {
+                            <option value=@c.STAFF_CODE>@c.NAME</option>
+                        }
+                    </select>                   
+                </div>
+            </div>
+
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
                     <label for="ddlFacility" id="lblFacility">Clinic:</label>
@@ -390,13 +419,17 @@
         let _tp2 = "";
         _tp1 = document.getElementById("ddlTreatPath1");
         var _user = "@(Model.loggedOnUserType)";
+        document.getElementById("lblGa").hidden = true;
+        document.getElementById("ddlGa").hidden = true;
+        document.getElementById("lblGenP").hidden = true;
+        document.getElementById("ddlGenP").hidden = true;
         if (!document.getElementById("ddlTreatPath2-Clinic").hidden)
         {
             _tp2 = document.getElementById("ddlTreatPath2-Clinic");
 
             if (_tp2.value == "" ||  _tp2.value == "1" || _tp2.value == "6" || _tp2.value == "7" || _tp2.value == "8")
             {
-                document.getElementById("WaitingListDetails").hidden = true;
+                document.getElementById("WaitingListDetails").hidden = true;                
             }
             else
             {
@@ -424,7 +457,7 @@
         if (!document.getElementById("ddlTreatPath2-NoClinic").hidden)
         {
             _tp2 = document.getElementById("ddlTreatPath2-NoClinic");
-            document.getElementById("WaitingListDetails").hidden = true;
+            document.getElementById("WaitingListDetails").hidden = true;            
         }
 
         if (_tp1.value == "4" || _tp1.value == "5")
@@ -450,6 +483,17 @@
             document.getElementById("btnGeneralTriage").hidden = false;
         }
 
+        if(_tp2.value == "5")
+        {   
+            document.getElementById("lblGa").hidden = false;
+            document.getElementById("ddlGa").hidden = false;
+        }        
+
+        if(_tp2.value == "9")
+        {
+            document.getElementById("lblGenP").hidden = false;
+            document.getElementById("ddlGenP").hidden = false;
+        }        
         
         if("@Model.patient.DOB" >= "@Model.dobAt16") //if adult, hide this box
         {
@@ -477,6 +521,11 @@
             document.getElementById("ddlTreatPath2-Clinic").hidden = true;
             document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
             document.getElementById("btnGeneralTriage").hidden = true;
+            document.getElementById("lblGa").hidden = true;
+            document.getElementById("ddlGa").hidden = true;
+            document.getElementById("lblGenP").hidden = true;
+            document.getElementById("ddlGenP").hidden = true;
+            
             var _tp1 = document.getElementById("ddlTreatPath1");
             var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
             var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
@@ -500,6 +549,19 @@
                 {
                     _tp2c.disabled = true;
                     document.getElementById("WaitingListDetails").hidden = false;
+
+                    if(_tp2c.value == "5")
+                    {
+                        document.getElementById("lblGa").hidden = false;
+                        document.getElementById("ddlGa").hidden = false;
+                    }
+
+                    if(_tp2c.value == "9")
+                    {
+                        document.getElementById("lblGenP").hidden = false;
+                        document.getElementById("ddlGenP").hidden = false;
+                    }
+
                 }
 
                 if (!_tp2nc.hidden)
