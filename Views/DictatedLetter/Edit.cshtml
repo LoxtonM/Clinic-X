@@ -673,7 +673,7 @@
         {
             document.getElementById("ddlLetterToClinician").hidden = true;
             document.getElementById("ddlLetterToType").hidden = true;
-            document.getElementById("txtLetterTo").value = sName.replace(/&#x27;/g, "'") + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
+            document.getElementById("txtLetterTo").value = sName.replace(/&#x27;/g, "'") + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'").replace(/&#x9;/g, "");
             document.getElementById("txtisAddressChanged").value = "true";
 
         }        
