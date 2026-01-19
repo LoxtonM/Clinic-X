@@ -179,14 +179,24 @@ namespace ClinicX.Controllers
                 ICP icp = await _triageData.GetICPDetails(icpID);
                 Referral referral = await _referralData.GetReferralDetails(icp.REFID);
                 StaffMember staffmember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string wlClinician = staffmember.STAFF_CODE;
                 int mpi = icp.MPI;
                 int refID = icp.REFID;
                 int tp2;
                 string referrer = referral.ReferrerCode;
                 string sApptIntent = "";
                 string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;
-                if(ga == null) { ga = ""; }
-                if(genp == null) { genp = ""; }
+
+                if(ga != null) 
+                { 
+                    wlClinician = ga;
+                    facility = await _constantsData.GetConstant("GAClinic", 1);
+                }
+                if(genp != null) 
+                { 
+                    wlClinician = genp;
+                    facility = await _constantsData.GetConstant("GenPClinic", 1);
+                }
 
                 if (comment == null) { comment = ""; }
 
@@ -205,7 +215,7 @@ namespace ClinicX.Controllers
                     if (facility != null && facility != "") // && clinician != null && clinician != "")
                     {
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
-                        facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm, ga, genp);
+                        facility, sApptIntent, wlClinician, comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }
                         
@@ -213,7 +223,7 @@ namespace ClinicX.Controllers
                     else
                     {
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
-                        "", sApptIntent, "", comment, User.Identity.Name, null, null, false, false, 0, requestPhotos, requestDevForm, ga, genp);
+                        "", sApptIntent, wlClinician, comment, User.Identity.Name, null, null, false, false, 0, requestPhotos, requestDevForm, ga, genp);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
                     }
@@ -223,7 +233,7 @@ namespace ClinicX.Controllers
                     if (facility != null && facility != "") // && clinician != null && clinician != "")
                     {
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
-                        facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm);
+                        facility, sApptIntent, wlClinician, comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
                         
@@ -231,7 +241,7 @@ namespace ClinicX.Controllers
                     else
                     {
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
-                        "", sApptIntent, "", comment, User.Identity.Name);
+                        "", sApptIntent, wlClinician, comment, User.Identity.Name);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
                     }
@@ -239,7 +249,7 @@ namespace ClinicX.Controllers
                 //add to waiting list
                 if (facility != null && facility != "")
                 {
-                    int success = _crud.CallStoredProcedure("Waiting List", "Create", mpi, wlPriority.GetValueOrDefault(), referral.refid, facility, "General", "",
+                    int success = _crud.CallStoredProcedure("Waiting List", "Create", mpi, wlPriority.GetValueOrDefault(), referral.refid, facility, "General", wlClinician,
                         comment, User.Identity.Name);
 
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genAddWL(SQL)" }); }
