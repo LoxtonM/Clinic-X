@@ -397,6 +397,7 @@
                             </select>
                             <select class="w-100" id="ddlCCType2" hidden>
                                 <option value="" selected>Select...</option>
+                                <option value="All">All Clinicians</option>
                                 @foreach (var item in Model.specialities)
                                 {
                                     <option value=@item>@item</option>
@@ -721,17 +722,20 @@
                 //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
             }
         }
-                
-        for (var i in clinSpecArray)
+
+        if(ccType.value != "All")
         {            
-            if(clinSpecArray[i] != ccType.value)
-            {                
-                delete clinSpecArray[i];
-                delete clinCodeArray[i];
-                delete clinNameArray[i];
-                delete clinPositionArray[i];
-                delete clinFacilityArray[i];
-            }            
+            for (var i in clinSpecArray)
+            {            
+                if(clinSpecArray[i] != ccType.value)
+                {                
+                    delete clinSpecArray[i];
+                    delete clinCodeArray[i];
+                    delete clinNameArray[i];
+                    delete clinPositionArray[i];
+                    delete clinFacilityArray[i];
+                }            
+            }
         }
         
         var def = document.createElement('option');

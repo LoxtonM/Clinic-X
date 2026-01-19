@@ -179,16 +179,17 @@ namespace ClinicX.Controllers
                 ICP icp = await _triageData.GetICPDetails(icpID);
                 Referral referral = await _referralData.GetReferralDetails(icp.REFID);
                 StaffMember staffmember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                string wlClinician = staffmember.STAFF_CODE;
+                string wlClinician = "";
+                
                 int mpi = icp.MPI;
                 int refID = icp.REFID;
                 int tp2;
                 string referrer = referral.ReferrerCode;
                 string sApptIntent = "";
-                string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;
+                string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;                            
 
-                if(ga != null) 
-                { 
+                if (ga != null)
+                {
                     wlClinician = ga;
                     facility = await _constantsData.GetConstant("GAClinic", 1);
                 }
@@ -207,6 +208,11 @@ namespace ClinicX.Controllers
 
                 if (sStaffType == "Consultant")
                 {
+                    if(wlClinician == "")
+                    {
+                        wlClinician = referral.PATIENT_TYPE_CODE;
+                    }
+
                     if(tp.GetValueOrDefault() == 3 || tp.GetValueOrDefault() == 5)
                     {
                         tp2 = 0;
@@ -230,6 +236,11 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
+                    if (wlClinician == "")
+                    {
+                        wlClinician = referral.GC_CODE;
+                    }
+
                     if (facility != null && facility != "") // && clinician != null && clinician != "")
                     {
                         int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,

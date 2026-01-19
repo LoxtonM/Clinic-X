@@ -179,7 +179,7 @@ namespace ClinicX.Controllers
                 //including all clinicians will slow it down too much, so I'm taking a leap of logic here and assuming one wouldn't want to 
                 //write to a GP other than the one registered for the patient (or the one who did the referral).
                 _lvm.clinicians = await _externalClinicianData.GetClinicianList();
-                _lvm.clinicians = _lvm.clinicians.Where(c => c.Is_GP == 0 && c.LAST_NAME != null && c.FACILITY != null).ToList();
+                _lvm.clinicians = _lvm.clinicians.Where(c => c.Is_GP == 0 && c.LAST_NAME != null && c.FACILITY != null).OrderBy(c => c.LAST_NAME).ToList();
                 //List<ExternalCliniciansAndFacilities> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList(); //what is this actually for??
                 _lvm.consultants = await _staffUser.GetConsultantsList();
                 _lvm.gcs = await _staffUser.GetGCList();
