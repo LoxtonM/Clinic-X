@@ -22,19 +22,7 @@
         <div class="col-md-2">
             <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveLetter" />
         </div>
-        @*
-        <div class="col-md-2">
-            <form id="DictatedLetterApproval" asp-action="Approve">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
-                <input id="txtCloseReferral" name="isCloseReferral" hidden />
-                <input type="button" class="btn btn-default btn-outline-success" value="Approve" id="btnApprove" hidden />
-            </form>
-            <form id="DictatedLetterUnapproval" asp-action="Unapprove">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
-                <input type="button" class="btn btn-default btn-outline-success" value="Unapprove" id="btnUnapprove" hidden />
-            </form>
-        </div>
-        *@
+        
         <div class="col-md-2">
             <form id="DictatedLetterDelete" asp-action="Delete">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
@@ -47,24 +35,7 @@
             </form>
         </div>       
     </div>
-    @*
-    <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden>
-        <div class="col-md-2"></div>
-        <div class="col-md-3">
-            <label>Do you want to close the referral?</label>
-        </div>
-        <div class="col-md-1">
-            <button type="button" class="btn btn-default btn-success" id="btnCloseReferral" onclick="ApproveLetter(1)">Yes</button>
-        </div>
-        <div class="col-md-1">
-            <button type="button" class="btn btn-default btn-danger" id="btnDontCloseReferral" onclick="ApproveLetter(0)">No</button>
-        </div>
-        <div class="col-md-1">
-            <button type="button" class="btn btn-default btn-primary" id="btnCancel" onclick="ApproveLetter(-1)">Cancel</button>
-        </div>
-        <div class="col-md-4"></div>
-    </div>
-    *@
+    
     <hr />
     <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
         <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
@@ -395,22 +366,7 @@
                                 <option value="GP">GP</option>
                                 <option value="Other">Other</option>
                             </select>
-                            @*
-                            <select  id="ddlCCType2" hidden>
-                                <option value="" selected>Select...</option>
-                                <option value="All">All Clinicians</option>
-                                @foreach (var item in Model.specialities)
-                                {
-                                    <option value=@item>@item</option>
-                                }
-                            </select>
-                            *@
-
-                            @*
-                            <select class="w-100" id="ddlCC" hidden>
-                                
-                            </select>
-                            *@
+                            
 
                             <select class="w-100 js-choice" id="ddlCC" hidden>
                                 @foreach (var item in Model.clinicians)
@@ -420,8 +376,19 @@
                             </select>
 
                             <select class="w-100" id="ddlRels" hidden>
-                                
-                            </select>
+                                @if(Model.relativesList.Count > 0)
+                                {
+                                    <option value="">Select...</option>
+                                    @foreach(var item in Model.relativesList)
+                                    {
+                                        <option value=@item.relsid>@item.RelSalutation @item.RelForename1 @item.RelSurname</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="">No relatives to display</option>
+                                }
+                        </select>
 
                         </div>
                         <div class="row mb-2 g-2">
@@ -497,6 +464,7 @@
     document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);
     //document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
     document.getElementById("ddlCC").addEventListener("change", SetCCClinician);
+    document.getElementById("ddlRels").addEventListener("change", SetCCRelative);
     //document.getElementById("btnAddCC").addEventListener("click", AddCC);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     document.getElementById("btnPreview2").addEventListener("click", DoPreview); //because we can't have two buttons that do the same thing, oh no.
@@ -779,6 +747,11 @@
     function SetCCClinician()
     {
         SetCCAddress(document.getElementById("ddlCC").value);
+    }
+
+    function SetCCRelative()
+    {
+        //do stuff
     }
 
     function SetCCAddress(ccCode) //sets value of CC box depending on what's chosen

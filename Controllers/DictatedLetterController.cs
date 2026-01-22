@@ -18,6 +18,7 @@ namespace ClinicX.Controllers
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;        
         private readonly IPatientDataAsync _patientData;
+        private readonly IRelativeDataAsync _relativeData;
         private readonly IStaffUserDataAsync _staffUser;
         private readonly IActivityDataAsync _activityData;
         private readonly IDictatedLetterDataAsync _dictatedLetterData;
@@ -29,7 +30,7 @@ namespace ClinicX.Controllers
 
         public DictatedLetterController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IActivityDataAsync activityData, IDictatedLetterDataAsync dictatedLetterData,
             IExternalClinicianDataAsync externalClinicianData, IExternalFacilityDataAsync externalFacilityData, ICRUD crud, IConstantsDataAsync constantsData, LetterController letterController, 
-            IAuditService auditService)
+            IAuditService auditService, IRelativeDataAsync relativeData)
         {
             //_clinContext = clinContext;
             //_docContext = docContext;
@@ -45,6 +46,7 @@ namespace ClinicX.Controllers
             _lc = letterController;
             _audit = auditService;
             _constantsData = constantsData;
+            _relativeData = relativeData;
         }
 
         [Authorize]
@@ -149,6 +151,8 @@ namespace ClinicX.Controllers
                 
                 _lvm.dictatedLettersCopies = await _dictatedLetterData.GetDictatedLettersCopiesList(id);
                 _lvm.patients = await _dictatedLetterData.GetDictatedLetterPatientsList(id);
+                var relList = await _relativeData.GetRelativesList(_lvm.dictatedLetters.MPI.GetValueOrDefault());
+                _lvm.relativesList = relList.Distinct().ToList();
                 List<DictatedLettersPatient> dlp = new List<DictatedLettersPatient>();
                 dlp = await _dictatedLetterData.GetDictatedLettersPatientsList(id);
                 _lvm.dictatedLettersPatients = new List<Patient>();
