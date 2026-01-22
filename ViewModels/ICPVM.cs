@@ -58,6 +58,7 @@ namespace ClinicX.ViewModels
         public string edmsLink { get; set; }
         public string canriskLink { get; set; }
         public string genomicsTestDirectoryLink { get; set; }
+        public string riskGuide { get; set; }
         public DateTime dobAt16 { get; set; }
     }
 }

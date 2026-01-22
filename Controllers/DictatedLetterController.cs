@@ -207,6 +207,20 @@ namespace ClinicX.Controllers
                 if (dateDictated != null) { dDateDictated = DateTime.Parse(dateDictated); }
                 else { dDateDictated = DateTime.Parse("1900-01-01"); } //set a default if no value
 
+                if (enclosures == null) { enclosures = ""; } //more potential nulls that have to be set to default values
+                if (letterContentBold == null) { letterContentBold = ""; }
+                if (letterContent == null) { letterContent = ""; }
+
+                //trial - see if partial edits can work
+
+                if (status == null) { status = ""; }
+                if (secTeam == null) { secTeam = ""; }
+                if (consultant == null) { consultant = ""; }
+                if (gc == null) { gc = ""; }
+                if (salutation == null) { salutation = ""; }
+                if (letterFromCode == null) { letterFromCode = ""; }
+                if (letterToCode == null) { letterToCode = ""; }
+
                 //two updates required - one to update the addressee (if addressee has changed)
                 if (isAddresseeChanged)
                 {
@@ -214,10 +228,6 @@ namespace ClinicX.Controllers
 
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
                 }
-
-                if(enclosures == null) { enclosures = ""; } //more potential nulls that have to be set to default values
-                if(letterContentBold == null) { letterContentBold = ""; }
-                if(letterContent == null) { letterContent = ""; }
 
                 int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc, 0,0,0,0,0, comments, salutation);
 

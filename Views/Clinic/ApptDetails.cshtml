@@ -22,33 +22,7 @@
 
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        @*
-        <div class="col-md-2">
-            <a class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Clinics Index</a>
-        </div>
-        <div class="col-md-1">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.Clinic.MPI>Patient Details</a>
-        </div>    
-        <div class="col-md-1">
-            <a id="btnRecordOutcome" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Edit" asp-route-id=@Model.Clinic.RefID>Record Outcome</a>        
-        </div>
-        <div class="col-md-1">
-            <a id="btnDiagnoses"  class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.Clinic.MPI>Record Diagnoses</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnTests" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.Clinic.MPI>Record Tests</a>        
-        </div>
-        <div class="col-md-1">
-            <a id="btnClinicalNotes" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.Clinic.MPI>Clinical Notes</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnDictatedLetter" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="Create" asp-route-id=@Model.Clinic.RefID>Dictate Letter</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnReview" class="btn btn-default btn-success" asp-controller="Review" asp-action="Create" asp-route-id=@Model.Clinic.RefID>Schedule Review</a>
-        </div>
-        *@
+        <h1>@Model.Clinic.FIRSTNAME @Model.Clinic.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.Clinic.MPI>@Model.Clinic.CGU_No</a></h1>
     </div>
     <hr />
 

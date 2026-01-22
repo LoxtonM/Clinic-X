@@ -18,16 +18,9 @@
     };
 }
 
-<div class="container card">
-    <div class="row mb-5 mt-2">
+<div class="container card">    
 
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        <div class="col-md-2">
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@Model.activityItem.RefID>Back to Appt Details</a>*@
-        </div>
-    </div>
-
-    <h1>Record Outcome for @Model.activityItem.TYPE - @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+    <h1>Record Outcome for @Model.activityItem.TYPE - @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h1>
     <div>    
         <dl class="row mb-5">
             <dt class="col-sm-2">

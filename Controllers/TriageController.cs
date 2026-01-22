@@ -357,7 +357,8 @@ namespace ClinicX.Controllers
 
                 _ivm.genomicsTestDirectoryLink = urlGenomicTestDirectoryurl;
                 _ivm.canriskLink = urlCanriskurl;
-
+                
+                _ivm.riskGuide = Url.Content($"~/SupportFiles/CancerRiskGuidance.pdf");
                 _ivm.clinicalFacilityList = await _triageData.GetClinicalFacilitiesList();
                 _ivm.staffMembers = await _staffUser.GetClinicalStaffList();
                 _ivm.icpCancer = await _triageData.GetCancerICPDetails(id);

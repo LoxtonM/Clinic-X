@@ -591,7 +591,7 @@ namespace ClinicX.Controllers
                                 MigraDoc.DocumentObjectModel.Tables.Row sRow = tableDiary.AddRow();
                                 if (d.DiaryDate != null)
                                 {
-                                    sRow.Cells[0].AddParagraph(d.DiaryDate.ToString("dd/MM/yyyy"));
+                                    sRow.Cells[0].AddParagraph(d.DiaryDate.Value.ToString("dd/MM/yyyy"));
                                 }
                                 if (d.DiaryAction != null)
                                 {

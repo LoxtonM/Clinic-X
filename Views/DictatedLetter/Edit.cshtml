@@ -395,7 +395,8 @@
                                 <option value="GP">GP</option>
                                 <option value="Other">Other</option>
                             </select>
-                            <select class="w-100" id="ddlCCType2" hidden>
+                            @*
+                            <select  id="ddlCCType2" hidden>
                                 <option value="" selected>Select...</option>
                                 <option value="All">All Clinicians</option>
                                 @foreach (var item in Model.specialities)
@@ -403,11 +404,25 @@
                                     <option value=@item>@item</option>
                                 }
                             </select>
+                            *@
 
-                            
-                            <select id="ddlCC" hidden>
+                            @*
+                            <select class="w-100" id="ddlCC" hidden>
                                 
                             </select>
+                            *@
+
+                            <select class="w-100 js-choice" id="ddlCC" hidden>
+                                @foreach (var item in Model.clinicians)
+                                {
+                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                                }
+                            </select>
+
+                            <select class="w-100" id="ddlRels" hidden>
+                                
+                            </select>
+
                         </div>
                         <div class="row mb-2 g-2">
                             <div class="col-md-10">
@@ -475,11 +490,12 @@
     document.getElementById("btnReqDelete").addEventListener("click", ShowDelete);
     document.getElementById("btnNoDelete").addEventListener("click", CancelDelete);
     document.getElementById("ddlLetterTo").addEventListener("change", SetLetterTo);
+    document.getElementById("txtLetterTo").addEventListener("change", SetLetterToTyped);
     document.getElementById("ddlLetterFrom").addEventListener("change", SetLetterFrom);
-    document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
-    document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
+    //document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
+    //document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
     document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);
-    document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
+    //document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
     document.getElementById("ddlCC").addEventListener("change", SetCCClinician);
     //document.getElementById("btnAddCC").addEventListener("click", AddCC);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
@@ -528,6 +544,13 @@
             }
         }    
         document.getElementById("txtisAddressChanged").value = "false"; //to flag if the address needs to be updated
+
+
+        const choices = new Choices('#ddlCC');
+
+        // when you want to hide:
+        document.querySelector('#ddlCC').closest('.choices').style.display = 'none';
+
 
         LoadEDMSLink(); //link to GEMR
     }
@@ -617,8 +640,13 @@
         document.getElementById("btnReqDelete").hidden = false;
     }
 
+    function SetLetterToTyped()
+    {        
+        document.getElementById("txtisAddressChanged").value = "true";
+    }
+
     function SetLetterTo() //addressee - is saved as a string containing the entire name and address (because of course it is)
-    {         
+    {        
         const sLetterTo = document.getElementById("ddlLetterTo").value;
         var letterToCode = document.getElementById("txtLetterToCode");
         var _salut = document.getElementById("txtSalutation");
@@ -676,191 +704,47 @@
             document.getElementById("ddlLetterToType").hidden = true;
             document.getElementById("txtLetterTo").value = sName.replace(/&#x27;/g, "'") + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'").replace(/&#x9;/g, "");
             document.getElementById("txtisAddressChanged").value = "true";
-
         }        
     }
 
     function ShowLetterToClinician()
     {
-        document.getElementById("ddlLetterToClinician").hidden = false;
+        document.getElementById("ddlCC").hidden = false;
     }
 
     function ShowCCClinician() 
-    {
+    {        
+        document.getElementById("ddlRels").hidden = true;
+        document.querySelector('#ddlCC').closest('.choices').style.display = 'none';
+        document.getElementById("ddlCC").hidden = true;
+        if(document.querySelector("#ddlCC").dataset.choices)
+        {
+            document.querySelector("#ddlCC").choices.destroy();
+        }
+        //const choices = new Choices('#ddlCC');
+
         if (document.getElementById("ddlCCType").value != "Other") //standard addresses (patient, referrer, GP, etc) will be entered into the box
         {
-            SetCCAddress(document.getElementById("ddlCCType").value);
+            if(document.getElementById("ddlCCType").value != "Relative")
+            {                
+                SetCCAddress(document.getElementById("ddlCCType").value);
+            }
+            else
+            {
+                document.getElementById("ddlRels").hidden = false;
+            }
         }
         else //if not, show the other stuff
         {
-            document.getElementById("ddlCCType2").hidden = false;
+            //document.getElementById("ddlCCType2").hidden = false;
+        
+            document.querySelector('#ddlCC').closest('.choices').style.display = '';
+            document.getElementById("ddlCC").hidden = false;            
         }        
     }
 
-    function ShowCCTypes() //list of different specialities that we can CC
-    {
-        const ccType = document.getElementById("ddlCCType2");
-        const ccList = document.getElementById("ddlCC");
-
-        ccList.innerHTML = "";
-        
-        var clinCodeArray = [];
-        var clinNameArray = [];
-        var clinPositionArray = [];
-        var clinSpecArray = [];
-        var clinFacilityArray = [];
-        
-        @foreach (var item in Model.clinicians)
-        {
-            @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null) 
-            { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
-                @:clinCodeArray.push("@item.MasterClinicianCode");
-                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
-                @:clinPositionArray.push("@item.POSITION");
-                @:clinSpecArray.push("@item.SPECIALITY");       
-                @:clinFacilityArray.push("@item.FACILITY");
-                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
-            }
-        }
-
-        if(ccType.value != "All")
-        {            
-            for (var i in clinSpecArray)
-            {            
-                if(clinSpecArray[i] != ccType.value)
-                {                
-                    delete clinSpecArray[i];
-                    delete clinCodeArray[i];
-                    delete clinNameArray[i];
-                    delete clinPositionArray[i];
-                    delete clinFacilityArray[i];
-                }            
-            }
-        }
-        
-        var def = document.createElement('option');
-        def.value = "";
-        def.innerHTML = "Select...";
-        ccList.appendChild(def);
-
-        for (var i in clinSpecArray)
-        {
-            if (ccList.length < 1000) //because it can't handle more than 1000 items, so this is a safeguard
-            {
-                var opt = document.createElement('option');
-                opt.value = clinCodeArray[i];
-                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i] + " - " + clinFacilityArray[i];
-                ccList.appendChild(opt);
-            }
-        }
-
-        ccList.hidden = false;
-    }
-        
-    function ShowLetterToClinician() //the actual list of clinicians that can be picked
-    {        
-        const ccType = document.getElementById("ddlLetterToType");
-        const ccList = document.getElementById("ddlLetterToClinician");
-
-        ccList.innerHTML = "";
-
-        var clinCodeArray = [];
-        var clinNameArray = [];
-        var clinPositionArray = [];
-        var clinSpecArray = [];
-        var clinFacilityArray = [];
-
-       @foreach (var item in Model.clinicians)
-        {
-            @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
-            { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
-                @:clinCodeArray.push("@item.MasterClinicianCode");
-                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
-                @:clinPositionArray.push("@item.POSITION");
-                @:clinSpecArray.push("@item.SPECIALITY");
-                @:clinFacilityArray.push("@item.FACILITY");
-                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
-            }
-        }
-
-        for (var i in clinSpecArray)
-        {
-            if (clinSpecArray[i] != ccType.value)
-            {
-                delete clinSpecArray[i];
-                delete clinCodeArray[i];
-                delete clinNameArray[i];
-                delete clinPositionArray[i];
-                delete clinFacilityArray[i];
-            }
-        }        
-
-        var def = document.createElement('option');
-        def.value = "";
-        def.innerHTML = "Select...";
-        ccList.appendChild(def);
-
-        for (var i in clinSpecArray)
-        {
-            if (ccList.length < 1000)
-            {
-                var opt = document.createElement('option');
-                opt.value = clinCodeArray[i];
-                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i] + " - " + clinFacilityArray[i];
-                ccList.appendChild(opt);
-            }
-        }
-        
-        ccList.hidden = false;
-    }
-
-
-    function SetLetterToClinician() //sets the actual recipient address to that chosen in the list
-    { 
-        const sClinCode = document.getElementById("ddlLetterToClinician").value;
-        
-        var sClinCodeArray = [];
-        var sNameArray = [];
-        var sFacCodeArray = [];
-        var sFacilityArray = [];
-        var sAddressArray = [];
-        var sName = "Nobody";
-        var sFacility = "Nothing";
-        var sAddress = "Nowhere";
-        @foreach (var item in Model.clinicians)
-        {
-            @:sClinCodeArray.push("@item.MasterClinicianCode");
-            @:sNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME");
-            @:sFacilityArray.push("@item.FACILITY");
-        }
-
-        @foreach (var item in Model.facilities)
-        {
-            @:sFacCodeArray.push("@item.MasterFacilityCode");
-            @:sAddressArray.push("@item.NAME" + "\n" + "@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.ZIP");
-        }
-
-        for (i in sNameArray) 
-        {            
-            if (sClinCodeArray[i] == sClinCode) {
-                sName = sNameArray[i];
-                sFacility = sFacilityArray[i];                
-            }
-        }
-
-        for (i in sFacilityArray) 
-        {
-            if (sFacCodeArray[i] == sFacility) 
-            {
-                sAddress = sAddressArray[i];
-            }
-        }
-        document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'").replace(/&#x9;/g, "");
-        
-        document.getElementById("txtSalutation").value = sName;
-
-        document.getElementById("txtisAddressChanged").value = "true";
-    }
+    
+   
 
     function SetLetterFrom() 
     {

@@ -53,6 +53,13 @@
         <h4>Genomics testing directory currently available, or has moved.</h4>
     }
 
+    
+    @if(Model.riskGuide != "")
+    {
+        <h4><a href=@Model.riskGuide>Risk Guide</a></h4>
+    }
+    
+
     <div class="d-grid mt-2 mb-2">
         <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseRiskItems" aria-expanded="false" aria-controls="collapseExample">Risk and Surveillance, and Testing (click to expand/hide)</button>
     </div>
