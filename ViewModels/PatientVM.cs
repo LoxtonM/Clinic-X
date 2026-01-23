@@ -21,6 +21,7 @@ namespace ClinicX.ViewModels
         public List<Alert> alerts { get; set; }
         public List<Diary> diary { get; set; }
         public StaffMember staffMember { get; set; }
+        public ExternalFacility gpFac { get; set; }
         public bool ptSuccess { get; set; }
         public string message { get; set; }
         public bool isPhenotipsAvailable { get; set; }

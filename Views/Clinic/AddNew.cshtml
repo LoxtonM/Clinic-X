@@ -64,7 +64,12 @@
                         <dd class="col-sm-10">
                             <input type="time" name="bookedTime" id="txtBookedTime" />
                         </dd>
-                        
+                        <dt class="col-sm-2">
+                            Time Spent:
+                        </dt>
+                        <dd class="col-sm-10">
+                            <input class="w-100" name="timeSpent" />
+                        </dt>
                     </dl>
                 </div>
 
@@ -73,12 +78,13 @@
 
                     <div id="TelAdmin" hidden>
                         <div class="row mb-5">
+                            @*
                             <div class="col-md-2">
                                 <label>Time Spent:</label>
                             </div>
                             <div class="col-md-1  text-md-end">
                                 <input class="w-100" name="timeSpent" />
-                            </div>
+                            </div>*@
                             <div class="col-md-2">
                                 <label>Priority:</label>
                             </div>
@@ -186,6 +192,12 @@
                             </div>
 
                             <div class="row">
+                                @*<div class="col-md-2">
+                                    <label>Time Spent:</label>
+                                </div>
+                                <div class="col-md-1  text-md-end">
+                                    <input class="w-100" name="timeSpent" />
+                                </div>*@
                                 <div class="col-md-8"></div>
                                 <div class="col-md-4">
                                     <select id="ddlSeenBy" name="clinician2" class="w-100 js-choice form-select">

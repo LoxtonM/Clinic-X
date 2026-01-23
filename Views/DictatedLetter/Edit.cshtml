@@ -670,7 +670,7 @@
         {
             document.getElementById("ddlLetterToClinician").hidden = true;
             document.getElementById("ddlLetterToType").hidden = true;
-            document.getElementById("txtLetterTo").value = sName.replace(/&#x27;/g, "'") + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'").replace(/&#x9;/g, "");
+            document.getElementById("txtLetterTo").value = sName.replaceAll(/&#x27;/g, "'") + "\n" + sAddress.replaceAll(/&amp;/g, "&").replaceAll(/&#xD;&#xA;/g, "\n").replaceAll(/&#x27;/g, "'").replaceAll(/&#x9;/g, "");
             document.getElementById("txtisAddressChanged").value = "true";
         }        
     }
@@ -850,7 +850,8 @@
                 }
             }            
         }
-        document.getElementById("txtCC").value = sName + "\n" + sAddress.replace("&#x27;", "'").replace("&#xD;&#xA;", " ");
+
+        document.getElementById("txtCC").value = sName + "\n" + sAddress.replaceAll(/&#x27;/g, "'").replaceAll(/&amp;/g, "&").replaceAll(/&#xD;&#xA;/g, "\n").replaceAll(/&#x27;/g, "'").replaceAll(/&#x9;/g, "")
     }
 
     function ClinicianSearch()

@@ -31,10 +31,11 @@ namespace ClinicX.Controllers
         private readonly IClinicDataAsync _clinicData;
         private readonly IApiController _api;
         private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
+        private readonly IExternalFacilityDataAsync _extFacility;
 
         public PatientController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, IPathwayDataAsync pathwayData, IAlertDataAsync alertData, 
             IReferralDataAsync referralData, IDiaryDataAsync diaryData, IHPOCodeDataAsync hPOCodeData, IAuditService auditService, IConstantsDataAsync constantsData, IAgeCalculator ageCalculator,
-            ITriageDataAsync triageData, IClinicDataAsync clinicData, IApiController aPIController, IPhenotipsMirrorDataAsync phenotipsMirrorData)
+            ITriageDataAsync triageData, IClinicDataAsync clinicData, IApiController aPIController, IPhenotipsMirrorDataAsync phenotipsMirrorData, IExternalFacilityDataAsync extFac)
         {
             //_clinContext = context;
             //_docContext = docContext;
@@ -56,6 +57,7 @@ namespace ClinicX.Controllers
             _clinicData = clinicData;
             _api = aPIController;
             _phenotipsMirrorData = phenotipsMirrorData;
+            _extFacility = extFac;
         }
         
 
@@ -88,6 +90,7 @@ namespace ClinicX.Controllers
                 _pvm.patientPathway = await _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = await _alertData.GetAlertsList(id);
                 _pvm.diary = await _diaryData.GetDiaryList(id);
+                _pvm.gpFac = await _extFacility.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
 
                 _pvm.relatives = _pvm.relatives.Distinct().ToList(); //because there are dupes.
                 _pvm.appointmentList = _pvm.appointmentList.Distinct().ToList();

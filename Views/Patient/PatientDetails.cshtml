@@ -342,8 +342,9 @@
                 GP Details:
             </dt>
             <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.GP_Facility)
+                @Html.DisplayFor(model => model.patient.GP)
             </dd>
+            
 
             @*Row 2 - Preferred name (if any), GP*@
             @if(Model.patient.PtAKA != null)
@@ -361,8 +362,9 @@
             }
             <dt class="col-sm-2"></dt>
             <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.GP)
+                @Html.DisplayFor(model => model.patient.GP_Facility)
             </dd>
+
 
             @*Row 3 - DOB/DOD*@
             <dt class="col-sm-2">
@@ -377,6 +379,13 @@
                 {
                     <span>Not known</span>
                 }
+            </dd>
+            <dt class="col-sm-2"></dt>
+            <dd class="col-sm-4">
+                @Html.DisplayFor(model => model.gpFac.ADDRESS)<br />
+                @if(Model.gpFac.CITY != null && Model.gpFac.CITY != "") { @Html.DisplayFor(model => model.gpFac.CITY)<br /> }
+                @if(Model.gpFac.STATE != null && Model.gpFac.STATE != "") { @Html.DisplayFor(model => model.gpFac.STATE)<br /> }
+                @Html.DisplayFor(model => model.gpFac.ZIP)
             </dd>
             @if(Model.patient.DECEASED == -1)
             {

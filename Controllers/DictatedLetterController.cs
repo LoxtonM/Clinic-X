@@ -465,8 +465,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _lvm.patientList = await _patientData.GetPatientsInPedigree(cguNo);
-                
+                //_lvm.patientList = await _patientData.GetPatientsInPedigree(cguNo);
+                _lvm.patientList = await _patientData.GetMatchingPatientsByCGUNo(cguNo);
+
                 return View(_lvm);
             }
             catch (Exception ex)
