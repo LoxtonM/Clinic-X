@@ -403,7 +403,14 @@ namespace ClinicX.Controllers
             int mpi = icpDetails.MPI;
             int refID = icpDetails.REFID;
 
-            if (letter != null && letter != 0)
+            bool letterAlreadyDone = false;
+
+            if (_ivm.icpCancer.ReviewedOption == letter)
+            {
+                letterAlreadyDone = true;
+            }
+
+            if (letter != null && letter != 0 && !letterAlreadyDone) //don't want to do the letter and diary every single time!!!
             {                
                 _ivm.cancerAction = await _icpActionData.GetICPCancerAction(letter.GetValueOrDefault());
                 string docCode = _ivm.cancerAction.DocCode;
@@ -433,7 +440,7 @@ namespace ClinicX.Controllers
                         //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
                         Referral refer = await _referralData.GetReferralDetails(refID);
                         _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0,
-                            "", "", null, false, "", leafletID);
+                        "", "", null, false, "", leafletID);                        
                     }
 
                     if (successDiary == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canDiaryUpdate(SQL)" }); }
