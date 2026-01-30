@@ -203,6 +203,16 @@
             </div>
         </div>
 
+        <div class="row mb-2 g-2" id="closeReferral" hidden> @*close referral - only available with certain options*@
+            <div class="col-md-2">Close referral and stop clock?</div>
+            <div class="col-md-2">
+                <select name="closeReferral">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+        </div>
+
         <div id="WaitingListDetails">
             <div class="row mb-5 g-5">
                 <h5 id="lblWaitingList">Waiting list details:</h5>
@@ -426,6 +436,8 @@
         document.getElementById("ddlGa").hidden = true;
         document.getElementById("lblGenP").hidden = true;
         document.getElementById("ddlGenP").hidden = true;
+        document.getElementById("closeReferral").hidden = true;
+
         if (!document.getElementById("ddlTreatPath2-Clinic").hidden)
         {
             _tp2 = document.getElementById("ddlTreatPath2-Clinic");
@@ -500,7 +512,12 @@
             document.getElementById("ddlGenP").hidden = false;
             _facility.hidden = true;
             _facilityLabel.hidden = true;
-        }        
+        }
+
+        if(_tp2.value == "6" || _tp2.value == "7" || _tp2.value == "8")
+        {
+            document.getElementById("closeReferral").hidden = false;
+        }
         
         if("@Model.patient.DOB" >= "@Model.dobAt16") //if adult, hide this box
         {
@@ -651,17 +668,20 @@
             return 0;
         }       
 
+        var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
+        var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
+
         if (document.getElementById("ddlTreatPath2-Clinic").value != "")
         {            
-
             if((document.getElementById("ddlFacility").value == null || document.getElementById("ddlFacility").value == "") && 
-            document.getElementById("ddlTreatPath2-Clinic").value != "5" && document.getElementById("ddlTreatPath2-Clinic").value != "9")
+            _tp2c.value != "5" && _tp2nc.value != "6" && _tp2nc.value != "7" && _tp2nc.value != "8" && _tp2c.value != "9")
             {
                 window.alert("Please choose a facility");
                 return 0;
             }
 
-            if(document.getElementById("txtDuration").value == null || document.getElementById("txtDuration").value == "")
+            if((document.getElementById("txtDuration").value == null || document.getElementById("txtDuration").value == "")  && _tp2nc.value != "6" && _tp2nc.value != "7" 
+            && _tp2nc.value != "8")
             {
                 window.alert("Please enter a duration");
                 return 0;

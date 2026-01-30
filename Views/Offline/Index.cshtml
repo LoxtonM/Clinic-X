@@ -1,0 +1,50 @@
+﻿@model ClinicX.ViewModels.OfflineDBVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Offline Database Setup";
+}
+
+@{
+    ViewData["Title"] = "ClinicX - Offline Database Setup";
+    ViewData["Page"] = "/ Offline Database Setup";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+<div class="container card">
+    @if(Model.message != "" && Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
+    <form asp-action="Index">
+        <div class="row">
+            <div class="col-md-2">
+                <label>Date From</label>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="dateFrom" asp-for=@Model.dateFrom />
+            </div>
+            <div class="col-md-2">
+                <label>Date To</label>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="dateTo" asp-for=@Model.dateTo />
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-outline-success">Resynch and Set Up Offline Database</button>
+            </div>            
+        </div>
+    </form>
+
+</div>

@@ -60,7 +60,7 @@
                 <label>Recommended By:</label>
             </div>
             <div class="col-md-2">
-                <select name="clinCode" class="w-100">
+                <select id="ddlClinician" name="clinCode" class="w-100" asp-for=@Model.staffCode>
                     <option value="">Select...</option>
                     @foreach (var item in Model.staffMembersList)
                     {
@@ -74,7 +74,7 @@
                 <label>Recommended Date:</label>
             </div>
             <div class="col-md-2">
-                <input type="date" class="w-100" name="recDate" />
+                <input id="txtDate" type="date" class="w-100" name="recDate" />
             </div>
             <div class="col-md-1">
                 <label>Start Age</label>
@@ -148,8 +148,15 @@
 <script>
 
     document.getElementById("chkUseLetter").addEventListener("change", SetUseLetter);
-    document.getElementById("chkYN").addEventListener("change", SetYN);
-    document.getElementById("btnBack").addEventListener("click", GoBack);
+    document.getElementById("chkYN").addEventListener("change", SetYN);    
+    window.addEventListener("load", LoadForm);
+        
+    function LoadForm()
+    {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById("txtDate").value = today;
+        document.getElementById("ddlClinician").value = "@Model.staffCode";
+    }
 
     function GoBack() 
     {

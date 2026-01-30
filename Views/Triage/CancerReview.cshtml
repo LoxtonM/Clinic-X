@@ -32,9 +32,9 @@
         }
     }
     <div class="row mb-5 g-2">
-        <h1>Cancer ICP Review for @Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME</h1>
+        <h1>Cancer ICP Review for @Model.icpCancer.FIRSTNAME @Model.icpCancer.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-itemid=@Model.icpCancer.MPI>@Model.icpCancer.CGU_No</a></h1>
     </div>
-
+    
     @if (Model.canriskLink != "")
     {
         <h4><a href=@Model.canriskLink target="_blank">CanRisk</a></h4>

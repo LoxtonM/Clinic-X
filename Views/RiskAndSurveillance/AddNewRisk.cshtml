@@ -53,7 +53,7 @@
                 <label>Clinician:</label>
             </div>
             <div class="col-md-2">
-                <select class="w-100" id="ddlClinician" name="clinCode">
+                <select class="w-100" id="ddlClinician" name="clinCode" value=@Model.staffCode>
                     <option value="">Select...</option>
                     @foreach (var item in Model.staffMembersList)
                     {

@@ -172,7 +172,7 @@ namespace ClinicX.Controllers
         
         [HttpPost]
         public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, 
-            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm, string? ga, string? genp)
+            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm, string? ga, string? genp, int? closeReferral)
         {
             try
             {
@@ -280,12 +280,19 @@ namespace ClinicX.Controllers
                 { 
                     int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "", "", "", User.Identity.Name);
 
-                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
+                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-createLetter(SQL)" }); }
                 }
 
                 if (tp2 == 7) //Reject letter
                 {                    
                     _lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer);
+                }
+
+                if(closeReferral == 1)
+                {
+                    int success3 = _crud.CallStoredProcedure("Referral", "Close", refID,0,0,"","","","",User.Identity.Name, null,null,false,false);
+
+                    if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-closeReferral(SQL)" }); }
                 }
 
                 return RedirectToAction("Index");
@@ -452,7 +459,7 @@ namespace ClinicX.Controllers
 
             if(clinician != null && clinician != "" && _ivm.icpCancer.WaitingListVenue == null)
             {  
-                int successWL = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, clinic, "Cancer", clinician, comments,
+                int successWL = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 50, refID, clinic, "Cancer", clinician, comments,
                     User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
 
                 if (successWL == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canAddWL(SQL)" }); }

@@ -225,6 +225,7 @@ namespace ClinicX.Controllers
                 _rsvm.survFreqCodes = await _survCodesData.GetSurvFreqCodesList();
                 _rsvm.discontinuedReasonCodes = await _survCodesData.GetDiscReasonCodesList();
                 _rsvm.staffMembersList = await _staffUser.GetClinicalStaffList();
+                _rsvm.staffCode = staffCode;
 
                 AgeCalculator ageCalc = new AgeCalculator(); //to display patient's current age (requested feature)
 

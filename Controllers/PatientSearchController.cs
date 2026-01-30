@@ -28,7 +28,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob)
+        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob, string? telNo, string? email)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace ClinicX.Controllers
                 string searchTerm = "";
                 _pvm.staffCode = staffCode;
 
-                if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")))
+                if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")) || telNo != null || email != null)
                 {
                     _pvm.patientsList = new List<Patient>(); //because null
 
@@ -104,6 +104,34 @@ namespace ClinicX.Controllers
                         }
                         searchTerm = searchTerm + "," + "DOB=" + dob.ToString();
                         _pvm.dobSearch = dob.GetValueOrDefault();
+                    }
+
+                    if(telNo != null)
+                    {
+                        if (searchTerm == "")
+                        {
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByTelNo(telNo);
+                        }
+                        else
+                        {
+                            _pvm.patientsList = _pvm.patientsList.Where(p => p.TEL == telNo || p.WORKTEL == telNo || p.PtTelMobile == telNo).ToList();
+                        }
+                        searchTerm = searchTerm + "," + "TEL=" + telNo;
+                        _pvm.telNoSearch = telNo;
+                    }
+
+                    if (email != null)
+                    {
+                        if (searchTerm == "")
+                        {
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByEmail(email);
+                        }
+                        else
+                        {
+                            _pvm.patientsList = _pvm.patientsList.Where(p => p.EmailAddress == email).ToList();
+                        }
+                        searchTerm = searchTerm + "," + "EmailAddress=" + email;
+                        _pvm.emailSearch = email;
                     }
 
                     _pvm.patientsList = _pvm.patientsList.OrderBy(p => p.LASTNAME).ThenBy(p => p.FIRSTNAME).ToList();

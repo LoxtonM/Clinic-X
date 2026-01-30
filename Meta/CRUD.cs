@@ -1,9 +1,11 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
+﻿using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Meta;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Data;
 using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ClinicX.Meta
 {
@@ -22,6 +24,8 @@ namespace ClinicX.Meta
             string string1, string string2, string string3, string text, string sLogin, string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "",
              DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false, bool? bool4 = false, bool? 
             bool5 = false, bool? bool6 = false, bool? bool7 = false, bool? bool8 = false);
+
+        public int SetupOfflineDatabase(string staffCode, DateTime dateFrom, DateTime dateTo);
     }
     public class CRUD : Controller, ICRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
                        //data modifications - creation, updates, and deletions. It does not retrieve any data, but uses a generic
@@ -43,6 +47,9 @@ namespace ClinicX.Meta
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); } //set some defaults (because SQL can't take nulls)
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
             if (text == null) { text = ""; }
+            if (string1 == null) { string1 = ""; }
+            if (string2 == null) { string2 = ""; }
+            if (string3 == null) { string3 = ""; }
             if (string4 == null) { string4 = ""; }
             if (string5 == null) { string5 = ""; }
             if (string6 == null) { string6 = ""; }
@@ -180,5 +187,35 @@ namespace ClinicX.Meta
 
             return iReturnValue;
         }
+
+        public int SetupOfflineDatabase(string userName, DateTime dateFrom, DateTime dateTo)
+        {
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_CXOfflineDB", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@loginName", SqlDbType.VarChar).Value = userName; //task you want to perform (create, update, etc)
+            cmd.Parameters.Add("@DateFrom", SqlDbType.DateTime).Value = dateFrom;
+            cmd.Parameters.Add("@DateTo", SqlDbType.DateTime).Value = dateTo;
+            /*
+            if (HttpContext != null)
+            {
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = Dns.GetHostEntry(_ip.GetIPAddress()).HostName.Substring(0, 10);
+            }
+            else
+            {
+                cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
+            }
+            */
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); //return success or not
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();
+
+            return iReturnValue;
+        }
+
     }
 }

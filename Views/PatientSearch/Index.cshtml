@@ -45,6 +45,23 @@
                 </div>
             </div>
 
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label>Telephone number:</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="telSearch" class="w-100" type="text" name="telNo" asp-for=@Model.telNoSearch/>
+                </div>
+                <div class="col-md-3">
+                    <label class="w-100">Email address:</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="emailSearch" class="w-100" type="text" name="email" asp-for=@Model.emailSearch />
+                </div>
+            </div>
+
+
+
             <div class="row">
                 <div class="col-md-2">
                     <button class="btn btn-success" type="submit">Search</button>
@@ -114,6 +131,9 @@
         document.getElementById("surnameSearch").value = null;
         document.getElementById("dobSearch").value = null;
         document.getElementById("nhsSearch").value = null;
+        document.getElementById("telSearch").value = null;
+        document.getElementById("emailSearch").value = null;
+
         document.getElementById("PatientSearch").submit();
     }
 </script>
