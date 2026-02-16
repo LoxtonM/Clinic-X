@@ -6,6 +6,7 @@ using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ClinicX.Controllers
@@ -172,9 +173,9 @@ namespace ClinicX.Controllers
                 string sGPCode = _lvm.patientDetails.GP_Facility_Code;
                 if (sGPCode == null ) { sGPCode = "Unknown1"; } //because obviously there are people with nulls in the GP field.
                 string sRefFacCode = _lvm.activityDetails.REF_FAC;
-                if (sRefFacCode == null) { sRefFacCode = "Unknown"; } 
+                if (sRefFacCode == null || sRefFacCode == "") { sRefFacCode = "Unknown"; } 
                 string sRefPhysCode = _lvm.activityDetails.REF_PHYS;
-                if (sRefPhysCode == null) { sRefPhysCode = "Unknown"; }
+                if (sRefPhysCode == null || sRefPhysCode == "") { sRefPhysCode = "Unknown"; }
                 _lvm.referrerFacility = await _externalFacilityData.GetFacilityDetails(sRefFacCode);                
                 _lvm.referrer = await _externalClinicianData.GetClinicianDetails(sRefPhysCode);                
                 _lvm.GPFacility = await _externalFacilityData.GetFacilityDetails(sGPCode);

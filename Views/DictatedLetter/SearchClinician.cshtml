@@ -107,6 +107,8 @@
 
         var _clin = document.getElementById("ddlClinicians");
         
+        
+
         var clinicianArray = [];
         var titleArray = [];
         var firstnameArray = [];
@@ -134,15 +136,15 @@
 
         for (var k = 0; k < clinicianArray.length; k++)
         {
-            if(clinicianArray[k] = _clin.value)
-            {                
+            if(clinicianArray[k] == _clin.value)
+            {               
                 sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
                 sAddress = facilityArray[k] + "\n" +
                 addressArray[k] + "\n" +
                 districtArray[k] + "\n" +
                 cityArray[k] + "\n" +                            
                 postcodeArray[k];
-            }
+            }            
         }
 
         sAddress = sAddress.replace("&#xD;&#xA;", "\n");

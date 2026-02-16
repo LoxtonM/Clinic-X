@@ -18,7 +18,7 @@
     
     <hr />
 
-    <h1>New Clinical Note</h1>
+    <h1>New Clinical Note for @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h1>
 
 
     <div class="container mb-5">
