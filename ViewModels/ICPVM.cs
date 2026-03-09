@@ -60,5 +60,6 @@ namespace ClinicX.ViewModels
         public string genomicsTestDirectoryLink { get; set; }
         public string riskGuide { get; set; }
         public DateTime dobAt16 { get; set; }
+        public List<SocialServicePathway> socialServicePathways { get; set; }
     }
 }

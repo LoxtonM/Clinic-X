@@ -8,6 +8,7 @@ namespace ClinicX.ViewModels
     {
         public StaffMember staffUser { get; set; }
         public List<DictatedLettersCopy> dictatedLettersCopies  { get; set; }
+        public DictatedLettersCopy dictatedLetterCopy { get; set; }
         public List<Patient> dictatedLettersPatients { get; set; }
         public DictatedLetter dictatedLetters { get; set; }
         public List<DictatedLetter> dictatedLettersForApproval { get; set; }

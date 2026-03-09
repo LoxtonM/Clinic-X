@@ -322,7 +322,8 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>CC Address</th>   
+                                <th>CC Address</th> 
+                                <th></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -331,6 +332,9 @@
                             {                        
                                 <tr>
                                     <td>@item.CC</td>
+                                    <td>
+                                        <a type="button" class="btn btn-success" asp-controller="DictatedLetter" asp-action="ModifyCC" asp-route-id=@item.CCID>Edit</a>
+                                    </td>
                                     <td>
                                         <input type="button" id=@item.CC value="Delete" class="btn btn-default btn-sm btn-outline-danger" onclick="DeleteCC(@item.CCID)" />
                                     </td>

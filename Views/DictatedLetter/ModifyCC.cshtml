@@ -1,0 +1,23 @@
+﻿@model ClinicX.ViewModels.DictatedLetterVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Edit Dictated Letter";
+    ViewData["Page"] = "/ Dictated Letter / Edit";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patientDetails.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Letter", "Edit", "DictatedLetter", new { id = Model.dictatedLetterCopy.DotID }, new { @class = "btn btn-success m-1" }),        
+    };
+}
+
+<div class="container">
+    <form asp-action="ModifyCC">
+        <input type="text" name="ccID" asp-for=@Model.dictatedLetterCopy.CCID hidden />
+        <textarea rows="8" cols="40" name="ccDetails" asp-for=@Model.dictatedLetterCopy.CC></textarea>
+        <button type="submit" class="btn btn-outline-success">Save</button>
+    </form>
+</div>

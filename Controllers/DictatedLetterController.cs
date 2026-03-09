@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ClinicalXPDataConnections.Data;
 
 namespace ClinicX.Controllers
 {
@@ -31,10 +32,10 @@ namespace ClinicX.Controllers
 
         public DictatedLetterController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IActivityDataAsync activityData, IDictatedLetterDataAsync dictatedLetterData,
             IExternalClinicianDataAsync externalClinicianData, IExternalFacilityDataAsync externalFacilityData, ICRUD crud, IConstantsDataAsync constantsData, LetterController letterController, 
-            IAuditService auditService, IRelativeDataAsync relativeData)
+            IAuditService auditService, IRelativeDataAsync relativeData)//, ClinicalContext clinicalContext, DocumentContext documentContext)
         {
-            //_clinContext = clinContext;
-            //_docContext = docContext;
+            //_clinContext = clinicalContext;
+            //_docContext = documentContext;
             _config = config;
             _lvm = new DictatedLetterVM();
             _staffUser = staffUserData;
@@ -520,11 +521,30 @@ namespace ClinicX.Controllers
             {
                 int success = _crud.CallStoredProcedure("Letter", "AddCC", dotID, 0, 0, "", "", "", addressToAdd, User.Identity.Name);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addCC(SQL)" }); }
-                
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addCC(SQL)" }); }                
             }
 
             return View(_lvm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ModifyCC(int id)
+        {
+            _lvm.dictatedLetterCopy = await _dictatedLetterData.GetDictatedLetterCopyDetails(id);
+            _lvm.dictatedLetters = await _dictatedLetterData.GetDictatedLetterDetails(_lvm.dictatedLetterCopy.DotID);
+            _lvm.patientDetails = await _patientData.GetPatientDetails(_lvm.dictatedLetters.MPI.GetValueOrDefault());
+
+            return View(_lvm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ModifyCC(int ccID, string ccDetails)
+        {
+            _lvm.dictatedLetterCopy = await _dictatedLetterData.GetDictatedLetterCopyDetails(ccID);
+
+            _crud.CallStoredProcedure("Letter", "EditCC", ccID, 0, 0, "", "", "", ccDetails, User.Identity.Name, null, null, false, false);
+
+            return RedirectToAction("Edit", "DictatedLetter", new { id = _lvm.dictatedLetterCopy.DotID }); 
         }
     }
 }

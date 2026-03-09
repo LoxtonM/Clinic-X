@@ -17,7 +17,7 @@ namespace ClinicX.Controllers
         //private readonly ClinicXContext _cXContext;
         //private readonly DocumentContext _docContext;
         private readonly ICPVM _ivm;
-        private readonly LetterController _lc;
+        private readonly ClinicalXPDataConnections.Meta.LetterController _lc;
         private readonly IConfiguration _config;
         private readonly IStaffUserDataAsync _staffUser;
         private readonly IPathwayDataAsync _pathwayData;
@@ -41,12 +41,13 @@ namespace ClinicX.Controllers
         private readonly ILeafletDataAsync _leafletData;
         private readonly IConstantsDataAsync _constantsData;
         private readonly IStaffOptionsDataAsync _staffOptionsData;
+        private readonly ISocialServicePathwayDataAsync _socialServicePathwayData;
 
         public TriageController(IConfiguration config, IStaffUserDataAsync staffUserData, IPathwayDataAsync pathwayData, IPriorityDataAsync priorityData, IReferralDataAsync referralData, ITriageDataAsync triageData,
             IICPActionDataAsync iCPActionData, IRiskDataAsync riskData, ISurveillanceDataAsync surveillanceData, ITestEligibilityDataAsync testEligibilityData, IDiaryDataAsync diaryData, IRelativeDataAsync relativeData,
             ICancerRequestDataAsync cancerRequestData, IExternalClinicianDataAsync externalClinicianData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IDocumentsDataAsync documentsData, ICRUD crud, 
             LetterController letterController, IAuditService auditService, IAgeCalculator ageCalculator, IPatientDataAsync patientData, ILeafletDataAsync leafletData, IConstantsDataAsync constantsData,
-            IStaffOptionsDataAsync staffOptionsData)
+            IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData)
         {
             //_clinContext = clinContext;
             //_cXContext = cXContext;
@@ -76,6 +77,7 @@ namespace ClinicX.Controllers
             _constantsData = constantsData;
             _staffOptionsData = staffOptionsData;
             _lc = letterController;
+            _socialServicePathwayData = socialServicePathwayData;
             //LetterController _lc = new LetterController(_clinContext, _docContext);
         }
 
@@ -139,9 +141,11 @@ namespace ClinicX.Controllers
                 _ivm.dobAt16 = DateTime.Now.AddYears(-16);
                 _ivm.staffOptions = await _staffOptionsData.GetStaffOptions(staffCode);
                 var clins = await _staffUser.GetClinicalStaffList();
-                clins = clins.Where(s => s.POSITION.Contains("Genomic") && !s.POSITION.Contains("Nurse")).ToList(); //because sometimes they spell it without the s (and we have to filter out the hbopathy nurses too)
-                _ivm.GAs = clins.Where(s => s.POSITION.Contains("Associate")).ToList();
-                _ivm.GenPs = clins.Where(s => s.POSITION.Contains("Practitioner")).ToList();
+                //clins = clins.Where(s => s.POSITION.Contains("Genomic") && !s.POSITION.Contains("Nurse")).ToList(); //because sometimes they spell it without the s (and we have to filter out the hbopathy nurses too)
+                //apparently "Contains(string)" doesn't work anymore for some reason!!!
+                _ivm.GAs = clins.Where(s => s.POSITION == ("Genomics Associate") || s.POSITION == ("Genomic Associate")).ToList();
+                _ivm.GenPs = clins.Where(s => s.POSITION == ("Genomics Practitioner") || s.POSITION == ("Genomics Practitioner")).ToList();
+                _ivm.socialServicePathways = await _socialServicePathwayData.GetSocialServicePathwayList(id);
 
                 if (_ivm.referralDetails.RefDate != null)
                 {
@@ -334,6 +338,10 @@ namespace ClinicX.Controllers
                     _lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID);
                 }
 
+                if(icpAction.ID == 8)
+                {
+                    return RedirectToAction("Index", "LetterMenu", new { refID = refID });
+                }
 
                 _ivm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(icpID);
 
@@ -751,6 +759,23 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-returnToCons" });
             }
-        }           
+        }
+
+        //[HttpPost]
+        public IActionResult StartSocialServicesPathway(int icpID)
+        {
+            try
+            {
+                int success = _crud.CallStoredProcedure("ICP General", "Start SSP", icpID, 0, 0, "", "", "", "", User.Identity.Name);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons(SQL)" }); }
+
+                return RedirectToAction("ICPDetails", "Triage", new { id = icpID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-returnToCons" });
+            }
+        }
     }
 }

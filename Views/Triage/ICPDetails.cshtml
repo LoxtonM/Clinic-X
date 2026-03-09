@@ -24,7 +24,7 @@
 
     <div class="container">
         <dl class="row">
-            <dt class="col-sm-8"></dt>
+            <dt class="col-sm-6"></dt>
             <dt class="col-sm-2">
                 <a type="button" class="btn btn-success" asp-action="ChangeGeneralTriage" asp-route-id=@Model.triage.ICPID>Change Triaging Clinician(s)</a>
             </dt>
@@ -33,7 +33,19 @@
                 {
                     <a type="button" class="btn btn-success" asp-action="ChangeTriagePathway" asp-route-id=@Model.triage.ICPID>Change Triage Pathway</a>
                 }
-            </dt>            
+            </dt>
+            <dt class="col-sm-2">
+                @if (Model.socialServicePathways.Count > 0)
+                {
+                    <a type="button" class="btn btn-outline-warning disabled">Social Services Pathway already active</a>
+                }
+                else
+                {
+                    <a type="button" class="btn btn-outline-danger" asp-action="StartSocialServicesPathway" asp-route-icpID=@Model.triage.ICPID>Start Social Services Pathway</a>
+                    @*<a type="button" class="btn btn-outline-danger" asp-action="StartSocialServicesPathway" asp-route-icpID=@Model.icpGeneral.ICPID>Start Social Services Pathway</a>*@
+                }
+            </dt>
+            
             <dt class="col-sm-2">
                 Patient name:
             </dt>
