@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ClinicalXPDataConnections.Data;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
-using ClinicX.Data;
 
 namespace ClinicX.Controllers
 {
@@ -78,6 +75,7 @@ namespace ClinicX.Controllers
 
                 _cvm.activityItem = await _activityData.GetActivityDetails(id);
                 _cvm.noteTypeList = await _clinicalNoteData.GetNoteTypesList();
+                _cvm.patient = await _patientData.GetPatientDetails(_cvm.activityItem.MPI);
 
                 return View(_cvm);
             }
