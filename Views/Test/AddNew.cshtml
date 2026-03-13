@@ -16,7 +16,17 @@
 
 <div class="container card">   
 
-    <h1>Add new test for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME)</h1>
+    <div class="mb-2 g-2">
+        <div class="row mt-2">
+            <h1>Add new test for @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h1>
+        </div>
+        <div class="row">
+            <h4>DOB: @Model.patient.DOB.Value.ToString("dd/MM/yyyy")</h4>
+        </div>
+        <div class="row">
+            <h4>NHS No: @Model.patient.SOCIAL_SECURITY</h4>
+        </div>
+    </div>   
 
     <div class="container">
         <form id="AddTestForm" asp-action="AddNew">

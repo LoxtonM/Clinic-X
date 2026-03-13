@@ -110,6 +110,7 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinic Details", "RefID=" + id.ToString(), _ip.GetIPAddress());
 
                 _cvm.Clinic = await _clinicData.GetClinicDetails(id);
+                _cvm.patient = await _patientData.GetPatientDetails(_cvm.Clinic.MPI);
                 _cvm.linkedReferral = await _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
 
                 if(_cvm.Clinic.Attendance.Contains("Att")) //show "seen by" details for completed appts

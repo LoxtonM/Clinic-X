@@ -113,7 +113,7 @@ namespace ClinicX.Controllers
 
                 if (isPreview.GetValueOrDefault())
                 {                    
-                    _vhrc.DoVHRPro(213, mpi, id, User.Identity.Name, referCode, screeningService, freeText, 0, true);
+                    await _vhrc.DoVHRPro(213, mpi, id, User.Identity.Name, referCode, screeningService, freeText, 0, true);
 
                     return File($"~/StandardLetterPreviews/VHRPropreview-{User.Identity.Name}.pdf", "Application/PDF");
                 }

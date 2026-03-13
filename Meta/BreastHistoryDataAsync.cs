@@ -19,7 +19,7 @@ namespace ClinicX.Meta
                 
         public async Task<BreastSurgeryHistory> GetBreastSurgeryHistory(int mpi)
         {
-            BreastSurgeryHistory bish = await _clinContext.BreastSurgeryHistory.FirstAsync(d => d.MPI == mpi);
+            BreastSurgeryHistory bish = await _clinContext.BreastSurgeryHistory.FirstOrDefaultAsync(d => d.MPI == mpi);
 
             return bish;
         }

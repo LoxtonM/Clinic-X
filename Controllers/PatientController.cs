@@ -85,8 +85,9 @@ namespace ClinicX.Controllers
 
                 _pvm.relatives = await _relativeData.GetRelativesList(id);
                 _pvm.hpoTermDetails = await _hpoData.GetHPOTermsAddedList(id);
-                _pvm.referrals = await _referralData.GetActiveReferralsListForPatient(id);
-                _pvm.appointmentList = await _clinicData.GetClinicByPatientsList(_pvm.patient.MPI); //.GroupBy(a => a.RefID).Select(g => g.First()).ToList();                
+                _pvm.referralsActive = await _referralData.GetActiveReferralsListForPatient(id);
+                _pvm.referralsComplete = await _referralData.GetCompleteReferralsListForPatient(id);
+                _pvm.appointmentList = await _clinicData.GetClinicByPatientsList(id); //.GroupBy(a => a.RefID).Select(g => g.First()).ToList();                
                 _pvm.patientPathway = await _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = await _alertData.GetAlertsList(id);
                 _pvm.diary = await _diaryData.GetDiaryList(id);
@@ -111,16 +112,30 @@ namespace ClinicX.Controllers
                     }                    
                 }                
 
-                IEnumerable<Referral> referrals = _pvm.referrals.Where(r => !string.IsNullOrWhiteSpace(r.PATHWAY));
-                Console.WriteLine("Referrals without null pw in  " +  sw.ElapsedMilliseconds);
+                IEnumerable<Referral> referrals = _pvm.referralsActive.Where(r => !string.IsNullOrWhiteSpace(r.PATHWAY));
+                IEnumerable<Referral> referralsComplete = _pvm.referralsComplete.Where(r => !string.IsNullOrWhiteSpace(r.PATHWAY));
+                
                 //because there are nulls in the pathway that are breaking it!! So we have to filter them out.
                 _pvm.referralsActiveGeneral = referrals.Where(r => r.PATHWAY.Contains("General", StringComparison.OrdinalIgnoreCase)).ToList();
                 _pvm.referralsActiveCancer = referrals.Where(r => r.PATHWAY.Contains("Cancer", StringComparison.OrdinalIgnoreCase)).ToList();
+
+                _pvm.referralsCompleteGeneral = referralsComplete.Where(r => r.PATHWAY.Contains("General", StringComparison.OrdinalIgnoreCase)).ToList();
+                _pvm.referralsCompleteCancer = referralsComplete.Where(r => r.PATHWAY.Contains("Cancer", StringComparison.OrdinalIgnoreCase)).ToList();
 
                 List<ICPCancer> icpCancerList = new List<ICPCancer>();
 
                 foreach (var r in _pvm.referralsActiveCancer)
                 {   
+                    ICP icp = await _triageData.GetICPDetailsByRefID(r.refid);
+                    if (icp != null)
+                    {
+                        ICPCancer icpc = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+                        if (icpc != null) { _pvm.icpCancerList.Add(icpc); }
+                    }
+                }
+
+                foreach (var r in _pvm.referralsCompleteCancer)
+                {
                     ICP icp = await _triageData.GetICPDetailsByRefID(r.refid);
                     if (icp != null)
                     {

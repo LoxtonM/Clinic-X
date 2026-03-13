@@ -306,11 +306,12 @@ public class VHRController : Controller
                 foreach (var item in surv)
                 {
                     totalLengthVHR += 10;
-                    vhrTf.DrawString(item.GeneChangeDescription, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 50));
+                    if (item.GeneChangeDescription != null) { vhrTf.DrawString(item.GeneChangeDescription, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 50)); }
+                    
                     string ageRange = item.SurvStartAge.ToString();
-                    if(item.SurvStopAge != null) { ageRange = ageRange + " - " + item.SurvStopAge.ToString();  }
+                    if(item.SurvStopAge != null && item.SurvStopAge != 0) { ageRange = ageRange + " - " + item.SurvStopAge.ToString();  }
                     vhrTf.DrawString(ageRange, fontSmall, XBrushes.Black, new XRect(200, totalLengthVHR, 500, 50));
-                    vhrTf.DrawString(item.SurvType + " (" + item.SurvFreqCode + ")", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR, 500, 50));
+                    vhrTf.DrawString(item.SurvType + " (" + item.SurvFreqCode + ")", fontSmall, XBrushes.Black, new XRect(350, totalLengthVHR, 500, 50));                        
                 }
             }
             totalLengthVHR += 20;
@@ -461,7 +462,7 @@ public class VHRController : Controller
                 foreach (var item in surv)
                 {
                     totalLengthVHR2 += 15;
-                    vhrTf2.DrawString(item.GeneChangeDescription, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50));                    
+                    if (item.GeneChangeDescription != null) { vhrTf2.DrawString(item.GeneChangeDescription, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR2, 500, 50)); }
                 }
             }
             totalLengthVHR2 += 35;

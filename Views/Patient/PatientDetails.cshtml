@@ -652,11 +652,11 @@
     </div>
 
     <div class="d-grid mt-2 mb-2">
-        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseRefTable" aria-expanded="false" aria-controls="collapseExample">Active Referrals (click to expand/hide)</button>
+        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseRefTable" aria-expanded="false" aria-controls="collapseExample">Referrals (click to expand/hide)</button>
     </div>
 
     <div class="collapse" id="collapseRefTable">
-        @if (Model.referrals.Count > 0)
+        @if (Model.referralsActive.Count > 0)
         {
             <h4>Active Referrals</h4>
             <div class="row">
@@ -675,7 +675,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var r in Model.referrals)
+                        @foreach (var r in Model.referralsActive)
                         {
                             <tr>
                                 @if(r.RefDate.HasValue)
@@ -726,7 +726,87 @@
         else
         {
             <h4>No active referrals.</h4>
-        }    
+        }
+        <div class="row">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+                <label>Show inactive:</label><input type="checkbox" id="chkShowInactive" />
+            </div>
+        </div>
+
+        <div id="completedRefs" hidden>
+            @if (Model.referralsComplete.Count > 0)
+            {            
+                <h4>Completed Referrals</h4>
+                <div class="row">
+                    <table class="table">
+                        <thead>
+                            <tr class="fw-bold">
+                                <td>Referral Date</td>
+                                <td>Type</td>
+                                <td>Referring Clinician</td>
+                                <td>Referring Facility</td>
+                                <td>Indication</td>
+                                <td>Pathway</td>
+                                <td>Consultant</td>
+                                <td>GC</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.referralsComplete)
+                            {
+                                <tr>
+                                    @if(r.RefDate.HasValue)
+                                    {
+                                        <td>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                                    }   
+                                    <td>@r.RefType</td>
+                                    @if (@r.ReferringFacilityCode != "GP")
+                                    {
+                                        <td>@r.ReferringClinician</td>
+                                        <td>@r.ReferringFacility</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@Model.patient.GP</td>
+                                        <td>@Model.patient.GP_Facility</td>
+                                    }
+                                    <td>@r.INDICATION</td>
+                                    <td>@r.PATHWAY</td>
+                                    <td>@r.LeadClinician</td>
+                                    <td>@r.GC</td>
+                                    @if (r.PATHWAY != null)
+                                    {
+                                        @if (@r.PATHWAY.Contains("Cancer"))
+                                        {
+                                            foreach (var i in Model.icpCancerList)
+                                            {
+                                                @if(i != null) @*because obviously the list of cancer ICPs has a null cancer ICP, that makes perfect sense...*@
+                                                {
+                                                    if (i.RefID == r.refid)
+                                                    {
+                                                        <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@i.ICP_Cancer_ID>ICP Review</a></td>
+                                                    }
+                                                }                                            
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>            
+                </div>
+            }
+            else
+            {
+                <h4>No active referrals.</h4>
+            }
+        </div>
     </div>
 
     <div class="d-grid mt-2 mb-2">
@@ -826,6 +906,7 @@
 
 <script type="text/javascript">
 
+    document.getElementById("chkShowInactive").addEventListener("change", ShowInactive);
     window.addEventListener("load", LoadEDMSLink);
 
     function LoadEDMSLink() 
@@ -854,6 +935,22 @@
         {
             document.getElementById("btnPedigree").hidden = true; //don't show the PA button if Phenotips is available
         }
-    }        
+    }     
+    
+    function ShowInactive()
+    {
+        var tickBox = document.getElementById("chkShowInactive");
+        var completedReferrals = document.getElementById("completedRefs");
+
+        if(tickBox.checked == true)
+        {
+            completedReferrals.hidden = false;
+        }
+        else
+        {
+            completedReferrals.hidden = true;
+        }
+        
+    }
     
 </script>

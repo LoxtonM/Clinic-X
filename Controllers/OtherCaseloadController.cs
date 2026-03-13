@@ -37,7 +37,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string? staffCode)
+        public async Task<IActionResult> Index(string? staffCode, string? clType)
         {
             try
             {
@@ -55,13 +55,24 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(userStaffCode, "ClinicX - Caseloads", "StaffCode=" + staffCode, _ip.GetIPAddress());
 
                 _cvm.staffCode = staffCode;
-                _cvm.caseLoad = await _caseloadData.GetCaseloadList(staffCode);
-                _cvm.caseLoad = _cvm.caseLoad.OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();
+                var caseLoad = await _caseloadData.GetCaseloadList(staffCode);
+                caseLoad = caseLoad.OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();
                 _cvm.clinicians = await _staffUser.GetClinicalStaffList();
-                if (_cvm.caseLoad.Count() > 0)
+                _cvm.name = await _staffUser.GetStaffNameFromStaffCode(staffCode);
+                                
+                if (clType != null && clType != "")
                 {
-                    _cvm.name = _cvm.caseLoad.FirstOrDefault().Clinician;
-                }
+                    if (clType == "clinic")
+                    {
+                        caseLoad = caseLoad.Where(c => c.State == "To be seen").ToList(); //because ".Contains(...)" doesn't work in LinQ for some reason!!
+                    }
+                    else
+                    {
+                        caseLoad = caseLoad.Where(c => c.Type.ToUpper() == clType.ToUpper()).ToList();
+                    }
+                }                
+
+                _cvm.caseLoad = caseLoad;
 
                 bool isConsSup = await _supervisorData.GetIsConsSupervisor(userStaffCode);
                 bool isGCSup = await _supervisorData.GetIsGCSupervisor(userStaffCode);

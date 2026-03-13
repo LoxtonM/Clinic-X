@@ -12,9 +12,12 @@ namespace ClinicX.ViewModels
         public Patient previousPatient { get; set; }
         public List<Relative> relatives { get; set; }
         public List<HPOTermDetails> hpoTermDetails { get; set; }        
-        public List<Referral> referrals { get; set; }
+        public List<Referral> referralsActive { get; set; }
+        public List<Referral> referralsComplete { get; set; }
         public List<Referral> referralsActiveGeneral { get; set; }
         public List<Referral> referralsActiveCancer { get; set; }
+        public List<Referral> referralsCompleteGeneral { get; set; }
+        public List<Referral> referralsCompleteCancer { get; set; }
         public List<Appointment> appointmentList { get; set; }
         public PatientPathway patientPathway { get; set; }
         public List<PatientPathway> patientPathways { get; set; }

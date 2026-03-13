@@ -29,7 +29,7 @@ namespace ClinicX.Meta
         {
             IQueryable<UntestedVHRGroup> uvgList = _clinContext.UntestedVHRGroup.Where(v => v.RefID != null);
 
-            UntestedVHRGroup uvg = await uvgList.FirstAsync(v => v.RefID == refid);
+            UntestedVHRGroup uvg = await uvgList.FirstOrDefaultAsync(v => v.RefID == refid);
 
             return uvg;
         }

@@ -369,15 +369,18 @@ namespace ClinicX.Controllers
                 URLChecker urlChecker = new URLChecker();
                 string urlGenomicTestDirectoryurl = await _constantsData.GetConstant("TestDirectoryGeneral", 1); //apparently they want Rare Diseases, not the cancer one
                 string urlCanriskurl = await _constantsData.GetConstant("CanriskURL", 1);
+                string riskGuide = await _constantsData.GetConstant("CancerRiskGuide", 2);
 
                 _ivm.genomicsTestDirectoryLink = urlGenomicTestDirectoryurl;
                 _ivm.canriskLink = urlCanriskurl;
                 
-                _ivm.riskGuide = Url.Content($"~/SupportFiles/CancerRiskGuidance.pdf");
+                _ivm.riskGuide = Url.Content($"~/SupportFiles/{riskGuide}");
                 _ivm.clinicalFacilityList = await _triageData.GetClinicalFacilitiesList();
                 _ivm.staffMembers = await _staffUser.GetClinicalStaffList();
                 _ivm.icpCancer = await _triageData.GetCancerICPDetails(id);
                 _ivm.leaflets = await _leafletData.GetCancerLeafletsList();
+
+                _ivm.patient = await _patientData.GetPatientDetails(_ivm.icpCancer.MPI);
 
                 if (_ivm.icpCancer != null)
                 {

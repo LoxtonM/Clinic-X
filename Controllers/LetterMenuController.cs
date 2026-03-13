@@ -1,4 +1,4 @@
-﻿//using ClinicalXPDataConnections.Data;
+﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using ClinicX.Meta;
@@ -24,7 +24,7 @@ namespace ClinicX.Controllers
         private readonly IExternalClinicianDataAsync _externalClinicianData;
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documentsData, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController letterController, ICRUD crud,
-            IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData) 
+            IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData)//, ClinicalContext context, DocumentContext documentContext) 
         {
             _config = config;   
             //_context = context;

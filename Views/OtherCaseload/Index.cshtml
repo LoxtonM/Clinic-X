@@ -33,16 +33,29 @@
 
     <div class="d-grid">
         <form asp-action="Index">
-            <div class="row">
+            <div class="row mb-2 g-2">
                 <div class="col-md-2">
                     <label>Staff Member:</label>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <select name="staffCode" asp-for=@Model.staffCode>                        
                         @foreach(var item in Model.clinicians)
                         {
                             <option value=@item.STAFF_CODE>@item.NAME</option>
                         }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label>Type:</label>
+                </div>
+                <div class="col-md-3">
+                    <select name="clType">
+                        <option value="">All</option>
+                        <option value="clinic">Clinic</option>
+                        <option value="cancer icp">Cancer ICP</option>
+                        <option value="letter">Letter</option>
+                        <option value="test">Test</option>
+                        <option value="triage">Triage</option>
                     </select>
                 </div>
                 <div class="col-md-2">
