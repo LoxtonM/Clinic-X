@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.IO;
 
 namespace ClinicX.Controllers
 {
@@ -90,7 +91,8 @@ namespace ClinicX.Controllers
                 _pvm.appointmentList = await _clinicData.GetClinicByPatientsList(id); //.GroupBy(a => a.RefID).Select(g => g.First()).ToList();                
                 _pvm.patientPathway = await _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = await _alertData.GetAlertsList(id);
-                _pvm.diary = await _diaryData.GetDiaryList(id);
+                var diaryList = await _diaryData.GetDiaryList(id);
+                _pvm.diary = diaryList.Where(d => d.DocCode == null || (d.DocCode != "REPSUM" && d.DocCode != "HS")).ToList(); //was hoping to do this filtering in the view but that stops the REPSUM from working!
                 _pvm.gpFac = await _extFacility.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
 
                 _pvm.relatives = _pvm.relatives.Distinct().ToList(); //because there are dupes.
@@ -195,12 +197,13 @@ namespace ClinicX.Controllers
                 }
 
                 //EDMS link
-                string edmsBaseURL = await _constantsData.GetConstant("GEMRLink", 1);
+                string edmsBaseURL = await _constantsData.GetConstant("GEMRLink", 1);                
 
                 if (!string.IsNullOrWhiteSpace(edmsBaseURL) && !string.IsNullOrWhiteSpace(_pvm.patient.DCTM_Folder_ID))
                 {
                     _pvm.edmsLink = edmsBaseURL + _pvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
                 }
+                
 
                 return View(_pvm);
             }
@@ -223,5 +226,7 @@ namespace ClinicX.Controllers
             //Process.Start($"G:\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
             Process.Start($"\\\\zion.matrix.local\\dfsrootbwh\\cling\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
         }
+
+       
     }
 }

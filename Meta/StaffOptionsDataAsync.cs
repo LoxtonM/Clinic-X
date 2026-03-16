@@ -19,7 +19,7 @@ namespace ClinicX.Meta
 
         public async Task<StaffOptions> GetStaffOptions(string staffCode)
         {
-            StaffOptions options = await _context.StaffOptions.FirstAsync(o => o.Staff_Code == staffCode);
+            StaffOptions options = await _context.StaffOptions.FirstOrDefaultAsync(o => o.Staff_Code == staffCode);
 
             return options;
         }

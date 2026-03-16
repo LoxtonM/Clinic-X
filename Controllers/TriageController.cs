@@ -1,4 +1,4 @@
-﻿//using ClinicalXPDataConnections.Data;
+﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 //using ClinicX.Data;
@@ -6,6 +6,7 @@ using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Linq;
 
@@ -47,7 +48,7 @@ namespace ClinicX.Controllers
             IICPActionDataAsync iCPActionData, IRiskDataAsync riskData, ISurveillanceDataAsync surveillanceData, ITestEligibilityDataAsync testEligibilityData, IDiaryDataAsync diaryData, IRelativeDataAsync relativeData,
             ICancerRequestDataAsync cancerRequestData, IExternalClinicianDataAsync externalClinicianData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IDocumentsDataAsync documentsData, ICRUD crud, 
             LetterController letterController, IAuditService auditService, IAgeCalculator ageCalculator, IPatientDataAsync patientData, ILeafletDataAsync leafletData, IConstantsDataAsync constantsData,
-            IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData)
+            IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData)//, ClinicalContext clinContext)
         {
             //_clinContext = clinContext;
             //_cXContext = cXContext;
@@ -492,6 +493,7 @@ namespace ClinicX.Controllers
             {
                 int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "REPSUM", "", "", User.Identity.Name, null, null, false, false);
                 var diary = await _diaryData.GetLatestDiaryByRefID(refID, "REPSUM");
+
                 int diaryID = diary.DiaryID;
 
                 //LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _docContext);
@@ -502,7 +504,7 @@ namespace ClinicX.Controllers
             }
 
             return RedirectToAction("CancerReview", new { id = id });
-        }
+        }        
 
         [HttpGet]
         [Authorize]

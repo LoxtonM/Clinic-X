@@ -385,7 +385,7 @@
                                     <option value="">Select...</option>
                                     @foreach(var item in Model.relativesList)
                                     {
-                                        <option value=@item.relsid>@item.RelSalutation @item.RelForename1 @item.RelSurname</option>
+                                        <option value=@item.MPI>@item.CGU_No - @item.Title @item.FIRSTNAME @item.LASTNAME</option>
                                     }
                                 }
                                 else
@@ -755,7 +755,40 @@
 
     function SetCCRelative()
     {
-        //do stuff
+        var rel = document.getElementById("ddlRels").value;
+        var sName = "Nobody";
+        var sAddress = "Nowhere";
+        
+        var nameArray = [];
+        var mpiArray = [];
+        var address1Array = [];
+        var address2Array = [];
+        var address3Array = [];
+        var address4Array = [];
+        var postcodeArray = [];
+
+        @foreach (var item in Model.relativesList)
+        {
+            @:mpiArray.push("@item.MPI");
+            @:nameArray.push("@item.PtLetterAddressee");
+            @:address1Array.push("@item.ADDRESS1");
+            @:address2Array.push("@item.ADDRESS2");
+            @:address3Array.push("@item.ADDRESS3");
+            @:address4Array.push("@item.ADDRESS4");
+            @:postcodeArray.push("@item.POSTCODE");            
+        }
+
+        for (var k = 0; k < mpiArray.length; k++)
+        {
+            var mpiToTest = mpiArray[k];
+            if (mpiToTest == rel)
+            {
+                sName = nameArray[k];
+                sAddress = address1Array[k] + "\n" + address2Array[k] + "\n" + address3Array[k] + "\n" + address4Array[k] + "\n" + postcodeArray[k];
+            }
+        }
+
+        document.getElementById("txtCC").value = sName + "\n" + sAddress.replaceAll(/&#x27;/g, "'").replaceAll(/&amp;/g, "&").replaceAll(/&#xD;&#xA;/g, "\n").replaceAll(/&#x27;/g, "'").replaceAll(/&#x9;/g, "")
     }
 
     function SetCCAddress(ccCode) //sets value of CC box depending on what's chosen

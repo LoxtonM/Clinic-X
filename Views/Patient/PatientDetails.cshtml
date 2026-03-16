@@ -18,6 +18,7 @@
         Html.ActionLink("New Dictated Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Cancer Risks", "Index", "RiskAndSurveillance", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
+        Html.ActionLink("Patient Documents", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPatientDocuments", target="_blank" }),
         Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPhenotips", target="_blank" }),
         Html.ActionLink("Open Pedigree Assistant", "PedigreeAssistant", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPedigree" }),
         @*Html.ActionLink("Record Cancer Risk/Surveillance", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
@@ -382,10 +383,13 @@
             </dd>
             <dt class="col-sm-2"></dt>
             <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.gpFac.ADDRESS)<br />
-                @if(Model.gpFac.CITY != null && Model.gpFac.CITY != "") { @Html.DisplayFor(model => model.gpFac.CITY)<br /> }
-                @if(Model.gpFac.STATE != null && Model.gpFac.STATE != "") { @Html.DisplayFor(model => model.gpFac.STATE)<br /> }
-                @Html.DisplayFor(model => model.gpFac.ZIP)
+                @if(Model.gpFac != null)
+                {
+                    @Html.DisplayFor(model => model.gpFac.ADDRESS)<br />                
+                    @if(Model.gpFac.CITY != null && Model.gpFac.CITY != "") { @Html.DisplayFor(model => model.gpFac.CITY)<br /> }
+                    @if(Model.gpFac.STATE != null && Model.gpFac.STATE != "") { @Html.DisplayFor(model => model.gpFac.STATE)<br /> }
+                    @Html.DisplayFor(model => model.gpFac.ZIP)
+                }
             </dd>
             @if(Model.patient.DECEASED == -1)
             {
@@ -911,10 +915,13 @@
 
     function LoadEDMSLink() 
     {
+        document.getElementById("btnPatientDocuments").hidden = true;
+
         //only load EDMS link if there actually is one
         if ("@(Model.patient.DCTM_Folder_ID)" != "") 
         {            
             document.getElementById("btnEDMS").href = "@Model.edmsLink";
+            
         }
         else
         {
@@ -928,7 +935,7 @@
         else
         {
             document.getElementById("btnPhenotips").hidden = true;            
-            document.getElementById("btnImportRelatives").hidden = true;
+            //document.getElementById("btnImportRelatives").hidden = true;
         }
 
         if("@(Model.isPhenotipsAvailable)" == "True")

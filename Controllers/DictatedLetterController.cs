@@ -153,8 +153,9 @@ namespace ClinicX.Controllers
                 
                 _lvm.dictatedLettersCopies = await _dictatedLetterData.GetDictatedLettersCopiesList(id);
                 _lvm.patients = await _dictatedLetterData.GetDictatedLetterPatientsList(id);
-                var relList = await _relativeData.GetRelativesList(_lvm.dictatedLetters.MPI.GetValueOrDefault());
-                _lvm.relativesList = relList.Distinct().ToList();
+                //var relList = await _relativeData.GetRelativesList(_lvm.dictatedLetters.MPI.GetValueOrDefault());
+                //_lvm.relativesList = relList.Distinct().ToList();
+                
                 List<DictatedLettersPatient> dlp = new List<DictatedLettersPatient>();
                 dlp = await _dictatedLetterData.GetDictatedLettersPatientsList(id);
                 _lvm.dictatedLettersPatients = new List<Patient>();
@@ -170,6 +171,9 @@ namespace ClinicX.Controllers
                 int? mpi = _lvm.dictatedLetters.MPI;
                 int? refID = _lvm.dictatedLetters.RefID;
                 _lvm.patientDetails = await _patientData.GetPatientDetails(mpi.GetValueOrDefault());
+                var relList = await _patientData.GetPatientsInPedigree(_lvm.patientDetails.PEDNO);
+                relList = relList.Where(r => r.MPI != _lvm.patientDetails.MPI).ToList();
+                _lvm.relativesList = relList.Distinct().ToList();
                 _lvm.activityDetails = await _activityData.GetActivityDetails(refID.GetValueOrDefault());
                 string sGPCode = _lvm.patientDetails.GP_Facility_Code;
                 if (sGPCode == null ) { sGPCode = "Unknown1"; } //because obviously there are people with nulls in the GP field.

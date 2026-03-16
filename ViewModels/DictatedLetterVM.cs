@@ -30,6 +30,6 @@ namespace ClinicX.ViewModels
         public List<ActivityItem> activities { get; set; }
         public string edmsLink { get; set; }
         public string searchClinicianAddress { get; set; }
-        public List<Relative> relativesList { get; set; }
+        public List<Patient> relativesList { get; set; }
     }
 }

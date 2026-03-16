@@ -103,7 +103,7 @@ namespace ClinicX.Controllers
                             _pvm.patientsList = _pvm.patientsList.Where(p => p.DOB == dob).ToList();
                         }
                         searchTerm = searchTerm + "," + "DOB=" + dob.ToString();
-                        _pvm.dobSearch = dob.GetValueOrDefault();
+                        _pvm.dobSearch = dob;
                     }
 
                     if(telNo != null)
