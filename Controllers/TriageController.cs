@@ -136,7 +136,8 @@ namespace ClinicX.Controllers
                 _ivm.generalActionsList2 = await _icpActionData.GetICPGeneralActionsList2();
                 //check user type for cons/GC triage
                 _ivm.loggedOnUserType = user.CLINIC_SCHEDULER_GROUPS;
-                _ivm.priorityList = await _priorityData.GetPriorityList();
+                var priorityList = await _priorityData.GetPriorityList();
+                _ivm.priorityList = priorityList.OrderByDescending(p => p.PriorityLevel).ToList();
                 _ivm.cancerReviewActionsLists = await _icpActionData.GetICPCancerReviewActionsList();
                 _ivm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1);
                 _ivm.dobAt16 = DateTime.Now.AddYears(-16);
@@ -346,7 +347,14 @@ namespace ClinicX.Controllers
 
                 _ivm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(icpID);
 
-                return RedirectToAction("CancerReview", "Triage", new {id = _ivm.icpCancer.ICP_Cancer_ID });
+                if (icpAction.ID == 4 || icpAction.ID == 10)
+                {
+                    return RedirectToAction("Index", "Triage");
+                }
+                else
+                {
+                    return RedirectToAction("CancerReview", "Triage", new { id = _ivm.icpCancer.ICP_Cancer_ID });
+                }
             }
             catch (Exception ex)
             {

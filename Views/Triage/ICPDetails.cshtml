@@ -157,8 +157,7 @@
                 <label>Waiting List Priority</label>
             </div>
             <div class="col-md-2">
-                <select id="ddlPriority" name="wlPriority">
-                    <option value="">Select...</option>
+                <select id="ddlPriority" name="wlPriority">                    
                     @foreach (var item in Model.priorityList)
                     {
                         <option value=@item.PriorityLevel>@item.CLASS - @item.DESCRIPTION</option>
@@ -635,7 +634,7 @@
             DoTreatPath2();
         }
         LoadEDMSLink();
-        AutoLoadEDMS();
+        //AutoLoadEDMS();
     }
 
 
@@ -657,17 +656,7 @@
         document.getElementById("formICPCancer").submit();
     }
 
-    function AutoLoadEDMS()
-    {
-        if("@Model.staffOptions.Automated_GEMR_Open" == "True") //automated GEMR open if true
-        {
-            //window.alert("Yup");           
-            if("@Model.patient.Patient_Dctm_Sts" == 5)
-            {                
-                window.open("@Model.edmsLink" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie");
-            }
-        }        
-    }
+    
 
 
 
@@ -721,3 +710,24 @@
     }
 
 </script>
+
+@if (Model.staffOptions != null) //because otherwise it throws a fit if it's null!
+{
+    <script>
+        window.addEventListener("load", AutoLoadEDMS);
+
+        function AutoLoadEDMS()
+        {
+            if (@(Model.staffOptions != null ? "true" : "false"))
+            {
+                if ("@Model.staffOptions.Automated_GEMR_Open" === "true") //automated GEMR open if true
+                {
+                    if ("@Model.patient.Patient_Dctm_Sts" == 5)
+                    {
+                        window.open("@Model.edmsLink" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie");
+                    }
+                }
+            }
+        }
+    </script>
+}
