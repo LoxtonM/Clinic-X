@@ -43,8 +43,8 @@
     }
     <div class="row mb-5 g-2 mt-2">
         <div>
-            @if (Model.staffMember.BILL_ID == "Technical")
-            {
+            @*@if (Model.staffMember.BILL_ID == "Technical")
+            {*@
                 @if (Model.isPhenotipsAvailable)
                 {
                     if(Model.isPatientInPhenotips)
@@ -99,7 +99,7 @@
                         <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
                     }
                 }
-            }
+            @*}*@
         </div>        
     </div>
 
