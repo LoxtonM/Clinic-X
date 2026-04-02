@@ -224,6 +224,20 @@
                 </div>
             </div>
 
+            @*
+            <div class="row mb-5">
+                <div class="col-md-2">
+                    <label for="ddlClockStop" id="lblClockStop">Clock Stop:</label>
+                </div>
+                <div class="col-md-4">
+                    <select asp-for=@Model.activityDetails.ClockStop id="ddlClockStop" name="isClockStop" class="w-100">
+                        <option value="" selected></option>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>                   
+                </div>                
+            </div>
+            *@
         </form>
         @*<div class="row mb-5 g-5">*@
         <div class="d-grid mb-5">
@@ -422,6 +436,7 @@
             <form id="DictatedLetterApproval" asp-action="Approve">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
                 <input id="txtCloseReferral" name="isCloseReferral" hidden />
+                <input id="txtClockStop" name="isClockStop" hidden />
                 <input type="button" class="btn btn-default btn-outline-success" value="Approve" id="btnApprove" hidden />
             </form>
             <form id="DictatedLetterUnapproval" asp-action="Unapprove">
@@ -431,8 +446,7 @@
             </div>
         </div>
 
-        <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden>
-            <div class="col-md-2"></div>
+        <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden>            
             <div class="col-md-3">
                 <label>Do you want to close the referral?</label>
             </div>
@@ -445,7 +459,15 @@
             <div class="col-md-1">
                 <button type="button" class="btn btn-default btn-primary" id="btnCancel" onclick="ApproveLetter(-1)">Cancel</button>
             </div>
-            <div class="col-md-4"></div>            
+            <div class="col-md-2">
+                <label>Stop the clock:</label>
+            </div>
+            <div class="col-md-2">
+                <select asp-for=@Model.activityDetails.ClockStop id="ddlClockStop" name="isClockStop" class="w-100">  @*for some reason I can't set the EventListener below!!!*@                  
+                    <option value="True">Yes</option>
+                    <option value="False" selected>No</option>
+                </select>
+            </div>
         </div>
     </div>
 </div>
@@ -472,7 +494,8 @@
     //document.getElementById("btnAddCC").addEventListener("click", AddCC);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     document.getElementById("btnPreview2").addEventListener("click", DoPreview); //because we can't have two buttons that do the same thing, oh no.
-    //document.getElementById("btnSearch").addEventListener("click", ClinicianSearch);
+    //document.getElementById("btnSearch").addEventListener("click", ClinicianSearch);    
+    document.getElementById("ddlClockStop").addEventListener("change", SetClockStop);
     window.addEventListener("load", LoadLetter);
     window.addEventListener("load", LoadEDMSLink);
 
@@ -521,8 +544,7 @@
         const choices = new Choices('#ddlCC');
 
         // when you want to hide:
-        document.querySelector('#ddlCC').closest('.choices').style.display = 'none';
-
+        document.querySelector('#ddlCC').closest('.choices').style.display = 'none';        
 
         LoadEDMSLink(); //link to GEMR
     }
@@ -547,8 +569,7 @@
     }
 
     function ApproveLetter(closeReferral)
-    {
-        
+    {        
         if (closeReferral == 1) 
         {            
             document.getElementById("txtCloseReferral").value = "true";
@@ -1037,6 +1058,11 @@
                 SaveLetter();
             }            
         //}
+    }
+
+    function SetClockStop()
+    {
+        document.getElementById("txtClockStop").value = document.getElementById("ddlClockStop").value;
     }
 
 </script>
