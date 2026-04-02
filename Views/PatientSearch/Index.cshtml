@@ -7,29 +7,40 @@
 
 
 <div class="container card">
-    <div class="row mb-5 mt-2 g-2">
+    <div class="row mb-5 mt-2">
         <form id="PatientSearch" asp-action="Index">
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <label class="w-100">CGU/File Number:</label>
+            <div class="row mb-2 g-2">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label class="w-100">CGU/File Number:</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input id="cguSearch" class="w-100" type="text" name="cguNo" asp-for=@Model.cguNumberSearch />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="w-100">Forename:</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input id="forenameSearch" class="w-100" type="text" name="firstname" asp-for=@Model.forenameSearch />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="w-100">Surname:</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input id="surnameSearch" class="w-100" type="text" name="lastname" asp-for=@Model.surnameSearch />
+                    </div>                
                 </div>
-                <div class="col-md-2">
-                    <input id="cguSearch" class="w-100" type="text" name="cguNo" asp-for=@Model.cguNumberSearch />
+                <div class="row">
+                    <div class="col-md-2">
+                        <label class="w-100">This CGU number only:</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="checkbox" id="chkLimitCGU" />
+                        <input id="txtLimitCGU" type="text" name="isLimitCGUNumber" hidden />
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <label class="w-100">Forename:</label>
-                </div>
-                <div class="col-md-2">
-                    <input id="forenameSearch" class="w-100" type="text" name="firstname" asp-for=@Model.forenameSearch />
-                </div>
-                <div class="col-md-2">
-                    <label class="w-100">Surname:</label>
-                </div>
-                <div class="col-md-2">
-                    <input id="surnameSearch" class="w-100" type="text" name="lastname" asp-for=@Model.surnameSearch />
-                </div>
-                
             </div>
+
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
                     <label>Date of Birth</label>
@@ -124,6 +135,9 @@
 </div>
 
 <script>
+
+    document.getElementById("chkLimitCGU").addEventListener("change", SetLimitCGUNo);
+
     function ClearForm() 
     {
         document.getElementById("cguSearch").value = null;
@@ -135,5 +149,10 @@
         document.getElementById("emailSearch").value = null;
 
         document.getElementById("PatientSearch").submit();
+    }
+
+    function SetLimitCGUNo()
+    {
+        document.getElementById("txtLimitCGU").value = document.getElementById("chkLimitCGU").checked;
     }
 </script>

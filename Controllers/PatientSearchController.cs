@@ -28,7 +28,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob, string? telNo, string? email)
+        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob, string? telNo, string? email, bool? isLimitCGUNumber = false)
         {
             try
             {
@@ -46,6 +46,11 @@ namespace ClinicX.Controllers
                         if (cguNo != ".") //to stop searching everything by looking for "."
                         {
                             _pvm.patientsList = await _patientSearchData.GetPatientsListByCGUNo(cguNo);
+
+                            if(isLimitCGUNumber.GetValueOrDefault())
+                            {
+                                _pvm.patientsList = _pvm.patientsList.Where(p => p.CGU_No == cguNo).ToList();
+                            }
                         }
                         searchTerm = "CGU_No=" + cguNo;
                         _pvm.cguNumberSearch = cguNo;

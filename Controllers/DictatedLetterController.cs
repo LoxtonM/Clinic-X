@@ -440,7 +440,8 @@ namespace ClinicX.Controllers
             try
             {
                 _lvm.patientDetails = await _patientData.GetPatientDetails(id);
-                _lvm.activities = await _activityData.GetActivityList(id);
+                var activities = await _activityData.GetActivityList(id);
+                _lvm.activities = activities.OrderByDescending(a => a.DATE_SCHEDULED).ToList();
                 
                 return View(_lvm);
             }

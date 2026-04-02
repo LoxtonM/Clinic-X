@@ -30,24 +30,50 @@ namespace ClinicX.Controllers
 
 
         [Authorize]
-        public async Task<IActionResult> LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob)
+        public async Task<IActionResult> LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob, string? labNo)
         {
             var user = await _staff.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = user.STAFF_CODE;
             IPAddressFinder _ip = new IPAddressFinder(HttpContext);
             _audit.CreateUsageAuditEntry(staffCode, "ClinicX - LabReports", "", _ip.GetIPAddress());
 
-            _lvm.patientsList = new List<LabPatient>();
+            var patientsList = new List<LabPatient>();
+
+            if (labNo != null)
+            {
+                if (labNo.Contains("D"))
+                {
+                    var lab = await _labData.GetDNAReport(labNo);
+
+                    if (lab != null)
+                    {
+                        patientsList = await _labData.GetDNAPatientsByLabNo(labNo);
+                    }
+                }
+                else
+                {
+                    var lab = await _labData.GetCytoReport(labNo);
+
+                    if (lab != null)
+                    {
+                        patientsList = await _labData.GetCytoPatientsByLabNo(labNo);
+                    }
+                }
+
+                _lvm.searchTerms = "LabNo:" + labNo;
+            }
 
             if (firstname != null || lastname != null || nhsno != null || postcode != null || dob != null)
             {
-                _lvm.patientsList = await _labData.GetPatients(firstname, lastname, nhsno, postcode, dob);
+                patientsList = await _labData.GetPatients(firstname, lastname, nhsno, postcode, dob);
                 _lvm.searchTerms = "Firstname:" + firstname + ",Lastname:" + lastname + ",NHSNo:" + nhsno + ",Postcode:" + postcode;
                 if(dob != null)
                 {
                     _lvm.searchTerms = _lvm.searchTerms + dob.Value.ToString("yyyy-MM-dd");
                 }
             }
+
+            _lvm.patientsList = patientsList;
 
             return View(_lvm);
         }

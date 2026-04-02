@@ -16,7 +16,7 @@
 
 <div class="container card">   
 
-    <h1>Add new diagnosis for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME)</h1>
+    <h1>Add new diagnosis for @Html.DisplayFor(Model => Model.patient.FIRSTNAME) @Html.DisplayFor(Model => Model.patient.LASTNAME) - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h1>
     <div class="row g-2 mb-5 mt-2">
         <form id="DiseaseSearch">
             <div class="row mb-2 g-2">

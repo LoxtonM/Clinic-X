@@ -390,6 +390,7 @@ namespace ClinicX.Controllers
                 _ivm.leaflets = await _leafletData.GetCancerLeafletsList();
 
                 _ivm.patient = await _patientData.GetPatientDetails(_ivm.icpCancer.MPI);
+                _ivm.referralDetails = await _referralData.GetReferralDetails(_ivm.icpCancer.RefID);
 
                 if (_ivm.icpCancer != null)
                 {
