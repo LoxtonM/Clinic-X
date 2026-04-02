@@ -29,5 +29,8 @@ namespace ClinicX.ViewModels
         public List<Referral> referralsList { get; set; }
         public List<ClinicVenue> venueList { get; set; }
         public List<ActivityType> appTypeList { get; set; }
+        public List<Disease> diseaseList { get; set; }
+        public List<DiseaseStatus> diseaseStatusList { get; set; }
+        public List<Diagnosis> diagnosisList { get; set; }
     }
 }

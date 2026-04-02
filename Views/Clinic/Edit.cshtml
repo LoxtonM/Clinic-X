@@ -200,6 +200,80 @@
             </div>
         </form>
     </div>
+
+    <div class="mb-5">
+        <h4>Diagnoses for Patient</h4>
+        
+        <form id="ContactOutcome" asp-action="AddNewDiseaseCode">
+            @*mpi, diseaseCode, status, comments*@
+            <input name="refID" asp-for=@Model.activityItem.RefID hidden />
+
+            <div class="row">
+                <div class="col-md-2">
+                    <label>Disease code</label>
+                </div>
+                <div class="col-md-2">
+                    <select name="diseaseCode" class="w-100">
+                        <option value="" selected></option>
+                        @foreach(var d in Model.diseaseList)
+                        {
+                            <option value="@d.DISEASE_CODE">@d.DISEASE_CODE - @d.DESCRIPTION</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label>Status</label>
+                </div>
+                <div class="col-md-2">
+                    <select name="status"  class="w-100">
+                        <option value="" selected></option>
+                        @foreach(var d in Model.diseaseStatusList)
+                        {
+                            <option value="@d.DISEASE_STATUS">@d.DISEASE_STATUS</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label>Status</label>
+                </div>
+                <div class="col-md-2">            
+                    <input  class="w-100" name="comments" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-success">Add Diagnosis</button>
+                </div>
+            </div>
+        </form>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var d in Model.diagnosisList)
+                {
+                    <tr>
+                        <td>@d.DISEASE_CODE</td>
+                        <td>@d.DESCRIPTION</td>
+                        <td>@d.STATUS</td>
+                        <td>@d.MAIN_SUB</td>
+                        @*<td><a type="button" class="btn btn-outline-warning" asp-controller="Diagnosis" asp-action="Edit" asp-route-id=@d.ID>Edit</a></td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+    </div
+
 </div>
 
 <script type="text/javascript">

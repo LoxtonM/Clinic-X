@@ -24,10 +24,11 @@ namespace ClinicX.Controllers
         private readonly IOutcomeDataAsync _outcomeData;
         private readonly IClinicVenueDataAsync _clinicVenueData;
         private readonly IActivityTypeDataAsync _activityTypeData;
-
+        private readonly IDiseaseDataAsync _diseaseData;
 
         public ClinicController(IConfiguration config, IPatientDataAsync patientData, IReferralDataAsync referralData, IActivityDataAsync activityData, IStaffUserDataAsync staffUserData,
-            IClinicDataAsync clinicData, ICRUD crud, IAuditService auditService, IOutcomeDataAsync outcomeData, IClinicVenueDataAsync clinicVenueData, IActivityTypeDataAsync activityTypeData)
+            IClinicDataAsync clinicData, ICRUD crud, IAuditService auditService, IOutcomeDataAsync outcomeData, IClinicVenueDataAsync clinicVenueData, IActivityTypeDataAsync activityTypeData, 
+            IDiseaseDataAsync diseaseData)
         {
             //_clinContext = context;
             _config = config;
@@ -42,6 +43,7 @@ namespace ClinicX.Controllers
             _outcomeData = outcomeData;
             _clinicVenueData = clinicVenueData;
             _activityTypeData = activityTypeData;
+            _diseaseData = diseaseData;
         }
 
 
@@ -177,6 +179,10 @@ namespace ClinicX.Controllers
                 int mpi = _cvm.activityItem.MPI;
                 _cvm.patient = await _patientData.GetPatientDetails(mpi);
 
+                _cvm.diseaseList = await _diseaseData.GetDiseaseList();
+                _cvm.diseaseStatusList = await _diseaseData.GetStatusList();
+                _cvm.diagnosisList = await _diseaseData.GetDiseaseListByPatient(mpi);
+
                 return View(_cvm);
             }
             catch (Exception ex)
@@ -292,6 +298,30 @@ namespace ClinicX.Controllers
             }
 
             return RedirectToAction("ApptDetails", new { id = refID });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewDiseaseCode(int refID, string diseaseCode, string status, string comments)
+        {
+            try
+            {
+                if (comments == null) { comments = ""; }
+
+                var activityDetails = await _activityData.GetActivityDetails(refID);
+                
+
+                int success = _crud.CallStoredProcedure("Diagnosis", "Create", activityDetails.MPI, 0, 0, diseaseCode, status, "", comments, User.Identity.Name);
+                //do the update, return 1 if successful and 0 if not
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diagnosis-new(SQL)" }); }
+
+                return RedirectToAction("Edit", "Clinic", new { id = refID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Diagnosis-new" });
+            }
         }
     }
 }
