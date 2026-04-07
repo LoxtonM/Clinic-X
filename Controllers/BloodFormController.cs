@@ -19,10 +19,10 @@ namespace ClinicX.Controllers
         private readonly IBloodFormDataAsync _bloodFormData;
         private readonly IStaffUserDataAsync _staffUser;
         private readonly ITestDataAsync _testData;
-        private readonly IClinicDataAsync _clinicData;
+        //private readonly IClinicDataAsync _clinicData;
         
 
-        public BloodFormController(IConfiguration config, IPatientDataAsync patientData, IBloodFormDataAsync bloodFormData, IStaffUserDataAsync staffUserData, ITestDataAsync testData, IClinicDataAsync clinicData)
+        public BloodFormController(IConfiguration config, IPatientDataAsync patientData, IBloodFormDataAsync bloodFormData, IStaffUserDataAsync staffUserData, ITestDataAsync testData)
         {
             //_clinContext = clinContext;  
             //_cxContext = cxContext;            
@@ -30,7 +30,7 @@ namespace ClinicX.Controllers
             _bloodFormData = bloodFormData;
             _staffUser = staffUserData;
             _testData = testData;
-            _clinicData = clinicData;
+            //_clinicData = clinicData;
         }
 
 
@@ -279,8 +279,9 @@ namespace ClinicX.Controllers
             tf.DrawString("Date of next appointment:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 290, totalLength, 150, 20));
 
             string dtString="N/A";
+            /*
             List<Appointment> apptList = await _clinicData.GetClinicByPatientsList(patient.MPI);
-            apptList = apptList.Where(a => a.Attendance == "NOT RECORDED" && a.BOOKED_DATE > DateTime.Now).OrderBy(a => a.BOOKED_DATE).ToList();
+            apptList = apptList.Where(a => a.Attendance == "NOT RECORDED" && a.BOOKED_DATE >= DateTime.Now).OrderBy(a => a.BOOKED_DATE).ToList();
             //apptList = apptList.Where(a => a.BOOKED_DATE > DateTime.Now).ToList();
             
             
@@ -289,6 +290,12 @@ namespace ClinicX.Controllers
                 Appointment appt = apptList.First();
                 DateTime bookedDate = appt.BOOKED_DATE.GetValueOrDefault();
                 dtString = bookedDate.ToString("dd/MM/yyyy");
+            }
+            */
+
+            if (bloodForm.DateOfNextAppointment != null)
+            {
+                dtString = bloodForm.DateOfNextAppointment.Value.ToString("dd/MM/yyyy");
             }
 
             tf.DrawString(dtString, font, XBrushes.Black, new XRect(pageEdge + 430, totalLength, 150, 20));

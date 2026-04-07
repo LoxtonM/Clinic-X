@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-//using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Models;
 using ClinicX.ViewModels;
 using System.Data;
 using ClinicalXPDataConnections.Meta;
@@ -28,10 +28,11 @@ namespace ClinicX.Controllers
         private readonly ISampleDataAsync _sampleData;
         private readonly IConstantsDataAsync _constantsData;
         private readonly IReferralDataAsync _refData;
+        private readonly IClinicDataAsync _clinicData;
         private readonly BloodFormController _bfc;
 
         public TestController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, ITestDataAsync testData, ICRUD crud, IAuditService audit, IAgeCalculator ageCalculator,
-            IBloodFormDataAsync bloodFormData, ISampleDataAsync sampleData, IConstantsDataAsync constantsData, IReferralDataAsync referralData, BloodFormController bloodFormController)
+            IBloodFormDataAsync bloodFormData, ISampleDataAsync sampleData, IConstantsDataAsync constantsData, IReferralDataAsync referralData, IClinicDataAsync clinicData, BloodFormController bloodFormController)
         {
             //_clinContext = context;
             //_cXContext = cXContext;
@@ -48,6 +49,7 @@ namespace ClinicX.Controllers
             _sampleData = sampleData;
             _constantsData = constantsData;
             _refData = referralData;
+            _clinicData = clinicData;
             _bfc = bloodFormController;
         }
 
@@ -237,6 +239,20 @@ namespace ClinicX.Controllers
             _tvm.patient = await _patientData.GetPatientDetails(_tvm.test.MPI);            
             _tvm.sampleTypes = await _sampleData.GetSampleTypeList();
             _tvm.sampleRequirementList = await _sampleData.GetSampleRequirementsList();
+
+            
+            List<Appointment> apptList = await _clinicData.GetClinicByPatientsList(_tvm.test.MPI);
+            apptList = apptList.Where(a => a.Attendance == "NOT RECORDED" && a.BOOKED_DATE >= DateTime.Now).OrderBy(a => a.BOOKED_DATE).ToList();
+            //apptList = apptList.Where(a => a.BOOKED_DATE > DateTime.Now).ToList();
+            
+            
+            if (apptList.Count > 0)
+            {
+                Appointment appt = apptList.First();
+                DateTime bookedDate = appt.BOOKED_DATE.GetValueOrDefault();
+                _tvm.dateOfNextAppt = bookedDate;
+            }
+            
 
             return View(_tvm);
         }
