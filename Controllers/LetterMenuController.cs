@@ -11,8 +11,8 @@ namespace ClinicX.Controllers
     public class LetterMenuController : Controller
     {
         private readonly IConfiguration _config;
-        //private readonly ClinicalContext _context;
-        //private readonly DocumentContext _documentContext;
+        private readonly ClinicalContext _context;
+        private readonly DocumentContext _documentContext;
         private readonly IDocumentsDataAsync _documentsData;
         private readonly IPatientDataAsync _patientData;
         private readonly IReferralDataAsync _referralData;
@@ -24,11 +24,11 @@ namespace ClinicX.Controllers
         private readonly IExternalClinicianDataAsync _externalClinicianData;
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documentsData, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController letterController, ICRUD crud,
-            IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData)//, ClinicalContext context, DocumentContext documentContext) 
+            IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData, ClinicalContext context, DocumentContext documentContext) 
         {
             _config = config;   
-            //_context = context;
-            //_documentContext = documentContext;
+            _context = context;
+            _documentContext = documentContext;
             _documentsData = documentsData;
             _patientData = patientData;
             _referralData = referralData;
@@ -55,13 +55,15 @@ namespace ClinicX.Controllers
             var clinList = await _externalClinicianData.GetClinicianList();
             var clins = new List<ExternalCliniciansAndFacilities>();
             _lvm.patGP = await _externalClinicianData.GetPatientGPReferrer(_lvm.referral.MPI);
-            clins.Add(_lvm.patGP);
+
+            clins = clinList;            
+            clins.Add(_lvm.patGP);            
+                        
             _lvm.externalClinicians = clins;
+
             _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
             _lvm.breastList = clinList.Where(c => c.POSITION.Contains("Breast") || c.SPECIALITY.Contains("Breast")).ToList();
             _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).ToList();
-
-
 
             _lvm.leaflets = new List<Leaflet>();
             if (_lvm.referral.PATHWAY == "Cancer")

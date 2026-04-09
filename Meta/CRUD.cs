@@ -11,11 +11,10 @@ namespace ClinicX.Meta
 {
     public interface ICRUD
     {
-        public int CallStoredProcedure(string sType, string sOperation, int int1, int int2, int int3,
-            string string1, string string2, string string3, string text, string sLogin,
-            DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
-            int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
-            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "");
+        public int CallStoredProcedure(string sType, string sOperation, int int1, int int2, int int3, string string1, string string2, string string3, string text, string sLogin,
+            DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false, int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", 
+            string? string5 = "", string? string6 = "", float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "", 
+            string? string9 = "", string? string10 = "");
 
         public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, 
             string postCode, string nhsNo);
@@ -42,7 +41,7 @@ namespace ClinicX.Meta
             string string1, string string2, string string3, string text, string sLogin,
             DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
-            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "")
+            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "")
         {   
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); } //set some defaults (because SQL can't take nulls)
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
@@ -91,6 +90,14 @@ namespace ClinicX.Meta
             if (string8 != "")
             {
                 cmd.Parameters.Add("@string8", SqlDbType.VarChar).Value = string8;
+            }
+            if (string9 != "")
+            {
+                cmd.Parameters.Add("@string9", SqlDbType.VarChar).Value = string9;
+            }
+            if (string10 != "")
+            {
+                cmd.Parameters.Add("@string10", SqlDbType.VarChar).Value = string10;
             }
             if (HttpContext != null) //tries to get the hostname (for audit purposes) - if it can't, just use the server name
             {

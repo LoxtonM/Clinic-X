@@ -180,6 +180,11 @@
             outcomeLetters.hidden = false;
         }
         
+        //const choices = new Choices('#ddlExtClinician');
+
+        // when you want to hide:
+        //document.querySelector('#ddlExtClinician').closest('.choices').style.display = 'none';
+
     }
 
     function SetDoccode()
@@ -202,6 +207,7 @@
         var clinNameArray = [];
         var clinDeptArray = [];
 
+        /*
         var i, L = clinList.options.length - 1;
         for(i = L; i >= 0; i--)
         {
@@ -211,7 +217,7 @@
         clinCodeArray.push("@Model.patGP.MasterClinicianCode");
         clinNameArray.push("@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME" );
         clinDeptArray.push("@Model.patGP.FACILITY");
-
+        */
 
         if(!standardLetters.hidden) //because we absolutely CAN FUCKING NOT simply pass the parameter to a function this way, because that would be far too fucking simple!!!!!
         {
@@ -267,13 +273,14 @@
                 @:clinDeptArray.push("@item.FACILITY");
             }
         }
-
-
+                
         if(docCode == "O4" || docCode == "O4am") //because the "LetterTo" is "RD" - but that's "referrer" in every other letter! So... what the actual fuck, CGU_DB??
         {
+            //document.querySelector('#ddlExtClinician').closest('.choices').style.display = '';
             document.getElementById("divExtClinician").hidden = false;
 
-            @foreach (var item in Model.breastList)
+            /*
+            @foreach (var item in Model.externalClinicians)
             {
                 @:clinCodeArray.push("@item.MasterClinicianCode");
                 if (item.POSITION != "Not known")
@@ -285,8 +292,9 @@
                     @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME".replace("&#x27;", "'"));
                 }
                 @:clinDeptArray.push("@item.FACILITY");
-            }
-        }
+            } 
+            */
+        }        
 
         if(recip == "Other")
         {
@@ -307,8 +315,7 @@
             }
         }
 
-
-
+        /*
         for(var j = 0; j < clinCodeArray.length; j++)
         {
             var option = document.createElement('option');
@@ -316,6 +323,7 @@
             option.text = clinNameArray[j] + ", " + clinDeptArray[j].replace("&#x27;", "'").replace("&amp;", "&");
             clinList.add(option, 0);
         }
+        */
     }
 
     function DoPreview()

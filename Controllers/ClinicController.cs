@@ -25,10 +25,11 @@ namespace ClinicX.Controllers
         private readonly IClinicVenueDataAsync _clinicVenueData;
         private readonly IActivityTypeDataAsync _activityTypeData;
         private readonly IDiseaseDataAsync _diseaseData;
+        private readonly IDictatedLetterDataAsync _dictatedLetterData;
 
         public ClinicController(IConfiguration config, IPatientDataAsync patientData, IReferralDataAsync referralData, IActivityDataAsync activityData, IStaffUserDataAsync staffUserData,
             IClinicDataAsync clinicData, ICRUD crud, IAuditService auditService, IOutcomeDataAsync outcomeData, IClinicVenueDataAsync clinicVenueData, IActivityTypeDataAsync activityTypeData, 
-            IDiseaseDataAsync diseaseData)
+            IDiseaseDataAsync diseaseData, IDictatedLetterDataAsync dictatedLetterData)
         {
             //_clinContext = context;
             _config = config;
@@ -44,6 +45,7 @@ namespace ClinicX.Controllers
             _clinicVenueData = clinicVenueData;
             _activityTypeData = activityTypeData;
             _diseaseData = diseaseData;
+            _dictatedLetterData = dictatedLetterData;
         }
 
 
@@ -193,7 +195,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, string? ethnicity, bool? isComplete = false, string? seenBy2="", string? seenBy3="")
+        public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, string? ethnicity, bool? isComplete = false, string? seenBy2="", string? seenBy3="")
         {
             try
             {
@@ -222,7 +224,20 @@ namespace ClinicX.Controllers
                     int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "",
                     "", "", User.Identity.Name);
 
-                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.",formName = "Clinic-edit(SQL)" }); }
+                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.",formName = "Clinic-createDOT(SQL)" }); }
+
+                    string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);                    
+
+                    List<DictatedLetter> dotList = await _dictatedLetterData.GetDictatedLettersList(staffCode);
+                    dotList = dotList.Where(l => l.RefID == refID).OrderByDescending(l => l.CreatedDate).ToList();
+                    DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
+                    int dID = dot.DoTID;
+                    var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);
+                    int mpi = letter.MPI.GetValueOrDefault(); //because clearly we can't do it in one line, that would be way too fucking convenient!!!
+
+                    int success3 = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
+
+                    if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-addFMtoDOT(SQL)" }); }
                 }
 
                 return RedirectToAction("ApptDetails", new { id = refID });                
@@ -256,12 +271,14 @@ namespace ClinicX.Controllers
             int refID = 0;
 
             if (venue == null) { venue = ""; }
+            if (message == null) { message = ""; }
             if (clinician1 == null) { clinician1 = _staffUser.GetStaffMemberDetails(User.Identity.Name).Result.STAFF_CODE; }
             if (noPatientsSeen == null) { noPatientsSeen = 1; }
+            if (timeSpent != null) { counseled = "Attended"; }
 
             DateTime bookedTimeEdited = DateTime.Parse("1900-01-01 " + bookedTime.Hour + ":" + bookedTime.Minute + ":" + bookedTime.Second);
 
-            int success = _crud.CallStoredProcedure("Contact", "Create", mpi, linkedRefID, timeSpent.GetValueOrDefault(), appType, venue, clinician1, "", User.Identity.Name,
+            int success = _crud.CallStoredProcedure("Contact", "Create", mpi, linkedRefID, timeSpent.GetValueOrDefault(), appType, venue, clinician1, message, User.Identity.Name,
                 bookedDate, bookedTimeEdited, isClockStop, false, noPatientsSeen, 0, 0, clinician2, clinician3, letterReq, 0, 0, 0, 0, 0, counseled);
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-create(SQL)" }); }
@@ -274,7 +291,7 @@ namespace ClinicX.Controllers
             if (appType == "Tel. Admin")
             {
                 Patient patient = await _patientData.GetPatientDetails(mpi);
-                string emailSubject = $"{patient.CGU_No} - {patient.FIRSTNAME} {patient.LASTNAME} - {urgency} Telephone Message";
+                string emailSubject = $"{patient.CGU_No} - {patient.FIRSTNAME} {patient.LASTNAME} - {urgency} Telephone Message"; //create the email
 
                 string emailMessage = $"Caller - {callersName}%0D%0A%0D%0A" +
                     $"Organisation - {callersOrg}%0D%0A%0D%0A" +
@@ -282,17 +299,15 @@ namespace ClinicX.Controllers
                 message;
 
                 string emailBodyText = "";
-                bool isHidden = true;
+                bool isHidden = !isAddAsNote.GetValueOrDefault();
 
-                if (isAddAsNote.GetValueOrDefault())
+                if (!isHidden) //if "don't create as note", generate the note but mark it as "hidden"
                 {
                     emailBodyText = "A copy of this message has already been queued for creation in EDMS%0D%0A%0D%0A";
-                    isHidden = false;
+                    emailBodyText = emailBodyText + emailMessage;                    
                 }
 
-                _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", emailBodyText, User.Identity.Name, null, null, isHidden);
-
-                emailBodyText = emailBodyText + emailMessage;
+                _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, "Admin", "", "", emailBodyText, User.Identity.Name, null, null, isHidden);  //create straight into edms              
 
                 return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
             }

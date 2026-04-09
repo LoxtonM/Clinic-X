@@ -40,7 +40,7 @@
     <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
         <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
     </h1>
-
+    @*
     <h2 id="lblLetterRe">Re: @if(Model.dictatedLettersPatients.Count > 0)
         {
             @Html.ValueFor(model => model.dictatedLetters.LetterRe)        
@@ -50,7 +50,7 @@
             <p>(add patients via the "Patients" list below) - @Html.ValueFor(model => model.dictatedLetters.LetterRe)</p>
         }
     </h2>
-
+    *@
     <div class="container mb-5">
         <form id="Preview" asp-action="PreviewDOT">
             <div class="row mb-5 g-5">
@@ -74,8 +74,18 @@
                 <textarea rows="8" cols="40" id="txtCCAddress" name="ccAddress"></textarea>
                 <input id="txtPreview" name="doPreview" />
             </div>
+                        
+            <div class="row mb-5 g-5">
+                <div class="col-md-2 text-right">
+                    <label>Re:</label>
+                </div>
+                <div class="col-md-8">
+                    <textarea rows="2" cols="100" name="letterRe" id="txtLetterRe" class="w-100" asp-for=@Model.dictatedLetters.LetterRe></textarea>
+                </div>
+            </div>
 
-            <div class="row mb-5 g-5">                
+            <div> 
+
                 <div class="row">
                     <div class="col-md-2"></div>
                     <div class="col-md-1">
@@ -99,6 +109,7 @@
                             }
                             <option value="GP">GP</option>
                             <option value="Other">Other</option>
+                            <option value="TWIMC">To Whom it May Concern</option>
                         </select>                    
 
                         <select class="w-100" id="ddlLetterToType" hidden>                            
@@ -648,6 +659,16 @@
         var sAddress = "";   
         
         _salut.value = "";
+
+        if(sLetterTo == "TWIMC")
+        {
+            sName = "To whom it may concern";
+            sAddress = "";
+            letterToCode.value = "TWIMC";
+
+            _salut.value = "To whom it may concern";
+        }
+
 
         if (sLetterTo == "Patient") 
         {   

@@ -153,7 +153,7 @@ public class VHRController : Controller
             vhrTf.DrawString(content1, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 80));
             content2 = "NHS No: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine +
                     "DOB: " + _lvm.patient.DOB.Value.ToString("dd/MM/yyyy") + Environment.NewLine + Environment.NewLine +
-                    "Home number: " + _lvm.patient.TEL;
+                    "Home number: " + _lvm.patient.PtTelMobile;
 
                         
             vhrTf.DrawString(content2, fontSmall, XBrushes.Black, new XRect(310, totalLengthVHR, 500, 80));

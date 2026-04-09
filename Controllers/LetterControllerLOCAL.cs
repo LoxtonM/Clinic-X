@@ -424,6 +424,7 @@ namespace ClinicalXPDataConnections.Meta
                     var hospital = _externalFacilityData.GetFacilityDetails(clinician.FACILITY);
                     salutation = clinician.TITLE + " " + clinician.FIRST_NAME + " " + clinician.NAME;
                     address = salutation + Environment.NewLine;
+                    address += hospital.NAME + Environment.NewLine;
                     address += hospital.ADDRESS + Environment.NewLine;
                     address += hospital.CITY + Environment.NewLine;
                     address += hospital.STATE + Environment.NewLine;

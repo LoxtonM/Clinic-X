@@ -18,7 +18,7 @@ namespace ClinicX.Controllers
         //private readonly ClinicXContext _cXContext;
         //private readonly DocumentContext _docContext;
         private readonly ICPVM _ivm;
-        private readonly ClinicalXPDataConnections.Meta.LetterController _lc;
+        private readonly LetterController _lc;
         private readonly IConfiguration _config;
         private readonly IStaffUserDataAsync _staffUser;
         private readonly IPathwayDataAsync _pathwayData;
