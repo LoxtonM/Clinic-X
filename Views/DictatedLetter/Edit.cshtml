@@ -1051,17 +1051,17 @@
 
     function DoPreview()
     {        
+        
         //if (CheckFormValid())
         //{
             //document.getElementById("Preview").submit();
             var isPreviewValid = 1;
 
-            if(document.getElementById("lblLetterRe").innerHTML.match("add patients via the"))
+            if(document.getElementById("txtLetterRe").innerHTML.match("add patients via the"))
             {
                 window.alert("Please specify a patient before previewing the letter.");
                 isPreviewValid = 0;
             }
-
             if (document.getElementById("txtLetterContent").value == "")
             {
                 window.alert("Please enter some text before previewing the letter.");
@@ -1072,7 +1072,6 @@
                 window.alert("Please choose a recipient before previewing the letter.")
                 isPreviewValid = 0;
             }
-
             if(isPreviewValid == 1)
             {
                 document.getElementById("txtPreview").value = "true";

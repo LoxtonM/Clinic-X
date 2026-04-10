@@ -96,7 +96,7 @@ namespace ClinicX.Controllers
                 _ivm.triages = triages.OrderBy(t => t.RefDate).ToList();
                 var icpCancerList = await _triageData.GetCancerICPList(User.Identity.Name);
                 _ivm.icpCancerListOwn = icpCancerList.Where(r => r.GC_CODE == _ivm.staffCode).ToList();
-                _ivm.icpCancerListOther = icpCancerList.Where(r => r.ToBeReviewedby == User.Identity.Name.ToUpper() && r.FinalReviewed == null).ToList();
+                _ivm.icpCancerListOther = icpCancerList.Where(r => r.ToBeReviewedby.ToUpper() == User.Identity.Name.ToUpper() && r.FinalReviewed == null).ToList();
                 
                 return View(_ivm);
             }
