@@ -120,6 +120,20 @@
                             }
                         </select>
 
+                        <select class="w-100" id="ddlRelsTo" hidden>
+                            @if (Model.relativesList.Count > 0)
+                            {
+                                <option value="">Select...</option>
+                                @foreach (var item in Model.relativesList)
+                                {
+                                    <option value=@item.MPI>@item.CGU_No - @item.Title @item.FIRSTNAME @item.LASTNAME</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="">No relatives to display</option>
+                            }
+                        </select>
 
                         <select class="w-100" id="ddlLetterToClinician" hidden>
 
@@ -502,6 +516,7 @@
     //document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
     document.getElementById("ddlCC").addEventListener("change", SetCCClinician);
     document.getElementById("ddlRels").addEventListener("change", SetCCRelative);
+    document.getElementById("ddlRelsTo").addEventListener("change", SetRelativeTo);
     //document.getElementById("btnAddCC").addEventListener("click", AddCC);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     document.getElementById("btnPreview2").addEventListener("click", DoPreview); //because we can't have two buttons that do the same thing, oh no.
@@ -718,7 +733,63 @@
             document.getElementById("ddlLetterToType").hidden = true;
             document.getElementById("txtLetterTo").value = sName.replaceAll(/&#x27;/g, "'") + "\n" + sAddress.replaceAll(/&amp;/g, "&").replaceAll(/&#xD;&#xA;/g, "\n").replaceAll(/&#x27;/g, "'").replaceAll(/&#x9;/g, "");
             document.getElementById("txtisAddressChanged").value = "true";
-        }        
+        }
+        
+        if(sLetterTo == "Relative")
+        {            
+            document.getElementById("ddlRelsTo").hidden = false;
+        }
+        else
+        {
+            document.getElementById("ddlRelsTo").hidden = true;
+        }
+    }
+
+    function SetRelativeTo()
+    {
+        document.getElementById("txtSalutation").value = "";
+        document.getElementById("txtLetterTo").value = "";
+
+        if(document.getElementById("ddlRelsTo").value != "")
+        {
+            document.getElementById("txtSalutation").value = "Dear Relative";
+
+            var rel = document.getElementById("ddlRelsTo").value;
+            var sName = "Nobody";
+            var sAddress = "Nowhere";
+
+            var nameArray = [];
+            var mpiArray = [];
+            var address1Array = [];
+            var address2Array = [];
+            var address3Array = [];
+            var address4Array = [];
+            var postcodeArray = [];
+
+            @foreach (var item in Model.relativesList)
+            {
+                @:mpiArray.push("@item.MPI");
+                @:nameArray.push("@item.PtLetterAddressee");
+                @:address1Array.push("@item.ADDRESS1");
+                @:address2Array.push("@item.ADDRESS2");
+                @:address3Array.push("@item.ADDRESS3");
+                @:address4Array.push("@item.ADDRESS4");
+                @:postcodeArray.push("@item.POSTCODE");
+            }
+
+            for (var k = 0; k < mpiArray.length; k++)
+            {
+                var mpiToTest = mpiArray[k];
+                if (mpiToTest == rel)
+                {
+                    sName = nameArray[k];
+                    sAddress = address1Array[k] + "\n" + address2Array[k] + "\n" + address3Array[k] + "\n" + address4Array[k] + "\n" + postcodeArray[k];
+                }
+            }
+
+            document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replaceAll(/&#x27;/g, "'").replaceAll(/&amp;/g, "&").replaceAll(/&#xD;&#xA;/g, "\n").replaceAll(/&#x27;/g, "'").replaceAll(/&#x9;/g, "")
+
+        }
     }
 
     function ShowLetterToClinician()
