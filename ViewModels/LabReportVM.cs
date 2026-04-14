@@ -15,5 +15,11 @@ namespace ClinicX.ViewModels
         public List<LabLab> cytoReportsList { get; set; }
         public LabDNAReport dnaReportDetails { get; set; }
         public string? searchTerms { get; set; }
+        public string? firstnameSearch { get; set; }
+        public string? lastnameSearch { get; set; }
+        public DateTime? dobSearch { get; set; }
+        public string? nhsnoSearch { get; set; }
+        public string? postcodeSearch { get; set; }
+        public string? labNoSearch { get; set; }
     }
 }

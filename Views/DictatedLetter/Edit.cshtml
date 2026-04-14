@@ -1060,11 +1060,13 @@
             window.alert("Oi! Stop trying to inject SQL code into my form!");
             return 0;
         }
+        /*
         if (document.getElementById("txtLetterContentBold").value == "") 
         {
             window.alert("Please enter a summary.")        
             return 0;
-        }        
+        } 
+        */
         if (document.getElementById("txtLetterContent").value == "")
         { 
             window.alert("Please enter some text.")
@@ -1101,11 +1103,20 @@
             return 0;
         }
 
+        /*
         if(document.getElementById("lblLetterRe").innerHTML.match("add patients via the"))
         {
             window.alert("Please specify a patient.");
             return 0;
-        }        
+        } 
+        */
+
+       if(document.getElementById("txtLetterRe").value = "")
+       {
+           window.alert("Please specify a patient.");
+            return 0;
+       }
+
 
         return 1;
     }

@@ -16,6 +16,7 @@
         Html.ActionLink("Reviews", "ReviewsForPatient", "Review", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
         Html.ActionLink("Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("New Dictated Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        @*Html.ActionLink("New Standard Letter", "Index", "LetterMenu", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
         Html.ActionLink("Cancer Risks", "Index", "RiskAndSurveillance", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
         Html.ActionLink("Patient Documents", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPatientDocuments", target="_blank" }),

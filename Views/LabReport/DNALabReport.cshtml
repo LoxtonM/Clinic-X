@@ -4,18 +4,14 @@
 }
 
 <div class="container">
-    
-    <h1>Report details for @Model.dnaReportDetails.LABNO</h1>
+    <div class="row mb-5 g-5">
+        <h1>Report details for @Model.dnaReportDetails.LABNO</h1>
+    </div>
     
     @if (@Model.dnaReportDetails.REPORT_STATUS == "Final")
     {
         <div class="row mb-5 g-5">
-            <div class="col-md-1">
-                <label>Summary:</label>
-            </div>
-            <div class="col-md-10">
-                <p>@Model.dnaReportDetails.SUMMARY</p>
-            </div>
+            <h3>@Model.dnaReportDetails.SUMMARY</h3>            
         </div>
 
         <div class="row mb-5 g-5">
@@ -37,7 +33,7 @@
     }
     else
     {
-        <h1 class="redtext">This report is not finalised.</h1>
+        <h3 class="redtext">This report is not finalised.</h3>
     }
 
     <div class="row mb-5 g-5">

@@ -213,14 +213,14 @@
             document.getElementById("txtDateRec").value = today.toISOString().split('T')[0];
         }
 
-        if(document.getElementById("ddlResultGiven").value == "Yes")
-        {            
+        //if(document.getElementById("ddlResultGiven").value == "Yes")
+        //{            
             document.getElementById("ddlComplete").value = "-1";
-        }
-        else
-        {
-            window.alert("You have not given the result to the patient yet.");
-        }
+        //}
+        //else
+        //{
+          //  window.alert("You have not given the result to the patient yet.");
+        //}
     }
 
     function LoadTestData()   
@@ -271,11 +271,13 @@
 
     function CheckFormValid() 
     {   
+        /*
         if(document.getElementById("txtDateGib").value == "" && document.getElementById("ddlComplete").value == -1)
         {
             window.alert("You haven't given the result to the patient yet!");
             return 0;
         }
+        */ //apparently it's necessary to complete without giving the result to the patient, so this validation is no longer required
         
         //gotta protect against those SQL injections!
         if (document.getElementById("txtComments").value.match(/};.*/) || document.getElementById("txtResult").value.match(/};.*/)) 

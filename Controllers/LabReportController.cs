@@ -61,6 +61,7 @@ namespace ClinicX.Controllers
                 }
 
                 _lvm.searchTerms = "LabNo:" + labNo;
+                _lvm.labNoSearch = labNo;
             }
 
             if (firstname != null || lastname != null || nhsno != null || postcode != null || dob != null)
@@ -71,10 +72,16 @@ namespace ClinicX.Controllers
                 {
                     _lvm.searchTerms = _lvm.searchTerms + dob.Value.ToString("yyyy-MM-dd");
                 }
+
+                
+                _lvm.firstnameSearch = firstname;
+                _lvm.lastnameSearch = lastname;
+                _lvm.nhsnoSearch = nhsno;
+                _lvm.postcodeSearch = postcode;
+                _lvm.dobSearch = dob;
             }
 
-            _lvm.patientsList = patientsList;
-
+            _lvm.patientsList = patientsList.OrderBy(p => p.LASTNAME).ToList();
             return View(_lvm);
         }
 

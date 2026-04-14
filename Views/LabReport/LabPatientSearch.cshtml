@@ -11,13 +11,13 @@
                 <label>First name:</label>
             </div>
             <div class="col-md-2">
-                <input name="firstname" />
+                <input name="firstname" asp-for=@Model.firstnameSearch />
             </div>
             <div class="col-md-2">
                 <label>Last name:</label>
             </div>
             <div class="col-md-2">
-                <input name="lastname" />
+                <input name="lastname" asp-for=@Model.lastnameSearch />
             </div>
         </div>
 
@@ -27,13 +27,13 @@
             </div>
         
             <div class="col-md-2">
-                <input type="date" name="dob" />
+                <input type="date" name="dob" asp-for=@Model.dobSearch />
             </div>
             <div class="col-md-2">
                 <label>Postcode:</label>
             </div>
             <div class="col-md-2">
-                <input name="postcode" />
+                <input name="postcode" asp-for=@Model.postcodeSearch />
             </div>
         </div>
         <div class="row mb-5 g-5">            
@@ -41,13 +41,13 @@
                 <label>NHS No:</label>
             </div>
             <div class="col-md-2">
-                <input name="nhsno" />
+                <input name="nhsno" asp-for=@Model.nhsnoSearch />
             </div>
             <div class="col-md-2">
                 <label>Lab Number:</label>
             </div>
             <div class="col-md-2">
-                <input name="labNo" />
+                <input name="labNo" asp-for=@Model.labNoSearch />
             </div>
         </div>
 

@@ -315,7 +315,9 @@
         var today = new Date();
         var clinicDate = document.getElementById("txtBookedDate");
 
-        if(document.getElementById("ddlAppType").value == "Tel. Admin")
+        if(document.getElementById("ddlAppType").value == "Tel. Admin" || document.getElementById("ddlAppType").value == "Tel. Consultation" || 
+        document.getElementById("ddlAppType").value == "Advice and Guidance" || document.getElementById("ddlAppType").value == "Review - Patient not" ||
+        document.getElementById("ddlAppType").value == "Tel. Non.Patient" || document.getElementById("ddlAppType").value == "Tel. Results")
         {           
             clinicDate.value = today.toISOString().slice(0,10);
             document.getElementById("ContactDetails").hidden = true;

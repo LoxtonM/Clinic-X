@@ -20,7 +20,7 @@
 
 <div class="container card">   
 
-    <h1>ICP Details for @Model.triage.CGU_No</h1>
+    <h1>ICP Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.triage.CGU_No</a></h1>
 
     <div class="container">
         <dl class="row">
@@ -51,6 +51,12 @@
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.triage.Name)
+            </dd>
+            <dt class="col-sm-2">
+                NHS Number:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.patient.SOCIAL_SECURITY)
             </dd>
             <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.patient.DOB):
