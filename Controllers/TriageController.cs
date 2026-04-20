@@ -43,12 +43,13 @@ namespace ClinicX.Controllers
         private readonly IConstantsDataAsync _constantsData;
         private readonly IStaffOptionsDataAsync _staffOptionsData;
         private readonly ISocialServicePathwayDataAsync _socialServicePathwayData;
+        private readonly IDictatedLetterDataAsync _dictatedLetterData;
 
         public TriageController(IConfiguration config, IStaffUserDataAsync staffUserData, IPathwayDataAsync pathwayData, IPriorityDataAsync priorityData, IReferralDataAsync referralData, ITriageDataAsync triageData,
             IICPActionDataAsync iCPActionData, IRiskDataAsync riskData, ISurveillanceDataAsync surveillanceData, ITestEligibilityDataAsync testEligibilityData, IDiaryDataAsync diaryData, IRelativeDataAsync relativeData,
             ICancerRequestDataAsync cancerRequestData, IExternalClinicianDataAsync externalClinicianData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IDocumentsDataAsync documentsData, ICRUD crud, 
             LetterController letterController, IAuditService auditService, IAgeCalculator ageCalculator, IPatientDataAsync patientData, ILeafletDataAsync leafletData, IConstantsDataAsync constantsData,
-            IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData)//, ClinicalContext clinContext)
+            IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData, IDictatedLetterDataAsync dictatedLetterData)//, ClinicalContext clinContext)
         {
             //_clinContext = clinContext;
             //_cXContext = cXContext;
@@ -79,6 +80,7 @@ namespace ClinicX.Controllers
             _staffOptionsData = staffOptionsData;
             _lc = letterController;
             _socialServicePathwayData = socialServicePathwayData;
+            _dictatedLetterData = dictatedLetterData;
             //LetterController _lc = new LetterController(_clinContext, _docContext);
         }
 
@@ -96,6 +98,7 @@ namespace ClinicX.Controllers
                 _ivm.triages = triages.OrderBy(t => t.RefDate).ToList();
                 var icpCancerList = await _triageData.GetCancerICPList(User.Identity.Name);
                 _ivm.icpCancerListOwn = icpCancerList.Where(r => r.GC_CODE == _ivm.staffCode).ToList();
+                icpCancerList = icpCancerList.Where(r => r.ToBeReviewedby != null).ToList(); //because it keeps throwing a hissy fit!!
                 _ivm.icpCancerListOther = icpCancerList.Where(r => r.ToBeReviewedby.ToUpper() == User.Identity.Name.ToUpper() && r.FinalReviewed == null).ToList();
                 
                 return View(_ivm);
@@ -284,9 +287,18 @@ namespace ClinicX.Controllers
 
                 if (tp2 == 6) //Dictate letter
                 { 
-                    int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "", "", "", User.Identity.Name);
+                    int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "ICP Draft", "", "", "", User.Identity.Name);
 
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-createLetter(SQL)" }); }
+
+                    List<DictatedLetter> dotList = await _dictatedLetterData.GetDictatedLettersList(staffmember.STAFF_CODE);
+                    dotList = dotList.Where(l => l.RefID == refID).OrderByDescending(l => l.CreatedDate).ToList();
+                    DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
+                    int dID = dot.DoTID;
+
+                    int success3 = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
+
+                    if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-addFMtoDOT(SQL)" }); }
                 }
 
                 if (tp2 == 7) //Reject letter

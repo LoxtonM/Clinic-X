@@ -252,9 +252,13 @@ namespace ClinicX.Controllers
                 DateTime bookedDate = appt.BOOKED_DATE.GetValueOrDefault();
                 _tvm.dateOfNextAppt = bookedDate;
             }
-            
+            else
+            {
+                _tvm.dateOfNextAppt = null;
+            }
 
-            return View(_tvm);
+
+                return View(_tvm);
         }
 
         [HttpPost]

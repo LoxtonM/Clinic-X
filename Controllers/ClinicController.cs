@@ -51,7 +51,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Index(DateTime? pastFilterDate, bool? isShowOutstanding, DateTime? futureFilterDate)
+        public async Task<IActionResult> Index(DateTime? pastFilterDate, bool? isShowAll, DateTime? futureFilterDate)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace ClinicX.Controllers
                 _cvm.currentClinicsList = clinicListAll.Where(c => c.BOOKED_DATE == DateTime.Today).ToList();
                 _cvm.futureClinicsList = clinicListAll.Where(c => c.BOOKED_DATE > DateTime.Today).ToList();
 
-                if (isShowOutstanding.GetValueOrDefault())
+                if (!isShowAll.GetValueOrDefault())
                 {
                     _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.Attendance == "NOT RECORDED").ToList();
                 }
@@ -87,7 +87,7 @@ namespace ClinicX.Controllers
                 _cvm.futureClinicsList = _cvm.futureClinicsList.Where(c => c.BOOKED_DATE <= futureFilterDate).OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
                 _cvm.pastClinicFilterDate = pastFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
                 _cvm.futureClinicFilterDate = futureFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
-                _cvm.isClinicOutstanding = isShowOutstanding.GetValueOrDefault();
+                _cvm.isShowAll = isShowAll.GetValueOrDefault();
 
                 return View(_cvm);               
             }
@@ -195,7 +195,8 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, string? ethnicity, bool? isComplete = false, string? seenBy2="", string? seenBy3="")
+        public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, string? ethnicity,
+            string? diseaseCode, string? status, string? comments, bool? isComplete = false, string? seenBy2="", string? seenBy3="")
         {
             try
             {
@@ -213,6 +214,9 @@ namespace ClinicX.Controllers
 
                 if (ethnicity == null) { ethnicity = ""; }
                 
+                var activity = await _activityData.GetActivityDetails(refID); //because we need the MPI for the diagnosis update, and we don't want to have to pass it through the form
+                int mpi = activity.MPI;
+
                 int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
                     letterRequired, ethnicity, User.Identity.Name, arrivalTime, null, isClockStop, isComplete, 0,0,0,seenBy2,seenBy3);
                 //do the update, return 1 if successful and 0 if not
@@ -221,8 +225,7 @@ namespace ClinicX.Controllers
 
                 if (letterRequired != "No")
                 {
-                    int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "",
-                    "", "", User.Identity.Name);
+                    int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "Post Clinic Draft", "", "", "", User.Identity.Name);
 
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.",formName = "Clinic-createDOT(SQL)" }); }
 
@@ -233,11 +236,18 @@ namespace ClinicX.Controllers
                     DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
                     int dID = dot.DoTID;
                     var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);
-                    int mpi = letter.MPI.GetValueOrDefault(); //because clearly we can't do it in one line, that would be way too fucking convenient!!!
+                    //int mpi = letter.MPI.GetValueOrDefault(); //because clearly we can't do it in one line, that would be way too fucking convenient!!!
 
                     int success3 = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
 
                     if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-addFMtoDOT(SQL)" }); }
+                }
+
+                if(diseaseCode != null && status != null)
+                {
+                    int success4 = _crud.CallStoredProcedure("Diagnosis", "Create", mpi, refID, 0, diseaseCode, status, "", comments, User.Identity.Name);
+                 
+                    if (success4 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-addDisease(SQL)" }); }
                 }
 
                 return RedirectToAction("ApptDetails", new { id = refID });                

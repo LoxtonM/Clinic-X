@@ -282,7 +282,7 @@ namespace ClinicX.Controllers
                 var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);
                 int mpi = letter.MPI.GetValueOrDefault(); //because clearly we can't do it in one line, that would be way too fucking convenient!!!
 
-                int success2 = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
+                int success2 = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "Draft", "", "", "", User.Identity.Name); //add the patient to the DOT
 
                 if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addPt(SQL)" }); }
 

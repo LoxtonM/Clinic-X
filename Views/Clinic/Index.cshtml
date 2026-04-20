@@ -127,13 +127,13 @@
                     <input type="date" name="pastFilterDate" asp-for=@Model.pastClinicFilterDate /> 
                 </div>
                 <div class="col-md-2">
-                    <label>Only Show Outstanding:</label>
+                    <label>Show All:</label>
                 </div>
                 <div class="col-md-1">
-                    <input type="checkbox" id="chkIsShowOutstanding" class="check" asp-for=@Model.isClinicOutstanding onchange="SetShowOutstandingChecked()" />
+                    <input type="checkbox" id="chkIsShowAll" class="check" asp-for=@Model.isShowAll onchange="SetShowAllChecked()" />
                 </div>
                 <div class="col-md-1">
-                    <input type="text" id="txtIsShowOutstanding" name="isShowOutstanding" asp-for=@Model.isClinicOutstanding hidden="true" />
+                    <input type="text" id="txtIsShowAll" name="isShowOutstanding" asp-for=@Model.isShowAll hidden="true" />
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-success">Update</button>
@@ -195,9 +195,9 @@
         }
     }
 
-    function SetShowOutstandingChecked()
+    function SetShowAllChecked()
     {
-        document.getElementById("txtIsShowOutstanding").value = document.getElementById("chkIsShowOutstanding").checked;
+        document.getElementById("txtIsShowAll").value = document.getElementById("chkIsShowAll").checked;
     }
 
 </script>

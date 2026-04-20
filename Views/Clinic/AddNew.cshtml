@@ -290,6 +290,13 @@
     document.getElementById("ddlAppType").addEventListener("change", ShowAppType);
     document.getElementById("chkAddAsNote").addEventListener("change", SetAddAsNote);
     document.getElementById("txtBookedDate").addEventListener("change", SetContactDate);
+    window.addEventListener("load", LoadForm);
+
+    function LoadForm()
+    {       
+        var today = new Date();
+        document.getElementById("txtBookedDate").value = today.toISOString().slice(0,10);
+    }
 
     function SetContactDate()
     {

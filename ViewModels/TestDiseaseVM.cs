@@ -25,6 +25,6 @@ namespace ClinicX.ViewModels
         public string edmsLink { get; set; }
         public string phenotipsLink { get; set; }
         public bool isPatientInPhenotips { get; set; }
-        public DateTime dateOfNextAppt { get; set; }
+        public DateTime? dateOfNextAppt { get; set; }
     }
 }

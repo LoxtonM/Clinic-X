@@ -12,6 +12,7 @@ namespace ClinicX.ViewModels
         public List<DocumentsContent> docContentList { get; set; }
         public Patient patient {  get; set; }
         public Referral referral { get; set; }
+        public List<Referral> referralList { get; set; }
         public List<Leaflet> leaflets { get; set; }
         public List<ExternalCliniciansAndFacilities> externalClinicians { get; set; }
         public List<ExternalCliniciansAndFacilities> clinicianList { get; set; }

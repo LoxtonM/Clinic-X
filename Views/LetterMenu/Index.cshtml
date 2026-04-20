@@ -14,7 +14,21 @@
 }
 
 <div class="container">
-    <h1>Letters for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</h1>
+    <div class="row mb-5 g-5">
+        <h1>Letters for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</h1>
+    </div>
+
+    <div class="row mb-5 g-5" id="divReferral" hidden> @*we can't just have it conditionally appear, because Javascript.*@
+        <div class="col-md-4">
+            <select id="ddlRefID">
+                @foreach(var item in Model.referralList)
+                {
+                    <option value=@item.refid>@item.RefType = @item.RefDate.Value.ToShortDateString()</option>
+                }
+            </select>
+        </div>
+    </div>
+    
 
     <div class="row mb-5 g-5">
         <div class="col-md-4">
@@ -32,7 +46,7 @@
     
     <form id="frmDoLetter" asp-action="DoLetter">
         <div class="row mb-5 g-5">
-            <input name="refID" asp-for=@Model.referral.refid hidden />
+            <input name="refID" id="txtRefID" asp-for=@Model.referral.refid hidden />
             <input name="docCode" id="txtDocCode" hidden />
             <input name="isPreview" id="txtIsPreview" hidden />
             <div class="col-md-4">
@@ -137,6 +151,7 @@
     document.getElementById("docGroupOutcome").addEventListener("change", SetDoccode);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     document.getElementById("btnPrint").addEventListener("click", DoPrint);
+    document.getElementById("ddlRefID").addEventListener("change", SetReferral);
     window.addEventListener("load", ShowLetterMenu);
     
     function ShowLetterMenu()
@@ -184,7 +199,11 @@
 
         // when you want to hide:
         //document.querySelector('#ddlExtClinician').closest('.choices').style.display = 'none';
-
+        if(document.getElementById("txtRefID").value == null || document.getElementById("txtRefID").value == "")
+        {
+            document.getElementById("txtRefID").value = document.getElementById("ddlRefID").value;
+            document.getElementById("divReferral").hidden = false;
+        }
     }
 
     function SetDoccode()
@@ -340,5 +359,9 @@
         document.getElementById("frmDoLetter").submit();
     }
 
+    function SetReferral()
+    {
+        document.getElementById("txtRefID").value = document.getElementById("ddlRefID").value;
+    }
 
 </script>

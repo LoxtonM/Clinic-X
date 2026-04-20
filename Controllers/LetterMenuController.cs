@@ -41,10 +41,14 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(int refID)
+        public async Task<IActionResult> Index(int? refID, int mpi)
         {
-            _lvm.referral = await _referralData.GetReferralDetails(refID);
-            _lvm.patient = await _patientData.GetPatientDetails(_lvm.referral.MPI);
+            if (refID != null)
+            {
+                _lvm.referral = await _referralData.GetReferralDetails(refID.GetValueOrDefault());
+            }
+            _lvm.referralList = await _referralData.GetActiveReferralsListForPatient(mpi);
+            _lvm.patient = await _patientData.GetPatientDetails(mpi);
             var docList = await _documentsData.GetDocumentsList();
             _lvm.docsListStandard = docList.Where(d => d.DocGroup == "Standard").ToList(); //might need a "ListDocGroups" data model
             _lvm.docsListMedRec = docList.Where(d => d.DocGroup == "MEDREC").ToList();
@@ -54,7 +58,7 @@ namespace ClinicX.Controllers
             //_lvm.clinicianList = new List<ExternalCliniciansAndFacilities>();
             var clinList = await _externalClinicianData.GetClinicianList();
             var clins = new List<ExternalCliniciansAndFacilities>();
-            _lvm.patGP = await _externalClinicianData.GetPatientGPReferrer(_lvm.referral.MPI);
+            _lvm.patGP = await _externalClinicianData.GetPatientGPReferrer(mpi);
 
             clins = clinList;            
             clins.Add(_lvm.patGP);            
@@ -66,13 +70,17 @@ namespace ClinicX.Controllers
             _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).ToList();
 
             _lvm.leaflets = new List<Leaflet>();
-            if (_lvm.referral.PATHWAY == "Cancer")
+            
+            if (refID != null)
             {
-                _lvm.leaflets = await _leafletData.GetCancerLeafletsList();
-            }
-            else if (_lvm.referral.PATHWAY == "General")
-            {
-                _lvm.leaflets = await _leafletData.GetGeneralLeafletsList();
+                if (_lvm.referral.PATHWAY.Trim() == "Cancer") //because obviously it's not "cancer" it's "cancer space".
+                {
+                    _lvm.leaflets = await _leafletData.GetCancerLeafletsList();
+                }
+                else if (_lvm.referral.PATHWAY.Trim() == "General")
+                {
+                    _lvm.leaflets = await _leafletData.GetGeneralLeafletsList();
+                }
             }
             else
             {
