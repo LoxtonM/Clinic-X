@@ -14,8 +14,8 @@ namespace ClinicX.Controllers
 {
     public class DictatedLetterController : Controller
     {
-        //private readonly ClinicalContext _clinContext;
-        //private readonly DocumentContext _docContext;
+        private readonly ClinicalContext _clinContext;
+        private readonly DocumentContext _docContext;
         private readonly LetterController _lc;
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;        
@@ -32,10 +32,10 @@ namespace ClinicX.Controllers
 
         public DictatedLetterController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IActivityDataAsync activityData, IDictatedLetterDataAsync dictatedLetterData,
             IExternalClinicianDataAsync externalClinicianData, IExternalFacilityDataAsync externalFacilityData, ICRUD crud, IConstantsDataAsync constantsData, LetterController letterController, 
-            IAuditService auditService, IRelativeDataAsync relativeData)//, ClinicalContext clinicalContext, DocumentContext documentContext)
+            IAuditService auditService, IRelativeDataAsync relativeData, ClinicalContext clinicalContext, DocumentContext documentContext)
         {
-            //_clinContext = clinicalContext;
-            //_docContext = documentContext;
+            _clinContext = clinicalContext;
+            _docContext = documentContext;
             _config = config;
             _lvm = new DictatedLetterVM();
             _staffUser = staffUserData;
@@ -141,7 +141,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, string? message, bool? success)
         {            
             try
             {
@@ -196,6 +196,9 @@ namespace ClinicX.Controllers
                 _lvm.secteams = await _staffUser.GetSecTeamsList();
                 _lvm.specialities = await _externalClinicianData.GetClinicianTypeList();
                 _lvm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1); //set web link to EDMS
+
+                _lvm.message = message;
+                _lvm.success = success.GetValueOrDefault();
 
                 return View(_lvm);
             }
@@ -256,7 +259,7 @@ namespace ClinicX.Controllers
                     return RedirectToAction("PreviewDOT", new { dID = dID });
                 }                
 
-                return RedirectToAction("Edit", new { id = dID });
+                return RedirectToAction("Edit", new { id = dID, message = "Saved", success = true });
             }
             catch (Exception ex)
             {
@@ -425,9 +428,9 @@ namespace ClinicX.Controllers
         {
             try
             {
-                _lc.PrintDOTPDF(dID, User.Identity.Name, true);
-                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext); //for testing purposes
-                //lc.PrintDOTPDF(dID, User.Identity.Name, true); //FOR TESTING ONLY - production should use the data library instead
+                //_lc.PrintDOTPDF(dID, User.Identity.Name, true);
+                LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext); //for testing purposes
+                lc.PrintDOTPDF(dID, User.Identity.Name, true); //FOR TESTING ONLY - production should use the data library instead
                 
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }

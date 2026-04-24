@@ -49,7 +49,9 @@ namespace ClinicX.Controllers
 
                             if(isLimitCGUNumber.GetValueOrDefault())
                             {
-                                _pvm.patientsList = _pvm.patientsList.Where(p => p.CGU_No == cguNo).ToList();
+                                string pedno = cguNo.Split(".")[0]; //because the CGU number is in the format "PEDNO.regno" and we want to limit the search to that PEDNO
+
+                                _pvm.patientsList = _pvm.patientsList.Where(p => p.PEDNO == pedno).ToList();
                             }
                         }
                         searchTerm = "CGU_No=" + cguNo;

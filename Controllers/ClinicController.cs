@@ -51,7 +51,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Index(DateTime? pastFilterDate, bool? isShowAll, DateTime? futureFilterDate)
+        public async Task<IActionResult> Index(DateTime? pastFilterDate, bool? isShowAll, DateTime? futureFilterDate, string? message, bool? success = false)
         {
             try
             {
@@ -89,6 +89,9 @@ namespace ClinicX.Controllers
                 _cvm.futureClinicFilterDate = futureFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
                 _cvm.isShowAll = isShowAll.GetValueOrDefault();
 
+                _cvm.message = message;
+                _cvm.success = success.GetValueOrDefault();
+
                 return View(_cvm);               
             }
             catch (Exception ex)
@@ -114,6 +117,11 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinic Details", "RefID=" + id.ToString(), _ip.GetIPAddress());
 
                 _cvm.Clinic = await _clinicData.GetClinicDetails(id);
+
+                if(_cvm.Clinic == null)
+                {
+                    return RedirectToAction("Index", "Clinic", new { message = "Clinic not found, please report to IT quoting RefID " + id, success = false });
+                }
                 _cvm.patient = await _patientData.GetPatientDetails(_cvm.Clinic.MPI);
                 _cvm.linkedReferral = await _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
 

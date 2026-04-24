@@ -47,8 +47,7 @@ namespace ClinicX.Controllers
             {
                 _lvm.referral = await _referralData.GetReferralDetails(refID.GetValueOrDefault());
             }
-            _lvm.referralList = await _referralData.GetActiveReferralsListForPatient(mpi);
-            _lvm.patient = await _patientData.GetPatientDetails(mpi);
+            
             var docList = await _documentsData.GetDocumentsList();
             _lvm.docsListStandard = docList.Where(d => d.DocGroup == "Standard").ToList(); //might need a "ListDocGroups" data model
             _lvm.docsListMedRec = docList.Where(d => d.DocGroup == "MEDREC").ToList();
@@ -58,11 +57,18 @@ namespace ClinicX.Controllers
             //_lvm.clinicianList = new List<ExternalCliniciansAndFacilities>();
             var clinList = await _externalClinicianData.GetClinicianList();
             var clins = new List<ExternalCliniciansAndFacilities>();
-            _lvm.patGP = await _externalClinicianData.GetPatientGPReferrer(mpi);
+            clins = clinList;
 
-            clins = clinList;            
-            clins.Add(_lvm.patGP);            
-                        
+            if (mpi == 0)
+            {
+                mpi = _lvm.referral.MPI;
+            }
+
+            _lvm.referralList = await _referralData.GetActiveReferralsListForPatient(mpi);
+            _lvm.patient = await _patientData.GetPatientDetails(mpi);
+            _lvm.patGP = await _externalClinicianData.GetPatientGPReferrer(mpi);
+            clins.Add(_lvm.patGP);
+
             _lvm.externalClinicians = clins;
 
             _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
@@ -112,17 +118,17 @@ namespace ClinicX.Controllers
                 diaryID = diary.DiaryID; //get the diary ID of the entry just created to add to the letter's filename
             }
 
-            //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
+            LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
 
-            _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician, 
-                    "", null, isPreview, "", leafletID);
+            await lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician, 
+                    "", null, isPreview, "", leafletID, true);
 
             if(isPreview)
             {
                 return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
 
-            return RedirectToAction("Index", new { refID = refID });
+            return RedirectToAction("Index", new { refID = refID, mpi = mpi });
         }
     }
 }

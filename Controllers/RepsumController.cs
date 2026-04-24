@@ -57,7 +57,7 @@ namespace ClinicX.Controllers
         {            
             await DoRepsum(id, diaryID, User.Identity.Name);
 
-            return RedirectToAction("CancerReview", "Triage", new { id = id });
+            return RedirectToAction("CancerReview", "Triage", new { id = id, message="Final review complete - REPSUM has been created for filing in EDMS", success = true });
         }
 
 
@@ -697,9 +697,23 @@ namespace ClinicX.Controllers
                     sRow.Cells[0].AddParagraph(f.RelSurname + ", " + f.RelForename1 + " " + f.RelForename2);
                     sRow.Cells[1].AddParagraph(f.RelSex);
                     sRow.Cells[2].AddParagraph(f.Alive);
-                    sRow.Cells[3].AddParagraph(f.RelDOB);
-                    sRow.Cells[4].AddParagraph(f.RelDOD);
-                    sRow.Cells[5].AddParagraph(f.Diagnosis + " age " + f.AgeDiag + ", treated at " + f.Hospital);
+                    if (f.RelDOB != null)
+                    {
+                        sRow.Cells[3].AddParagraph(f.RelDOB);
+                    }
+                    else
+                    {
+                        sRow.Cells[3].AddParagraph("");
+                    }
+                    if (f.RelDOD != null)
+                    {
+                        sRow.Cells[4].AddParagraph(f.RelDOD);
+                    }
+                    else
+                    {
+                        sRow.Cells[4].AddParagraph("");
+                    }
+                        sRow.Cells[5].AddParagraph(f.Diagnosis + " age " + f.AgeDiag + ", treated at " + f.Hospital);
                     sRow.Cells[6].AddParagraph(f.InfoReq + " " + f.WhyNot);
                     if (f.Conf == "Other")
                     {

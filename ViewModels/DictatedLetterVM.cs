@@ -31,5 +31,7 @@ namespace ClinicX.ViewModels
         public string edmsLink { get; set; }
         public string searchClinicianAddress { get; set; }
         public List<Patient> relativesList { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
     }
 }

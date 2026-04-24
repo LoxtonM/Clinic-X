@@ -324,8 +324,9 @@
 
         if(document.getElementById("ddlAppType").value == "Tel. Admin" || document.getElementById("ddlAppType").value == "Tel. Consultation" || 
         document.getElementById("ddlAppType").value == "Advice and Guidance" || document.getElementById("ddlAppType").value == "Review - Patient not" ||
-        document.getElementById("ddlAppType").value == "Tel. Non.Patient" || document.getElementById("ddlAppType").value == "Tel. Results")
-        {           
+        document.getElementById("ddlAppType").value == "Tel. Non.Patient" || document.getElementById("ddlAppType").value == "Tel. Results" ||
+        document.getElementById("ddlAppType").value == "Tel. Post-Clinic" || document.getElementById("ddlAppType").value == "Tel. Pre-Clinic")
+        {
             clinicDate.value = today.toISOString().slice(0,10);
             document.getElementById("ContactDetails").hidden = true;
             document.getElementById("TelAdmin").hidden = false;
