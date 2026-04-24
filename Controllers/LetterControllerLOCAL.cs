@@ -1970,7 +1970,7 @@ namespace ClinicalXPDataConnections.Meta
                             {
                                 if (ccs[i] == "PT")
                                 {
-                                    cc = patName + patAddress;
+                                    cc = patAddress;
                                 }
                                 //if (ccs[i] == referrerName)
                                 if (ccs[i] == "RD")
