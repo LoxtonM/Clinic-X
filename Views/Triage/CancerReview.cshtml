@@ -128,7 +128,7 @@
                                 }
                             </td>
 
-                            @if (item.IncludeLetter == 0)
+                            @if (item.IncludeLetter == 0 || item.IncludeLetter == null)
                             {
                                 <td><a type="button" class="btn btn-default btn-outline-success" asp-controller="RiskAndSurveillance" asp-action="SetUsingLetter" asp-route-id=@item.RiskID asp-route-isUsingLetter="true">No</a></td>
                             }

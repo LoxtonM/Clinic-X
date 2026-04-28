@@ -186,6 +186,8 @@ namespace ClinicX.Controllers
         {
             try
             {
+                if(isUseLetter == null) { isUseLetter = false; } //because somehow it's getting nulls sometimes!
+
                 int success = _crud.CallStoredProcedure("Risk", "Create", refID, 0, 0, riskCode, siteCode, clinCode, comments,
                     User.Identity.Name, riskDate, null, isUseLetter, false, 0, 0, 0, tool, "", "", lifetimePercent,
                     f2529, f3040, f4050, f5060);

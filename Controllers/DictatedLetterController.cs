@@ -323,7 +323,7 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-approve(SQL)" }); }
 
-                return RedirectToAction("Edit", new { id = dID });
+                return RedirectToAction("Edit", new { id = dID, message = "Letter approved.", success = true });
 
             }
             catch (Exception ex)
@@ -341,7 +341,7 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-unapprove(SQL)" }); }
 
-                return RedirectToAction("Edit", new { id = dID });
+                return RedirectToAction("Edit", new { id = dID, message = "Letter un-approved.", success = true });
 
             }
             catch (Exception ex)

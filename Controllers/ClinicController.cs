@@ -274,7 +274,14 @@ namespace ClinicX.Controllers
             _cvm.patient = await _patientData.GetPatientDetails(mpi);
             _cvm.outcomes = await _outcomeData.GetOutcomeList();
             _cvm.staffMembers = await _staffUser.GetClinicalStaffList();
-            _cvm.referralsList = await _referralData.GetActiveReferralsListForPatient(mpi);
+            var referralsListActive = await _referralData.GetActiveReferralsListForPatient(mpi);
+            var referralsListComplete = await _referralData.GetCompleteReferralsListForPatient(mpi); //because people absolutely MUST do activity on completed referrals.
+            var referralsList = referralsListActive;
+            foreach (var item in referralsListComplete)
+            {
+                referralsList.Add(item);
+            }
+            _cvm.referralsList = referralsList.OrderByDescending(r => r.RefDate).ToList();
             _cvm.venueList = await _clinicVenueData.GetVenueList();
             _cvm.appTypeList = await _activityTypeData.GetApptTypes();
 

@@ -2453,20 +2453,23 @@ namespace ClinicalXPDataConnections.Meta
             text = text.Replace("</div>", "newline");
             text = text.Replace(Environment.NewLine, "newline");
             text = text.Replace("<div>&nbsp;</div>", "newline");
+            text = text.Replace("<br>", "newline");
+            text = text.Replace("</p>", "newline");
             text = text.Replace("newlinenewlinenewlinenewlinenewlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine); //don't fucking ask!!!
             text = text.Replace("newlinenewlinenewlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine);
-            text = text.Replace("newlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine);
+            text = text.Replace("newlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine); //we have to try to catch every possibility
             text = text.Replace("newlinenewlinenewline", Environment.NewLine); //because there are SOOOOO many different ways of getting line breaks!!
             //text = text.Replace("newlinenewline", System.Environment.NewLine);
-            text = text.Replace("newline", System.Environment.NewLine);
+            text = text.Replace("newline", System.Environment.NewLine);            
+
             text = text.Replace("&nbsp;", " ");
 
             text = text.Replace("&amp;", "&");
 
-            text = text.Replace("</p>", Environment.NewLine);
+            //text = text.Replace("</p>", Environment.NewLine);
             text = text.Replace("<o:p></o:p>", "");
 
-            text = text.Replace("<br>", Environment.NewLine + Environment.NewLine);
+            //text = text.Replace("<br>", Environment.NewLine + Environment.NewLine);
 
             text = text.Replace("<sup>", "");
             text = text.Replace("</sup>", " ");
