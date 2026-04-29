@@ -157,6 +157,11 @@ namespace ClinicX.Controllers
                     if (mirror != null) //use the mirror table rather than pinging the API every time someone checks the record!
                     {
                         _pvm.isPatientInPhenotips = true;
+
+                        if(mirror.FamilyID == null)
+                        {
+                            await _api.SynchroniseMirrorWithPhenotips(id);
+                        }
                         
                         var cancerPPQExists = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer");
                         var generalPPQExists = _api.CheckPPQExists(_pvm.patient.MPI, "General");

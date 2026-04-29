@@ -450,60 +450,15 @@ namespace ClinicX.Controllers
                 letterAlreadyDone = true;
             }
 
-            if (letter != null && letter != 0 && !letterAlreadyDone) //don't want to do the letter and diary every single time!!!
-            {                
-                _ivm.cancerAction = await _icpActionData.GetICPCancerAction(letter.GetValueOrDefault());
-                string docCode = _ivm.cancerAction.DocCode;
-
-                if (letter != 1 && letter != 11)
-                {
-                    reviewText = docCode;
-
-                    if (reviewText != null) { reviewText = reviewText + " letter on " + DateTime.Now.ToString("dd/MM/yyyy") + " by " + user.NAME; }
-
-                    string diaryText = "";
-                    var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
-                    int letterID = doc.DocContentID;
-
-                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
-                    var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
-                    int diaryID = diary.DiaryID;
-
-                    if (letter == 3)
-                    {
-                        int successDOT = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "", staffCode, "", User.Identity.Name);
-
-                        if (successDOT == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
-                    }
-                    else
-                    {
-                        //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
-                        Referral refer = await _referralData.GetReferralDetails(refID);
-                        _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0,
-                        "", "", null, false, "", leafletID);                        
-                    }
-
-                    if (successDiary == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canDiaryUpdate(SQL)" }); }
-                }
-            }
+            
                         
             
             if (toBeReviewedBy == null) { toBeReviewedBy = ""; }//because the default value isn't being assigned for some reason!            
 
-            if(clinician != null && clinician != "" && _ivm.icpCancer.WaitingListVenue == null)
-            {  
-                int successWL = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 50, refID, clinic, "Cancer", clinician, comments,
-                    User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
+            
 
-                if (successWL == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canAddWL(SQL)" }); }
-            }
 
-            //if(finalReview == "Yes")
-            //{
-                //finalReviewText = reviewText;
             reviewBy = user.STAFF_CODE;
-                //finalReviewDate = DateTime.Today;
-            //}
 
             int success = _crud.CallStoredProcedure("ICP Cancer", "ICP Review", id, letter.GetValueOrDefault(), 0, reviewBy, finalReview, toBeReviewedBy, addNotes,
                     User.Identity.Name, null, null, false, false, 0,0,0,clinician, clinic, comments);
@@ -512,14 +467,58 @@ namespace ClinicX.Controllers
 
             if(finalReview == "Yes")
             {
+                if (letter != null && letter != 0 && !letterAlreadyDone) //don't want to do the letter and diary every single time!!!
+                {
+                    _ivm.cancerAction = await _icpActionData.GetICPCancerAction(letter.GetValueOrDefault());
+                    string docCode = _ivm.cancerAction.DocCode;
+
+                    if (clinician != null && clinician != "" && _ivm.icpCancer.WaitingListVenue == null)
+                    {
+                        int successWL = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 50, refID, clinic, "Cancer", clinician, comments,
+                            User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
+
+                        if (successWL == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canAddWL(SQL)" }); }
+                    }
+
+                    if (letter != 1 && letter != 11)
+                    {
+                        reviewText = docCode;
+
+                        if (reviewText != null) { reviewText = reviewText + " letter on " + DateTime.Now.ToString("dd/MM/yyyy") + " by " + user.NAME; }
+
+                        string diaryText = "";
+                        var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
+                        int letterID = doc.DocContentID;
+
+                        int successDiaryLetter = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+                        var diaryLetter = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
+                        int diaryIDLetter = diaryLetter.DiaryID;
+
+                        if (letter == 3)
+                        {
+                            int successDOT = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "", staffCode, "", User.Identity.Name);
+
+                            if (successDOT == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
+                        }
+                        else
+                        {
+                            //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+                            Referral refer = await _referralData.GetReferralDetails(refID);
+                            _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0,
+                            "", "", null, false, "", leafletID);
+                        }
+
+                        if (successDiaryLetter == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canDiaryUpdate(SQL)" }); }
+                    }
+                }
+
+
+
                 int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "REPSUM", "", "", User.Identity.Name, null, null, false, false);
                 var diary = await _diaryData.GetLatestDiaryByRefID(refID, "REPSUM");
 
                 int diaryID = diary.DiaryID;
 
-                //LetterControllerLOCAL let = new LetterControllerLOCAL(_clinContext, _docContext);
-                //let.DoRepsum(_ivm.icpCancer.ICP_Cancer_ID, diaryID, User.Identity.Name);
-                //_lc.DoRepsum(_ivm.icpCancer.ICP_Cancer_ID, diaryID, User.Identity.Name);
                 return RedirectToAction("PrepareRepsum", "Repsum", new { id = id, diaryID = diaryID }); 
                 //we HAVE to do it this way or it won't update the data model
             }
