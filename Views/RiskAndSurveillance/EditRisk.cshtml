@@ -124,7 +124,7 @@
                 Recorded By:
             </dt>
             <dd class="col-md-10">
-                <select name="clinCode" asp-for=@Model.riskDetails.Clinician>
+                <select name="clinCode" asp-for=@Model.riskDetails.RiskClinCode>
                     @foreach(var item in Model.staffMembersList)
                     {
                         <option value=@item.STAFF_CODE>@item.NAME</option>

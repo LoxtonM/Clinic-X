@@ -22,9 +22,10 @@ namespace ClinicX.Controllers
         private readonly IDiaryDataAsync _diaryData;
         private readonly ILeafletDataAsync _leafletData;
         private readonly IExternalClinicianDataAsync _externalClinicianData;
+        private readonly ITriageDataAsync _triageData;
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documentsData, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController letterController, ICRUD crud,
-            IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData, ClinicalContext context, DocumentContext documentContext) 
+            IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData, ITriageDataAsync triageData, ClinicalContext context, DocumentContext documentContext) 
         {
             _config = config;   
             _context = context;
@@ -38,6 +39,7 @@ namespace ClinicX.Controllers
             _diaryData = diaryData;
             _leafletData = leafletData;
             _externalClinicianData = externalClinicianData;
+            _triageData = triageData;
         }
 
         [Authorize]
@@ -53,6 +55,8 @@ namespace ClinicX.Controllers
             _lvm.docsListMedRec = docList.Where(d => d.DocGroup == "MEDREC").ToList();
             _lvm.docsListDNA = docList.Where(d => d.DocGroup == "DNATS").ToList();
             _lvm.docsListOutcome = docList.Where(d => d.DocGroup == "Outcome").ToList();
+            _lvm.docsListReports = docList.Where(d => d.DocGroup == "REPORTS").ToList();
+            _lvm.docsListOther = docList.Where(d => d.DocGroup == "OTHER").ToList();
             _lvm.docContentList = await _documentsData.GetDocumentsContentList();
             //_lvm.clinicianList = new List<ExternalCliniciansAndFacilities>();
             var clinList = await _externalClinicianData.GetClinicianList();
@@ -100,7 +104,12 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> DoLetter(int refID, string docCode, bool isPreview, string? additionalText, string? enclosures, string? otherClinician, int? leafletID = 0)
         {
             var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
-            int docID = doc.DocContentID;
+            int docID = 0;
+
+            if (docCode != "REPSUM")
+            {
+                docID = doc.DocContentID;
+            }
             _lvm.referral = await _referralData.GetReferralDetails(refID);
             _lvm.patient = await _patientData.GetPatientDetails(_lvm.referral.MPI);
 
@@ -120,8 +129,18 @@ namespace ClinicX.Controllers
 
             //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
 
-            await _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician, 
-                    "", null, isPreview, "", leafletID, true);
+            if (docCode == "REPSUM")
+            {
+                var icp = await _triageData.GetICPDetailsByRefID(refID);
+                var icpC = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+
+                return RedirectToAction("PrepareRepsum", "Repsum", new { id = icpC.ICP_Cancer_ID, diaryID = diaryID });
+            }
+            else
+            {
+                await _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician,
+                        "", null, isPreview, "", leafletID, true);
+            }
 
             if(isPreview)
             {

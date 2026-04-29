@@ -26,10 +26,11 @@ namespace ClinicX.Controllers
         private readonly IActivityTypeDataAsync _activityTypeData;
         private readonly IDiseaseDataAsync _diseaseData;
         private readonly IDictatedLetterDataAsync _dictatedLetterData;
+        private readonly IClinicalNoteDataAsync _clinicalNoteData;
 
         public ClinicController(IConfiguration config, IPatientDataAsync patientData, IReferralDataAsync referralData, IActivityDataAsync activityData, IStaffUserDataAsync staffUserData,
             IClinicDataAsync clinicData, ICRUD crud, IAuditService auditService, IOutcomeDataAsync outcomeData, IClinicVenueDataAsync clinicVenueData, IActivityTypeDataAsync activityTypeData, 
-            IDiseaseDataAsync diseaseData, IDictatedLetterDataAsync dictatedLetterData)
+            IDiseaseDataAsync diseaseData, IDictatedLetterDataAsync dictatedLetterData, IClinicalNoteDataAsync clinicalNoteData)
         {
             //_clinContext = context;
             _config = config;
@@ -46,6 +47,7 @@ namespace ClinicX.Controllers
             _activityTypeData = activityTypeData;
             _diseaseData = diseaseData;
             _dictatedLetterData = dictatedLetterData;
+            _clinicalNoteData = clinicalNoteData;
         }
 
 
@@ -283,13 +285,18 @@ namespace ClinicX.Controllers
             }
             _cvm.referralsList = referralsList.OrderByDescending(r => r.RefDate).ToList();
             _cvm.venueList = await _clinicVenueData.GetVenueList();
-            _cvm.appTypeList = await _activityTypeData.GetApptTypes();
+            var appTypeList = await _activityTypeData.GetApptTypes();
 
+            appTypeList = appTypeList.Where(a => a.APP_TYPE.Contains("Tel") || a.APP_TYPE.Contains("Advice") || a.APP_TYPE.Contains("Review") || a.APP_TYPE.Contains("Letter")).ToList();
+            //because obviously this list isn't parameterised!
+
+            _cvm.appTypeList = appTypeList;
+            _cvm.noteTypeList = await _clinicalNoteData.GetNoteTypesList();
             return View(_cvm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int mpi, int linkedRefID, DateTime bookedDate, DateTime bookedTime, string appType, string? outcome, string? venue, string? clinician1,
+        public async Task<IActionResult> AddNew(int mpi, int linkedRefID, DateTime bookedDate, DateTime bookedTime, string appType, string noteType, string? outcome, string? venue, string? clinician1,
             string? clinician2, string? clinician3, int? timeSpent, int? noPatientsSeen, string? letterReq, string? counseled, string? callersName, string? callersOrg, string? callersTelNo,
             string? message, string? urgency, bool? isAddAsNote = false, bool? isClockStop = false)
         {
@@ -312,6 +319,7 @@ namespace ClinicX.Controllers
             appts = appts.Where(a => a.BOOKED_DATE == bookedDate).OrderByDescending(a => a.RefID).ToList();
 
             refID = appts.First().RefID;
+            bool isHidden = !isAddAsNote.GetValueOrDefault();
 
             if (appType == "Tel. Admin")
             {
@@ -324,7 +332,7 @@ namespace ClinicX.Controllers
                 message;
 
                 string emailBodyText = "";
-                bool isHidden = !isAddAsNote.GetValueOrDefault();
+                
 
                 if (!isHidden) //if "don't create as note", generate the note but mark it as "hidden"
                 {
@@ -332,9 +340,13 @@ namespace ClinicX.Controllers
                     emailBodyText = emailBodyText + emailMessage;                    
                 }
 
-                _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, "Admin", "", "", emailBodyText, User.Identity.Name, null, null, isHidden);  //create straight into edms              
+                _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, noteType, "", "", emailBodyText, User.Identity.Name, null, null, isHidden);  //create straight into edms              
 
                 return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
+            }
+            else
+            {
+                _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, noteType, "", "", message, User.Identity.Name, null, null, isHidden);  //create straight into edms
             }
 
             return RedirectToAction("ApptDetails", new { id = refID });

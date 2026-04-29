@@ -39,7 +39,7 @@ namespace ClinicX.Controllers
             _patientData = patientData;
             _referralData = referralData;
             _constantsData = constantsData;
-            _riskData = riskData;      
+            _riskData = riskData;
             _triageData = triageData;
             _survData = surveillanceData;
             _studyData = studyData;
@@ -54,15 +54,22 @@ namespace ClinicX.Controllers
 
         [Authorize]
         public async Task<IActionResult> PrepareRepsum(int id, int diaryID)
-        {            
-            await DoRepsum(id, diaryID, User.Identity.Name);
+        {
+            bool repsumDone = await DoRepsum(id, diaryID, User.Identity.Name);
 
-            return RedirectToAction("CancerReview", "Triage", new { id = id, message="Final review complete - REPSUM has been created for filing in EDMS", success = true });
+            string message = "";           
+
+            if(repsumDone) { message = "Final review complete - REPSUM has been created for filing in EDMS"; }
+            else { message = "REPSUM failed - If the review has completed, please try from the letters menu"; }
+
+            return RedirectToAction("CancerReview", "Triage", new { id = id, message = message, success = repsumDone });
         }
 
 
-        public async Task DoRepsum(int icpID, int diaryID, string user)
+        public async Task<bool> DoRepsum(int icpID, int diaryID, string user)
         {
+            bool success = false;
+
             StaffMember staffMember = new StaffMember();
             staffMember = await _staffUser.GetStaffMemberDetails(user);
             Patient patient = new Patient();
@@ -72,7 +79,7 @@ namespace ClinicX.Controllers
             ICP icp = await _triageData.GetICPDetails(icpc.ICPID);
             Referral referral = await _referralData.GetReferralDetails(icp.REFID);
             patient = await _patientData.GetPatientDetails(referral.MPI);
-            
+
             MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
 
             Section section = document.AddSection();
@@ -87,7 +94,7 @@ namespace ClinicX.Controllers
             MigraDoc.DocumentObjectModel.Tables.Column logo = table.AddColumn();
             reportHeader.Format.Alignment = ParagraphAlignment.Left;
             logo.Format.Alignment = ParagraphAlignment.Right;
-        
+
             MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
             row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
             row1.Cells[0].AddParagraph().AddFormattedText($"Summary of reports for referral: {referral.refid} / {patient.CGU_No}", TextFormat.Bold);
@@ -192,7 +199,7 @@ namespace ClinicX.Controllers
                     MigraDoc.DocumentObjectModel.Tables.Row rRow = tableRisk.AddRow();
 
                     string calcTool = "Unknown"; //because of course there's fucking nulls!!!
-                    if(r.CalculationToolUsed != null) { calcTool = r.CalculationToolUsed;  }
+                    if (r.CalculationToolUsed != null) { calcTool = r.CalculationToolUsed; }
 
                     rRow.Cells[0].AddParagraph(r.RiskDate.Value.ToString("dd/MM/yyyy"));
                     if (r.RiskName != null)
@@ -203,11 +210,26 @@ namespace ClinicX.Controllers
                     {
                         rRow.Cells[1].AddParagraph(r.RiskCode);
                     }
-                    rRow.Cells[2].AddParagraph(r.LifetimeRiskPercentage.ToString());
-                    rRow.Cells[3].AddParagraph(r.R30_40.ToString());
-                    rRow.Cells[4].AddParagraph(r.R40_50.ToString());
-                    rRow.Cells[5].AddParagraph(calcTool);
-                    rRow.Cells[6].AddParagraph(r.SurvSite);
+                    if (r.LifetimeRiskPercentage != null)
+                    {
+                        rRow.Cells[2].AddParagraph(r.LifetimeRiskPercentage.ToString());
+                    }
+                    if (r.R30_40 != null)
+                    {
+                        rRow.Cells[3].AddParagraph(r.R30_40.ToString());
+                    }
+                    if (r.R40_50 != null)
+                    {
+                        rRow.Cells[4].AddParagraph(r.R40_50.ToString());
+                    }
+                    if (calcTool != null)
+                    {
+                        rRow.Cells[5].AddParagraph(calcTool);
+                    }
+                    if (r.SurvSite != null)
+                    {
+                        rRow.Cells[6].AddParagraph(r.SurvSite);
+                    }
                     //rRow.Borders.Bottom.Visible = false;
                     if (rowCount == riskList.Count)
                     {
@@ -222,7 +244,7 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
 
-            
+
             List<Surveillance> survList = await _survData.GetSurveillanceList(patient.MPI);
             if (survList.Count > 0)
             {
@@ -252,7 +274,7 @@ namespace ClinicX.Controllers
                     foreach (var s in survList)
                     {
                         rowCount += 1;
-                        MigraDoc.DocumentObjectModel.Tables.Row sRow = tableSurv.AddRow();                        
+                        MigraDoc.DocumentObjectModel.Tables.Row sRow = tableSurv.AddRow();
                         sRow.Cells[0].AddParagraph(s.SurvSite);
                         if (s.SurvStartAge != null) { sRow.Cells[1].AddParagraph(s.SurvStartAge.ToString()); }
                         if (s.SurvStopAge != null) { sRow.Cells[2].AddParagraph(s.SurvStopAge.ToString()); }
@@ -272,7 +294,7 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
 
-            
+
             List<Study> studyList = await _studyData.GetStudiesList(patient.MPI);
             if (studyList.Count > 0)
             {
@@ -320,7 +342,7 @@ namespace ClinicX.Controllers
 
             spacer = section.AddParagraph();
 
-            
+
             List<Eligibility> teList = await _teData.GetTestingEligibilityList(patient.MPI);
             if (teList.Count > 0)
             {
@@ -382,7 +404,7 @@ namespace ClinicX.Controllers
 
             spacer = section.AddParagraph();
 
-            
+
             List<Appointment> appList = await _appData.GetClinicByPatientsList(patient.MPI);
             if (appList.Count > 0)
             {
@@ -431,7 +453,7 @@ namespace ClinicX.Controllers
 
             spacer = section.AddParagraph();
 
-            
+
             List<WaitingList> wlList = await _wlData.GetWaitingListByCGUNo(patient.CGU_No);
             if (wlList.Count > 0)
             {
@@ -483,7 +505,7 @@ namespace ClinicX.Controllers
 
             spacer = section.AddParagraph();
 
-            
+
             List<Diary> dList = await _dData.GetDiaryList(patient.MPI);
             List<Relative> rList = await _relData.GetRelativesList(patient.MPI);
             rList = rList.DistinctBy(r => r.relsid).ToList();
@@ -491,7 +513,7 @@ namespace ClinicX.Controllers
             int rdCount = 0;
 
             if (rList.Count > 0)
-            {                
+            {
                 foreach (var rel in rList)
                 {
                     List<RelativeDiary> rdList = await _relDiaryData.GetRelativeDiaryList(rel.relsid);
@@ -511,7 +533,7 @@ namespace ClinicX.Controllers
                 pDiaryHeader.Format.Font.Size = 12;
 
                 Paragraph dPatient = section.AddParagraph();
-                
+
                 MigraDoc.DocumentObjectModel.Tables.Table tableDiary = section.AddTable();
                 MigraDoc.DocumentObjectModel.Tables.Column dDate = tableDiary.AddColumn();
                 MigraDoc.DocumentObjectModel.Tables.Column dAction = tableDiary.AddColumn();
@@ -556,7 +578,7 @@ namespace ClinicX.Controllers
                     sRow.Cells[1].AddParagraph(d.DiaryAction);
                     if (d.DiaryText != null)
                     {
-                        sRow.Cells[2].AddParagraph(d.DiaryText.Substring(0, Math.Min(d.DiaryText.Length,  1 + d.DiaryText.IndexOf(Environment.NewLine))));
+                        sRow.Cells[2].AddParagraph(d.DiaryText.Substring(0, Math.Min(d.DiaryText.Length, 1 + d.DiaryText.IndexOf(Environment.NewLine))));
                     }
                     if (d.DocCode != null)
                     {
@@ -635,7 +657,7 @@ namespace ClinicX.Controllers
             spacer = section.AddParagraph();
 
             spacer = section.AddParagraph();
-            
+
             List<FHSummary> famList = await _famData.GetFHSummaryList(patient.MPI);
 
             if (famList.Count > 0)
@@ -713,7 +735,7 @@ namespace ClinicX.Controllers
                     {
                         sRow.Cells[4].AddParagraph("");
                     }
-                        sRow.Cells[5].AddParagraph(f.Diagnosis + " age " + f.AgeDiag + ", treated at " + f.Hospital);
+                    sRow.Cells[5].AddParagraph(f.Diagnosis + " age " + f.AgeDiag + ", treated at " + f.Hospital);
                     sRow.Cells[6].AddParagraph(f.InfoReq + " " + f.WhyNot);
                     if (f.Conf == "Other")
                     {
@@ -789,7 +811,7 @@ namespace ClinicX.Controllers
             pdf.RenderDocument();
             pdf.PdfDocument.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf"));
 
-            
+
 
             string fileCGU = patient.CGU_No.Replace(".", "-");
             string docCode = "REPSUM";
@@ -805,6 +827,9 @@ namespace ClinicX.Controllers
 
             System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
             //}
+            success = true;
+
+            return success;
         }
     }
 }

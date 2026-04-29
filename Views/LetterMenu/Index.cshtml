@@ -38,6 +38,7 @@
                 <option value="MEDREC">Medical Records Requests</option>
                 <option value="DNATS">DNA</option>
                 <option value="Outcome">Outcome</option>
+                <option value="Reports">Reports</option>
                 <option value="Other">Other</option>
             </select>
         </div>
@@ -74,6 +75,20 @@
                 <select name="docID" id="docGroupOutcome" hidden>
                     <option value="" selected>Select</option>
                     @foreach (var item in Model.docsListOutcome)
+                    {
+                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+                <select name="docID" id="docGroupReports" hidden>
+                    <option value="" selected>Select</option>
+                    @foreach (var item in Model.docsListReports)
+                    {
+                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+                <select name="docID" id="docGroupOther" hidden>
+                    <option value="" selected>Select</option>
+                    @foreach (var item in Model.docsListOther)
                     {
                         <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
                     }
@@ -149,6 +164,8 @@
     document.getElementById("docGroupMedRec").addEventListener("change", SetDoccode);
     document.getElementById("docGroupDNA").addEventListener("change", SetDoccode);
     document.getElementById("docGroupOutcome").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupReports").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupOther").addEventListener("change", SetDoccode);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     document.getElementById("btnPrint").addEventListener("click", DoPrint);
     document.getElementById("ddlRefID").addEventListener("change", SetReferral);
@@ -162,6 +179,8 @@
         var medrecLetters = document.getElementById("docGroupMedRec");
         var dnaLetters = document.getElementById("docGroupDNA");
         var outcomeLetters = document.getElementById("docGroupOutcome");
+        var reports = document.getElementById("docGroupReports");
+        var otherLetters = document.getElementById("docGroupOther");
                 
 
         standardLetters.value = "";
@@ -172,6 +191,10 @@
         dnaLetters.hidden = true;
         outcomeLetters.value = "";
         outcomeLetters.hidden = true;
+        reports.value = "";
+        reports.hidden = true;
+        otherLetters.value = "";
+        otherLetters.hidden = true;
 
         
         if (groupMenu.value == "Standard")
@@ -194,6 +217,14 @@
         {
             outcomeLetters.hidden = false;
         }
+        if (groupMenu.value == "Reports")
+        {
+            reports.hidden = false;
+        }
+        if (groupMenu.value == "Other")
+        {
+            otherLetters.hidden = false;
+        }
         
         //const choices = new Choices('#ddlExtClinician');
 
@@ -215,6 +246,8 @@
         var medrecLetters = document.getElementById("docGroupMedRec");
         var dnaLetters = document.getElementById("docGroupDNA");
         var outcomeLetters = document.getElementById("docGroupOutcome");
+        var reports = document.getElementById("docGroupReports");
+        var otherLetters = document.getElementById("docGroupOther");
 
         var clinList = document.getElementById("ddlExtClinician");
 
@@ -256,6 +289,16 @@
         if(!outcomeLetters.hidden)
         {
             docCode = outcomeLetters.value;
+        }
+
+        if(!reports.hidden)
+        {            
+            docCode = reports.value;
+        }
+
+        if(!otherLetters.hidden)
+        {
+            docCode = otherLetters.value;
         }
 
         document.getElementById("txtDocCode").value = docCode;
@@ -314,6 +357,7 @@
             } 
             */
         }        
+
 
         if(recip == "Other")
         {

@@ -130,6 +130,7 @@
                             <option value="TWIMC">To Whom it May Concern</option>
                         </select>                    
 
+                        @*
                         <select class="w-100" id="ddlLetterToType" hidden>                            
                             <option value="">Select...</option>
                             @foreach (var item in Model.specialities)
@@ -137,7 +138,7 @@
                                 <option value=@item>@item</option>
                             }
                         </select>
-
+                        *@
                         <select class="w-100" id="ddlRelsTo" hidden>
                             @if (Model.relativesList.Count > 0)
                             {
@@ -153,8 +154,12 @@
                             }
                         </select>
 
-                        <select class="w-100" id="ddlLetterToClinician" hidden>
-
+                        <select class="w-100 js-choice" id="ddlLetterToClinician" hidden>
+                            <option value="">Select...</option>
+                            @foreach (var item in Model.clinicians)
+                            {
+                                <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY</option>
+                            }
                         </select>                    
                     </div>
                     <div class="col-md-4">
@@ -530,7 +535,7 @@
     document.getElementById("ddlLetterTo").addEventListener("change", SetLetterTo);
     document.getElementById("txtLetterTo").addEventListener("change", SetLetterToTyped);
     document.getElementById("ddlLetterFrom").addEventListener("change", SetLetterFrom);
-    //document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
+    document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
     //document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
     document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);
     //document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
@@ -588,9 +593,11 @@
 
 
         const choices = new Choices('#ddlCC');
+        const choices2 = new Choices('#ddlLetterToClinician');
 
         // when you want to hide:
         document.querySelector('#ddlCC').closest('.choices').style.display = 'none';        
+        document.querySelector('#ddlLetterToClinician').closest('.choices').style.display = 'none';
 
         LoadEDMSLink(); //link to GEMR
     }
@@ -744,13 +751,16 @@
         
         if (sLetterTo == "Other") 
         {            
-            document.getElementById("ddlLetterToType").hidden = false;
+            //document.getElementById("ddlLetterToType").hidden = false;
+            document.getElementById("ddlLetterToClinician").hidden = false;
+            document.querySelector('#ddlLetterToClinician').closest('.choices').style.display = '';
             letterToCode.value = "Other";
         }
         else
-        {
+        {           
             document.getElementById("ddlLetterToClinician").hidden = true;
-            document.getElementById("ddlLetterToType").hidden = true;
+            document.querySelector('#ddlLetterToClinician').closest('.choices').style.display = 'none';            
+            //document.getElementById("ddlLetterToType").hidden = true;
             document.getElementById("txtLetterTo").value = sName.replaceAll(/&#x27;/g, "'") + "\n" + sAddress.replaceAll(/&amp;/g, "&").replaceAll(/&#xD;&#xA;/g, "\n").replaceAll(/&#x27;/g, "'").replaceAll(/&#x9;/g, "");
             document.getElementById("txtisAddressChanged").value = "true";
         }
@@ -815,6 +825,74 @@
     function ShowLetterToClinician()
     {
         document.getElementById("ddlCC").hidden = false;
+    }
+
+    function SetLetterToClinician()
+    {
+        const clinCode = document.getElementById("ddlLetterToClinician");
+                
+        
+        var sName = "";
+        var sAddress = "";
+
+        var clinicianArray = [];
+        var titleArray = [];
+        var firstnameArray = [];
+        var lastnameArray = [];
+        var facilityArray = [];
+        var facilityCode;
+
+        @foreach (var item in Model.clinicians)
+        {
+            @:clinicianArray.push("@item.MasterClinicianCode");
+            @:titleArray.push("@item.TITLE");
+            @:firstnameArray.push("@item.FIRST_NAME");
+            @:lastnameArray.push("@item.LAST_NAME");
+            @:facilityArray.push("@item.MasterFacilityCode");
+        }
+
+        for (var k = 0; k < clinicianArray.length; k++)
+        {
+            var nameToTest = clinicianArray[k];
+            if (nameToTest == clinCode.value)
+            {                
+                sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
+                facilityCode = facilityArray[k];
+            }
+        }
+
+        var facilityCodeArray = [];
+        var facilityNameArray = [];
+        var facilityAddressArray = [];
+        var facilityCityArray = [];
+        var facilityStateArray = [];
+        var facilityPostcodeArray = [];
+
+        @foreach (var item in Model.facilities)
+        {
+            @:facilityCodeArray.push("@item.MasterFacilityCode");
+            @:facilityNameArray.push("@item.NAME");
+            @:facilityAddressArray.push("@item.ADDRESS");
+            @:facilityCityArray.push("@item.CITY");
+            @:facilityStateArray.push("@item.STATE");
+            @:facilityPostcodeArray.push("@item.ZIP");
+        }
+
+        for (var j = 0; j < facilityCodeArray.length; j++)
+        {
+            var nameToTest = facilityCodeArray[j];
+            if (nameToTest == facilityCode)
+            {
+                sAddress = facilityNameArray[j] + "\n" +
+                facilityAddressArray[j] + "\n" +
+                facilityCityArray[j] + "\n" +
+                facilityStateArray[j] + "\n" +
+                facilityPostcodeArray[j];
+            }
+        }        
+
+        document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replaceAll(/&#x27;/g, "'").replaceAll(/&amp;/g, "&").replaceAll(/&#xD;&#xA;/g, "\n").replaceAll(/&#x27;/g, "'").replaceAll(/&#x9;/g, "")
+        document.getElementById("txtSalutation").value = "Dear " + sName;
     }
 
     function ShowCCClinician() 

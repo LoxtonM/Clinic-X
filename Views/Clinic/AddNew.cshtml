@@ -77,16 +77,20 @@
                 <div class="mb-5">
 
                     <div id="TelAdmin" hidden>
-                        <div class="row mb-5">
-                            @*
+                        <div class="row mb-5">                            
                             <div class="col-md-2">
-                                <label>Time Spent:</label>
+                                <label>Note Type:</label>
                             </div>
-                            <div class="col-md-1  text-md-end">
-                                <input class="w-100" name="timeSpent" />
-                            </div>*@
                             <div class="col-md-2">
-                                <label>Priority:</label>
+                                <select name="noteType">
+                                    @foreach (var item in Model.noteTypeList)
+                                    {
+                                        <option value=@item.NoteType>@item.NoteType</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label>Urgent/Routine:</label>
                             </div>
                             <div class="col-md-2  text-md-end">
                                 <select name="urgency">
@@ -117,7 +121,7 @@
                         </div>
                         <div class="row mb-5">
                             <div class="col-md-2  text-md-end">
-                                <label>Message:</label>
+                                <label>Message/Note:</label>
                             </div>
                             <div class="col-md-6">
                                 <textarea class="w-100" name="message"></textarea>
@@ -322,16 +326,18 @@
         var today = new Date();
         var clinicDate = document.getElementById("txtBookedDate");
 
+        /*
         if(document.getElementById("ddlAppType").value == "Tel. Admin" || document.getElementById("ddlAppType").value == "Tel. Consultation" || 
         document.getElementById("ddlAppType").value == "Advice and Guidance" || document.getElementById("ddlAppType").value == "Review - Patient not" ||
         document.getElementById("ddlAppType").value == "Tel. Non.Patient" || document.getElementById("ddlAppType").value == "Tel. Results" ||
         document.getElementById("ddlAppType").value == "Tel. Post-Clinic" || document.getElementById("ddlAppType").value == "Tel. Pre-Clinic")
-        {
-            clinicDate.value = today.toISOString().slice(0,10);
-            document.getElementById("ContactDetails").hidden = true;
-            document.getElementById("TelAdmin").hidden = false;
-            document.getElementById("ddlVenue").value = "Telephone";            
-        }
+        {*/
+        clinicDate.value = today.toISOString().slice(0,10);
+        document.getElementById("ContactDetails").hidden = true;
+        document.getElementById("TelAdmin").hidden = false;
+        document.getElementById("ddlVenue").value = "Telephone";            
+    /*    
+    }
         else
         {            
             if(clinicDate.value != "")
@@ -352,7 +358,7 @@
                 }
             }
             
-        }
+        }*/
         
     }
 

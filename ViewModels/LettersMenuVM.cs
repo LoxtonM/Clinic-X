@@ -9,6 +9,8 @@ namespace ClinicX.ViewModels
         public List<Document> docsListMedRec { get; set; }
         public List<Document> docsListDNA { get; set; }
         public List<Document> docsListOutcome { get; set; }
+        public List<Document> docsListReports { get; set; }
+        public List<Document> docsListOther { get; set; }
         public List<DocumentsContent> docContentList { get; set; }
         public Patient patient {  get; set; }
         public Referral referral { get; set; }
