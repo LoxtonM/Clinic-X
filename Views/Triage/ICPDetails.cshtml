@@ -650,10 +650,9 @@
         var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
         var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
         var _facility = document.getElementById("ddlFacility");
-
+               
         if (CheckFormValid() == 1)
         {
-            //window.alert("Submitted!");
             document.getElementById("formICPGeneral").submit();
         }
     }
@@ -669,6 +668,7 @@
 
     function CheckFormValid()
     { //validation to ensure all required data is entered
+        document.getElementById("txtIndicationNotesTriage").value = document.getElementById("txtIndicationNotes").value; //so they can be saved with the form submit
 
         if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "")
         {
@@ -697,26 +697,13 @@
 
             if (document.getElementById("ddlTreatPath2-Clinic").value == "3")
             {   
-                if(!"@Model.referralDetails.REASON_FOR_REFERRAL".toUpperCase().match("Process".toUpperCase())) //check for "Process X" in indication notes (account for capitalisation)
-                {
-                    if(document.getElementById("txtIndicationNotes").value.toUpperCase().match("Process".toUpperCase()))
-                    {
-                        //window.alert("You have selected a CLICS pathway without specifying a process. You might have not saved the indication notes.");
-                        //if(document.getElementById("txtIndicationNotes").value != null)
-                        //{
-                        document.getElementById("txtIndicationNotesTriage").value = document.getElementById("txtIndicationNotes").value;
-                        //}
-                    }
-                    else
-                    {
-                        window.alert("You have selected a CLICS pathway without specifying a process. Please rectify.");    
-                        return 0;
-                    }
-                    
+                if(!"@Model.referralDetails.REASON_FOR_REFERRAL".toUpperCase().match("Process".toUpperCase()) || !document.getElementById("txtIndicationNotesTriage").value.toUpperCase().match("Process".toUpperCase()))
+                {                 
+                    window.alert("You have selected a CLICS pathway without specifying a process. Please rectify.");    
+                    return 0;                 
                 }
             }
         }
-
         
         return 1;
     }
