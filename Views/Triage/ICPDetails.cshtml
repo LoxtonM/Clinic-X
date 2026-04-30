@@ -145,6 +145,7 @@
             <input name="icpID" asp-for=@Model.triage.ICPID />
             <input id="txtTP1" name="tp" />
             <input id="txtTP2" name="tp2" />
+            <input id="txtIndicationNotesTriage" name="indicationNotes" />
         </div>
         <div class="row">
             <div class="col-md-2">
@@ -700,13 +701,18 @@
                 {
                     if(document.getElementById("txtIndicationNotes").value.toUpperCase().match("Process".toUpperCase()))
                     {
-                        window.alert("You have selected a CLICS pathway without specifying a process. You might have not saved the indication notes.");
+                        //window.alert("You have selected a CLICS pathway without specifying a process. You might have not saved the indication notes.");
+                        //if(document.getElementById("txtIndicationNotes").value != null)
+                        //{
+                        document.getElementById("txtIndicationNotesTriage").value = document.getElementById("txtIndicationNotes").value;
+                        //}
                     }
                     else
                     {
                         window.alert("You have selected a CLICS pathway without specifying a process. Please rectify.");    
+                        return 0;
                     }
-                    return 0;
+                    
                 }
             }
         }

@@ -23,9 +23,11 @@ namespace ClinicX.Controllers
         private readonly ILeafletDataAsync _leafletData;
         private readonly IExternalClinicianDataAsync _externalClinicianData;
         private readonly ITriageDataAsync _triageData;
+        private readonly IScreeningCoordinatorDataAsync _screeningCoordinatorData;
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documentsData, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController letterController, ICRUD crud,
-            IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData, ITriageDataAsync triageData, ClinicalContext context, DocumentContext documentContext) 
+            IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData, ITriageDataAsync triageData, 
+            IScreeningCoordinatorDataAsync screeningCoordinatorData, ClinicalContext context, DocumentContext documentContext) 
         {
             _config = config;   
             _context = context;
@@ -40,6 +42,7 @@ namespace ClinicX.Controllers
             _leafletData = leafletData;
             _externalClinicianData = externalClinicianData;
             _triageData = triageData;
+            _screeningCoordinatorData = screeningCoordinatorData;
         }
 
         [Authorize]
@@ -78,6 +81,7 @@ namespace ClinicX.Controllers
             _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
             _lvm.breastList = clinList.Where(c => c.POSITION.Contains("Breast") || c.SPECIALITY.Contains("Breast")).ToList();
             _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).ToList();
+            _lvm.screeningCoordinatorList = await _screeningCoordinatorData.GetScreeningCoordinatorList();
 
             _lvm.leaflets = new List<Leaflet>();
             

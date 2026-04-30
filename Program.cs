@@ -85,6 +85,7 @@ builder.Services.AddScoped<LetterController>();
 builder.Services.AddScoped<IApiController, APIController>();
 builder.Services.AddScoped<BloodFormController>();
 builder.Services.AddScoped<ISocialServicePathwayDataAsync, SocialServicePathwayDataAsync>();
+builder.Services.AddScoped<IScreeningCoordinatorDataAsync, ScreeningCoordinatorDataAsync>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
    .AddCookie(options =>

@@ -296,4 +296,22 @@ namespace ClinicX.Models
         public int ICPID { get; set; }
         public bool IsActive { get; set; }
     }
+
+    [Keyless]
+    [Table("ViewScreeningCoordinators", Schema = "dbo")]
+    public class ScreeningCoordinator
+    {        
+        public string MasterClinicianCode { get; set; }
+        public string Contact { get; set; }
+        public string FacilityName { get; set; }
+        public string? ADDRESS { get; set; }
+        public string? CITY { get; set; }
+        public string? STATE { get; set; }
+        public string? COUNTRY { get; set; }
+        public string? PostCode { get; set; }
+        public string? TITLE { get; set; }
+        public string? FIRST_NAME { get; set; }
+        public string? NAME { get; set; }
+        public string? JobTitle { get; set; }
+    }
 }

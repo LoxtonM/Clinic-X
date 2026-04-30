@@ -181,7 +181,7 @@ namespace ClinicX.Controllers
         
         [HttpPost]
         public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, 
-            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm, string? ga, string? genp, int? closeReferral)
+            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm, string? ga, string? genp, int? closeReferral, string? indicationNotes)
         {
             try
             {
@@ -196,6 +196,14 @@ namespace ClinicX.Controllers
                 string referrer = referral.ReferrerCode;
                 string sApptIntent = "";
                 string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;                            
+
+                if(indicationNotes != null && indicationNotes != "")
+                {
+                    int success = _crud.CallStoredProcedure("ICP General", "Indication Notes", icpID, 0, 0, "", "", "", indicationNotes, User.Identity.Name);
+
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons(SQL)" }); }
+                }
+
 
                 if (ga != null)
                 {
@@ -467,12 +475,12 @@ namespace ClinicX.Controllers
 
             if(finalReview == "Yes")
             {
-                if (letter != null && letter != 0 && !letterAlreadyDone) //don't want to do the letter and diary every single time!!!
-                {
+                //if (letter != null && letter != 0 && !letterAlreadyDone) //don't want to do the letter and diary every single time!!!
+                //{
                     _ivm.cancerAction = await _icpActionData.GetICPCancerAction(letter.GetValueOrDefault());
                     string docCode = _ivm.cancerAction.DocCode;
 
-                    if (clinician != null && clinician != "" && _ivm.icpCancer.WaitingListVenue == null)
+                    if (clinician != null && clinician != "" && _ivm.icpCancer.WaitingListVenue != null)
                     {
                         int successWL = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 50, refID, clinic, "Cancer", clinician, comments,
                             User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
@@ -491,6 +499,7 @@ namespace ClinicX.Controllers
                         int letterID = doc.DocContentID;
 
                         int successDiaryLetter = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+                        //confirm if we want a diary entry for DOT at this stage
                         var diaryLetter = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
                         int diaryIDLetter = diaryLetter.DiaryID;
 
@@ -504,22 +513,20 @@ namespace ClinicX.Controllers
                         {
                             //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
                             Referral refer = await _referralData.GetReferralDetails(refID);
-                            _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryID, freeText1, "", 0,
+                            _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryIDLetter, freeText1, "", 0,
                             "", "", null, false, "", leafletID);
                         }
 
                         if (successDiaryLetter == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canDiaryUpdate(SQL)" }); }
                     }
-                }
-
-
+                //}
 
                 int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "REPSUM", "", "", User.Identity.Name, null, null, false, false);
                 var diary = await _diaryData.GetLatestDiaryByRefID(refID, "REPSUM");
 
                 int diaryID = diary.DiaryID;
 
-                return RedirectToAction("PrepareRepsum", "Repsum", new { id = id, diaryID = diaryID }); 
+                return RedirectToAction("PrepareRepsum", "Repsum", new { id = id, diaryID = diaryID }); //redirects to REPSUM controller, which should redirect back here when done
                 //we HAVE to do it this way or it won't update the data model
             }
 

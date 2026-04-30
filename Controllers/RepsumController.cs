@@ -55,7 +55,7 @@ namespace ClinicX.Controllers
         [Authorize]
         public async Task<IActionResult> PrepareRepsum(int id, int diaryID)
         {
-            bool repsumDone = await DoRepsum(id, diaryID, User.Identity.Name);
+            bool repsumDone = await DoRepsum(id, diaryID, User.Identity.Name); //should return success (or failure if something goes wrong in the creation process)
 
             string message = "";           
 
@@ -66,7 +66,7 @@ namespace ClinicX.Controllers
         }
 
 
-        public async Task<bool> DoRepsum(int icpID, int diaryID, string user)
+        public async Task<bool> DoRepsum(int icpID, int diaryID, string user) //actually builds the REPSUM print-out, and auto-saves it to EDMS
         {
             bool success = false;
 

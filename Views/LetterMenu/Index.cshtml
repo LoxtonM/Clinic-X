@@ -116,6 +116,7 @@
                 <label>Recipient:</label>
             </div>
             <div class="col-md-4">
+                @*
                 <select name="otherClinician" id="ddlExtClinician" class="js-choice">
                     <option value="">Select ...</option>
                     @foreach(var item in Model.externalClinicians)
@@ -123,6 +124,15 @@
                         <option value=@item.MasterClinicianCode>@item.TITLE @item.LAST_NAME - @item.FACILITY</option>
                     }
                 </select>
+                *@
+                <select name="otherClinician" id="ddlExtClinician">
+                    <option value="">Select ...</option>
+                    @foreach (var item in Model.screeningCoordinatorList)
+                    {
+                        <option value=@item.MasterClinicianCode>@item.Contact - @item.FacilityName</option>
+                    }
+                </select>
+
             </div>
         </div>
 
@@ -341,21 +351,7 @@
             //document.querySelector('#ddlExtClinician').closest('.choices').style.display = '';
             document.getElementById("divExtClinician").hidden = false;
 
-            /*
-            @foreach (var item in Model.externalClinicians)
-            {
-                @:clinCodeArray.push("@item.MasterClinicianCode");
-                if (item.POSITION != "Not known")
-                {
-                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.POSITION".replace("&amp;", "&").replace("&#x27;", "'"));
-                }
-                else
-                {
-                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME".replace("&#x27;", "'"));
-                }
-                @:clinDeptArray.push("@item.FACILITY");
-            } 
-            */
+            
         }        
 
 
