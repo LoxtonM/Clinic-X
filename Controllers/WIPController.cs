@@ -4,12 +4,12 @@ namespace ClinicX.Controllers
 {
     public class WIPController : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             return View();
         }
 
-        public IActionResult NotFound()
+        public async Task<IActionResult> NotFound()
         {
             return View();
         }

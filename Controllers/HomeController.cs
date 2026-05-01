@@ -65,7 +65,7 @@ namespace ClinicX.Controllers
             }
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy()
         {
             return View();
         }

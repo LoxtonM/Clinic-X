@@ -122,14 +122,14 @@ namespace ClinicX.Controllers
                     string docCode = "VHRPro";
                     string diaryText = "";
 
-                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+                    int successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
                     int diaryID = diary.DiaryID;
                     _vhrc.DoVHRPro(213, mpi, id, User.Identity.Name, referCode, screeningService, freeText, diaryID, false);
 
                     docCode = "VHRProC";
                     diaryText = "";
-                    successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+                    successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
                     var diary2 = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
                     diaryID = diary2.DiaryID;
 
@@ -156,7 +156,7 @@ namespace ClinicX.Controllers
                 int iOther = other ? 1 : 0;
                 int iNotID = notID ? 1 : 0;                
 
-                int success = _crud.CallStoredProcedure("UntestedVHRGroup", "Edit", id, thresholdAge.GetValueOrDefault(), 0, "", "", "", "", User.Identity.Name, null, null, below30, below50, iOther, iNotID);
+                int success = await _crud.CallStoredProcedure("UntestedVHRGroup", "Edit", id, thresholdAge.GetValueOrDefault(), 0, "", "", "", "", User.Identity.Name, null, null, below30, below50, iOther, iNotID);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "VHRPro update untestedgroup" }); }
 
@@ -203,7 +203,7 @@ namespace ClinicX.Controllers
                 int iOther = other ? 1 : 0; //converts bools to ints for the SQL update
                 int iNotID = notID ? 1 : 0;
 
-                int success = _crud.CallStoredProcedure("UntestedVHRGroup", "Create", refid, thresholdAge.GetValueOrDefault(), 0, "", "", "", "", User.Identity.Name, null, null, below30, below50, iOther, iNotID);
+                int success = await _crud.CallStoredProcedure("UntestedVHRGroup", "Create", refid, thresholdAge.GetValueOrDefault(), 0, "", "", "", "", User.Identity.Name, null, null, below30, below50, iOther, iNotID);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "VHRPro update untestedgroup" }); }
 

@@ -5,7 +5,7 @@ namespace ClinicX.Controllers
     public class ErrorController : Controller
     {       
         [HttpGet]
-        public IActionResult ErrorHome(string error, string? formName="")
+        public async Task<IActionResult> ErrorHome(string error, string? formName="")
         {            
 
             using (StreamWriter sw = System.IO.File.AppendText($"wwwroot/ErrorLogs/Log.txt"))

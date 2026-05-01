@@ -80,13 +80,13 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNew(int mpi, string diseaseCode, string status, string comments)
+        public async Task<IActionResult> AddNew(int mpi, string diseaseCode, string status, string comments)
         {
             try
             {
                 if (comments == null) { comments = ""; }
                 
-                int success = _crud.CallStoredProcedure("Diagnosis", "Create", mpi, 0, 0, diseaseCode, status, "", comments, User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Diagnosis", "Create", mpi, 0, 0, diseaseCode, status, "", comments, User.Identity.Name);
                 //do the update, return 1 if successful and 0 if not
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName= "Diagnosis-new(SQL)" }); }
@@ -137,7 +137,7 @@ namespace ClinicX.Controllers
                 Diagnosis diag = await _diseaseData.GetDiagnosisDetails(diagID);
                 int mpi = diag.MPI;
                                 
-                int success = _crud.CallStoredProcedure("Diagnosis", "Update", diagID, 0, 0, status, "", "", comments, User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Diagnosis", "Update", diagID, 0, 0, status, "", "", comments, User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diagnosis-edit(SQL)" }); }
 

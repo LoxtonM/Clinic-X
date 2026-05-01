@@ -99,7 +99,7 @@ namespace ClinicX.Controllers
 
                     if (curPassword == _pvm.staffMember.PASSWORD && newPassword == newPasswordConf)
                     {
-                        int success = _crud.CallStoredProcedure("Password", "Change", 0,0,0,curPassword, newPassword, newPasswordConf, "", User.Identity.Name);
+                        int success = await _crud.CallStoredProcedure("Password", "Change", 0,0,0,curPassword, newPassword, newPasswordConf, "", User.Identity.Name);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Profile-ChangePassword(SQL)" }); }
                     }
@@ -159,7 +159,7 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        int success = _crud.CallStoredProcedure("StaffMember", "Edit", 0, 0, 0, title, forename, surname, position, User.Identity.Name, null, null, false, false, 0, 0, 0, email, telephone, gmcnumber);
+                        int success = await _crud.CallStoredProcedure("StaffMember", "Edit", 0, 0, 0, title, forename, surname, position, User.Identity.Name, null, null, false, false, 0, 0, 0, email, telephone, gmcnumber);
                         
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Profile-UpdateDetails(SQL)" }); }
                         

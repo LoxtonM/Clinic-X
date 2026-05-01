@@ -121,11 +121,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNew(int mpi, string test, string sentTo, DateTime expectedDate, int refID)
+        public async Task<IActionResult> AddNew(int mpi, string test, string sentTo, DateTime expectedDate, int refID)
         {
             try
             {                
-                int success = _crud.CallStoredProcedure("Test", "Create", mpi, refID, 0, test, sentTo, "", "", User.Identity.Name, expectedDate);
+                int success = await _crud.CallStoredProcedure("Test", "Create", mpi, refID, 0, test, sentTo, "", "", User.Identity.Name, expectedDate);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-add(SQL)" }); }
 
@@ -219,7 +219,7 @@ namespace ClinicX.Controllers
                 var tser = await _testData.GetTestDetails(testID);
                 int mpi = tser.MPI; //obviously we can't do it immediately.
 
-                int success = _crud.CallStoredProcedure("Test", "Update", testID, complete, 0, result, "", "", comments, User.Identity.Name, dateReceived, dateGiven);
+                int success = await _crud.CallStoredProcedure("Test", "Update", testID, complete, 0, result, "", "", comments, User.Identity.Name, dateReceived, dateGiven);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-edit(SQL)" }); }
 

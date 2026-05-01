@@ -113,7 +113,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult PhenotipsQRLink(int mpi, string? pathway)
+        public async Task<IActionResult> PhenotipsQRLink(int mpi, string? pathway)
         {
             string sMessage = "";
             bool isSuccess = false;
@@ -191,7 +191,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult PhenotipsPPQLink(int mpi, string ppqLink)
+        public async Task<IActionResult> PhenotipsPPQLink(int mpi, string ppqLink)
         {
             _pvm.mpi = mpi;
             _pvm.ppqURL = ppqLink;

@@ -115,7 +115,7 @@ namespace ClinicX.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult Create(int mpi, int refID, string pathway, string category, string revDate, string comments, string? recipient)
+        public async Task<IActionResult> Create(int mpi, int refID, string pathway, string category, string revDate, string comments, string? recipient)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace ClinicX.Controllers
                 }
 
 
-                int success = _crud.CallStoredProcedure("Review", "Create", mpi, refID, 0, pathway, category, recipient, comments, User.Identity.Name,
+                int success = await _crud.CallStoredProcedure("Review", "Create", mpi, refID, 0, pathway, category, recipient, comments, User.Identity.Name,
                      reviewDate);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Review-add(SQL)" }); }
@@ -199,7 +199,7 @@ namespace ClinicX.Controllers
                     reviewDate = DateTime.Parse("1/1/1900");
                 }
                                
-                int success = _crud.CallStoredProcedure("Review", "Edit", id, 0, 0, status, comments, "", "", User.Identity.Name,
+                int success = await _crud.CallStoredProcedure("Review", "Edit", id, 0, 0, status, comments, "", "", User.Identity.Name,
                     reviewDate);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Review-edit(SQL)" }); }

@@ -782,7 +782,7 @@
 
         if(document.getElementById("ddlRelsTo").value != "")
         {
-            document.getElementById("txtSalutation").value = "Dear Relative";
+            //
 
             var rel = document.getElementById("ddlRelsTo").value;
             var sName = "Nobody";
@@ -818,7 +818,7 @@
             }
 
             document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replaceAll(/&#x27;/g, "'").replaceAll(/&amp;/g, "&").replaceAll(/&#xD;&#xA;/g, "\n").replaceAll(/&#x27;/g, "'").replaceAll(/&#x9;/g, "")
-
+            document.getElementById("txtSalutation").value = "Dear " + sName;
         }
     }
 

@@ -227,7 +227,7 @@ namespace ClinicX.Controllers
                 var activity = await _activityData.GetActivityDetails(refID); //because we need the MPI for the diagnosis update, and we don't want to have to pass it through the form
                 int mpi = activity.MPI;
 
-                int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
+                int success = await _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
                     letterRequired, ethnicity, User.Identity.Name, arrivalTime, null, isClockStop, isComplete, 0,0,0,seenBy2,seenBy3);
                 //do the update, return 1 if successful and 0 if not
 
@@ -235,7 +235,7 @@ namespace ClinicX.Controllers
 
                 if (letterRequired != "No")
                 {
-                    int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "Post Clinic Draft", "", "", "", User.Identity.Name);
+                    int success2 = await _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "Post Clinic Draft", "", "", "", User.Identity.Name);
 
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.",formName = "Clinic-createDOT(SQL)" }); }
 
@@ -248,14 +248,14 @@ namespace ClinicX.Controllers
                     var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);
                     //int mpi = letter.MPI.GetValueOrDefault(); //because clearly we can't do it in one line, that would be way too fucking convenient!!!
 
-                    int success3 = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
+                    int success3 = await _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
 
                     if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-addFMtoDOT(SQL)" }); }
                 }
 
                 if(diseaseCode != null && status != null)
                 {
-                    int success4 = _crud.CallStoredProcedure("Diagnosis", "Create", mpi, refID, 0, diseaseCode, status, "", comments, User.Identity.Name);
+                    int success4 = await _crud.CallStoredProcedure("Diagnosis", "Create", mpi, refID, 0, diseaseCode, status, "", comments, User.Identity.Name);
                  
                     if (success4 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-addDisease(SQL)" }); }
                 }
@@ -310,7 +310,7 @@ namespace ClinicX.Controllers
 
             DateTime bookedTimeEdited = DateTime.Parse("1900-01-01 " + bookedTime.Hour + ":" + bookedTime.Minute + ":" + bookedTime.Second);
 
-            int success = _crud.CallStoredProcedure("Contact", "Create", mpi, linkedRefID, timeSpent.GetValueOrDefault(), appType, venue, clinician1, message, User.Identity.Name,
+            int success = await _crud.CallStoredProcedure("Contact", "Create", mpi, linkedRefID, timeSpent.GetValueOrDefault(), appType, venue, clinician1, message, User.Identity.Name,
                 bookedDate, bookedTimeEdited, isClockStop, false, noPatientsSeen, 0, 0, clinician2, clinician3, letterReq, 0, 0, 0, 0, 0, counseled);
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-create(SQL)" }); }
@@ -363,7 +363,7 @@ namespace ClinicX.Controllers
                 var activityDetails = await _activityData.GetActivityDetails(refID);
                 
 
-                int success = _crud.CallStoredProcedure("Diagnosis", "Create", activityDetails.MPI, 0, 0, diseaseCode, status, "", comments, User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Diagnosis", "Create", activityDetails.MPI, 0, 0, diseaseCode, status, "", comments, User.Identity.Name);
                 //do the update, return 1 if successful and 0 if not
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diagnosis-new(SQL)" }); }

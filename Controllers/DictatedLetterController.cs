@@ -181,7 +181,11 @@ namespace ClinicX.Controllers
                 if (sRefFacCode == null || sRefFacCode == "") { sRefFacCode = "Unknown"; } 
                 string sRefPhysCode = _lvm.activityDetails.REF_PHYS;
                 if (sRefPhysCode == null || sRefPhysCode == "") { sRefPhysCode = "Unknown"; }
-                _lvm.referrerFacility = await _externalFacilityData.GetFacilityDetails(sRefFacCode);                
+                _lvm.referrerFacility = await _externalFacilityData.GetFacilityDetails(sRefFacCode);
+                if (_lvm.referrerFacility == null)
+                {
+                    _lvm.referrerFacility = await _externalFacilityData.GetFacilityDetails("Unknown"); //because somehow there's a fucking null!!!!! Because of course there is.
+                }
                 _lvm.referrer = await _externalClinicianData.GetClinicianDetails(sRefPhysCode);                
                 _lvm.GPFacility = await _externalFacilityData.GetFacilityDetails(sGPCode);
                 _lvm.facilities = await _externalFacilityData.GetFacilityList();
@@ -209,7 +213,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
+        public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
             bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments,
             string salutation, string? ccAddress, bool? doPreview, bool? isClockStop, string? letterRe)
         {
@@ -238,13 +242,13 @@ namespace ClinicX.Controllers
                 //two updates required - one to update the addressee (if addressee has changed)
                 if (isAddresseeChanged)
                 {
-                    int success2 = _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, salutation, letterToCode, letterFromCode, letterTo, User.Identity.Name, 
+                    int success2 = await _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, salutation, letterToCode, letterFromCode, letterTo, User.Identity.Name, 
                         null, null, false, false, 0,0,0, letterRe);
 
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
                 }
 
-                int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, isClockStop, false, 0, 0, 0, 
+                int success = await _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, isClockStop, false, 0, 0, 0, 
                     secTeam, consultant, gc, 0,0,0,0,0, comments, salutation, letterRe);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
@@ -274,7 +278,7 @@ namespace ClinicX.Controllers
             {
                 var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = user.STAFF_CODE;
-                int success = _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", staffCode, "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", staffCode, "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
 
@@ -285,7 +289,7 @@ namespace ClinicX.Controllers
                 var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);
                 int mpi = letter.MPI.GetValueOrDefault(); //because clearly we can't do it in one line, that would be way too fucking convenient!!!
 
-                int success2 = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "Draft", "", "", "", User.Identity.Name); //add the patient to the DOT
+                int success2 = await _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "Draft", "", "", "", User.Identity.Name); //add the patient to the DOT
 
                 if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addPt(SQL)" }); }
 
@@ -298,11 +302,11 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult Delete(int dID)
+        public async Task<IActionResult> Delete(int dID)
         {
             try 
             {
-                int success = _crud.CallStoredProcedure("Letter", "Delete", dID, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Letter", "Delete", dID, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
 
@@ -315,11 +319,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Approve(int dID, bool? isCloseReferral=false, bool? isClockStop=false)
+        public async Task<IActionResult> Approve(int dID, bool? isCloseReferral=false, bool? isClockStop=false)
         {
             try
             {                
-                int success = _crud.CallStoredProcedure("Letter", "Approve", dID, 0, 0, "", "", "", "", User.Identity.Name, null, null, isCloseReferral, isClockStop);
+                int success = await _crud.CallStoredProcedure("Letter", "Approve", dID, 0, 0, "", "", "", "", User.Identity.Name, null, null, isCloseReferral, isClockStop);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-approve(SQL)" }); }
 
@@ -333,11 +337,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Unapprove(int dID)
+        public async Task<IActionResult> Unapprove(int dID)
         {
             try
             {
-                int success = _crud.CallStoredProcedure("Letter", "Unapprove", dID, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Letter", "Unapprove", dID, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-unapprove(SQL)" }); }
 
@@ -351,11 +355,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddPatientToDOT(int pID, int dID)
+        public async Task<IActionResult> AddPatientToDOT(int pID, int dID)
         {
             try
             {                
-                int success = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, pID, 0, "", "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, pID, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addPt(SQL)" }); }
 
@@ -368,11 +372,11 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult RemovePatientsFromDOT(int dotID)
+        public async Task<IActionResult> RemovePatientsFromDOT(int dotID)
         {
             try
             {
-                int success = _crud.CallStoredProcedure("Letter", "RemoveFamMembers", dotID, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Letter", "RemoveFamMembers", dotID, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-removePts(SQL)" }); }
 
@@ -385,11 +389,11 @@ namespace ClinicX.Controllers
         }
 
         //[HttpPost]
-        public IActionResult AddCCToDOT(int dID, string cc)
+        public async Task<IActionResult> AddCCToDOT(int dID, string cc)
         {
             try
             {                
-                int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, "", "", "", cc, User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, "", "", "", cc, User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addCC(SQL)" }); }
 
@@ -410,7 +414,7 @@ namespace ClinicX.Controllers
                 
                 int dID = letter.DotID;
 
-                int success = _crud.CallStoredProcedure("Letter", "DeleteCC", id, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Letter", "DeleteCC", id, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-deleteCC(SQL)" }); }
 
@@ -424,7 +428,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public IActionResult PreviewDOT(int dID)
+        public async Task<IActionResult> PreviewDOT(int dID)
         {
             try
             {
@@ -459,7 +463,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult NewDOTLetterPatient()
+        public async Task<IActionResult> NewDOTLetterPatient()
         {
             try
             {
@@ -530,7 +534,7 @@ namespace ClinicX.Controllers
 
             if (!isSearchOnly)
             {
-                int success = _crud.CallStoredProcedure("Letter", "AddCC", dotID, 0, 0, "", "", "", addressToAdd, User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Letter", "AddCC", dotID, 0, 0, "", "", "", addressToAdd, User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addCC(SQL)" }); }                
             }

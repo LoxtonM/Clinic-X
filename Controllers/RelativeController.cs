@@ -143,7 +143,7 @@ namespace ClinicX.Controllers
 
                 if (forename2 == null) { forename2 = ""; }
 
-                int success = _crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, title, forename1, forename2, surname,
+                int success = await _crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, title, forename1, forename2, surname,
                         User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-edit(SQL)" }); }
@@ -214,7 +214,7 @@ namespace ClinicX.Controllers
                 if (title == null) { title = ""; }
                 if (forename2 == null) { forename2 = ""; }
 
-                int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, isAffected, 0, title, forename1, forename2, surname,
+                int success = await _crud.CallStoredProcedure("Relative", "Create", wmfacsid, isAffected, 0, title, forename1, forename2, surname,
                     User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-add(SQL)" }); }
@@ -265,12 +265,12 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult ImportRelatives(int wmfacsid, string firstname, string lastname, DateTime dob, 
+        public async Task<IActionResult> ImportRelatives(int wmfacsid, string firstname, string lastname, DateTime dob, 
             DateTime dod, string sex, string relation)
         {
             try
             {
-                int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, 0, 0, "", firstname, "", lastname,
+                int success = await _crud.CallStoredProcedure("Relative", "Create", wmfacsid, 0, 0, "", firstname, "", lastname,
                     User.Identity.Name, dob, dod, false, false, 0, 0, 0, relation, sex);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-add(SQL)" }); }

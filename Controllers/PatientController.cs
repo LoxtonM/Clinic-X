@@ -219,7 +219,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpGet]
-        public IActionResult PedigreeAssistant(int id)
+        public async Task<IActionResult> PedigreeAssistant(int id)
         {
             RunPedigreeAssistant();
 

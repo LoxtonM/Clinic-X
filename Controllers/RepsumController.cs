@@ -275,11 +275,11 @@ namespace ClinicX.Controllers
                     {
                         rowCount += 1;
                         MigraDoc.DocumentObjectModel.Tables.Row sRow = tableSurv.AddRow();
-                        sRow.Cells[0].AddParagraph(s.SurvSite);
+                        if (s.SurvSite != null) { sRow.Cells[0].AddParagraph(s.SurvSite); } //EVERYTHING has to account for a possible null, or it throws a fit (and silently fails)!
                         if (s.SurvStartAge != null) { sRow.Cells[1].AddParagraph(s.SurvStartAge.ToString()); }
                         if (s.SurvStopAge != null) { sRow.Cells[2].AddParagraph(s.SurvStopAge.ToString()); }
-                        sRow.Cells[3].AddParagraph(s.SurvFreq);
-                        sRow.Cells[4].AddParagraph(s.SurvType);
+                        if (s.SurvFreq != null) { sRow.Cells[3].AddParagraph(s.SurvFreq); }
+                        if (s.SurvType != null) { sRow.Cells[4].AddParagraph(s.SurvType); }
 
                         if (rowCount == survList.Count)
                         {
@@ -319,15 +319,9 @@ namespace ClinicX.Controllers
                 {
                     rowCount += 1;
                     MigraDoc.DocumentObjectModel.Tables.Row sRow = tableStudy.AddRow();
-                    if (s.IdentifiedDate != null)
-                    {
-                        sRow.Cells[0].AddParagraph(s.IdentifiedDate.Value.ToString("dd/MM/yyyy"));
-                    }
+                    if (s.IdentifiedDate != null) { sRow.Cells[0].AddParagraph(s.IdentifiedDate.Value.ToString("dd/MM/yyyy")); }
                     sRow.Cells[1].AddParagraph(s.StudyCode + "-" + s.StudyName);
-                    if (s.Status != null)
-                    {
-                        sRow.Cells[2].AddParagraph(s.Status);
-                    }
+                    if (s.Status != null) { sRow.Cells[2].AddParagraph(s.Status); }
 
                     if (rowCount == studyList.Count)
                     {
@@ -385,10 +379,7 @@ namespace ClinicX.Controllers
                     {
                         sRow.Cells[4].AddParagraph("No");
                     }
-                    if (s.RelSurname != null)
-                    {
-                        sRow.Cells[5].AddParagraph($"{s.RelTitle} {s.RelForename1} {s.RelSurname}");
-                    }
+                    if (s.RelSurname != null) { sRow.Cells[5].AddParagraph($"{s.RelTitle} {s.RelForename1} {s.RelSurname}"); }
 
                     if (rowCount == teList.Count)
                     {
@@ -435,11 +426,11 @@ namespace ClinicX.Controllers
                 {
                     rowCount += 1;
                     MigraDoc.DocumentObjectModel.Tables.Row sRow = tableApp.AddRow();
-                    sRow.Cells[0].AddParagraph(a.BOOKED_DATE.Value.ToString("dd/MM/yyyy"));
-                    sRow.Cells[1].AddParagraph(a.BOOKED_TIME.Value.ToString("HH:mm"));
-                    sRow.Cells[2].AddParagraph(a.AppType);
-                    sRow.Cells[3].AddParagraph(a.Clinician);
-                    sRow.Cells[4].AddParagraph(a.Attendance);
+                    if (a.BOOKED_DATE != null) { sRow.Cells[0].AddParagraph(a.BOOKED_DATE.Value.ToString("dd/MM/yyyy")); }
+                    if (a.BOOKED_TIME != null) { sRow.Cells[1].AddParagraph(a.BOOKED_TIME.Value.ToString("HH:mm")); }
+                    if (a.AppType != null) { sRow.Cells[2].AddParagraph(a.AppType); }
+                    if (a.Clinician != null) { sRow.Cells[3].AddParagraph(a.Clinician); }
+                    if (a.Attendance != null) { sRow.Cells[4].AddParagraph(a.Attendance); }
 
                     if (rowCount == appList.Count)
                     {
@@ -484,12 +475,12 @@ namespace ClinicX.Controllers
                 {
                     rowCount += 1;
                     MigraDoc.DocumentObjectModel.Tables.Row sRow = tableWL.AddRow();
-                    sRow.Cells[0].AddParagraph(w.ClinicianName);
-                    sRow.Cells[1].AddParagraph(w.ClinicName);
+                    if (w.ClinicianName != null) { sRow.Cells[0].AddParagraph(w.ClinicianName); }
+                    if (w.ClinicName != null) { sRow.Cells[1].AddParagraph(w.ClinicName); }
                     sRow.Cells[2].AddParagraph();
-                    sRow.Cells[3].AddParagraph(w.AddedDate.Value.ToString("dd/MM/yyyy"));
+                    if (w.AddedDate != null) { sRow.Cells[3].AddParagraph(w.AddedDate.Value.ToString("dd/MM/yyyy")); }
                     sRow.Cells[4].AddParagraph();
-                    sRow.Cells[5].AddParagraph(w.Comment);
+                    if (w.Comment != null) { sRow.Cells[5].AddParagraph(w.Comment); }
 
                     if (rowCount == wlList.Count)
                     {
@@ -717,8 +708,8 @@ namespace ClinicX.Controllers
 
                     MigraDoc.DocumentObjectModel.Tables.Row sRow = tableFam.AddRow();
                     sRow.Cells[0].AddParagraph(f.RelSurname + ", " + f.RelForename1 + " " + f.RelForename2);
-                    sRow.Cells[1].AddParagraph(f.RelSex);
-                    sRow.Cells[2].AddParagraph(f.Alive);
+                    if(f.RelSex != null) { sRow.Cells[1].AddParagraph(f.RelSex); }
+                    if (f.Alive != null) { sRow.Cells[2].AddParagraph(f.Alive); }
                     if (f.RelDOB != null)
                     {
                         sRow.Cells[3].AddParagraph(f.RelDOB);

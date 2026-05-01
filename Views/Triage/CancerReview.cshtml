@@ -418,14 +418,16 @@
             return 0;
         }        
 
-        if (document.getElementById("ddlLetter").value == 9 || document.getElementById("ddlLetter").value == 10)
+        
+        if (document.getElementById("ddlLetter").value == 6 || document.getElementById("ddlLetter").value == 9 || document.getElementById("ddlLetter").value == 13)
         {   
             @if (Model.surveillanceList.Count() == 0)
             {
-                @:window.alert("You have selected an O3 or O3a with no surveillance recommendations. Please amend.");
+                @:window.alert("You have selected an O2, O3, or O4 with no surveillance recommendations. Please amend.");
                 @:return 0;            
             }
         }
+        
                 
         if (document.getElementById("ddlLetter").value == 1 && document.getElementById("ddlClinic").value != "")
         {

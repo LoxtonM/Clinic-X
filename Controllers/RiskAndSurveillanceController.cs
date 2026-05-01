@@ -135,7 +135,7 @@ namespace ClinicX.Controllers
                 var risk = await _survData.GetSurvDetails(survID);
                 int riskID = risk.RiskID;                
 
-                int success = _crud.CallStoredProcedure("Surveillance", "Add Gene Change", survID, geneChange, 0, "", "", "", "",
+                int success = await _crud.CallStoredProcedure("Surveillance", "Add Gene Change", survID, geneChange, 0, "", "", "", "",
                     User.Identity.Name, null, null, false, false);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addRisk(QSL)" }); }
@@ -188,7 +188,7 @@ namespace ClinicX.Controllers
             {
                 if(isUseLetter == null) { isUseLetter = false; } //because somehow it's getting nulls sometimes!
 
-                int success = _crud.CallStoredProcedure("Risk", "Create", refID, 0, 0, riskCode, siteCode, clinCode, comments,
+                int success = await _crud.CallStoredProcedure("Risk", "Create", refID, 0, 0, riskCode, siteCode, clinCode, comments,
                     User.Identity.Name, riskDate, null, isUseLetter, false, 0, 0, 0, tool, "", "", lifetimePercent,
                     f2529, f3040, f4050, f5060);
 
@@ -252,14 +252,14 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddNewSurveillance(int riskID, string siteCode, string typeCode, string clinCode, 
+        public async Task<IActionResult> AddNewSurveillance(int riskID, string siteCode, string typeCode, string clinCode, 
             DateTime recDate, int startAge, int endAge, string frequency, bool isUseLetter, bool isYN, string? discReason)
         {
             try
             {
                 if(discReason == null) { discReason = ""; } //because SQL doesn't like nulls
                 
-                int success = _crud.CallStoredProcedure("Surveillance", "Create", riskID, startAge, endAge, siteCode, typeCode, clinCode, "",
+                int success = await _crud.CallStoredProcedure("Surveillance", "Create", riskID, startAge, endAge, siteCode, typeCode, clinCode, "",
                     User.Identity.Name, recDate, null, isUseLetter, isYN, 0, 0, 0, frequency, discReason);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addSurv(SQL)" }); }
@@ -418,7 +418,7 @@ namespace ClinicX.Controllers
 
                 if (score == null) { score = ""; }
 
-                int success = _crud.CallStoredProcedure("TestEligibility", "Create", refID, relative.GetValueOrDefault(), gene, tool, score, offerTest, "",
+                int success = await _crud.CallStoredProcedure("TestEligibility", "Create", refID, relative.GetValueOrDefault(), gene, tool, score, offerTest, "",
                 User.Identity.Name, null, null, isRelative);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addSurv(SQL)" }); }
@@ -453,7 +453,7 @@ namespace ClinicX.Controllers
             ICP icp = await _triageData.GetICPDetailsByRefID(_rsvm.eligibilityDetails.RefID);
             _rsvm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
 
-            int success = _crud.CallStoredProcedure("TestEligibility", "Edit", id, gene, 0, tool, score, offerTest, "",
+            int success = await _crud.CallStoredProcedure("TestEligibility", "Edit", id, gene, 0, tool, score, offerTest, "",
                 User.Identity.Name);
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addSurv(SQL)" }); }

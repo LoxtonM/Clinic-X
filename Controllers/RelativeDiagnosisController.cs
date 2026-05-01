@@ -84,13 +84,13 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNew(int id, string diagnosis, string? age, string? hospital, string? cRegCode, DateTime? dateRequested,
+        public async Task<IActionResult> AddNew(int id, string diagnosis, string? age, string? hospital, string? cRegCode, DateTime? dateRequested,
             string? consultant, string? status, string? consent, DateTime? dateReceived)
         {
             try
             {
                 if (cRegCode == null) { cRegCode = ""; }
-                int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Create", id, 0, 0, diagnosis, age, cRegCode, hospital, User.Identity.Name,
+                int success = await _crud.CallStoredProcedure("RelativeDiagnosis", "Create", id, 0, 0, diagnosis, age, cRegCode, hospital, User.Identity.Name,
                     dateRequested, DateTime.Parse("1900-01-01"), false, false, 0, 0, 0, status, consent, consultant);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiagnosis-add(SQL)" }); }
@@ -142,7 +142,7 @@ namespace ClinicX.Controllers
                 //there are too many strings, so I need to concatenate them all to send them to the SP
                 //(it's either that or add another 4 optional string variables - a limitation of my chosen method!)
 
-                int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Edit", tumourID, 0, 0, consent, confirmed, data, notes, User.Identity.Name, dateReceived, confDiagDate,
+                int success = await _crud.CallStoredProcedure("RelativeDiagnosis", "Edit", tumourID, 0, 0, consent, confirmed, data, notes, User.Identity.Name, dateReceived, confDiagDate,
                     false, false, 0, 0, 0, siteCode, latCode, morphCode);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiagnosis-edit(SQL)" }); }

@@ -106,7 +106,7 @@ namespace ClinicX.Controllers
                     }
                 }
 
-                int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, 0, 0, termCode, "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, 0, 0, termCode, "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "HPO-add(SQL)" }); }
 
@@ -127,7 +127,7 @@ namespace ClinicX.Controllers
                 string termCode = term.TermCode;
 
 
-                int success = _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, 0, 0, termCode, "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Clinical Note", "Add HPO Term", noteID, 0, 0, termCode, "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "HPO-addFromText(SQL)" }); }
 
@@ -140,14 +140,14 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteHPOTermFromNote(int id)
+        public async Task<IActionResult> DeleteHPOTermFromNote(int id)
         {
             try
             {
                 //int noteID = 0;
                 int noteID = _misc.GetNoteIDFromHPOTerm(id);
 
-                int success = _crud.CallStoredProcedure("Clinical Note", "Delete HPO Term", id, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Clinical Note", "Delete HPO Term", id, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "HPO-delete(SQL)" }); }
 

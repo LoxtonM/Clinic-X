@@ -87,13 +87,13 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(int mpi, int refID, string noteType, string clinicalNote)
+        public async Task<IActionResult> Create(int mpi, int refID, string noteType, string clinicalNote)
         {
             try
             {                                
                 int noteID;
 
-                int success = _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 0, noteType, "", "",
+                int success = await _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 0, noteType, "", "",
                     clinicalNote, User.Identity.Name);
                 //do the update, return 1 if successful and 0 if not
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="ClinicalNote-create(SQL)" }); }
@@ -133,7 +133,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]        
-        public IActionResult Edit(int noteID, string clinicalNote)
+        public async Task<IActionResult> Edit(int noteID, string clinicalNote)
         {
             try
             {
@@ -142,7 +142,7 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                int success = _crud.CallStoredProcedure("Clinical Note", "Update", noteID, 0, 0, 
+                int success = await _crud.CallStoredProcedure("Clinical Note", "Update", noteID, 0, 0, 
                     "", "", "", clinicalNote, User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="ClinicalNote-edit(SQL)" }); }
@@ -190,7 +190,7 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("Edit", new { id = id });
                 }
-                int success = _crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Clinical Note", "Finalise", id, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update." }); }
 

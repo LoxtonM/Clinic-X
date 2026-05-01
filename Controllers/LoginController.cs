@@ -9,7 +9,7 @@ namespace ClinicX.Controllers
     {
         UserDataAccessLayer objUser = new  UserDataAccessLayer();
         [HttpGet]
-        public IActionResult UserLogin()
+        public async Task<IActionResult> UserLogin()
         {           
             return View();
         }

@@ -14,9 +14,9 @@ namespace ClinicX.Controllers
 {
     public class TriageController : Controller
     {
-        //private readonly ClinicalContext _clinContext;
+        private readonly ClinicalContext _clinContext;
         //private readonly ClinicXContext _cXContext;
-        //private readonly DocumentContext _docContext;
+        private readonly DocumentContext _docContext;
         private readonly ICPVM _ivm;
         private readonly LetterController _lc;
         private readonly IConfiguration _config;
@@ -49,11 +49,11 @@ namespace ClinicX.Controllers
             IICPActionDataAsync iCPActionData, IRiskDataAsync riskData, ISurveillanceDataAsync surveillanceData, ITestEligibilityDataAsync testEligibilityData, IDiaryDataAsync diaryData, IRelativeDataAsync relativeData,
             ICancerRequestDataAsync cancerRequestData, IExternalClinicianDataAsync externalClinicianData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IDocumentsDataAsync documentsData, ICRUD crud, 
             LetterController letterController, IAuditService auditService, IAgeCalculator ageCalculator, IPatientDataAsync patientData, ILeafletDataAsync leafletData, IConstantsDataAsync constantsData,
-            IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData, IDictatedLetterDataAsync dictatedLetterData)//, ClinicalContext clinContext)
+            IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData, IDictatedLetterDataAsync dictatedLetterData, ClinicalContext clinContext, DocumentContext docContext)
         {
-            //_clinContext = clinContext;
+            _clinContext = clinContext;
             //_cXContext = cXContext;
-            //_docContext = docContext;
+            _docContext = docContext;
             _config = config;
             _ivm = new ICPVM();
             _staffUser = staffUserData;
@@ -199,7 +199,7 @@ namespace ClinicX.Controllers
 
                 if(indicationNotes != null && indicationNotes != "")
                 {
-                    int success = _crud.CallStoredProcedure("ICP General", "Indication Notes", icpID, 0, 0, "", "", "", indicationNotes, User.Identity.Name);
+                    int success = await _crud.CallStoredProcedure("ICP General", "Indication Notes", icpID, 0, 0, "", "", "", indicationNotes, User.Identity.Name);
 
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons(SQL)" }); }
                 }
@@ -237,7 +237,7 @@ namespace ClinicX.Controllers
 
                     if (facility != null && facility != "") // && clinician != null && clinician != "")
                     {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
+                        int success = await _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
                         facility, sApptIntent, wlClinician, comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }
@@ -245,7 +245,7 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
+                        int success = await _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
                         "", sApptIntent, wlClinician, comment, User.Identity.Name, null, null, false, false, 0, requestPhotos, requestDevForm, ga, genp);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
@@ -260,7 +260,7 @@ namespace ClinicX.Controllers
 
                     if (facility != null && facility != "") // && clinician != null && clinician != "")
                     {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
+                        int success = await _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
                         facility, sApptIntent, wlClinician, comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
@@ -268,7 +268,7 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
+                        int success = await _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
                         "", sApptIntent, wlClinician, comment, User.Identity.Name);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
@@ -277,7 +277,7 @@ namespace ClinicX.Controllers
                 //add to waiting list
                 if (facility != null && facility != "")
                 {
-                    int success = _crud.CallStoredProcedure("Waiting List", "Create", mpi, wlPriority.GetValueOrDefault(), referral.refid, facility, "General", wlClinician,
+                    int success = await _crud.CallStoredProcedure("Waiting List", "Create", mpi, wlPriority.GetValueOrDefault(), referral.refid, facility, "General", wlClinician,
                         comment, User.Identity.Name);
 
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genAddWL(SQL)" }); }
@@ -285,7 +285,7 @@ namespace ClinicX.Controllers
 
                 if (tp2 == 2) //CTB letter
                 {
-                    int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
+                    int success = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genDiaryUpdate(SQL)" }); }
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, "CTBAck");
                     int diaryID = diary.DiaryID;
@@ -295,7 +295,7 @@ namespace ClinicX.Controllers
 
                 if (tp2 == 6) //Dictate letter
                 { 
-                    int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "ICP Draft", "", "", "", User.Identity.Name);
+                    int success2 = await _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "ICP Draft", "", "", "", User.Identity.Name);
 
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-createLetter(SQL)" }); }
 
@@ -304,7 +304,7 @@ namespace ClinicX.Controllers
                     DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
                     int dID = dot.DoTID;
 
-                    int success3 = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
+                    int success3 = await _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
 
                     if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-addFMtoDOT(SQL)" }); }
                 }
@@ -316,7 +316,7 @@ namespace ClinicX.Controllers
 
                 if(closeReferral == 1)
                 {
-                    int success3 = _crud.CallStoredProcedure("Referral", "Close", refID,0,0,"","","","",User.Identity.Name, null,null,false,false);
+                    int success3 = await _crud.CallStoredProcedure("Referral", "Close", refID,0,0,"","","","",User.Identity.Name, null,null,false,false);
 
                     if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-closeReferral(SQL)" }); }
                 }
@@ -341,7 +341,7 @@ namespace ClinicX.Controllers
                 string referrer = referral.ReferrerCode;
 
                 CRUD _crud = new CRUD(_config);
-                int success = _crud.CallStoredProcedure("ICP Cancer", "Triage", icpID, action, 0, "", "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("ICP Cancer", "Triage", icpID, action, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canTriage(SQL)" }); }
 
@@ -353,7 +353,7 @@ namespace ClinicX.Controllers
                     var doc = await _documentsData.GetDocumentDetails(icpAction.RelatedLetterID.Value);
                     string docCode = doc.DocCode;
 
-                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
+                    int successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode); //to add diaryid to the letter output
                     int diaryID = diary.DiaryID;
                     
@@ -468,7 +468,7 @@ namespace ClinicX.Controllers
 
             reviewBy = user.STAFF_CODE;
 
-            int success = _crud.CallStoredProcedure("ICP Cancer", "ICP Review", id, letter.GetValueOrDefault(), 0, reviewBy, finalReview, toBeReviewedBy, addNotes,
+            int success = await _crud.CallStoredProcedure("ICP Cancer", "ICP Review", id, letter.GetValueOrDefault(), 0, reviewBy, finalReview, toBeReviewedBy, addNotes,
                     User.Identity.Name, null, null, false, false, 0,0,0,clinician, clinic, comments);
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canReview" }); }
@@ -482,7 +482,7 @@ namespace ClinicX.Controllers
 
                     if (clinician != null && clinician != "" && _ivm.icpCancer.WaitingListVenue != null)
                     {
-                        int successWL = _crud.CallStoredProcedure("Waiting List", "Create", mpi, 50, refID, clinic, "Cancer", clinician, comments,
+                        int successWL = await _crud.CallStoredProcedure("Waiting List", "Create", mpi, 50, refID, clinic, "Cancer", clinician, comments,
                             User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
 
                         if (successWL == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canAddWL(SQL)" }); }
@@ -498,22 +498,23 @@ namespace ClinicX.Controllers
                         var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
                         int letterID = doc.DocContentID;
 
-                        int successDiaryLetter = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
+                        int successDiaryLetter = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", diaryText, User.Identity.Name, null, null, false, false);
                         //confirm if we want a diary entry for DOT at this stage
                         var diaryLetter = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
                         int diaryIDLetter = diaryLetter.DiaryID;
 
                         if (letter == 3)
                         {
-                            int successDOT = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "", staffCode, "", User.Identity.Name);
+                            int successDOT = await _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "", staffCode, "", User.Identity.Name);
 
                             if (successDOT == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
                         }
                         else
                         {
-                            //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+                            LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
                             Referral refer = await _referralData.GetReferralDetails(refID);
-                            _lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryIDLetter, freeText1, "", 0,
+                            
+                            await lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryIDLetter, freeText1, "", 0,
                             "", "", null, false, "", leafletID);
                         }
 
@@ -521,7 +522,7 @@ namespace ClinicX.Controllers
                     }
                 //}
 
-                int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "REPSUM", "", "", User.Identity.Name, null, null, false, false);
+                int successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "REPSUM", "", "", User.Identity.Name, null, null, false, false);
                 var diary = await _diaryData.GetLatestDiaryByRefID(refID, "REPSUM");
 
                 int diaryID = diary.DiaryID;
@@ -598,7 +599,7 @@ namespace ClinicX.Controllers
                     var doc = await _documentsData.GetDocumentDetails(docID);
                     string docCode = doc.DocCode;
 
-                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
+                    int successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
                     int diaryID = diary.DiaryID;
 
@@ -612,7 +613,7 @@ namespace ClinicX.Controllers
                     var doc = await _documentsData.GetDocumentDetails(docID2);
                     string docCode = doc.DocCode;
 
-                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
+                    int successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
                     int diaryID = diary.DiaryID;
 
@@ -626,7 +627,7 @@ namespace ClinicX.Controllers
                     var doc = await _documentsData.GetDocumentDetails(docID3);
                     string docCode = doc.DocCode;
 
-                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
+                    int successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
                     int diaryID = diary.DiaryID;
 
@@ -701,12 +702,12 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult ChangeGeneralTriage(int icpId, string newConsultant, string newGC)
+        public async Task<IActionResult> ChangeGeneralTriage(int icpId, string newConsultant, string newGC)
         {
             try
             {
                 if(newConsultant == null) { newConsultant = ""; }
-                int success = _crud.CallStoredProcedure("ICP General", "Change", icpId, 0, 0, newConsultant, newGC, "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("ICP General", "Change", icpId, 0, 0, newConsultant, newGC, "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-changeGenTriage(SQL)" }); }
 
@@ -742,11 +743,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult ChangeTriagePathway(int id, string newPathway)
+        public async Task<IActionResult> ChangeTriagePathway(int id, string newPathway)
         {
             try
             {
-                int success = _crud.CallStoredProcedure("ICP Cancer", "Change Pathway", id, 0, 0, newPathway, "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("ICP Cancer", "Change Pathway", id, 0, 0, newPathway, "", "", "", User.Identity.Name);
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-changePathway(SQL)" }); }
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = id });
@@ -760,11 +761,11 @@ namespace ClinicX.Controllers
 
 
         [HttpPost]
-        public IActionResult ReturnToConsultant(int icpId)
+        public async Task<IActionResult> ReturnToConsultant(int icpId)
         {
             try
             {                
-                int success = _crud.CallStoredProcedure("ICP General", "Return", icpId, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("ICP General", "Return", icpId, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons" }); }
 
@@ -777,11 +778,11 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public IActionResult SaveIndicationNotes(int icpID, string indicationNotes)
+        public async Task<IActionResult> SaveIndicationNotes(int icpID, string indicationNotes)
         {
             try
             {
-                int success = _crud.CallStoredProcedure("ICP General", "Indication Notes", icpID, 0, 0, "", "", "", indicationNotes, User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("ICP General", "Indication Notes", icpID, 0, 0, "", "", "", indicationNotes, User.Identity.Name);
                 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons(SQL)" }); }                
 
@@ -794,11 +795,11 @@ namespace ClinicX.Controllers
         }
 
         //[HttpPost]
-        public IActionResult StartSocialServicesPathway(int icpID)
+        public async Task<IActionResult> StartSocialServicesPathway(int icpID)
         {
             try
             {
-                int success = _crud.CallStoredProcedure("ICP General", "Start SSP", icpID, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("ICP General", "Start SSP", icpID, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons(SQL)" }); }
 
