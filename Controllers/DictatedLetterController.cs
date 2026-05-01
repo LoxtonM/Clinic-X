@@ -282,7 +282,12 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
 
-                List<DictatedLetter> dotList = await _dictatedLetterData.GetDictatedLettersList(staffCode);
+                var act = await _activityData.GetActivityDetails(id); //to get the letter we just created
+
+                //List<DictatedLetter> dotList = await _dictatedLetterData.GetDictatedLettersList(staffCode);
+
+                List<DictatedLetter> dotList = await _dictatedLetterData.GetDictatedLettersForPatient(act.MPI);
+
                 dotList = dotList.Where(l => l.RefID == id).OrderByDescending(l => l.CreatedDate).ToList();
                 DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
                 int dID = dot.DoTID;

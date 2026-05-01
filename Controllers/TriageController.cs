@@ -415,6 +415,7 @@ namespace ClinicX.Controllers
                 if (_ivm.icpCancer != null)
                 {
                     _ivm.riskList = await _riskData.GetRiskList(id);
+                    _ivm.riskList = _ivm.riskList.Distinct().ToList();
                     _ivm.surveillanceList = await _survData.GetSurveillanceList(_ivm.icpCancer.MPI);
                     _ivm.eligibilityList = await _testEligibilityData.GetTestingEligibilityList(_ivm.icpCancer.MPI);
                 }

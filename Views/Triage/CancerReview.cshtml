@@ -70,6 +70,13 @@
         <h4><a href=@Model.riskGuide>Risk Guide</a></h4>
     }
     
+    <div class="row mb-2 g-2">
+        @if(Model.icpCancer.FinalReviewed != null)
+        {        
+            <h3>Final Review: @Model.icpCancer.FinalReviewed</h3>
+        }
+    </div>
+
 
     <div class="d-grid mt-2 mb-2">
         <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseRiskItems" aria-expanded="false" aria-controls="collapseExample">Risk and Surveillance, and Testing (click to expand/hide)</button>
@@ -272,11 +279,13 @@
                         }
                     </select>
                 </div>
+            </div>
+            <div class="row mb-5 g-5">
                 <div class="col-md-1">
                     <label>Free text:</label>
                 </div>
-                <div class="col-md-4">
-                    <textarea class="w-100" name="freeText1"></textarea>
+                <div class="col-md-8">
+                    <textarea rows="8" cols="400" class="w-100" name="freeText1" spellcheck="true"></textarea>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -301,7 +310,7 @@
                 Additional Notes:
             </div>
             <div class="col-md-4">
-                <textarea cols="100" rows="5" name="addNotes" asp-for=@Model.icpCancer.Comments></textarea>
+                <textarea cols="100" rows="5" name="addNotes" id="txtAddNotes" asp-for=@Model.icpCancer.Comments></textarea>
             </div>
         </div>
 
@@ -391,6 +400,7 @@
             _finalreview.disabled = true;
             _toBeReviewed.disabled = true;
             document.getElementById("btnSave").disabled = true;
+            document.getElementById("txtAddNotes").disabled = true;
         }
 
     }

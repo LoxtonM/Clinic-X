@@ -367,7 +367,7 @@ namespace ClinicX.Controllers
                 {
                     rowCount += 1;
                     MigraDoc.DocumentObjectModel.Tables.Row sRow = tableTE.AddRow();
-                    if (s.Gene != null) { sRow.Cells[0].AddParagraph(s.Gene.ToString()); }
+                    if (s.TestCode != null) { sRow.Cells[0].AddParagraph(s.TestCode); }
                     sRow.Cells[1].AddParagraph(s.CalcTool);
                     sRow.Cells[2].AddParagraph(s.Score);
                     sRow.Cells[3].AddParagraph(s.OfferTesting);
@@ -668,7 +668,7 @@ namespace ClinicX.Controllers
                 MigraDoc.DocumentObjectModel.Tables.Column c4 = tableFam.AddColumn(); //dob
                 c4.Width = 50;
                 MigraDoc.DocumentObjectModel.Tables.Column c5 = tableFam.AddColumn(); //dod
-                c5.Width = 40;
+                c5.Width = 50;
                 MigraDoc.DocumentObjectModel.Tables.Column c6 = tableFam.AddColumn(); //diag age etc
                 c6.Width = 200;
                 MigraDoc.DocumentObjectModel.Tables.Column c7 = tableFam.AddColumn(); //info req/why not
