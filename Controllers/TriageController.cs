@@ -421,6 +421,7 @@ namespace ClinicX.Controllers
                 }
                 _ivm.documentList = await _documentsData.GetDocumentsList();
                 _ivm.documentList = _ivm.documentList.Where(d => (d.DocCode.StartsWith("O") && d.DocGroup == "Outcome") || d.DocCode.Contains("PrC")).ToList();
+                _ivm.docContentList = await _documentsData.GetDocumentsContentList();
                 _ivm.cancerReviewActionsLists = await _icpActionData.GetICPCancerReviewActionsList();
 
                 _ivm.message = message;

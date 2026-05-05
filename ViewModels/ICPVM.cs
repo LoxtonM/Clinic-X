@@ -32,6 +32,7 @@ namespace ClinicX.ViewModels
         public Eligibility eligibility { get; set; }
         public List<Eligibility> eligibilityList { get; set; }
         public List<Document> documentList { get; set; }
+        public List<DocumentsContent> docContentList { get; set; }
         public Referral referralDetails { get; set; }
         public List<Pathway> pathways { get; set; }
         public List<Priority> priorityList { get; set; }

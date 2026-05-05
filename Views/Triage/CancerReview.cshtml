@@ -288,7 +288,7 @@
                 <div class="col-md-2">
                     <label>Select letter:</label>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-6">
                     <select id="ddlLetter" class="w-100" name="letter" asp-for=@Model.icpCancer.ReviewedOption>
                         @*<option value="">Select...</option>*@
                         @foreach (var item in Model.cancerReviewActionsLists)
@@ -297,6 +297,10 @@
                         }
                     </select>
                 </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-outline-success" id="btnPreview">Preview Letter</button>
+                </div>
+
             </div>
             <div class="row mb-5 g-5">
                 <div class="col-md-1">
@@ -378,13 +382,73 @@
 </div>
 
 <script>
-    document.getElementById("btnSave").addEventListener("click", DoSubmit)
-    document.getElementById("chkNotForCrossBooking").addEventListener("change", SetNotForCrossBooking)
+    document.getElementById("btnSave").addEventListener("click", DoSubmit);
+    document.getElementById("chkNotForCrossBooking").addEventListener("change", SetNotForCrossBooking);
+    document.getElementById("btnPreview").addEventListener("click", DoLetterPreview);
     window.addEventListener("load", LoadForm);
 
     function SetNotForCrossBooking()
     {
         document.getElementById("txtNotForCrossBooking").value = document.getElementById("chkNotForCrossBooking").checked;
+    }
+
+    function DoLetterPreview()
+    {
+        var _opt = document.getElementById("ddlLetter").value;
+        var _docCode = "";
+        var _docID = "";
+        var actionArray = [];
+        var docArray = [];
+        var docCodeArray = [];
+        var docIDArray = []; //believe it or not, we have to do all this just to get the doc ID!!!
+
+        if(_opt == "1" || _opt == "3" || _opt == "11")
+        {
+            window.alert("Please select a letter option that has content to preview.");
+            return;
+        }
+
+        @foreach(var item in Model.cancerReviewActionsLists)
+        {
+            @:actionArray.push("@item.ID");
+            @:docArray.push("@item.DocCode");
+        }
+        
+        for (var i = 0; i < actionArray.length; i++)
+        {        
+            if(actionArray[i] == _opt)
+            {
+                _docCode = docArray[i];
+            }
+        }
+
+        @foreach(var item in Model.docContentList)
+        {
+            @:docCodeArray.push("@item.DocCode");
+            @:docIDArray.push("@item.DocContentID");
+        }
+
+        for (var j = 0; j < docCodeArray.length; j++)
+        {
+            if(docCodeArray[j] == _docCode)
+            {
+                _docID = docIDArray[j];
+            }
+        }
+
+        //int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
+            //string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
+            //int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false, string? qrCodeText = "", int? leafletID = 0,
+            //bool? adminToPrint = false
+
+        var _url = "";
+        _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + "@Model.icpCancer.RefID"
+        + "&user=mnln&referrerCode=" + "@Model.referralDetails.ReferrerCode" + "&isPreview=true";
+
+        window.alert(_url);
+
+        window.open(_url, '_blank').focus();
+
     }
 
     function LoadForm() 
