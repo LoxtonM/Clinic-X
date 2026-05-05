@@ -71,10 +71,28 @@
     }
     
     <div class="row mb-2 g-2">
-        @if(Model.icpCancer.FinalReviewed != null)
-        {        
-            <h3>Final Review: @Model.icpCancer.FinalReviewed</h3>
+
+        @if(Model.icpCancer.ToBeReviewedby != null)
+        {
+            @if(Model.icpCancer.ReviewedBy != null)
+            {
+                <h3>Initial Review by: @Model.icpCancer.ReviewedByName</h3>
+            }
+
+            @if(Model.icpCancer.FinalReviewed != null)
+            {        
+                <h3>Final Review: @Model.icpCancer.FinalReviewed</h3>
+            }
         }
+        else
+        {
+            @if (Model.icpCancer.FinalReviewed != null)
+            {
+                <h3>Final Review: @Model.icpCancer.FinalReviewed</h3>
+            }
+        }
+
+        
     </div>
 
 
