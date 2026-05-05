@@ -159,14 +159,20 @@
                     <div class="col-md-2">
                         <label for="ddlLetterRequired" id="lblLetterRequired">Letter Required:</label>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <select asp-for=@Model.activityItem.LetterReq id="ddlLetterRequired" name="letterRequired" class="w-100">
                             <option value="Yes - Within 10 Days">Yes - Within 10 Days</option>
                             <option value="Yes - Later">Yes - Later</option>
                             <option selected value="No">No</option>
                         </select>
                     </div>
-                    <div class="col-md-2"></div>
+                    <div class="col-md-2"><label id="lblDraft" hidden>Create DOT draft?</label></div>
+                    <div class="col-md-2">
+                        <select name="isCreateDraft" id="ddlDraft" hidden>
+                            <option value="True">Yes</option>
+                            <option value="False" selected>No</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="row mb-5">
                     <div class="col-md-2">
@@ -317,12 +323,40 @@
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnCompleteCOF").addEventListener("click", DoOutcome);
     document.getElementById("ddlContactOutcome").addEventListener("change", LoadOutcome);
+    document.getElementById("ddlLetterRequired").addEventListener("change", SetDraftRequired);
     window.addEventListener("load", LoadClinic);
 
     function GoBack() 
     {
         window.history.back();
         //window.close();
+    }
+
+    function SetDraftRequired()
+    {
+        var _ddl = document.getElementById("ddlDraft");
+        var _lbl = document.getElementById("lblDraft");
+        var _letterRequired = document.getElementById("ddlLetterRequired");
+
+        if(_letterRequired.value == "Yes - Later")
+        {
+            _ddl.hidden = false;
+            _lbl.hidden = false;
+        }
+        else
+        {            
+            _ddl.hidden = true;
+            _lbl.hidden = true;
+
+            if(_letterRequired.value == "Yes - Within 10 Days")
+            {
+                _ddl.value = "True";
+            }
+            else
+            {
+                _ddl.value = "False";
+            }
+        }
     }
 
     function LoadClinic() 

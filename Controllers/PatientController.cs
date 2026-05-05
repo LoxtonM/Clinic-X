@@ -158,7 +158,7 @@ namespace ClinicX.Controllers
                     {
                         _pvm.isPatientInPhenotips = true;
 
-                        if(mirror.FamilyID == null)
+                        if(mirror.FamilyID == null || mirror.FamilyID == "")
                         {
                             await _api.SynchroniseMirrorWithPhenotips(id);
                         }

@@ -206,7 +206,7 @@ namespace ClinicX.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, string? ethnicity,
-            string? diseaseCode, string? status, string? comments, bool? isComplete = false, string? seenBy2="", string? seenBy3="")
+            string? diseaseCode, string? status, string? comments, bool? isComplete = false, string? seenBy2="", string? seenBy3="", bool? isCreateDraft = false)
         {
             try
             {
@@ -233,7 +233,7 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="Clinic-edit(SQL)" }); }
 
-                if (letterRequired != "No")
+                if (letterRequired != "No" && isCreateDraft.GetValueOrDefault())
                 {
                     int success2 = await _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "Post Clinic Draft", "", "", "", User.Identity.Name);
 
