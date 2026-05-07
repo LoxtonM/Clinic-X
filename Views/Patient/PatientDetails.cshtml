@@ -392,6 +392,7 @@
                     @Html.DisplayFor(model => model.gpFac.ZIP)
                 }
             </dd>
+            @*Row 4 - DOD, NHS Number*@
             @if(Model.patient.DECEASED == -1)
             {
                 <dt class="col-sm-2">
@@ -411,34 +412,43 @@
             else
             {
                 <dt class="col-sm-2"></dt><dd class="col-sm-4"></dd>
-            }
-
-            @*Row 4 - NHS number, primary language*@
+            }            
             <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.patient.SOCIAL_SECURITY):
             </dt>
             <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.SOCIAL_SECURITY)
             </dd>
+            @*Row 5 - Primary language, ethnicity*@
             <dt class="col-sm-2">
                 Primary Language:
             </dt>
             <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.PrimaryLanguage)            
             </dd>
-
-            @*Row 5 - Ethnicity, interpreter requirements*@
+            
             <dt class="col-sm-2">
                 Ethnicity:
             </dt>        
             <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.Ethnic)
             </dd>       
+            @*Row 6 - Interpreter requirements, gender*@
             <dt class="col-sm-2">
                 Interpreter required:
             </dt>
             <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.IsInterpreterReqd)
+            </dd>    
+            <dt class="col-sm-2">
+                Sex (Gender):
+            </dt>
+            <dd class="col-sm-4">
+                @Html.DisplayFor(model => model.patient.SEX) 
+                @if(Model.patient.GenderIdentity != null) 
+                { 
+                    <span>(</span>@Html.DisplayFor(model => model.patient.GenderIdentity)<span>)</span>
+                }
             </dd>    
 
             <dd class="col-sm-12"><hr /></dd>       
@@ -463,16 +473,22 @@
                 @Html.DisplayFor(model => model.patient.ADDRESS2)
             </dd>
             <dt class="col-sm-2">
-                Mobile:
+                Work:
             </dt>
             <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.PtTelMobile)
+                @Html.DisplayFor(model => model.patient.WORKTEL)
             </dd>
 
             <dt class="col-sm-2">            
             </dt>
-            <dd class="col-sm-10">
+            <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.ADDRESS3)
+            </dd>
+            <dt class="col-sm-2">
+                Mobile:
+            </dt>
+            <dd class="col-sm-4">
+                @Html.DisplayFor(model => model.patient.PtTelMobile)
             </dd>
 
             <dt class="col-sm-2">

@@ -840,6 +840,7 @@
         var firstnameArray = [];
         var lastnameArray = [];
         var facilityArray = [];
+        var jobTitleArray = [];
         var facilityCode;
 
         @foreach (var item in Model.clinicians)
@@ -849,6 +850,7 @@
             @:firstnameArray.push("@item.FIRST_NAME");
             @:lastnameArray.push("@item.LAST_NAME");
             @:facilityArray.push("@item.MasterFacilityCode");
+            @:jobTitleArray.push("@item.POSITION");
         }
 
         for (var k = 0; k < clinicianArray.length; k++)
@@ -858,6 +860,7 @@
             {                
                 sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
                 facilityCode = facilityArray[k];
+                sName = sName + "\n" + jobTitleArray[k];
             }
         }
 
@@ -1045,6 +1048,7 @@
             var firstnameArray = [];
             var lastnameArray = [];
             var facilityArray = [];
+            var jobTitleArray = [];
             var facilityCode;
                                           
             @foreach(var item in Model.clinicians)
@@ -1054,6 +1058,7 @@
                 @:firstnameArray.push("@item.FIRST_NAME");
                 @:lastnameArray.push("@item.LAST_NAME");
                 @:facilityArray.push("@item.MasterFacilityCode");
+                @:jobTitleArray.push("@item.POSITION");
             }
                 
             for (var k = 0; k < clinicianArray.length; k++) 
@@ -1062,6 +1067,7 @@
                 if (nameToTest == ccCode) 
                 {                    
                     sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
+                    sName = sName + "\n" + jobTitleArray[k];
                     facilityCode = facilityArray[k];                    
                 }
             }

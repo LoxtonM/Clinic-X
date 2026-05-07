@@ -26,6 +26,8 @@
                     <th>Type</th>
                     <th>Name</th>
                     <th>Referral Date</th>
+                    <th>Consultant</th>
+                    <th>GC</th>
                     <th>Indication Notes</th>
                 </tr>
             </thead>
@@ -46,6 +48,8 @@
                         {
                             <td></td>
                         }
+                        <td>@item.ConsultantName</td>
+                        <td>@item.GCName</td>
                         <td>@item.IndicationNotes</td>
                     </tr>
                 }

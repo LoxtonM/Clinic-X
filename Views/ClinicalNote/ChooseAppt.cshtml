@@ -38,7 +38,7 @@
                         <td><a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Create" asp-route-id=@item.RefID>Select</a></td>
                         <td>@item.Clinic</td>
                         <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
-                        <td>@item.BOOKED_TIME.Value.ToString("hh:mm")</td>
+                        <td>@item.BOOKED_TIME.Value.ToString("HH:mm")</td>
                     </tr>                   
                 }          
             </tbody>
