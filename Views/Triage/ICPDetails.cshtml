@@ -91,7 +91,7 @@
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.triage.RefDate) @if (Model.referralAgeDays != null)
                 {
-                    <span>&emsp;&emsp;<b>Age:</b> @Model.referralAgeDays days (@Model.referralAgeWeeks weeks)</span>
+                    <span>&emsp;&emsp;<b>Referral Age:</b> @Model.referralAgeDays days (@Model.referralAgeWeeks weeks)</span>
                 }
             </dd>
             <dt class="col-sm-2">
@@ -313,7 +313,7 @@
                     <label for="txtDuration" id="lblDuration">Duration:</label>
                 </div>
                 <div class="col-md-2">
-                    <input id="txtDuration" name="duration" />
+                    <input id="txtDuration" name="duration" value="45" />
                 </div>
 
             </div>

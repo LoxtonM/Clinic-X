@@ -43,11 +43,11 @@ namespace ClinicX.Controllers
             {
                 var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string userStaffCode = user.STAFF_CODE;
-                
+                                
                 if (staffCode == null)
                 {
                     staffCode = userStaffCode;
-                }
+                }                
 
                 _cvm.isSupervisor = false;
                 
@@ -58,8 +58,15 @@ namespace ClinicX.Controllers
                 var caseLoad = await _caseloadData.GetCaseloadList(staffCode);
                 caseLoad = caseLoad.OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();
                 _cvm.clinicians = await _staffUser.GetClinicalStaffList();
-                _cvm.name = await _staffUser.GetStaffNameFromStaffCode(staffCode);
-                                
+                if (staffCode != null && staffCode != "")
+                {
+                    _cvm.name = await _staffUser.GetStaffNameFromStaffCode(staffCode);
+                }
+                else
+                {
+                    _cvm.name = "All clinicians";
+                }
+
                 if (clType != null && clType != "")
                 {
                     if (clType == "clinic")
