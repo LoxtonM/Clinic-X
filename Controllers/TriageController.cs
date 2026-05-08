@@ -97,9 +97,10 @@ namespace ClinicX.Controllers
                 var triages = await _triageData.GetTriageList(User.Identity.Name);
                 _ivm.triages = triages.OrderBy(t => t.RefDate).ToList();
                 var icpCancerList = await _triageData.GetCancerICPList(User.Identity.Name);
-                _ivm.icpCancerListOwn = icpCancerList.Where(r => r.GC_CODE == _ivm.staffCode).ToList();
+                icpCancerList = icpCancerList.Where(r => r.ClockStopDate == null && r.FinalReviewed == null).ToList(); //get only current ones
+                _ivm.icpCancerListOwn = icpCancerList.Where(r => r.GC_CODE == _ivm.staffCode).ToList(); //ones directly for the GC to "Review"
                 icpCancerList = icpCancerList.Where(r => r.ToBeReviewedby != null).ToList(); //because it keeps throwing a hissy fit!!
-                _ivm.icpCancerListOther = icpCancerList.Where(r => r.ToBeReviewedby.ToUpper() == User.Identity.Name.ToUpper() && r.FinalReviewed == null).ToList();
+                _ivm.icpCancerListOther = icpCancerList.Where(r => r.ToBeReviewedby.ToUpper() == User.Identity.Name.ToUpper()).ToList(); //ones from another GC, for a GC or Consultant to "Final Review"
                 
                 return View(_ivm);
             }

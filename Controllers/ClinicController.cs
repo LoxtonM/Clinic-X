@@ -191,7 +191,8 @@ namespace ClinicX.Controllers
                 int mpi = _cvm.activityItem.MPI;
                 _cvm.patient = await _patientData.GetPatientDetails(mpi);
 
-                _cvm.diseaseList = await _diseaseData.GetDiseaseList();
+                var diseaseList = await _diseaseData.GetDiseaseList();
+                _cvm.diseaseList = diseaseList.OrderBy(d => d.DISEASE_CODE).ToList();
                 _cvm.diseaseStatusList = await _diseaseData.GetStatusList();
                 _cvm.diagnosisList = await _diseaseData.GetDiseaseListByPatient(mpi);
 
@@ -340,8 +341,8 @@ namespace ClinicX.Controllers
                     emailBodyText = emailBodyText + emailMessage;                    
                 }
 
-                _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, noteType, "", "", emailBodyText, User.Identity.Name, null, null, isHidden);  //create straight into edms              
-
+                _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, noteType, "", "", emailBodyText, User.Identity.Name, null, null, isHidden, false, 1);  //create straight into edms              
+                
                 return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
             }
             else
@@ -364,6 +365,28 @@ namespace ClinicX.Controllers
                 
 
                 int success = await _crud.CallStoredProcedure("Diagnosis", "Create", activityDetails.MPI, 0, 0, diseaseCode, status, "", comments, User.Identity.Name);
+                //do the update, return 1 if successful and 0 if not
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diagnosis-new(SQL)" }); }
+
+                return RedirectToAction("Edit", "Clinic", new { id = refID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Diagnosis-new" });
+            }
+        }
+
+        public async Task<IActionResult> DeleteDiseaseCode(int id, int refID)
+        {
+            try
+            {
+                _cvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _cvm.staffMember?.STAFF_CODE ?? string.Empty;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinic", "RefID=" + id.ToString(), _ip.GetIPAddress());
+
+                int success = await _crud.CallStoredProcedure("Diagnosis", "Delete", id, 0, 0, "","" , "", "", User.Identity.Name);
                 //do the update, return 1 if successful and 0 if not
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diagnosis-new(SQL)" }); }

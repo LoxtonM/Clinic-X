@@ -55,7 +55,14 @@
 
             <div class="row mb-5">
                 <div class="col-md-2">
-                    <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveNote" />
+                    <input type="button" class="btn btn-default btn-outline-success" value="Save and Continue Editing" id="btnSaveNote" />
+                </div>
+                <div class="col-md-8">
+                    <input type="text" id="txtFinalise" name="isFinalised" value="false" hidden />
+                </div>
+
+                <div class="col-md-2">
+                    <input type="button" class="btn btn-default btn-outline-success" value="Save and Finalise" id="btnSaveAndFinaliseNote" />
                 </div>
             </div>
         </form>
@@ -65,6 +72,7 @@
 
 <script type="text/javascript">
     document.getElementById("btnSaveNote").addEventListener("click", SaveNote);
+    document.getElementById("btnSaveAndFinaliseNote").addEventListener("click", SaveAndFinaliseNote);
 
     function SaveNote() 
     {        
@@ -72,7 +80,16 @@
         {
             document.getElementById("ClinicalNote").submit();
         }
-    }     
+    }
+
+    function SaveAndFinaliseNote() 
+    {        
+        if (CheckFormValid() == 1) 
+        {
+            document.getElementById("txtFinalise").value = "true";            
+            document.getElementById("ClinicalNote").submit();
+        }
+    }
 
     function CheckFormValid() 
     { //validation to ensure all required data is entered

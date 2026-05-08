@@ -197,12 +197,12 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row" id="cofDiagnosis">
                     <div class="col-md-2">
                         <label>Disease code</label>
                     </div>
-                    <div class="col-md-2">
-                        <select name="diseaseCode" class="w-100">
+                    <div class="col-md-4">
+                        <select name="diseaseCode"  id="ddlCOFDiagnosis"  class="w-100 js-choice">
                             <option value="" selected></option>
                             @foreach(var d in Model.diseaseList)
                             {
@@ -210,11 +210,11 @@
                             }
                         </select>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-1">
                         <label>Status</label>
                     </div>
                     <div class="col-md-2">
-                        <select name="status"  class="w-100">
+                        <select name="status" id="ddlCOFDiagStatus"  class="w-100">
                             <option value="" selected></option>
                             @foreach(var d in Model.diseaseStatusList)
                             {
@@ -222,11 +222,11 @@
                             }
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <label>Status</label>
+                    <div class="col-md-1">
+                        <label>Comments</label>
                     </div>
                     <div class="col-md-2">            
-                        <input  class="w-100" name="comments" />
+                        <input class="w-100" id="txtCOFDiagComments" name="comments" />
                     </div>
                 </div>
 
@@ -243,18 +243,19 @@
     </div>
 
     <div class="mb-5">
-        <h4>Diagnoses for Patient</h4>
+        <h4>Additional Diagnoses for Patient</h4>
+        <p style="color:red">Adding additional diagnoses will cause a form refresh. In order to keep any progress, only use this menu before starting the COF, or after the COF is complete.</p>
         
         
-        <form id="ContactOutcome" asp-action="AddNewDiseaseCode">            
+        <form id="frmDiseaseCodes" asp-action="AddNewDiseaseCode">            
             <input name="refID" asp-for=@Model.activityItem.RefID hidden />
 
             <div class="row">
                 <div class="col-md-2">
                     <label>Disease code</label>
                 </div>
-                <div class="col-md-2">
-                    <select name="diseaseCode" class="w-100">
+                <div class="col-md-4">
+                    <select name="diseaseCode" id="ddlDiseaseCode" class="w-100">
                         <option value="" selected></option>
                         @foreach(var d in Model.diseaseList)
                         {
@@ -262,7 +263,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <label>Status</label>
                 </div>
                 <div class="col-md-2">
@@ -274,8 +275,8 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <label>Status</label>
+                <div class="col-md-1">
+                    <label>Comments</label>
                 </div>
                 <div class="col-md-2">            
                     <input  class="w-100" name="comments" />
@@ -297,6 +298,7 @@
                     <th>Description</th>
                     <th>Status</th>
                     <th>Comments</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -307,7 +309,7 @@
                         <td>@d.DESCRIPTION</td>
                         <td>@d.STATUS</td>
                         <td>@d.MAIN_SUB</td>
-                        @*<td><a type="button" class="btn btn-outline-warning" asp-controller="Diagnosis" asp-action="Edit" asp-route-id=@d.ID>Edit</a></td>*@
+                        <td><a type="button" class="btn btn-outline-danger" asp-action="DeleteDiseaseCode" asp-route-id=@d.ID asp-route-refID=@Model.activityItem.RefID>Delete</a></td>                        
                     </tr>
                 }
             </tbody>
@@ -361,6 +363,9 @@
 
     function LoadClinic() 
     {        
+        const choices = new Choices('#ddlCOFDiagnosis');
+        const choices2 = new Choices('#ddlDiseaseCode');
+
         //document.getElementById("txtRefID").hidden = true;             
         var _att = "@(Model.activityItem.COUNSELED)";        
         document.getElementById("ContactDetails").hidden = true;
@@ -392,7 +397,12 @@
                 _complete.disabled = true;
                 _ethnic.disabled = true;
                 _complete.hidden = true;
+                document.getElementById("ddlCOFDiagnosis").disabled = true;
+                document.getElementById("ddlCOFDiagStatus").disabled = true;
+                document.getElementById("txtCOFDiagComments").disabled = true;
+                document.querySelector('#ddlCOFDiagnosis').closest('.choices').style.display = 'none';        
                 document.getElementById("lblCloseRef").hidden = true;
+                document.getElementById("cofDiagnosis").hidden = true;
                 document.getElementById("AdditionalClinicians").hidden = false;
                 
                 if("@Model.activityItem.SEEN_BY2" != null && "@Model.activityItem.SEEN_BY2" != "")
@@ -426,6 +436,8 @@
             document.getElementById("ddlSeenBy2").hidden = false;
             document.getElementById("ddlSeenBy3").hidden = false;
         }
+
+        
     }
 
     function LoadOutcome() 

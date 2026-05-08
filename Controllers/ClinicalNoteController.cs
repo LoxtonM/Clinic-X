@@ -87,14 +87,14 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int mpi, int refID, string noteType, string clinicalNote)
+        public async Task<IActionResult> Create(int mpi, int refID, string noteType, string clinicalNote, bool isFinalised)
         {
             try
             {                                
                 int noteID;
 
                 int success = await _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 0, noteType, "", "",
-                    clinicalNote, User.Identity.Name);
+                    clinicalNote, User.Identity.Name, null, null, false, isFinalised);
                 //do the update, return 1 if successful and 0 if not
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="ClinicalNote-create(SQL)" }); }
 
@@ -133,7 +133,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]        
-        public async Task<IActionResult> Edit(int noteID, string clinicalNote)
+        public async Task<IActionResult> Edit(int noteID, string clinicalNote, bool isFinalised)
         {
             try
             {
@@ -146,6 +146,11 @@ namespace ClinicX.Controllers
                     "", "", "", clinicalNote, User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="ClinicalNote-edit(SQL)" }); }
+
+                if(isFinalised)
+                {
+                    return RedirectToAction("Finalise", new { id = noteID, isSaved = true });
+                }
 
                 return RedirectToAction("Edit", new { id = noteID });
             }

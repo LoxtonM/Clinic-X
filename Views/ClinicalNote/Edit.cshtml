@@ -54,33 +54,35 @@
                 <h4 id="instructions">Enter your note and save. Click "Finalise" when done editing</h4>
                 <h4 id="instructions2">Please make sure you save your note and are happy with it before finalising it as you will not be able to undo this.</h4>
             </div>        
-        </form>
+        
 
-        <div class="row">
-            <div class="col-md-2">
-                <input type="submit" class="btn btn-default btn-outline-success" value="Save" id="btnSaveNote" />
+            <div class="row">
+                <div class="col-md-2">
+                    <input type="submit" class="btn btn-default btn-outline-success" value="Save and Continue Editing" id="btnSaveNote" />
+                </div>
+                <div class="col-md-8"><input type="text" id="txtFinalised" name="isFinalised" value="false" hidden /></div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-default btn-outline-success" id="btnFinalise">Save and Finalise</button>
+                    @*<a type="button" class="btn btn-default btn-outline-success" id="btnFinalise" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Model.clinicalNote.ClinicalNoteID asp-route-isSaved="true" asp-route-isFinalised="true">Save and Finalise</a>*@
+                    @*<a type="button" class="btn btn-default btn-outline-danger" id="btnFinaliseNotSaved" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Model.clinicalNote.ClinicalNoteID hidden>Finalise</a>*@
+                    @*<button type="button" class="btn btn-default btn-outline-danger" id="btnFinaliseNotSaved" hidden>Finalise</button>*@
+                </div>
             </div>
-            <div class="col-md-8"></div>
-            <div class="col-md-2">
-                <a type="button" class="btn btn-default btn-outline-success" id="btnFinalise" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Model.clinicalNote.ClinicalNoteID asp-route-isSaved="true">Finalise</a>
-                @*<a type="button" class="btn btn-default btn-outline-danger" id="btnFinaliseNotSaved" asp-controller="ClinicalNote" asp-action="Finalise" asp-route-id=@Model.clinicalNote.ClinicalNoteID hidden>Finalise</a>*@
-                <button type="button" class="btn btn-default btn-outline-danger" id="btnFinaliseNotSaved" hidden>Finalise</button>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
 
 <script type="text/javascript">
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnSaveNote").addEventListener("click", SaveNote);
-    document.getElementById("txtClinicalNote").addEventListener("input", SetNoteNotSaved);
-    document.getElementById("btnFinaliseNotSaved").addEventListener("click", NotFinalisedMessage);
+    document.getElementById("btnFinalise").addEventListener("click", SaveAndFinaliseNote);
+    //document.getElementById("txtClinicalNote").addEventListener("input", SetNoteNotSaved);
+    //document.getElementById("btnFinaliseNotSaved").addEventListener("click", NotFinalisedMessage);
     window.addEventListener("load", LoadNote);
 
     function LoadNote()
     {
         //document.getElementById("metadata").hidden = true;
-        
         if (document.getElementById("txtDCTMSts").value != 0)
         {
             document.getElementById("txtNoteType").disabled = true;
@@ -112,6 +114,15 @@
     {
         if (CheckFormValid() == 1) 
         {            
+            document.getElementById("ClinicalNote").submit();
+        }
+    }
+
+    function SaveAndFinaliseNote()
+    {
+        if (CheckFormValid() == 1)
+        {
+            document.getElementById("txtFinalised").value = "true";
             document.getElementById("ClinicalNote").submit();
         }
     }

@@ -52,7 +52,14 @@ namespace ClinicX.Controllers
             {
                 _lvm.referral = await _referralData.GetReferralDetails(refID.GetValueOrDefault());
             }
-            
+
+            _lvm.referralList = await _referralData.GetActiveReferralsListForPatient(mpi);
+
+            if(refID == null && _lvm.referralList.Count() == 0)
+            {
+                return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = false, message = "No active referrals exist." });
+            }
+
             var docList = await _documentsData.GetDocumentsList();
             _lvm.docsListStandard = docList.Where(d => d.DocGroup == "Standard").ToList(); //might need a "ListDocGroups" data model
             _lvm.docsListMedRec = docList.Where(d => d.DocGroup == "MEDREC").ToList();
@@ -76,11 +83,13 @@ namespace ClinicX.Controllers
             _lvm.patGP = await _externalClinicianData.GetPatientGPReferrer(mpi);
             clins.Add(_lvm.patGP);
 
-            _lvm.externalClinicians = clins;
-
+            _lvm.externalClinicians = clins;            
             _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
             _lvm.breastList = clinList.Where(c => c.POSITION.Contains("Breast") || c.SPECIALITY.Contains("Breast")).ToList();
             _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).ToList();
+            
+            
+
             _lvm.screeningCoordinatorList = await _screeningCoordinatorData.GetScreeningCoordinatorList();
 
             _lvm.leaflets = new List<Leaflet>();
