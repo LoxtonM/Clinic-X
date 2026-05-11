@@ -30,9 +30,11 @@ namespace ClinicX.Controllers
         private readonly IReferralDataAsync _refData;
         private readonly IClinicDataAsync _clinicData;
         private readonly BloodFormController _bfc;
+        private readonly ConsentFormController _cfc;
 
-        public TestController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, ITestDataAsync testData, ICRUD crud, IAuditService audit, IAgeCalculator ageCalculator,
-            IBloodFormDataAsync bloodFormData, ISampleDataAsync sampleData, IConstantsDataAsync constantsData, IReferralDataAsync referralData, IClinicDataAsync clinicData, BloodFormController bloodFormController)
+        public TestController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, ITestDataAsync testData, ICRUD crud, IAuditService audit, 
+            IAgeCalculator ageCalculator, IBloodFormDataAsync bloodFormData, ISampleDataAsync sampleData, IConstantsDataAsync constantsData, IReferralDataAsync referralData, 
+            IClinicDataAsync clinicData, BloodFormController bloodFormController, ConsentFormController consentFormController)
         {
             //_clinContext = context;
             //_cXContext = cXContext;
@@ -51,6 +53,7 @@ namespace ClinicX.Controllers
             _refData = referralData;
             _clinicData = clinicData;
             _bfc = bloodFormController;
+            _cfc = consentFormController;
         }
 
         [Authorize]
@@ -139,7 +142,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, string? message, bool? success)
         {
             try
             {
@@ -170,6 +173,8 @@ namespace ClinicX.Controllers
                 }
                 _tvm.bloodFormList = await _bloodFormData.GetBloodFormList(id);
                 _tvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1) + _tvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
+                _tvm.success = success.GetValueOrDefault();
+                _tvm.message = message;
 
                 return View(_tvm);
             }
@@ -235,6 +240,11 @@ namespace ClinicX.Controllers
         [Authorize]
         public async Task<IActionResult> NewBloodForm(int testID)
         {
+            var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = user.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Blood Form", "TestID=" + testID.ToString(), _ip.GetIPAddress());
+
             _tvm.test = await _testData.GetTestDetails(testID);
             _tvm.patient = await _patientData.GetPatientDetails(_tvm.test.MPI);            
             _tvm.sampleTypes = await _sampleData.GetSampleTypeList();
@@ -278,10 +288,47 @@ namespace ClinicX.Controllers
             return RedirectToAction("BloodFormEdit", new { bloodFormID = iBloodFormID });
         }
 
+        public async Task<IActionResult> NewConsentForm(int testID, bool? isPreview = false)
+        {
+            var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = user.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "ClinicX - New Consent Form", "ID=" + testID.ToString(), _ip.GetIPAddress());
+
+            _tvm.test = await _testData.GetTestDetails(testID);
+            _tvm.patient = await _patientData.GetPatientDetails(_tvm.test.MPI);
+
+            bool success = await _cfc.CreateConsentForm(_tvm.test.MPI, User.Identity.Name, isPreview);
+
+            if (isPreview.GetValueOrDefault())
+            {
+                //return RedirectToAction("Edit", new { id = testID});
+                return File($"~/StandardLetterPreviews/consentform-{User.Identity.Name}.pdf", "Application/PDF");
+            }
+            else
+            {
+                string message = "";
+                if(success)
+                {
+                    message = "Form has been sent to your VOT.";
+                }
+                else
+                {
+                    message = "Consent form failed :(";
+                }
+                return RedirectToAction("Edit", "Test", new { id = testID, success = success, message = message });
+            }
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> BloodFormEdit(int bloodFormID) //save data to use in the blood form preview
         {
+            var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = user.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Blood Form", "ID=" + bloodFormID.ToString(), _ip.GetIPAddress());
+
             _tvm.bloodForm = await _bloodFormData.GetBloodFormDetails(bloodFormID);
             _tvm.test = await _testData.GetTestDetails(_tvm.bloodForm.TestID);
             _tvm.patient = await _patientData.GetPatientDetails(_tvm.test.MPI);
@@ -315,6 +362,11 @@ namespace ClinicX.Controllers
         [HttpGet]
         public async Task<IActionResult> DoBloodForm(int bloodFormID, string? altPatName, bool? isPreview = false) //create the blood form itself
         {
+            var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = user.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Create Blood Form Printout", "ID=" + bloodFormID.ToString(), _ip.GetIPAddress());
+
             //BloodFormData bfData = new BloodFormData(_cXContext);
             BloodForm bf = await _bloodFormData.GetBloodFormDetails(bloodFormID);
             int testID = bf.TestID;

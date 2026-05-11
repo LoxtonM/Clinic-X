@@ -17,7 +17,24 @@
     };
 }
 
-<div class="container card">    
+<div class="container card">
+    
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
     <hr />
 
     <div class="mb-2 g-2">
@@ -149,6 +166,14 @@
         <div class="row">
             <div class="col-md-2">
                 <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="NewBloodForm" asp-route-testID=@Model.test.TestID>Create Blood Form for this test</a>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-2">
+                <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="NewConsentForm" asp-route-testID=@Model.test.TestID asp-route-isPreview="false">Create Consent Form (send direct to VOT)</a>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-2">
+                <a type="button" class="btn btn-default btn-success" asp-controller="Test" asp-action="NewConsentForm" asp-route-testID=@Model.test.TestID asp-route-isPreview="true">Create Consent Form (Preview)</a>
             </div>
         </div>
 

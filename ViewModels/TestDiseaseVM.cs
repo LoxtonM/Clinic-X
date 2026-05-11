@@ -26,5 +26,7 @@ namespace ClinicX.ViewModels
         public string phenotipsLink { get; set; }
         public bool isPatientInPhenotips { get; set; }
         public DateTime? dateOfNextAppt { get; set; }
+        public bool success { get; set; }
+        public string message { get; set; }
     }
 }

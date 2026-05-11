@@ -44,6 +44,7 @@ namespace ClinicX.Controllers
         private readonly IStaffOptionsDataAsync _staffOptionsData;
         private readonly ISocialServicePathwayDataAsync _socialServicePathwayData;
         private readonly IDictatedLetterDataAsync _dictatedLetterData;
+        
 
         public TriageController(IConfiguration config, IStaffUserDataAsync staffUserData, IPathwayDataAsync pathwayData, IPriorityDataAsync priorityData, IReferralDataAsync referralData, ITriageDataAsync triageData,
             IICPActionDataAsync iCPActionData, IRiskDataAsync riskData, ISurveillanceDataAsync surveillanceData, ITestEligibilityDataAsync testEligibilityData, IDiaryDataAsync diaryData, IRelativeDataAsync relativeData,
@@ -135,7 +136,7 @@ namespace ClinicX.Controllers
                 _ivm.clinicalFacilityList = _ivm.clinicalFacilityList.OrderBy(f => f.NAME).ToList();
                 _ivm.icpGeneral = await _triageData.GetGeneralICPDetailsByICPID(id);
                 _ivm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(id);
-                _ivm.cancerActionsList = await _icpActionData.GetICPCancerActionsList();                
+                _ivm.cancerActionsList = await _icpActionData.GetICPCancerActionsList();
                 _ivm.generalActionsList = await _icpActionData.GetICPGeneralActionsList();
                 _ivm.generalActionsList2 = await _icpActionData.GetICPGeneralActionsList2();
                 //check user type for cons/GC triage
@@ -161,14 +162,19 @@ namespace ClinicX.Controllers
 
                 if (_ivm.patient.DOB != null)
                 {
-                    _ivm.patientAge = _ageCalculator.DateDifferenceYear(_ivm.patient.DOB.GetValueOrDefault(), DateTime.Today);                    
+                    _ivm.patientAge = _ageCalculator.DateDifferenceYear(_ivm.patient.DOB.GetValueOrDefault(), DateTime.Today);
                 }
                 _ivm.patientAddress = _ivm.patient.ADDRESS1; //build the address string - making sure to ignore the nulls
-                if(_ivm.patient.ADDRESS2 != null) { _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.ADDRESS2; }
+                if (_ivm.patient.ADDRESS2 != null) { _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.ADDRESS2; }
                 if (_ivm.patient.ADDRESS3 != null) { _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.ADDRESS3; }
                 if (_ivm.patient.ADDRESS4 != null) { _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.ADDRESS4; }
-                
+
                 _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.POSTCODE;
+
+                if (_ivm.referralDetails.ClockStartDate != null)
+                { 
+                    _ivm.breachDate = _ivm.referralDetails.ClockStartDate.Value.AddDays(7 * 18);
+                }
 
                 if (DateTime.Now.AddYears(-16) < _ivm.patient.DOB) { _ivm.isChild = true; }
 
