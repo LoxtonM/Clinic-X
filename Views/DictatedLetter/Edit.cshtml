@@ -714,7 +714,7 @@
 
         if (sLetterTo == "Patient") 
         {   
-            sName = "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
+            sName = "@Model.patientDetails.Title" + " " + "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
             sAddress = "@Model.patientDetails.ADDRESS1" + "\n" + 
                         "@Model.patientDetails.ADDRESS2" + "\n" +
                         "@Model.patientDetails.ADDRESS3" + "\n" +
@@ -722,7 +722,7 @@
                         "@Model.patientDetails.POSTCODE";
             letterToCode.value = "PT";
 
-            _salut.value = "@Model.patientDetails.Title" + " " + "@Model.patientDetails.LASTNAME";
+            _salut.value = "@Model.patientDetails.Title" + " " + "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
         }
         if (sLetterTo == "GP")
         {

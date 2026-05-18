@@ -283,15 +283,14 @@
         var isCB = "@Model.bloodForm.IsCordBlood";
         var isFB = "@Model.bloodForm.IsFetalBlood";
 
-        if(isVB) { sampleType.value = "VB"; }
-        if(isSa) { sampleType.value = "Sa"; }
-        if(isBS) { sampleType.value = "BS"; }
-        if(isCVS) { sampleType.value = "CVS"; }
-        if(isAF) { sampleType.value = "isAF" }
-        if(isTi) { sampleType.value = "Ti"; }
-        if(isCB) { sampleType.value = "CB"; }
-        if(isFB) { sampleType.value = "FB"; }
-
+        if(isVB == "True") { sampleType.value = "VB"; } //fucking javascript! Of course "if(boolean)" doesn't return false if the boolean is false!!!
+        if(isSa == "True") { sampleType.value = "Sa"; }
+        if(isBS == "True") { sampleType.value = "BS"; }
+        if(isCVS == "True") { sampleType.value = "CVS"; }
+        if(isAF == "True") { sampleType.value = "AF" }
+        if(isTi == "True") { sampleType.value = "Ti"; }
+        if(isCB == "True") { sampleType.value = "CB"; }
+        if(isFB == "True") { sampleType.value = "FB"; }       
     }
 
 </script>

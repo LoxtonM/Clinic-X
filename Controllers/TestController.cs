@@ -124,7 +124,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(int mpi, string test, string sentTo, DateTime expectedDate, int refID)
+        public async Task<IActionResult> AddNew(int mpi, string test, DateTime? expectedDate, int refID, string? sentTo = "")
         {
             try
             {                
@@ -335,6 +335,8 @@ namespace ClinicX.Controllers
             
             _tvm.sampleTypes = await _sampleData.GetSampleTypeList();
             _tvm.sampleRequirementList = await _sampleData.GetSampleRequirementsList();
+
+
 
             return View(_tvm);
         }

@@ -445,8 +445,6 @@
         _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + "@Model.icpCancer.RefID"
         + "&user=mnln&referrerCode=" + "@Model.referralDetails.ReferrerCode" + "&isPreview=true";
 
-        window.alert(_url);
-
         window.open(_url, '_blank').focus();
 
     }

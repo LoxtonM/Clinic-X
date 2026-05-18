@@ -104,7 +104,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ApptDetails(int id)
+        public async Task<IActionResult> ApptDetails(int id, string? message, bool? success = false)
         {
             try
             {
@@ -158,6 +158,9 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
+
+                _cvm.message = message;
+                _cvm.success = success.GetValueOrDefault();
 
                 return View(_cvm);
             }
@@ -216,6 +219,9 @@ namespace ClinicX.Controllers
                     return NotFound();
                 }
 
+                bool isSuccess = false;
+                string message = "";
+
                 //because it doesn't like passing nulls to SQL, we have to set it to a value SQL can take, then re-set it to null in the SQL
                 if (isClockStop == null) { isClockStop = false; }
 
@@ -234,6 +240,9 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="Clinic-edit(SQL)" }); }
 
+                isSuccess = true;
+                message = "Contact outcome successfully recorded.";
+
                 if (letterRequired != "No" && isCreateDraft.GetValueOrDefault())
                 {
                     int success2 = await _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "Post Clinic Draft", "", "", "", User.Identity.Name);
@@ -246,22 +255,27 @@ namespace ClinicX.Controllers
                     dotList = dotList.Where(l => l.RefID == refID).OrderByDescending(l => l.CreatedDate).ToList();
                     DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
                     int dID = dot.DoTID;
-                    var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);
-                    //int mpi = letter.MPI.GetValueOrDefault(); //because clearly we can't do it in one line, that would be way too fucking convenient!!!
+                    var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);                    
 
                     int success3 = await _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
 
                     if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-addFMtoDOT(SQL)" }); }
+
+                    message += "  A letter has been created for dictation.";
+                }
+                else
+                {
+                    message += "  A letter has not been created.";
                 }
 
-                if(diseaseCode != null && status != null)
+                if (diseaseCode != null && status != null)
                 {
                     int success4 = await _crud.CallStoredProcedure("Diagnosis", "Create", mpi, refID, 0, diseaseCode, status, "", comments, User.Identity.Name);
-                 
+
                     if (success4 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-addDisease(SQL)" }); }
                 }
 
-                return RedirectToAction("ApptDetails", new { id = refID });                
+                return RedirectToAction("ApptDetails", new { id = refID, message = message, success = isSuccess });                
             }
             catch (Exception ex)
             {

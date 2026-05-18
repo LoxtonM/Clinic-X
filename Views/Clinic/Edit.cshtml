@@ -242,7 +242,7 @@
         </form>
     </div>
 
-    <div class="mb-5">
+    <div class="mb-5" id="divAdditionalDiagnoses">
         <h4>Additional Diagnoses for Patient</h4>
         <p style="color:red">Adding additional diagnoses will cause a form refresh. In order to keep any progress, only use this menu before starting the COF, or after the COF is complete.</p>
         
@@ -370,6 +370,8 @@
         var _att = "@(Model.activityItem.COUNSELED)";        
         document.getElementById("ContactDetails").hidden = true;
         var _seenBy = document.getElementById("ddlSeenBy");
+        var _diags = document.getElementById("divAdditionalDiagnoses");
+
         if ("@Model.activityItem.SEEN_BY" == "")
         {
             _seenBy.value = "@Model.activityItem.STAFF_CODE_1"
@@ -377,7 +379,8 @@
         if (_att != null && _att != "")         
         {
             document.getElementById("ddlContactOutcome").disabled = true;
-            document.getElementById("ContactDetails").hidden = false;            
+            document.getElementById("ContactDetails").hidden = false;   
+            _diags.hidden = false;
             var _arrivalTime = document.getElementById("txtArrivalTime");
             var _noPatientsSeen = document.getElementById("txtNoPatientsSeen");
             var _letterRequired = document.getElementById("ddlLetterRequired");
@@ -435,6 +438,7 @@
             document.getElementById("AdditionalClinicians").hidden = false;
             document.getElementById("ddlSeenBy2").hidden = false;
             document.getElementById("ddlSeenBy3").hidden = false;
+            _diags.hidden = true;
         }
 
         

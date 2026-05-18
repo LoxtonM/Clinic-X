@@ -97,7 +97,7 @@
                     }
                     else
                     {
-                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
+                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Create Phenotips Record</a>
                     }
                 }
             @*}*@
@@ -726,7 +726,7 @@
                                         {
                                             @if(i != null) @*because obviously the list of cancer ICPs has a null cancer ICP, that makes perfect sense...*@
                                             {
-                                                if (i.RefID == r.refid)
+                                                if (i.RefID == r.refid && !r.logicaldelete)
                                                 {
                                                     <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@i.ICP_Cancer_ID>ICP Review</a></td>
                                                 }
