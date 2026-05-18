@@ -303,6 +303,7 @@ namespace ClinicalXPDataConnections.Meta
             string salutation = "";
             DateTime patDOB = DateTime.Now; //have to give it an initial value or the program throws a fit
             if (_lvm.patient.DOB != null) { patDOB = _lvm.patient.DOB.GetValueOrDefault(); } //because you KNOW there's gonna be a null!
+            string patNHSNo = _lvm.patient.SOCIAL_SECURITY;
             string content1 = "";
             string content2 = "";
             string content3 = "";
@@ -601,6 +602,40 @@ namespace ClinicalXPDataConnections.Meta
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
+                if(docCode == "Kstop")
+                {
+                    Table table1 = section.AddTable();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = table1.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table1.Rows.Height = 50;
+                    table1.Columns.Width = 200;
+                    contentRe.Width = 20;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re:");
+                    row1_1.Cells[1].AddParagraph(patAddress);
+                    row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
+                    spacer = section.AddParagraph();
+                    content1 = _lvm.documentsContent.Para1;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para2;
+                    if(additionalText != null && additionalText != "")
+                    {
+                        content2 = content2 + Environment.NewLine + Environment.NewLine + additionalText;
+                    }
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+                    content3 = _lvm.documentsContent.Para3;
+                    Paragraph letterContent3 = section.AddParagraph(content3);
+
+                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                }
+
 
                 //Endo letters
                 if (docCode == "EndoAck")
@@ -674,17 +709,20 @@ namespace ClinicalXPDataConnections.Meta
                 if (docCode == "OOR1")
                 {
                     Table table1 = section.AddTable();
-                    Column contentPatAddress = table.AddColumn();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
                     contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
-                    Column contentPatDOB = table.AddColumn();
+                    Column contentPatDOB = table1.AddColumn();
                     contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
-                    table.Rows.Height = 50;
-                    table.Columns.Width = 150;
+                    table1.Rows.Height = 50;
+                    table1.Columns.Width = 200;
+                    contentRe.Width = 20;
                     Row row1_1 = table1.AddRow();
                     row1_1.VerticalAlignment = VerticalAlignment.Top;
                     row1_1.Format.Font.Bold = true;
-                    row1_1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
-                    row1_1.Cells[1].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy"));
+                    row1_1.Cells[0].AddParagraph("Re:");
+                    row1_1.Cells[1].AddParagraph(patAddress);
+                    row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy"));
                     spacer = section.AddParagraph();
                     Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
                     spacer = section.AddParagraph();
@@ -699,12 +737,12 @@ namespace ClinicalXPDataConnections.Meta
                 if (docCode == "OOR2")
                 {
                     Table table1 = section.AddTable();
-                    Column contentPatAddress = table.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
                     contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
-                    Column contentPatDOB = table.AddColumn();
+                    Column contentPatDOB = table1.AddColumn();
                     contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
-                    table.Rows.Height = 50;
-                    table.Columns.Width = 100;
+                    table1.Rows.Height = 50;
+                    table1.Columns.Width = 200;
                     Row row1_1 = table.AddRow();
                     row1_1.VerticalAlignment = VerticalAlignment.Top;
                     row1_1.Format.Font.Bold = true;

@@ -115,24 +115,43 @@
             <div class="col-md-2">
                 <label>Recipient:</label>
             </div>
-            <div class="col-md-4">
-                @*
-                <select name="otherClinician" id="ddlExtClinician" class="js-choice">
-                    <option value="">Select ...</option>
-                    @foreach(var item in Model.externalClinicians)
-                    {
-                        <option value=@item.MasterClinicianCode>@item.TITLE @item.LAST_NAME - @item.FACILITY</option>
-                    }
-                </select>
-                *@
-                <select name="otherClinician" id="ddlExtClinician">
+            <div class="col-md-4">                
+                <select id="ddlScreeningCoordinator" hidden onchange=SetOtherClinician("screening")> @*inline is necessary because I can't pass a parameter otherwise*@
                     <option value="">Select ...</option>
                     @foreach (var item in Model.screeningCoordinatorList)
                     {
                         <option value=@item.MasterClinicianCode>@item.Contact - @item.FacilityName</option>
                     }
                 </select>
-
+                <select id="ddlGeneticsCentre" hidden onchange=SetOtherClinician("genetics")>
+                    <option value="">Select ...</option>
+                    @foreach (var item in Model.geneticsList)
+                    {
+                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                    }
+                </select>
+                <select id="ddlHistoList" hidden onchange=SetOtherClinician("histo")>
+                    <option value="">Select ...</option>
+                    @foreach (var item in Model.histoList)
+                    {
+                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                    }
+                </select>
+                <select id="ddlBreastList" hidden onchange=SetOtherClinician("breast")>
+                    <option value="">Select ...</option>
+                    @foreach (var item in Model.breastList)
+                    {
+                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                    }
+                </select>
+                <select id="ddlAllHospitals" hidden onchange=SetOtherClinician("all")>
+                    <option value="">Select ...</option>
+                    @foreach (var item in Model.externalClinicians)
+                    {
+                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                    }
+                </select>
+                <input id="txtRecipient" name="otherClinician" hidden /> @*because we can't have multiple "name=" fields and just use the one that's not hidden! That would be too simple.*@
             </div>
         </div>
 
@@ -259,27 +278,27 @@
         var reports = document.getElementById("docGroupReports");
         var otherLetters = document.getElementById("docGroupOther");
 
-        var clinList = document.getElementById("ddlExtClinician");
+        //var clinList = document.getElementById("ddlExtClinician");
+        var screeningCoordinator = document.getElementById("ddlScreeningCoordinator");
+        var geneticsCentre = document.getElementById("ddlGeneticsCentre");
+        var histoList = document.getElementById("ddlHistoList");
+        var breastList = document.getElementById("ddlBreastList");
+        var allHospitalList = document.getElementById("ddlAllHospitals");
 
         var docCodeArray = [];
         var recipArray = [];
-        var recip = "";
+        //var recip = "";
 
-        var clinCodeArray = [];
-        var clinNameArray = [];
-        var clinDeptArray = [];
+        //var clinCodeArray = [];
+        //var clinNameArray = [];
+        //var clinDeptArray = [];
 
-        /*
-        var i, L = clinList.options.length - 1;
-        for(i = L; i >= 0; i--)
-        {
-            clinList.remove(i);
-        }
-
-        clinCodeArray.push("@Model.patGP.MasterClinicianCode");
-        clinNameArray.push("@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME" );
-        clinDeptArray.push("@Model.patGP.FACILITY");
-        */
+        //initially hide all of them (the right one will be un-hidden later)
+        screeningCoordinator.hidden = true;
+        geneticsCentre.hidden = true;
+        histoList.hidden = true;
+        breastList.hidden = true;
+        allHospitalList.hidden = true;
 
         if(!standardLetters.hidden) //because we absolutely CAN FUCKING NOT simply pass the parameter to a function this way, because that would be far too fucking simple!!!!!
         {
@@ -325,62 +344,45 @@
             {
                 recip = recipArray[i];
             }
-        }
-
-        if(recip == "Histo")
-        {
-            document.getElementById("divExtClinician").hidden = false;
-
-            @foreach (var item in Model.histoList)
-            {
-                @:clinCodeArray.push("@item.MasterClinicianCode");
-                if (item.POSITION != "Not known")
-                {
-                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.POSITION".replace("&amp;", "&").replace("&#x27;", "'"));
-                }
-                else
-                {
-                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME".replace("&#x27;", "'"));
-                }
-                @:clinDeptArray.push("@item.FACILITY");
-            }
-        }
-                
+        }        
+        
+        
         if(docCode == "O4" || docCode == "O4am") //because the "LetterTo" is "RD" - but that's "referrer" in every other letter! So... what the actual fuck, CGU_DB??
         {
             //document.querySelector('#ddlExtClinician').closest('.choices').style.display = '';
-            document.getElementById("divExtClinician").hidden = false;
-
-            
+            document.getElementById("divExtClinician").hidden = false;      
+            screeningCoordinator.hidden = false;
         }        
-
-
-        if(recip == "Other")
+        
+        switch(recip)
         {
-            document.getElementById("divExtClinician").hidden = false;
-
-            @foreach (var item in Model.geneticsList)
-            {
-                @:clinCodeArray.push("@item.MasterClinicianCode");
-                if (item.POSITION != "Not known")
-                {
-                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.POSITION".replace("&amp;", "&").replace("&#x27;", "'"));
+            case "Other":
+                document.getElementById("divExtClinician").hidden = false;
+                if(docCode == "PC01")
+                {                    
+                    geneticsCentre.hidden = false;
                 }
                 else
                 {
-                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME".replace("&#x27;", "'"));
+                    allHospitalList.hidden = false;
                 }
-                @:clinDeptArray.push("@item.FACILITY");
-            }
+                break;
+            case "Histo":
+                document.getElementById("divExtClinician").hidden = false;
+                histoList.hidden = false;
+                break;
+            default:
+                document.getElementById("divExtClinician").hidden = true;
         }
 
         /*
-        for(var j = 0; j < clinCodeArray.length; j++)
+        if(recip == "Other")
         {
-            var option = document.createElement('option');
-            option.value = clinCodeArray[j];
-            option.text = clinNameArray[j] + ", " + clinDeptArray[j].replace("&#x27;", "'").replace("&amp;", "&");
-            clinList.add(option, 0);
+            if(docCode == "PC01")
+            {
+                document.getElementById("divExtClinician").hidden = false;
+                geneticsCentre.hidden = false;
+            }
         }
         */
     }
@@ -402,6 +404,35 @@
     function SetReferral()
     {
         document.getElementById("txtRefID").value = document.getElementById("ddlRefID").value;
+    }
+
+    function SetOtherClinician(otherClinician) //because obviously we can't just use the list that's not hidden!
+    {        
+        var clin = document.getElementById("txtRecipient");
+        var screeningCoordinator = document.getElementById("ddlScreeningCoordinator");
+        var geneticsCentre = document.getElementById("ddlGeneticsCentre");
+        var histoList = document.getElementById("ddlHistoList");
+        var breastList = document.getElementById("ddlBreastList");
+        var allHospitalList = document.getElementById("ddlAllHospitals");
+
+        switch(otherClinician)
+        {
+            case "screening":
+                clin.value = screeningCoordinator.value;
+                break;
+            case "genetics":
+                clin.value = geneticsCentre.value;
+                break;
+            case "histo":
+                clin.value = histoList.value;
+                break;
+            case "breast":
+                clin.value = breastList.value;
+                break;
+            default:
+                clin.value = allHospitalList.value;
+        }
+
     }
 
 </script>

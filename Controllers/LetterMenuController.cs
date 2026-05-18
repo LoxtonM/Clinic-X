@@ -82,6 +82,7 @@ namespace ClinicX.Controllers
             _lvm.patient = await _patientData.GetPatientDetails(mpi);
             _lvm.patGP = await _externalClinicianData.GetPatientGPReferrer(mpi);
             clins.Add(_lvm.patGP);
+            clins = clins.Distinct().OrderBy(c => c.FACILITY).ToList();
 
             _lvm.externalClinicians = clins;            
             _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
@@ -151,6 +152,8 @@ namespace ClinicX.Controllers
             }
             else
             {
+                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
+
                 await _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician,
                         "", null, isPreview, "", leafletID, true);
             }
