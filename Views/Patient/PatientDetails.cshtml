@@ -97,7 +97,7 @@
                     }
                     else
                     {
-                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Create Phenotips Record</a>
+                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Create Phenotips Record</a> <span class="redtext"> - this will push the patient directly into Phenotips (one-click process)</span>
                     }
                 }
             @*}*@

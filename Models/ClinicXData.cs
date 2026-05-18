@@ -247,7 +247,9 @@ namespace ClinicX.Models
         public string? RelativeNo { get; set; }
         public string? RelativeDetails { get; set; }
         public string? SampleRequirements { get; set; }
-
+        public bool isPatientManagement { get; set; }
+        public bool isReproductiveDecisionMaking { get; set; }
+        public bool isRelativePredictiveTesting { get; set; }
     }
 
     [Table("ListSampleType", Schema = "dbo")]

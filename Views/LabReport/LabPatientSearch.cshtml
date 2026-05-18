@@ -70,7 +70,7 @@
                     <a type="button" class="btn btn-outline-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@item.INTID>View Reports</a>
                 </div>
                 <div class="col-md-2">
-                    @item.FIRSTNAME @item.LASTNAME
+                    @item.LASTNAME, @item.FIRSTNAME
                 </div>
                 <div class="col-md-2">
                     @if (@item.DOB != null)

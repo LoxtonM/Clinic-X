@@ -562,7 +562,9 @@ namespace ClinicX.Controllers
         {
             _lvm.dictatedLetterCopy = await _dictatedLetterData.GetDictatedLetterCopyDetails(ccID);
 
-            _crud.CallStoredProcedure("Letter", "EditCC", ccID, 0, 0, "", "", "", ccDetails, User.Identity.Name, null, null, false, false);
+            int success = await _crud.CallStoredProcedure("Letter", "EditCC", ccID, 0, 0, "", "", "", ccDetails, User.Identity.Name, null, null, false, false);
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-ModifyCC(SQL)" }); }
 
             return RedirectToAction("Edit", "DictatedLetter", new { id = _lvm.dictatedLetterCopy.DotID }); 
         }

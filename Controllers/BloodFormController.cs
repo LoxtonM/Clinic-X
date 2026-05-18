@@ -56,6 +56,8 @@ namespace ClinicX.Controllers
             XFont fontSmall = new XFont("Arial", 8, XFontStyle.Regular);
             XFont fontBold = new XFont("Arial", 12, XFontStyle.Bold);
             XFont fontUnderlined = new XFont("Arial", 12, XFontStyle.Underline);
+            XFont fontMedium = new XFont("Arial", 11, XFontStyle.Regular);
+            XFont fontMediumBold = new XFont("Arial", 11, XFontStyle.Bold);
             XFont fontSmallBold = new XFont("Arial", 8, XFontStyle.Bold);
             XFont fontSmallUnderlined = new XFont("Arial", 8, XFontStyle.Underline);
             XFont fontLarge = new XFont("Arial", 16, XFontStyle.Regular);
@@ -337,7 +339,7 @@ namespace ClinicX.Controllers
             //Clinical Utility section (NEW)
             gfx.DrawRectangle(XBrushes.Green, new XRect(pageEdge, totalLength, pageWidth, 20));
             totalLength += 2;
-            tf.DrawString("CLINICAL UTILITY (Please provide additional information with other relevant clinical information above)", fontBold, XBrushes.White, new XRect(pageEdge + 10, totalLength, 200, 20));
+            tf.DrawString("CLINICAL UTILITY (Please provide additional information with other relevant clinical information above)", fontMediumBold, XBrushes.White, new XRect(pageEdge + 10, totalLength, 600, 20));
             totalLength += 18;
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge, totalLength, pageWidth, 70));
             totalLength += 1;
