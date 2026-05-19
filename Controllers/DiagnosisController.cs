@@ -148,6 +148,28 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Diagnosis-edit" });
             }
         }
+
+        public async Task<IActionResult> DeleteDiseaseCode(int id)
+        {
+            try
+            {
+                var staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = staffMember?.STAFF_CODE ?? string.Empty;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Delete diagnosis", "DiagID=" + id.ToString(), _ip.GetIPAddress());
+
+                int success = await _crud.CallStoredProcedure("Diagnosis", "Delete", id, 0, 0, "", "", "", "", User.Identity.Name);
+                //do the update, return 1 if successful and 0 if not
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diagnosis-new(SQL)" }); }
+
+                return RedirectToAction("Index", "Diagnosis");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Diagnosis-new" });
+            }
+        }
     }
 }
 

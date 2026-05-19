@@ -5,6 +5,7 @@ using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using APIControllers.Controllers;
 
 namespace ClinicX.Controllers
 {
@@ -24,10 +25,12 @@ namespace ClinicX.Controllers
         private readonly IExternalClinicianDataAsync _externalClinicianData;
         private readonly ITriageDataAsync _triageData;
         private readonly IScreeningCoordinatorDataAsync _screeningCoordinatorData;
+        private readonly IApiController _api;
+        private readonly IConstantsDataAsync _constantsData;
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documentsData, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController letterController, ICRUD crud,
             IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData, ITriageDataAsync triageData, 
-            IScreeningCoordinatorDataAsync screeningCoordinatorData, ClinicalContext context, DocumentContext documentContext) 
+            IScreeningCoordinatorDataAsync screeningCoordinatorData, IApiController api, IConstantsDataAsync constantsData, ClinicalContext context, DocumentContext documentContext) 
         {
             _config = config;   
             _context = context;
@@ -43,6 +46,8 @@ namespace ClinicX.Controllers
             _externalClinicianData = externalClinicianData;
             _triageData = triageData;
             _screeningCoordinatorData = screeningCoordinatorData;
+            _api = api;
+            _constantsData = constantsData;
         }
 
         [Authorize]
@@ -152,10 +157,21 @@ namespace ClinicX.Controllers
             }
             else
             {
-                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
+                string qrCodeText = ""; //check and set up the Phenotips PPQ QR code if required
+                bool isPhenotipsAvailable = await _constantsData.GetConstant("PhenotipsURL", 2) == "1";
+
+                if (isPhenotipsAvailable)
+                {
+                    bool isPhenotipsQR = _documentsData.GetDocumentDetailsByDocCode(docCode).Result.hasPhenotipsPPQ;
+
+                    if (isPhenotipsQR)
+                    {
+                        qrCodeText = await _api.GetPPQQRCode(mpi, _lvm.referral.PATHWAY);
+                    }
+                }
 
                 await _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician,
-                        "", null, isPreview, "", leafletID, true);
+                        "", null, isPreview, qrCodeText, leafletID, true);
             }
 
             if(isPreview)

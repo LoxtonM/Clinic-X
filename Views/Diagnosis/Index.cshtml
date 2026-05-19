@@ -28,6 +28,7 @@
                         <th>Disease</th>
                         <th>Status</th>
                         <th>Comments</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,6 +40,7 @@
                             <td>@item.DESCRIPTION</td>
                             <td>@item.STATUS</td>
                             <td>@item.MAIN_SUB</td>
+                            <td><a type="button" class="btn btn-outline-danger" asp-action="DeleteDiseaseCode" asp-route-id=@item.ID>Delete</a></td>
                         </tr>
                     }
                 </tbody>
