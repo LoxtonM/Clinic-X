@@ -1,6 +1,7 @@
 ﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Models;
 using ClinicalXPDataConnections.ViewModels;
+using HtmlAgilityPack;
 //using Microsoft.Office.Interop.Outlook;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
@@ -9,7 +10,10 @@ using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf;
 using System.Drawing;
+using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace ClinicalXPDataConnections.Meta
@@ -153,7 +157,9 @@ namespace ClinicalXPDataConnections.Meta
 
             if (letterContent.Contains("</"))
             {
-                letterContent = RemoveHTML(letterContent);
+                //letterContent = RemoveHTML(letterContent);
+                letterContent = CleanWordHtmlToText(letterContent);
+                //letterContent = ConvertToPlainText()
             }
 
             Paragraph contentLetterContent = section.AddParagraph();
@@ -227,7 +233,7 @@ namespace ClinicalXPDataConnections.Meta
             }
 
             //CCs, print count, etc
-            int printCount = 1;            
+            int printCount = 1;
 
             List<DictatedLettersCopy> ccList = _dictatedLetterData.GetDictatedLettersCopiesList(_lvm.dictatedLetter.DoTID);
 
@@ -252,7 +258,7 @@ namespace ClinicalXPDataConnections.Meta
 
                     ccRow.Cells[0].AddParagraph("cc:");
                     ccRow.Cells[1].AddParagraph(item.CC);
-                    
+
                     printCount = printCount += 1;
                 }
             }
@@ -468,7 +474,26 @@ namespace ClinicalXPDataConnections.Meta
                 string dateTimeString = DateTime.Now.ToString("yyyyMMddHHmmss");
                 string diaryIDString = diaryID.ToString();
 
-                
+                switch (_lvm.documentsContent.LetterFrom)
+                {
+                    case "GC":
+                        var gc = _staffUser.GetStaffMemberDetailsByStaffCode(referral.GC_CODE);
+                        signOff = gc.NAME + Environment.NewLine + gc.POSITION;
+                        sigFilename = gc.StaffForename + gc.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        break;
+                    case "Cons":
+                        var cons = _staffUser.GetStaffMemberDetailsByStaffCode(referral.PATIENT_TYPE_CODE);
+                        signOff = cons.NAME + Environment.NewLine + cons.POSITION;
+                        sigFilename = cons.StaffForename + cons.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        break;
+                    case "Logon":
+                        //signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                        break;
+                    default:
+                        signOff = "";
+                        break;
+                }
+
                 ///////////////////////////////////////////////////////////////////////////////////////
                 ///////////////////////////////////////////////////////////////////////////////////////
                 //////All letter templates need to be defined individually here////////////////////////            
@@ -482,8 +507,6 @@ namespace ClinicalXPDataConnections.Meta
                 {
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent = section.AddParagraph(content1);
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-
                 }
 
                 //CTB Ack letter
@@ -498,7 +521,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     signOff = "CGU Booking Centre";
-                    //ccs[0] = referrerName;
                 }
 
                 //CTBFol letter
@@ -547,8 +569,6 @@ namespace ClinicalXPDataConnections.Meta
                     content3 = _lvm.documentsContent.Para3;
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     signOff = "CGU Booking Centre";
-                    //ccs[0] = referrerName;
-                    //ccs[1] = gpName;
                 }
 
                 //K letters
@@ -563,7 +583,6 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "K")
@@ -584,8 +603,6 @@ namespace ClinicalXPDataConnections.Meta
                     content5 = _lvm.documentsContent.Para6;
                     Paragraph letterContent5 = section.AddParagraph(content5);
                     spacer = section.AddParagraph();
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "Krem")
@@ -598,11 +615,9 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     content3 = _lvm.documentsContent.Para3;
                     Paragraph letterContent3 = section.AddParagraph(content3);
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
-                if(docCode == "Kstop")
+                if (docCode == "Kstop")
                 {
                     Table table1 = section.AddTable();
                     Column contentRe = table1.AddColumn();
@@ -624,7 +639,7 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para2;
-                    if(additionalText != null && additionalText != "")
+                    if (additionalText != null && additionalText != "")
                     {
                         content2 = content2 + Environment.NewLine + Environment.NewLine + additionalText;
                     }
@@ -632,8 +647,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     content3 = _lvm.documentsContent.Para3;
                     Paragraph letterContent3 = section.AddParagraph(content3);
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
 
@@ -643,7 +656,7 @@ namespace ClinicalXPDataConnections.Meta
 
 
 
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                    //signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "EndoRem")
@@ -651,7 +664,7 @@ namespace ClinicalXPDataConnections.Meta
 
 
 
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                    //signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
 
@@ -661,7 +674,6 @@ namespace ClinicalXPDataConnections.Meta
 
 
 
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "CardRem")
@@ -669,7 +681,6 @@ namespace ClinicalXPDataConnections.Meta
 
 
 
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
 
@@ -685,7 +696,6 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para4);
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para5);
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "RejFHAW")
@@ -701,8 +711,6 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
                     spacer = section.AddParagraph();
                     Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para5);
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 //OOR1
@@ -773,8 +781,6 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 //O1 letter
@@ -797,9 +803,6 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = referrerName;
-                    //ccs[1] = gpName;
                 }
 
                 //O1a
@@ -852,9 +855,6 @@ namespace ClinicalXPDataConnections.Meta
                     }
                     Paragraph letterContent5 = section.AddParagraph(content5);
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = referrerName;
-                    //ccs[1] = gpName;
                 }
 
                 //O1c
@@ -884,9 +884,6 @@ namespace ClinicalXPDataConnections.Meta
                         Paragraph letterContent3 = section.AddParagraph(content3);
                         spacer = section.AddParagraph();
                     }
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = referrerName;
-                    //ccs[1] = gpName;
                 }
 
                 //O2
@@ -937,7 +934,7 @@ namespace ClinicalXPDataConnections.Meta
 
                     Paragraph paraScreen = section.AddParagraph();
                     paraScreen.AddFormattedText(contentscreening, TextFormat.Bold);
-                    
+
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
@@ -956,9 +953,6 @@ namespace ClinicalXPDataConnections.Meta
                         Paragraph letterContent5 = section.AddParagraph(content5);
                         spacer = section.AddParagraph();
                     }
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = referrerName;
-                    //ccs[1] = gpName;
                 }
 
                 //O2a
@@ -1014,9 +1008,6 @@ namespace ClinicalXPDataConnections.Meta
                         Paragraph letterContent5 = section.AddParagraph(content5);
                         spacer = section.AddParagraph();
                     }
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = referrerName;
-                    //ccs[1] = gpName;
                 }
 
                 //O2d
@@ -1031,9 +1022,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = referrerName;
-                    //ccs[1] = gpName;
                 }
 
                 //O3
@@ -1068,9 +1056,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent5 = section.AddParagraph(content5);
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = referrerName;
-                    //ccs[1] = gpName;
                 }
 
                 //O3a
@@ -1089,9 +1074,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = referrerName;
-                    //ccs[1] = gpName;
                 }
 
                 //O4
@@ -1180,9 +1162,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent5 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = referrerName;
-                    //ccs[1] = gpName;
                 }
 
                 //O4am
@@ -1278,8 +1257,6 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent4 = section.AddParagraph(content4);
 
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = referrerName;
                 }
 
                 //MR01
@@ -1295,8 +1272,6 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
                     spacer = section.AddParagraph();
                     Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para5);
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
 
@@ -1338,9 +1313,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
 
                     Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
-
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 //DT01
@@ -1371,8 +1343,6 @@ namespace ClinicalXPDataConnections.Meta
 
                     spacer = section.AddParagraph();
 
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-
                     enclosures = "Two copies of consent form (Letter code CF02) Letter to give to your GP or hospital (Letter code DT03) " +
                         "Blood sampling kit (containing the relevant tubes, form and packaging) Pre-paid envelope";
                 }
@@ -1400,8 +1370,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 //DT11
@@ -1428,7 +1396,7 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent5 = section.AddParagraph(content5);
                     spacer = section.AddParagraph();
 
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                    //signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     enclosures = "copy of completed consent form (Letter code CF04)";
                     pageCount += 1; //because it's impossible to force it to go to the next page otherwise!
                     ccs[0] = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME;
@@ -1463,8 +1431,8 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
 
                     enclosures = "copy of completed consent form (Letter code CF04)";
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    ccs[0] = recipient;
+
+                    ccs[0] = recipient; //overrides the standard one
                 }
 
                 //DT13
@@ -1492,7 +1460,6 @@ namespace ClinicalXPDataConnections.Meta
                     content4 = _lvm.documentsContent.Para4;
                     Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 //DT15
@@ -1618,7 +1585,6 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContentClinDets = section.AddParagraph();
                     letterContentClinDets.AddFormattedText("Section 5: Clinician details", TextFormat.Bold);
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 //PC01
@@ -1640,7 +1606,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 //GR01
@@ -1655,7 +1620,6 @@ namespace ClinicalXPDataConnections.Meta
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     enclosures = "Consent form (letter code CF01)";
                 }
 
@@ -1680,7 +1644,6 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
 
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     enclosures = "Consent form (letter code CF01)";
                 }
 
@@ -1704,8 +1667,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     content5 = _lvm.documentsContent.Para9;
                     Paragraph letterContent5 = section.AddParagraph(content5);
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "VHRProC")
@@ -1716,15 +1677,13 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //ccs[0] = gpName;
                     ccs[1] = otherName;
                 }
 
                 //Clics letters
                 if (docCode == "ClicsFHF")
                 {
-                    content1 = _lvm.documentsContent.Para1;
+                    content1 = referrerName + " " + _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para2;
                     content3 = _lvm.documentsContent.Para3;
                     content4 = _lvm.documentsContent.Para4;
@@ -1737,20 +1696,16 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
 
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    //File.Delete($"wwwroot\\Images\\qrCode-{user}.jpg");
-                    //ccs[0] = referrerName;
                     ccs[0] = "RD";
                     if (referrerName != gpName)
                     {
-                        //ccs[1] = gpName;
                         ccs[1] = "GP";
                     }
                 }
 
                 if (docCode == "ClicsRem")
                 {
-                    content1 = _lvm.documentsContent.Para1;
+                    content1 = referrerName + " " + _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para2;
                     content3 = _lvm.documentsContent.Para3;
                     Paragraph letterContent1 = section.AddParagraph(content1);
@@ -1759,9 +1714,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    //ccs[0] = referrerName;
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "ClicsStop")
@@ -1775,15 +1727,11 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    //ccs[0] = referrerName;
                     ccs[0] = "RD";
                     if (referrerName != gpName)
                     {
-                        //ccs[1] = gpName;
                         ccs[1] = "GP";
                     }
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "ClicsMR01")
@@ -1804,8 +1752,6 @@ namespace ClinicalXPDataConnections.Meta
                     content5 = _lvm.documentsContent.Para5;
                     Paragraph letterContent5 = section.AddParagraph(content5);
                     spacer = section.AddParagraph();
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "ClicsMR03")
@@ -1830,8 +1776,6 @@ namespace ClinicalXPDataConnections.Meta
                     content5 = _lvm.documentsContent.Para9;
                     Paragraph letterContent5 = section.AddParagraph(content5);
                     spacer = section.AddParagraph();
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "ClicsMRR")
@@ -1848,8 +1792,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     content4 = _lvm.documentsContent.Para4;
                     Paragraph letterContent4 = section.AddParagraph(content4);
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 //DNA letters
@@ -1860,8 +1802,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
 
@@ -1878,8 +1818,6 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     content3 = _lvm.documentsContent.Para5;
                     Paragraph letterContent3 = section.AddParagraph(content3);
-
-                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 if (docCode == "DNMRC")
@@ -2484,30 +2422,120 @@ namespace ClinicalXPDataConnections.Meta
             }
         }
 
-        string RemoveHTML(string text)
+        public static string CleanWordHtmlToText(string dirtyHtml)
+        {
+            if (string.IsNullOrWhiteSpace(dirtyHtml))
+                return string.Empty;
+
+            dirtyHtml = dirtyHtml.Replace("<b>", "[[strong]]"); //we have to do this, or the bold tags will get wiped by the "everything" tag
+            dirtyHtml = dirtyHtml.Replace("</b>", "[[/strong]]");
+            dirtyHtml = dirtyHtml.Replace("<strong>", "[[strong]]");
+            dirtyHtml = dirtyHtml.Replace("</strong>", "[[/strong]]");
+
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(dirtyHtml);
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                ConvertToPlainText(htmlDoc.DocumentNode, sw);
+                sw.Flush();
+            }
+
+            string result = WebUtility.HtmlDecode(sb.ToString()).Trim();
+
+            // 1. Strip out Word's internal hard line breaks that split sentences in half
+            result = result.Replace("\r", "").Replace("\n", " ");
+
+            // 2. Clear out heavy duplicate spaces left behind
+            result = Regex.Replace(result, @"[ ]{2,}", " ");
+
+            // 3. THE FIX: Convert tokens into single or double line breaks exactly as preferred
+            result = result.Replace("__REAL_DOUBLE_BREAK__", Environment.NewLine + Environment.NewLine);
+            result = result.Replace("__REAL_SINGLE_BREAK__", Environment.NewLine);
+
+            // 4. Clean up any trailing spaces sitting at the start of new lines
+            result = Regex.Replace(result, @"(?<=\r?\n)[ ]+", "");
+
+            // 5. Final polish: If three or more newlines clump up together, scale them back to a double break
+            return Regex.Replace(result, @"(\r?\n){3,}", Environment.NewLine + Environment.NewLine).Trim();
+        }
+
+        private static void ConvertToPlainText(HtmlNode node, TextWriter writer)
+        {
+            switch (node.NodeType)
+            {
+                case HtmlNodeType.Comment:
+                    break;
+
+                case HtmlNodeType.Document:
+                case HtmlNodeType.Element:
+                    string name = node.Name.ToLower();
+                    if (name == "script" || name == "style" || name == "head" || name == "title" || name == "xml")
+                        break;
+
+                    if (node.HasChildNodes)
+                    {
+                        foreach (var child in node.ChildNodes)
+                        {
+                            ConvertToPlainText(child, writer);
+                        }
+                    }
+
+                    // Differentiate between standalone breaks (<br>) and major block items (<p>, <li>, <div>)
+                    if (name == "br")
+                    {
+                        writer.Write("__REAL_SINGLE_BREAK__");
+                    }
+                    else if (name == "p" || name == "div" || name == "tr" || name == "h1" || name == "h2" || name == "h3" || name == "li")
+                    {
+                        writer.Write("__REAL_DOUBLE_BREAK__");
+                    }
+                    break;
+
+                case HtmlNodeType.Text:
+                    string text = ((HtmlTextNode)node).Text;
+                    if (!string.IsNullOrWhiteSpace(text))
+                    {
+                        writer.Write(text);
+                    }
+                    break;
+            }
+        }
+
+
+
+        string RemoveHTML(string text) //possibly depreciated, since I can't get this to work cleanly!
         {
             //text = text.Replace("<div>", "");
+            text = text.Replace("  ", " "); //because of the stupid double spaces, which are now causing line breaks for some reason!!!!!
+            
             text = text.Replace("<div><br></div>", "newline");
             text = text.Replace("</div>", "newline");
-            text = text.Replace(Environment.NewLine, "newline");
-            text = text.Replace("<div>&nbsp;</div>", "newline");
-            text = text.Replace("<br>", "newline");
-            text = text.Replace("</p>", "newline");
+
+            //what utter fucking bullshit!!!
+            //this line is making certain spaces now cause line breaks, for some reason - but only sometimes!!!
+            text = text.Replace(Environment.NewLine, "newline");            
+            //I can't eliminate all of the single line breaks because that will fuck up all other letters!!!
+            //WHY YOU GOTTA DO THIS TO ME???????
+            
+            text = text.Replace("<div>&nbsp;</div>", "newline");            
             text = text.Replace("newlinenewlinenewlinenewlinenewlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine); //don't fucking ask!!!
             text = text.Replace("newlinenewlinenewlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine);
-            text = text.Replace("newlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine); //we have to try to catch every possibility
-            text = text.Replace("newlinenewlinenewline", Environment.NewLine + Environment.NewLine); //because there are SOOOOO many different ways of getting line breaks!!
-            text = text.Replace("newlinenewline", Environment.NewLine + Environment.NewLine);
-            text = text.Replace("newline", Environment.NewLine + Environment.NewLine);            
-
+            text = text.Replace("newlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine);
+            text = text.Replace("newlinenewlinenewline", Environment.NewLine); //because there are SOOOOO many different ways of getting line breaks!!
+            text = text.Replace("newlinenewline", System.Environment.NewLine);
+            
+            text = text.Replace("newline", System.Environment.NewLine);
+            
             text = text.Replace("&nbsp;", " ");
 
             text = text.Replace("&amp;", "&");
 
-            //text = text.Replace("</p>", Environment.NewLine);
+            text = text.Replace("</p>", Environment.NewLine);
             text = text.Replace("<o:p></o:p>", "");
 
-            //text = text.Replace("<br>", Environment.NewLine + Environment.NewLine);
+            text = text.Replace("<br>", Environment.NewLine + Environment.NewLine);
 
             text = text.Replace("<sup>", "");
             text = text.Replace("</sup>", " ");

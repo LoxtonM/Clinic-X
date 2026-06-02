@@ -208,6 +208,14 @@ namespace ClinicX.Controllers
                 {
                     _pvm.edmsLink = edmsBaseURL + _pvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
                 }
+
+                if(_pvm.alerts.Count > 0)
+                {
+                    foreach(var item in _pvm.alerts)
+                    {
+                        if(item.ProtectedAddress) { _pvm.isProtectedAddress = true; }
+                    }
+                }
                 
 
                 return View(_pvm);

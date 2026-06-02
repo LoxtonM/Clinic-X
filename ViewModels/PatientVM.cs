@@ -38,5 +38,6 @@ namespace ClinicX.ViewModels
         public List<ICPCancer> icpCancerList { get; set; }
         public string edmsLink { get; set; }
         public string phenotipsLink { get; set; }
+        public bool isProtectedAddress { get; set; }
     }
 }

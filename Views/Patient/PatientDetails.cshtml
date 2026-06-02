@@ -454,12 +454,17 @@
             <dd class="col-sm-12"><hr /></dd>       
 
             @*Row 6 - address, contact details*@
+            
+            <button type="button" class="btn btn-outline-dark" id="btnShowProtectedAddress" hidden>Protected address - click to reveal/hide</button>
+            
+
             <dt class="col-sm-2">
                 Address:
             </dt>
-            <dd class="col-sm-4">
+            <dd class="col-sm-4" id="address1">
                 @Html.DisplayFor(model => model.patient.ADDRESS1)
             </dd>
+            <dd class="col-sm-4" id="address1Blank" hidden></dd>
             <dt class="col-sm-2">
                 Contact number:
             </dt>
@@ -469,9 +474,10 @@
 
             <dt class="col-sm-2">            
             </dt>
-            <dd class="col-sm-4">
+            <dd class="col-sm-4" id="address2">
                 @Html.DisplayFor(model => model.patient.ADDRESS2)
             </dd>
+            <dd class="col-sm-4" id="address2Blank" hidden></dd>
             <dt class="col-sm-2">
                 Work:
             </dt>
@@ -481,9 +487,10 @@
 
             <dt class="col-sm-2">            
             </dt>
-            <dd class="col-sm-4">
+            <dd class="col-sm-4" id="address3">
                 @Html.DisplayFor(model => model.patient.ADDRESS3)
             </dd>
+            <dd class="col-sm-4" id="address3Blank" hidden></dd>
             <dt class="col-sm-2">
                 Mobile:
             </dt>
@@ -493,15 +500,15 @@
 
             <dt class="col-sm-2">
             </dt>
-            <dd class="col-sm-10">
+            <dd class="col-sm-10" id="address4">
                 @Html.DisplayFor(model => model.patient.ADDRESS4)
             </dd>
-
-            <dt class="col-sm-2">
-            </dt>
-            <dd class="col-sm-4">
+            <dd class="col-sm-10" id="address4Blank" hidden></dd>
+            <dt class="col-sm-2"></dt>
+            <dd class="col-sm-4" id="postCode">
                 @Html.DisplayFor(model => model.patient.POSTCODE)
             </dd>        
+            <dd class="col-sm-4" id="postCodeBlank" hidden></dd>
             <dt class="col-sm-2">
                 Email Address:
             </dt>
@@ -928,6 +935,7 @@
 <script type="text/javascript">
 
     document.getElementById("chkShowInactive").addEventListener("change", ShowInactive);
+    document.getElementById("btnShowProtectedAddress").addEventListener("click", ShowProtectedAddress);
     window.addEventListener("load", LoadEDMSLink);
 
     function LoadEDMSLink() 
@@ -959,6 +967,22 @@
         {
             document.getElementById("btnPedigree").hidden = true; //don't show the PA button if Phenotips is available
         }
+
+        if("@(Model.isProtectedAddress)" == "True")
+        {
+            document.getElementById("address1").hidden = true;
+            document.getElementById("address1Blank").hidden = false;
+            document.getElementById("address2").hidden = true;
+            document.getElementById("address2Blank").hidden = false;
+            document.getElementById("address3").hidden = true;
+            document.getElementById("address3Blank").hidden = false;
+            document.getElementById("address4").hidden = true;
+            document.getElementById("address4Blank").hidden = false;
+            document.getElementById("postCode").hidden = true;
+            document.getElementById("postCodeBlank").hidden = false;
+            document.getElementById("btnShowProtectedAddress").hidden = false;
+        }
+        
     }     
     
     function ShowInactive()
@@ -975,6 +999,20 @@
             completedReferrals.hidden = true;
         }
         
+    }
+
+    function ShowProtectedAddress()
+    {
+        document.getElementById("address1").hidden = !document.getElementById("address1").hidden;
+        document.getElementById("address1Blank").hidden = !document.getElementById("address1Blank").hidden;
+        document.getElementById("address2").hidden = !document.getElementById("address2").hidden;
+        document.getElementById("address2Blank").hidden = !document.getElementById("address2Blank").hidden;
+        document.getElementById("address3").hidden = !document.getElementById("address3").hidden;
+        document.getElementById("address3Blank").hidden = !document.getElementById("address3Blank").hidden;
+        document.getElementById("address4").hidden = !document.getElementById("address4").hidden;
+        document.getElementById("address4Blank").hidden = !document.getElementById("address4Blank").hidden;
+        document.getElementById("postCode").hidden = !document.getElementById("postCode").hidden;
+        document.getElementById("postCodeBlank").hidden = !document.getElementById("postCodeBlank").hidden;
     }
     
 </script>

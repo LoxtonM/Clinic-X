@@ -368,9 +368,9 @@ namespace ClinicX.Controllers
                     rowCount += 1;
                     MigraDoc.DocumentObjectModel.Tables.Row sRow = tableTE.AddRow();
                     if (s.TestCode != null) { sRow.Cells[0].AddParagraph(s.TestCode); }
-                    sRow.Cells[1].AddParagraph(s.CalcTool);
-                    sRow.Cells[2].AddParagraph(s.Score);
-                    sRow.Cells[3].AddParagraph(s.OfferTesting);
+                    if (s.CalcTool != null) { sRow.Cells[1].AddParagraph(s.CalcTool); }
+                    if (s.Score != null) { sRow.Cells[2].AddParagraph(s.Score); }
+                    if (s.OfferTesting != null) { sRow.Cells[3].AddParagraph(s.OfferTesting); }
                     if (s.Relative)
                     {
                         sRow.Cells[4].AddParagraph("Yes");
