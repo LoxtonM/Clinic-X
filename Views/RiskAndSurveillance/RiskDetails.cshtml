@@ -138,6 +138,7 @@
                     <th>Recommended By</th>
                     <th>Site</th>
                     <th>Hospital</th>
+                    <th>Use in letter</th>
                     <th></th>
                 </tr>
             </thead>
@@ -153,6 +154,14 @@
                         <td>@item.Clinician</td>
                         <td>@item.SurvSite</td>
                         <td>@item.SurvRecHoCode</td>
+                        @if (item.UseLetter.GetValueOrDefault())
+                        {
+                            <td><a type="button" class="btn btn-default btn-outline-success" asp-controller="RiskAndSurveillance" asp-action="SetSurvUsingLetter" asp-route-id=@item.SurvRecID asp-route-isUsingLetter="false">Yes</a></td>
+                        }
+                        else
+                        {
+                            <td><a type="button" class="btn btn-default btn-outline-success" asp-controller="RiskAndSurveillance" asp-action="SetSurvUsingLetter" asp-route-id=@item.SurvRecID asp-route-isUsingLetter="true">No</a></td>
+                        }
                         @if(item.SurvDisc)
                         {
                             <td>Discontinued on @item.SurvDiscDate.Value.ToString("dd/MM/yyyy")</td>

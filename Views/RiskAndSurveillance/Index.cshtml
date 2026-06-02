@@ -20,17 +20,17 @@
         <table class="table" id="myTable">
             <thead>
                 <tr>
-                    <td></td>
-                    <td>Risk</td>
-                    <td>Site</td>
-                    <td>Clinician</td>
-                    <td>Date</td>
-                    <td>Lifetime</td>
-                    <td>25-29 (%)</td>
-                    <td>30-40 (%)</td>
-                    <td>40-50 (%)</td>
-                    <td>50-60 (%)</td>
-                    <td>Surveillance Recommendations</td>
+                    <th></th>
+                    <th>Risk</th>
+                    <th>Site</th>
+                    <th>Clinician</th>
+                    <th>Date</th>
+                    <th>Lifetime</th>
+                    <th>25-29 (%)</th>
+                    <th>30-40 (%)</th>
+                    <th>40-50 (%)</th>
+                    <th>50-60 (%)</th>
+                    <th>Surveillance Recommendations</th>
                 </tr>
             </thead>
             <tbody>
@@ -57,8 +57,11 @@
                                 {
                                     @if (surv.RiskID == item.RiskID)
                                     {
-                                        <span>@surv.SurvFreqCode - age @surv.SurvStartAge to @surv.SurvStopAge</span>
-
+                                        <span>@surv.SurvFreqCode - age @surv.SurvStartAge</span>
+                                        @if (surv.SurvStopAge > 0)
+                                        {
+                                            <span> to @surv.SurvStopAge</span>
+                                        }
                                         <br />
                                     }
                                 }

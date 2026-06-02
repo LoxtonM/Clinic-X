@@ -89,6 +89,17 @@
                     </select>
                 </div>
             </div>
+            <div class="row mb-2 g-2">
+                <div class="col-md-2">
+                    <label>Use in letter</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" name="isUseLetter" asp-for=@Model.surveillanceDetails.UseLetter>
+                        <option selected value="false">No</option>                        
+                        <option selected value="true">Yes</option>
+                    </select>
+                </div>
+            </div>
 
             <div class="row mb-2 g-2">
                 <div class="col-md-2">

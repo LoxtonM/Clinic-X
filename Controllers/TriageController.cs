@@ -411,7 +411,8 @@ namespace ClinicX.Controllers
                 _ivm.canriskLink = urlCanriskurl;
                 
                 _ivm.riskGuide = Url.Content($"~/SupportFiles/{riskGuide}");
-                _ivm.clinicalFacilityList = await _triageData.GetClinicalFacilitiesList();
+                var facilityList = await _triageData.GetClinicalFacilitiesList();
+                _ivm.clinicalFacilityList = facilityList.OrderBy(f => f.FACILITY).ToList();
                 _ivm.staffMembers = await _staffUser.GetClinicalStaffList();
                 _ivm.icpCancer = await _triageData.GetCancerICPDetails(id);
                 _ivm.leaflets = await _leafletData.GetCancerLeafletsList();

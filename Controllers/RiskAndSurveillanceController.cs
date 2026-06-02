@@ -349,7 +349,8 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditSurveillance(int id, string geneChange, DateTime discDate, int startAge, int endAge, string frequency, bool isDisc, string? discReason)
+        public async Task<IActionResult> EditSurveillance(int id, string geneChange, DateTime discDate, int startAge, int endAge, string frequency, bool isDisc, string? discReason,
+            bool isUseLetter)
         {
             try
             {
@@ -360,7 +361,7 @@ namespace ClinicX.Controllers
 
                 if(discDate == null || discDate == DateTime.Parse("0001-01-01")) { discDate = DateTime.Parse("1900-01-01"); } //because Javascript has it as "0001-01-01" but SQL needs it to be "1900-01-01"
 
-                _crud.CallStoredProcedure("Surveillance", "Edit", id, startAge, endAge, geneChange, "", frequency, discReason, User.Identity.Name, discDate, null, isDisc, false);
+                _crud.CallStoredProcedure("Surveillance", "Edit", id, startAge, endAge, geneChange, frequency, discReason, "", User.Identity.Name, discDate, null, isDisc, isUseLetter);
 
                 return RedirectToAction("SurvDetails", "RiskAndSurveillance", new { id = id });
             }
@@ -469,6 +470,17 @@ namespace ClinicX.Controllers
             int icpID = _rsvm.riskDetails.ICP_Cancer_ID;
 
             _crud.CallStoredProcedure("Risk", "Set Use Letter", id, 0, 0, "", "", "", "", User.Identity.Name, null, null, isUsingLetter, false);
+
+            return RedirectToAction("CancerReview", "Triage", new { id = icpID });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> SetSurvUsingLetter(int id, bool isUsingLetter) //to provide a quick "don't use this one!" mechanic
+        {
+            _rsvm.surveillanceDetails = await _survData.GetSurvDetails(id);
+            int icpID = _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID).Result.ICP_Cancer_ID;
+
+            _crud.CallStoredProcedure("Surveillance", "Set Use Letter", id, 0, 0, "", "", "", "", User.Identity.Name, null, null, isUsingLetter, false);
 
             return RedirectToAction("CancerReview", "Triage", new { id = icpID });
         }

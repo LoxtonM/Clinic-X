@@ -33,7 +33,7 @@
                         </li>
                         <li class="vr"></li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Test" asp-action="AllOutstandingTests">Tests</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Test" asp-action="AllOutstandingTests">Outstanding Results</a>
                         </li>
                         <li class="vr"></li>
                         <li class="nav-item">
@@ -172,7 +172,7 @@
             const elements = document.querySelectorAll('.js-choice');
             elements.forEach(function(element) 
             {
-                new Choices(element);
+                element.choices = new Choices(element, {searchEnabled: true, shouldSort: false, searchResultLimit: -1});
             });
 
           // toastr js
@@ -192,7 +192,7 @@
                 "showEasing": "swing",
                 "hideEasing": "linear",
                 "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
+                "hideMethod": "fadeOut"                
             };
         });
 
@@ -213,11 +213,7 @@
             <text>toastr.error('@TempData["ErrorMessage"]');</text>
         }
 
-        const elements = document.querySelectorAll('.js-choice');
-            elements.forEach(function(element) {
-            new Choices(element);
-          });
-
+        
 
     </script>
     

@@ -46,6 +46,48 @@
         </div>
     </div>
     
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Referral Consultant:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.referralDetails.LeadClinician)
+        </dd>
+        <dt class="col-sm-2">
+            Referral GC:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.referralDetails.GC)
+        </dd>
+        <dt class="col-sm-2">
+            Admin Contact:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.referralDetails.AdminContact)
+        </dd>
+        <dt class="col-sm-2">
+            Referral Date:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.referralDetails.RefDate)
+        </dd>        
+        <dt class="col-sm-2">
+            Referred By:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.referralDetails.ReferringClinician) - @Html.DisplayFor(model => model.referralDetails.ReferringFacility)
+        </dd>
+        <dt class="col-sm-2">
+            Indication:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.referralDetails.INDICATION)
+        </dd>
+    </dl>
+
+
+    
     @if (Model.canriskLink != "")
     {
         <h4><a href=@Model.canriskLink target="_blank">CanRisk</a></h4>
@@ -229,10 +271,10 @@
             </div>
 
             <div class="row mb-5 g-5">
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <label class="text-right">Clinician:</label>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <select id="ddlClinician" asp-for=@Model.icpCancer.WaitingListClinician name="clinician">
                         <option value="">Select...</option>
                         @foreach (var item in Model.staffMembers)
@@ -241,15 +283,15 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <label class="text-right">Clinic:</label>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <select id="ddlClinic" asp-for=@Model.icpCancer.WaitingListVenue name="clinic">
                         <option value="">Select...</option>
                         @foreach (var item in Model.clinicalFacilityList)            
                         {
-                            <option value=@item.FACILITY>@item.NAME</option>
+                            <option value=@item.FACILITY>@item.FACILITY - @item.NAME</option>
                         }
                     </select>
                 </div>

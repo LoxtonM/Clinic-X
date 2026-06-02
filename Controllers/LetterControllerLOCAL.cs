@@ -897,8 +897,15 @@ namespace ClinicalXPDataConnections.Meta
                     {
                         foreach (var item in screening)
                         {
-                            contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString() + " to " +
-                                item.SurvStopAge.ToString() + Environment.NewLine;
+                            if (item.UseLetter.GetValueOrDefault())
+                            {
+                                contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
+                                if (item.SurvStopAge != null)
+                                {
+                                    contentscreening += " to " + item.SurvStopAge.ToString();
+                                }
+                                contentscreening += Environment.NewLine;
+                            }
                         }
                     }
 
@@ -1037,11 +1044,15 @@ namespace ClinicalXPDataConnections.Meta
 
                     foreach (var item in _riskList)
                     {
-                        _surv = _survData.GetSurvDetails(item.RiskID);
-                        content2 = item.SurvSite + " surveillance " + " by " + item.SurvType + " " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
-                        if (item.SurvStopAge != null)
+                        if (item.IncludeLetter.GetValueOrDefault() > 0)
                         {
-                            content2 = content2 + " to " + item.SurvStopAge.ToString();
+                            _surv = _survData.GetSurvDetails(item.RiskID);
+
+                            content2 = item.SurvSite + " surveillance " + " by " + item.SurvType + " " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
+                            if (item.SurvStopAge != null)
+                            {
+                                content2 += " to " + item.SurvStopAge.ToString();
+                            }
                         }
                     }
                     content3 = _lvm.documentsContent.Para3;
@@ -1064,7 +1075,7 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para2;
                     content3 = _lvm.documentsContent.Para3;
-                    content4 = _lvm.documentsContent.Para9;
+                    //content4 = _lvm.documentsContent.Para9; //apparently this paragraph shouldn't be there
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
@@ -1072,8 +1083,8 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent4 = section.AddParagraph(content4);
-                    spacer = section.AddParagraph();
+                    //Paragraph letterContent4 = section.AddParagraph(content4);
+                    //spacer = section.AddParagraph();
                 }
 
                 //O4

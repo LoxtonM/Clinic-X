@@ -36,33 +36,62 @@
                @Html.DisplayFor(model => model.surveillanceDetails.SurvSite)
             </dd>
             <dd class="col-sm-8"></dd>
-            <dt class="col-sm-1">
+            <dt class="col-sm-2">
                 From Age:
             </dt>
-            <dd class="col-sm-1">
+            <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.surveillanceDetails.SurvStartAge)
+            
+                @if (Model.surveillanceDetails.SurvStopAge > 0)
+                {
+                    <span> to: @Html.DisplayFor(model => model.surveillanceDetails.SurvStopAge)</span>
+                }
+                else
+                {
+                    <span> ongoing</span>
+                }
             </dd>
-            <dt class="col-sm-1">
-                to:
-            </dt>
-            <dd class="col-sm-1">
-                @Html.DisplayFor(model => model.surveillanceDetails.SurvStopAge)
-            </dd>
-            <dd class="col-sm-8"></dd>
             @if (Model.surveillanceDetails.SurvRecHoCode != null)
             {
                 <dt class="col-sm-2">
                     Hospital:
                 </dt>
-                <dd class="col-sm-2">
+                <dd class="col-sm-10">
                     @Html.DisplayFor(model => model.surveillanceDetails.SurvRecHoCode)
-            </dd>
+                </dd>
             }
             <dt class="col-sm-2">
                 Gene change:
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.surveillanceDetails.GeneChangeDescription)
+            </dd>
+
+            <dt class="col-sm-2">
+                Discontinued:
+            </dt>
+            <dd class="col-sm-10">
+                @if (Model.surveillanceDetails.SurvDisc)
+                {
+                    <span>Yes</span>
+                }
+                else
+                {
+                    <span>No</span>
+                }
+            </dd>
+            <dt class="col-sm-2">
+                Use in Letter:
+            </dt>
+            <dd class="col-sm-10">
+                @if (Model.surveillanceDetails.UseLetter.GetValueOrDefault())
+                {
+                    <span>Yes</span>
+                }
+                else
+                {
+                    <span>No</span>
+                }
             </dd>
 
         </dl>                    
