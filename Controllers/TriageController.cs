@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Linq;
+using APIControllers.Controllers;
 
 namespace ClinicX.Controllers
 {
@@ -44,13 +45,16 @@ namespace ClinicX.Controllers
         private readonly IStaffOptionsDataAsync _staffOptionsData;
         private readonly ISocialServicePathwayDataAsync _socialServicePathwayData;
         private readonly IDictatedLetterDataAsync _dictatedLetterData;
-        
+        private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
+        private readonly IApiController _api;
+
 
         public TriageController(IConfiguration config, IStaffUserDataAsync staffUserData, IPathwayDataAsync pathwayData, IPriorityDataAsync priorityData, IReferralDataAsync referralData, ITriageDataAsync triageData,
             IICPActionDataAsync iCPActionData, IRiskDataAsync riskData, ISurveillanceDataAsync surveillanceData, ITestEligibilityDataAsync testEligibilityData, IDiaryDataAsync diaryData, IRelativeDataAsync relativeData,
             ICancerRequestDataAsync cancerRequestData, IExternalClinicianDataAsync externalClinicianData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IDocumentsDataAsync documentsData, ICRUD crud, 
             LetterController letterController, IAuditService auditService, IAgeCalculator ageCalculator, IPatientDataAsync patientData, ILeafletDataAsync leafletData, IConstantsDataAsync constantsData,
-            IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData, IDictatedLetterDataAsync dictatedLetterData, ClinicalContext clinContext, DocumentContext docContext)
+            IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData, IDictatedLetterDataAsync dictatedLetterData, IPhenotipsMirrorDataAsync phenotipsMirrorData,
+            IApiController apiController, ClinicalContext clinContext, DocumentContext docContext)
         {
             _clinContext = clinContext;
             //_cXContext = cXContext;
@@ -82,6 +86,8 @@ namespace ClinicX.Controllers
             _lc = letterController;
             _socialServicePathwayData = socialServicePathwayData;
             _dictatedLetterData = dictatedLetterData;
+            _phenotipsMirrorData = phenotipsMirrorData;
+            _api = apiController;
             //LetterController _lc = new LetterController(_clinContext, _docContext);
         }
 
@@ -177,6 +183,47 @@ namespace ClinicX.Controllers
                 }
 
                 if (DateTime.Now.AddYears(-16) < _ivm.patient.DOB) { _ivm.isChild = true; }
+
+
+                var phenotipsAvailableFlag = await _constantsData.GetConstant("PhenotipsURL", 2);
+                _ivm.isPhenotipsAvailable = !string.IsNullOrEmpty(phenotipsAvailableFlag) && !phenotipsAvailableFlag.Contains("0", StringComparison.Ordinal);
+
+                //Constants table flag decides whether Phenotips is in use or not
+                if (_ivm.isPhenotipsAvailable)
+                {
+                    var mirror = await _phenotipsMirrorData.GetPhenotipsPatientByID(id);
+
+                    if (mirror != null) //use the mirror table rather than pinging the API every time someone checks the record!
+                    {
+                        _ivm.isPatientInPhenotips = true;
+
+                        if (mirror.FamilyID == null || mirror.FamilyID == "")
+                        {
+                            await _api.SynchroniseMirrorWithPhenotips(id);
+                        }
+
+                        var cancerPPQExists = _api.CheckPPQExists(_ivm.patient.MPI, "Cancer");
+                        var generalPPQExists = _api.CheckPPQExists(_ivm.patient.MPI, "General");
+                        var cancerPPQComplete = _api.CheckPPQSubmitted(_ivm.patient.MPI, "Cancer");
+                        var generalPPQComplete = _api.CheckPPQSubmitted(_ivm.patient.MPI, "General");
+                        var phenotipsID = _api.GetPhenotipsPatientID(id);
+
+                        await Task.WhenAll(cancerPPQExists, generalPPQExists, cancerPPQComplete, generalPPQComplete, phenotipsID);
+
+                        //Task.WaitAll(cancerPPQExists, generalPPQExists, cancerPPQComplete, generalPPQComplete, phenotipsID);
+
+                        _ivm.isCancerPPQScheduled = await cancerPPQExists;
+                        _ivm.isGeneralPPQScheduled = await generalPPQExists;
+                        _ivm.isCancerPPQComplete = await cancerPPQComplete;
+                        _ivm.isGeneralPPQComplete = await generalPPQComplete;
+                        string ptID = await phenotipsID;
+
+                        string baseURL = await _constantsData.GetConstant("PhenotipsURL", 1);
+
+                        if (!string.IsNullOrWhiteSpace(baseURL) && !string.IsNullOrWhiteSpace(ptID)) { _ivm.phenotipsLink = baseURL.TrimEnd('/') + "/" + ptID; }
+                    }
+                }
+
 
                 return View(_ivm);
             }

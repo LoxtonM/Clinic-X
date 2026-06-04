@@ -63,5 +63,13 @@ namespace ClinicX.ViewModels
         public DateTime dobAt16 { get; set; }
         public List<SocialServicePathway> socialServicePathways { get; set; }
         public DateTime breachDate { get; set; }
+
+        public bool isPhenotipsAvailable { get; set; }
+        public bool isCancerPPQScheduled { get; set; }
+        public bool isCancerPPQComplete { get; set; }
+        public bool isGeneralPPQScheduled { get; set; }
+        public bool isGeneralPPQComplete { get; set; }
+        public bool isPatientInPhenotips { get; set; }
+        public string phenotipsLink { get; set; }
     }
 }
