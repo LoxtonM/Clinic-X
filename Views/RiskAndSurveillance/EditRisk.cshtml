@@ -131,6 +131,16 @@
                     }
                 </select>
             </dd>
+            <dt class="col-md-2">
+                Use in Letter:
+            </dt>
+            <dd class="col-md-10">
+                <select name="useLetter" asp-for=@Model.riskDetails.IncludeLetter>
+                    <option value="">Select...</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select> 
+            </dd>
         </div>
 
         <div class="row mb-5 g-5">

@@ -110,6 +110,7 @@
         </dd>
         <dd class="col-md-4">
             @*<a type="button" class="btn btn-default btn-success" asp-action="EditRisk" asp-route-id=@Model.riskDetails.RiskID>Edit</a>*@
+            Use in letter: @if(Model.riskDetails.IncludeLetter == 1) { <span>Yes</span> } else { <span>No</span> }
         </dd>
     </div>
 

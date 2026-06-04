@@ -63,30 +63,39 @@
 
     @if (Model.patientsList.Count() > 0)
     {
-        @foreach(var item in Model.patientsList)
-        {
-            <div class="row mb-1 g-1">
-                <div class="col-md-2">
-                    <a type="button" class="btn btn-outline-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@item.INTID>View Reports</a>
-                </div>
-                <div class="col-md-2">
-                    @item.LASTNAME, @item.FIRSTNAME
-                </div>
-                <div class="col-md-2">
-                    @if (@item.DOB != null)
-                    {
-                        @item.DOB.Value.ToString("dd/MM/yyyy")
-                    }
-                </div>
-                <div class="col-md-2">
-                    @item.ZIP
-                </div>
-                <div class="col-md-2">
-                    @item.SOCIAL_SECURITY
-                </div>
-            </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>CGU No</th>
+                    <th>Patient Name</th>
+                    <th>Date of Birth</th>
+                    <th>Postcode</th>
+                    <th>NHS No</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.patientsList)
+                {
+                    <tr>
+                        <td><a type="button" class="btn btn-outline-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@item.INTID>View Reports</a></td>
+                        <td>@item.ALTHOSPNO</td>
+                        <td>@item.LASTNAME, @item.FIRSTNAME</td>
+                        @if(item.DOB != null) @*of course there are nulls in the date of birth. Why wouldn't there be???*@
+                        {
+                            <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <td>@item.ZIP</td>
+                        <td>@item.SOCIAL_SECURITY</td>
+                    </tr>
+                }
+            </tbody>
 
-        }
+        </table>
     }
     else
     {

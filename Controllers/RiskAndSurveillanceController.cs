@@ -302,16 +302,16 @@ namespace ClinicX.Controllers
         [HttpPost]
         public async Task<IActionResult> EditRisk(int id, string riskCode, string siteCode, string clinCode,
             DateTime riskDate, float lifetimePercent, string comments, float f2529, float f3040, float f4050,
-            float f5060, bool isUseLetter, string tool)
+            float f5060, int useLetter, string tool)
         {
             try
             {
                 var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());                                
 
-                _crud.CallStoredProcedure("Risk", "Edit", id, 0, 0, riskCode, siteCode, clinCode, comments, User.Identity.Name, null, null, isUseLetter, false,
+                _crud.CallStoredProcedure("Risk", "Edit", id, useLetter, 0, riskCode, siteCode, clinCode, comments, User.Identity.Name, null, null, false, false,
                     0, 0, 0, "", tool, "", f2529, f3040, f4050, f5060, lifetimePercent);
 
                 return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = id });
