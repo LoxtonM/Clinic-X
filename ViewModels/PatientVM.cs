@@ -39,5 +39,7 @@ namespace ClinicX.ViewModels
         public string edmsLink { get; set; }
         public string phenotipsLink { get; set; }
         public bool isProtectedAddress { get; set; }
+        public string? cguNumber { get; set; }
+        public List<Patient> patientsList { get; set; }
     }
 }

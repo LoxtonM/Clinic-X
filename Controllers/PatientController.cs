@@ -1,6 +1,7 @@
 ﻿using APIControllers.Controllers;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
+using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,10 +34,12 @@ namespace ClinicX.Controllers
         private readonly IApiController _api;
         private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
         private readonly IExternalFacilityDataAsync _extFacility;
+        private readonly IPedigreeDataAsync _pedigreeData;
+        private readonly ICRUD _crud;
 
         public PatientController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, IPathwayDataAsync pathwayData, IAlertDataAsync alertData, 
             IReferralDataAsync referralData, IDiaryDataAsync diaryData, IHPOCodeDataAsync hPOCodeData, IAuditService auditService, IConstantsDataAsync constantsData, IAgeCalculator ageCalculator,
-            ITriageDataAsync triageData, IClinicDataAsync clinicData, IApiController aPIController, IPhenotipsMirrorDataAsync phenotipsMirrorData, IExternalFacilityDataAsync extFac)
+            ITriageDataAsync triageData, IClinicDataAsync clinicData, IApiController aPIController, IPhenotipsMirrorDataAsync phenotipsMirrorData, IExternalFacilityDataAsync extFac, IPedigreeDataAsync pedigreeData, ICRUD crud)
         {
             //_clinContext = context;
             //_docContext = docContext;
@@ -59,6 +62,8 @@ namespace ClinicX.Controllers
             _api = aPIController;
             _phenotipsMirrorData = phenotipsMirrorData;
             _extFacility = extFac;
+            _pedigreeData = pedigreeData;
+            _crud = crud;
         }
         
 
@@ -225,6 +230,115 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
             }
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> ChangeCGUNumber(int mpi)
+        {
+            try
+            {
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient File Merge", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
+
+                _pvm.patient = await _patientData.GetPatientDetails(mpi);
+                _pvm.patientsList = new List<Patient>();
+
+                return View(_pvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditPatientDetails" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeCGUNumber(int mpi, string newFileNo)
+        {
+            try
+            {
+                if (newFileNo != null)
+                {
+                    newFileNo = newFileNo.Replace(" ", "");
+                }
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Patient", "File Merge");
+
+                _pvm.patient = await _patientData.GetPatientDetails(mpi);
+                _pvm.patientsList = await _patientData.GetPatientsInPedigree(newFileNo);
+                _pvm.cguNumber = newFileNo;
+
+                return View(_pvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditPatientDetails" });
+            }
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateCGUNumber(int mpi, string newFileNumber)
+        {
+            try
+            {
+                if (newFileNumber != null)
+                {
+                    newFileNumber = newFileNumber.Replace(" ", "");
+                }
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
+
+                int patientNumber = 0;
+
+                while (await _patientData.GetPatientDetailsByCGUNo(newFileNumber + "." + patientNumber.ToString()) != null)
+                {
+                    patientNumber++;
+                }
+
+                string sMessage = "";
+                bool isSuccess = false;
+                int sourceDCTM = 0;
+                int destDCTM = 0;
+
+                var pat = await _patientData.GetPatientDetails(mpi);
+                sourceDCTM = pat.Patient_Dctm_Sts;
+
+                var destPed = await _pedigreeData.GetPedigree(newFileNumber);
+
+                if (destPed != null)
+                {
+                    destDCTM = destPed.File_Dctm_Sts;
+                }
+
+                if (sourceDCTM <= destDCTM && destPed != null)
+                {
+                    int success = await _crud.CallStoredProcedure("Patient", "ChangeFileNumber", mpi, patientNumber, destDCTM, newFileNumber, "", "", "", User.Identity.Name);
+
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }
+
+                    sMessage = "CGU number updated, please check the new file for integrity.";
+                    isSuccess = true;
+                }
+                else
+                {
+                    sMessage = "Destination file is not electronic or does not exist.";
+                    isSuccess = false;
+                }
+
+                return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditPatientDetails" });
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> PedigreeAssistant(int id)

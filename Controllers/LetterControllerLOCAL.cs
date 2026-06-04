@@ -900,7 +900,7 @@ namespace ClinicalXPDataConnections.Meta
                             if (item.UseLetter.GetValueOrDefault())
                             {
                                 contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
-                                if (item.SurvStopAge != null)
+                                if (item.SurvStopAge != 0)
                                 {
                                     contentscreening += " to " + item.SurvStopAge.ToString();
                                 }
@@ -1049,7 +1049,7 @@ namespace ClinicalXPDataConnections.Meta
                             _surv = _survData.GetSurvDetails(item.RiskID);
 
                             content2 = item.SurvSite + " surveillance " + " by " + item.SurvType + " " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
-                            if (item.SurvStopAge != null)
+                            if (item.SurvStopAge != 0)
                             {
                                 content2 += " to " + item.SurvStopAge.ToString();
                             }

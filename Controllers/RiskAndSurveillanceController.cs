@@ -67,7 +67,8 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk List", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
                 _rsvm.patient = await _patientData.GetPatientDetails(mpi);
-                _rsvm.riskList = await _riskData.GetRiskListForPatient(mpi);                
+                _rsvm.riskList = await _riskData.GetRiskListForPatient(mpi);
+                _rsvm.surveillanceList = await _survData.GetSurveillanceList(mpi);
 
                 return View(_rsvm);
             }
@@ -480,9 +481,12 @@ namespace ClinicX.Controllers
             _rsvm.surveillanceDetails = await _survData.GetSurvDetails(id);
             int icpID = _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID).Result.ICP_Cancer_ID;
 
-            _crud.CallStoredProcedure("Surveillance", "Set Use Letter", id, 0, 0, "", "", "", "", User.Identity.Name, null, null, isUsingLetter, false);
+            int success = await _crud.CallStoredProcedure("Surveillance", "Set Use Letter", id, 0, 0, "", "", "", "", User.Identity.Name, null, null, isUsingLetter, false);
 
-            return RedirectToAction("CancerReview", "Triage", new { id = icpID });
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-survUseLetter(SQL)" }); }
+
+            //return RedirectToAction("CancerReview", "Triage", new { id = icpID });
+            return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = _rsvm.surveillanceDetails.RiskID });
         }
     }
 }

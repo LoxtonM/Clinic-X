@@ -146,7 +146,7 @@ namespace ClinicX.Controllers
                 diaryID = diary.DiaryID; //get the diary ID of the entry just created to add to the letter's filename
             }
 
-            //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
+            LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
 
             if (docCode == "REPSUM")
             {
@@ -170,7 +170,7 @@ namespace ClinicX.Controllers
                     }
                 }
 
-                await _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician,
+                await lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician,
                         "", null, isPreview, qrCodeText, leafletID, true);
             }
 

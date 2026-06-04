@@ -87,6 +87,7 @@ builder.Services.AddScoped<BloodFormController>();
 builder.Services.AddScoped<ConsentFormController>();
 builder.Services.AddScoped<ISocialServicePathwayDataAsync, SocialServicePathwayDataAsync>();
 builder.Services.AddScoped<IScreeningCoordinatorDataAsync, ScreeningCoordinatorDataAsync>();
+builder.Services.AddScoped<IPedigreeDataAsync, PedigreeDataAsync>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
    .AddCookie(options =>

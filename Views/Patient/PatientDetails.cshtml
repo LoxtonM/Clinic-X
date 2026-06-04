@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "ClinicX - Patient Details";
     ViewData["Page"] = "/ Clinic / Patient Details";
-    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+    @*ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });*@
 }
 
 @{
@@ -15,13 +15,13 @@
         Html.ActionLink("Clinical Notes", "Index", "ClinicalNote", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Reviews", "ReviewsForPatient", "Review", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
         Html.ActionLink("Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("New Dictated Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("New Standard Letter", "Index", "LetterMenu", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        @*Html.ActionLink("New Dictated Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
+        @*Html.ActionLink("New Standard Letter", "Index", "LetterMenu", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
         Html.ActionLink("Cancer Risks", "Index", "RiskAndSurveillance", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
-        Html.ActionLink("Patient Documents", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPatientDocuments", target="_blank" }),
+        @*Html.ActionLink("Patient Documents", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPatientDocuments", target="_blank" }),*@
         Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPhenotips", target="_blank" }),
-        Html.ActionLink("Open Pedigree Assistant", "PedigreeAssistant", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPedigree" }),
+        Html.ActionLink("Pedigree Assistant", "PedigreeAssistant", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPedigree" }),
         @*Html.ActionLink("Record Cancer Risk/Surveillance", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
     };
 }
@@ -44,56 +44,68 @@
     }
     <div class="row mb-5 g-2 mt-2">
         <div>
+            <div class="row mb-1 g-1">
+                <div class="col-md-2">
+                    <a type="button" class="btn btn-success" asp-controller="LetterMenu" asp-action="Index" asp-route-mpi=@Model.patient.MPI>Create New Standard Letter</a>
+                </div>
+                <div class="col-md-8"></div>
+                <div class="col-md-2">
+                    <a type="button" class="btn btn-success" asp-controller="Patient" asp-action="ChangeCGUNumber" asp-route-mpi=@Model.patient.MPI>Change CGU number (merge into new file)</a>
+                </div>
+            </div>
             @*@if (Model.staffMember.BILL_ID == "Technical")
             {*@
                 @if (Model.isPhenotipsAvailable)
                 {
                     if(Model.isPatientInPhenotips)
                     {
-                        if (!Model.isGeneralPPQScheduled && !Model.isCancerPPQScheduled)
-                        {
-                            if (Model.referralsActiveCancer.Count > 0)
-                            {
-                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
-                            }
-                            if (Model.referralsActiveGeneral.Count > 0)
-                            {
-                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Schedule General PPQ</a>
-                            }
-                        }
-                        else
-                        {
-                            if (Model.isCancerPPQScheduled && !Model.isCancerPPQComplete)
-                            {
-                                @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Get Cancer PPQ URL</a>*@
-                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="true" >Email Cancer PPQ URL</a>
-                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="false">View Cancer PPQ URL</a>
-                                @*<a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PhenotipsQRLink" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">View PPQ QR Code</a>*@
-                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="SendPhenotipsLetter" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Send Phenotips Letter (Cancer)</a>
-                            }
+                        <div class="row mb-1 g-1">
+                            <div class="col-md-12">
+                                @if (!Model.isGeneralPPQScheduled && !Model.isCancerPPQScheduled)
+                                {
+                                    if (Model.referralsActiveCancer.Count > 0)
+                                    {
+                                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
+                                    }
+                                    if (Model.referralsActiveGeneral.Count > 0)
+                                    {
+                                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Schedule General PPQ</a>
+                                    }
+                                }
+                                else
+                                {
+                                    if (Model.isCancerPPQScheduled && !Model.isCancerPPQComplete)
+                                    {
+                                        @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Get Cancer PPQ URL</a>*@
+                                        <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="true" >Email Cancer PPQ URL</a>
+                                        <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="false">View Cancer PPQ URL</a>
+                                        @*<a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PhenotipsQRLink" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">View PPQ QR Code</a>*@
+                                        @*<a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="SendPhenotipsLetter" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Send Phenotips Letter (Cancer)</a>*@
+                                    }
 
-                            if (Model.isGeneralPPQScheduled && !Model.isGeneralPPQComplete)
+                                    if (Model.isGeneralPPQScheduled && !Model.isGeneralPPQComplete)
+                                    {
+                                        @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General"asp-route-isEmail="true">Get General PPQ URL</a>*@
+                                        <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="true">Email General PPQ URL</a>
+                                        <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="false">Email General PPQ URL</a>
+                                        @*<a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="SendPhenotipsLetter" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Send Phenotips Letter (General)</a>*@
+                                    }
+                                }
+                            </div>
+
+                            @if(Model.isCancerPPQComplete)
                             {
-                                @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General"asp-route-isEmail="true">Get General PPQ URL</a>*@
-                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="true">Email General PPQ URL</a>
-                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="false">Email General PPQ URL</a>
-                                <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="SendPhenotipsLetter" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Send Phenotips Letter (General)</a>
+                                <div class="alert-success text-center">
+                                    <h3>A Cancer PPQ has been submitted by the patient</h3>
+                                </div>                            
                             }
-                        }
-
-                        if(Model.isCancerPPQComplete)
-                        {
-                            <div class="alert-success text-center">
-                                <h3>A Cancer PPQ has been submitted by the patient</h3>
-                            </div>                            
-                        }
-                        if(Model.isGeneralPPQComplete)
-                        {
-                            <div class="alert-success text-center">
-                                <h3>A General PPQ has been submitted by the patient</h3>
-                            </div>                            
-                        }
-
+                            @if(Model.isGeneralPPQComplete)
+                            {
+                                <div class="alert-success text-center">
+                                    <h3>A General PPQ has been submitted by the patient</h3>
+                                </div>                            
+                            }
+                        </div>
                     }
                     else
                     {
@@ -575,111 +587,6 @@
     }
 
     <div class="d-grid mt-2 mb-2">
-        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseDiaryTable" aria-expanded="false" aria-controls="collapseExample">Diary (click to expand/hide)</button>
-    </div>
-
-    <div class="collapse" id="collapseDiaryTable">       
-        @if (Model.diary.Count > 0)
-        {
-            <h4>Diary</h4>
-            <div class="row">
-                <table class="table">
-                    <thead>
-                        <tr class="fw-bold">
-                            <td>Diary Date</td>
-                            <td>Diary With</td>
-                            <td>Action</td>
-                            <td>Text</td>
-                            <td>Doc Code</td>
-                            <td>Related RefID</td>                        
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var d in Model.diary)
-                        {
-                            <tr>
-                                @if(d.DiaryDate != null)
-                                {
-                                    <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
-                                }
-                                else
-                                {
-                                    <td></td>
-                                }
-                                <td>@d.DiaryWith</td>
-                                <td>@d.DiaryAction</td>
-                                <td>@d.DiaryText</td>
-                                <td>@d.DocCode</td>
-                                <td>@d.RefID</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>    
-            </div>
-        }
-        else
-        {
-            <h4>No diary entries.</h4>
-        }
-    </div>
-
-    <div class="d-grid mt-2 mb-2">
-        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseAppointmentTable" aria-expanded="false" aria-controls="collapseExample">Appointments/Contacts (click to expand/hide)</button>
-    </div>
-
-    <div class="collapse" id="collapseAppointmentTable">       
-        @if (Model.appointmentList.Count > 0)
-        {
-            <h4>Appointments/Contacts</h4>
-            <div class="row">
-                <table class="table">
-                    <thead>
-                        <tr class="fw-bold">
-                            <td>Booked Date</td>
-                            <td>Booked Time</td>
-                            <td>Appt With</td>
-                            <td>Venue</td>
-                            <td>Outcome</td>
-                            <td></td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var a in Model.appointmentList)
-                        {
-                            <tr>
-                                @if(a.BOOKED_DATE != null)
-                                {
-                                    <td>@a.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
-                                }
-                                else
-                                {
-                                    <td></td>
-                                }
-                                @if(a.BOOKED_TIME != null)
-                                {
-                                    <td>@a.BOOKED_TIME.Value.ToString("HH:mm")</td>
-                                }
-                                else
-                                {
-                                    <td></td>
-                                }
-                                <td>@a.Clinician</td>
-                                <td>@a.Clinic</td>
-                                <td>@a.Attendance</td>   
-                                <td><a type="button" class="btn btn-success" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@a.RefID>Appt Details</a></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>    
-            </div>
-        }
-        else
-        {
-            <h4>No appointments recorded.</h4>
-        }
-    </div>
-
-    <div class="d-grid mt-2 mb-2">
         <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseRefTable" aria-expanded="false" aria-controls="collapseExample">Referrals (click to expand/hide)</button>
     </div>
 
@@ -837,6 +744,66 @@
         </div>
     </div>
 
+    
+
+    <div class="d-grid mt-2 mb-2">
+        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseAppointmentTable" aria-expanded="false" aria-controls="collapseExample">Appointments/Contacts (click to expand/hide)</button>
+    </div>
+
+    <div class="collapse" id="collapseAppointmentTable">       
+        @if (Model.appointmentList.Count > 0)
+        {
+            <h4>Appointments/Contacts</h4>
+            <div class="row">
+                <table class="table">
+                    <thead>
+                        <tr class="fw-bold">
+                            <td>Booked Date</td>
+                            <td>Booked Time</td>
+                            <td>Appt With</td>
+                            <td>Venue</td>
+                            <td>Outcome</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in Model.appointmentList)
+                        {
+                            <tr>
+                                @if(a.BOOKED_DATE != null)
+                                {
+                                    <td>@a.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                @if(a.BOOKED_TIME != null)
+                                {
+                                    <td>@a.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                <td>@a.Clinician</td>
+                                <td>@a.Clinic</td>
+                                <td>@a.Attendance</td>   
+                                <td><a type="button" class="btn btn-success" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@a.RefID>Appt Details</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>    
+            </div>
+        }
+        else
+        {
+            <h4>No appointments recorded.</h4>
+        }
+    </div>
+
+    
+
     <div class="d-grid mt-2 mb-2">
         <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseHPOTable" aria-expanded="false" aria-controls="collapseExample">HPO Terms (click to expand/hide)</button>
     </div>
@@ -861,6 +828,55 @@
         {
             <h4>No HPO codes have been added. You can add HPO codes from a clinical note.</h4>
         }    
+    </div>
+
+    <div class="d-grid mt-2 mb-2">
+        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseDiaryTable" aria-expanded="false" aria-controls="collapseExample">Diary (click to expand/hide)</button>
+    </div>
+
+    <div class="collapse" id="collapseDiaryTable">       
+        @if (Model.diary.Count > 0)
+        {
+            <h4>Diary</h4>
+            <div class="row">
+                <table class="table">
+                    <thead>
+                        <tr class="fw-bold">
+                            <td>Diary Date</td>
+                            <td>Diary With</td>
+                            <td>Action</td>
+                            <td>Text</td>
+                            <td>Doc Code</td>
+                            <td>Related RefID</td>                        
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in Model.diary)
+                        {
+                            <tr>
+                                @if(d.DiaryDate != null)
+                                {
+                                    <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                <td>@d.DiaryWith</td>
+                                <td>@d.DiaryAction</td>
+                                <td>@d.DiaryText</td>
+                                <td>@d.DocCode</td>
+                                <td>@d.RefID</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>    
+            </div>
+        }
+        else
+        {
+            <h4>No diary entries.</h4>
+        }
     </div>
 
     <div class="d-grid mt-2 mb-2">
@@ -940,7 +956,7 @@
 
     function LoadEDMSLink() 
     {
-        document.getElementById("btnPatientDocuments").hidden = true;
+        //document.getElementById("btnPatientDocuments").hidden = true;
 
         //only load EDMS link if there actually is one
         if ("@(Model.patient.DCTM_Folder_ID)" != "") 
