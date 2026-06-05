@@ -1933,8 +1933,7 @@ namespace ClinicalXPDataConnections.Meta
 
                 spacer = section.AddParagraph();
 
-
-                if (ccs[0] != "")
+                if (ccs[0] != "None") //assuming that if the first one is "None" then there are no CCs
                 {
                     section.AddPageBreak();
 
@@ -1945,10 +1944,11 @@ namespace ClinicalXPDataConnections.Meta
                     //Add a page for all of the CC addresses (must be declared here or we can't use it)            
                     for (int i = 0; i < ccs.Length - 1; i++)
                     {
-                        string cc = "";
+                        string cc = "";                       
 
-                        if (ccs[i] != null && ccs[i] != "")
-                        {
+                        if (ccs[i] != null && ccs[i] != "" && ccs[i] != "None")
+                        {                          
+
                             if (ccs[i].Contains("Ganesan")) //because of course it's hard-coded
                             {
                                 cc = ccs[i];

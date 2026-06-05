@@ -137,7 +137,7 @@
             </dd>
         </dl>
         <form id="formIndicationNotes" asp-action="SaveIndicationNotes">
-            <div class="row mb-2 g-2">
+            <div class="row mb-5 g-5">
                 <div class="col-md-2">
                     <b>Indication Notes:</b>
                 </div>
@@ -161,30 +161,32 @@
             if(Model.isPatientInPhenotips)
             {
                 <div class="row mb-1 g-1">
-                    <div class="col-md-12">
-                        <div class="col-md-12">
-                            @if (Model.referralDetails.PATHWAY == "Cancer")
-                            {
-                                @if (!Model.isCancerPPQScheduled)
-                                {
-                                    <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
-                                }                                
-                            }
-                            else
-                            {
-                                if (!Model.isGeneralPPQScheduled)
-                                {
-                                    <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Schedule General PPQ</a>
-                                }                                
-                            }
-                        </div>
-                    </div>
+                    <div class="col-md-2"></div>
+                    @if (Model.referralDetails.PATHWAY.Contains("Cancer"))
+                    {
+                        @if (!Model.isCancerPPQScheduled)
+                        {
+                            <div class="col-md-4">
+                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
+                            </div>
+                        }                                
+                    }
+                    else
+                    {
+                        if (!Model.isGeneralPPQScheduled)
+                        {
+                            <div class="col-md-4">
+                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Schedule General PPQ</a>
+                            </div>
+                        }                                
+                    }
                 </div>
             }
             else
             {
                 <div class="row mb-5 g-5">
-                    <div class="col-md-12">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">
                         <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Create Phenotips Record</a> <span class="redtext"> - this will push the patient directly into Phenotips (one-click process)</span>
                     </div>
                 </div>

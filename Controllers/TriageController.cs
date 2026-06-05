@@ -191,7 +191,7 @@ namespace ClinicX.Controllers
                 //Constants table flag decides whether Phenotips is in use or not
                 if (_ivm.isPhenotipsAvailable)
                 {
-                    var mirror = await _phenotipsMirrorData.GetPhenotipsPatientByID(id);
+                    var mirror = await _phenotipsMirrorData.GetPhenotipsPatientByID(_ivm.patient.MPI);
 
                     if (mirror != null) //use the mirror table rather than pinging the API every time someone checks the record!
                     {
