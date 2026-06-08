@@ -335,6 +335,7 @@ namespace ClinicX.Controllers
 
             refID = appts.First().RefID;
             bool isHidden = !isAddAsNote.GetValueOrDefault();
+            bool isFinalised = true;
 
             if (appType == "Tel. Admin")
             {
@@ -355,13 +356,13 @@ namespace ClinicX.Controllers
                     emailBodyText = emailBodyText + emailMessage;                    
                 }
 
-                _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, noteType, "", "", emailBodyText, User.Identity.Name, null, null, isHidden, false, 1);  //create straight into edms              
+                _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, noteType, "", "", emailBodyText, User.Identity.Name, null, null, isHidden, isFinalised, 1);  //create straight into edms              
                 
                 return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
             }
             else
             {
-                _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, noteType, "", "", message, User.Identity.Name, null, null, isHidden);  //create straight into edms
+                _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, noteType, "", "", message, User.Identity.Name, null, null, isHidden, isFinalised);  //create straight into edms
             }
 
             return RedirectToAction("ApptDetails", new { id = refID });

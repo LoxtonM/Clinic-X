@@ -1,5 +1,5 @@
 ﻿using APIControllers.Controllers;
-//using APIControllers.Data;
+using APIControllers.Data;
 //using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
@@ -16,7 +16,7 @@ namespace ClinicX.Controllers
     {
         //private readonly ClinicalContext _clinContext;
         //private readonly DocumentContext _docContext;
-        //private readonly APIContext _apiContext;
+        private readonly APIContext _apiContext;
         private readonly IConfiguration _config;
         private readonly IApiController _api;
         private readonly IPatientDataAsync _patientData;
@@ -24,21 +24,22 @@ namespace ClinicX.Controllers
         private readonly PhenotipsVM _pvm;
         private readonly LetterController _lc;
 
-        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController lc)
+        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController lc,
+            APIContext aPIContext)
         {
             //_clinContext = clinContext;
             //_docContext = docContext;
-            //_apiContext = apiContext;
+            _apiContext = aPIContext;
             _config = config;
             _api = aPIController;
             _patientData = patientData;
             _referralData = referralData;
             _pvm = new PhenotipsVM();
             _lc = lc;
-        }
+        } 
 
         [Authorize]
-        public async Task<IActionResult> PushPatientToPt(int mpi)
+        public async Task<IActionResult> PushPatientToPt(int mpi, string? callingForm, int? returnVariable)
         {
             string sMessage = "";
             bool isSuccess = false;
@@ -62,7 +63,22 @@ namespace ClinicX.Controllers
                 sMessage = "Push to Phenotips failed :(";
             }
 
-            return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
+            string callingController = "";
+            string callingAction = "";            
+
+            if(callingForm == "ICP")
+            {
+                callingController = "Triage";
+                callingAction = "ICPDetails";
+            }
+            else
+            {
+                callingController = "Patient";
+                callingAction = "PatientDetails";
+                returnVariable = mpi;
+            }
+
+            return RedirectToAction(callingAction, callingController, new { id = returnVariable, success = isSuccess, message = sMessage });
         }
 
         async Task AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
@@ -81,6 +97,8 @@ namespace ClinicX.Controllers
         {
             string sMessage = "";
             bool isSuccess = false;            
+
+            //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
 
             Int16 result = await _api.SchedulePPQ(mpi, pathway); //creates the PPQ, returns 1 (success), 0 (already exists), or -1 (failed)
 

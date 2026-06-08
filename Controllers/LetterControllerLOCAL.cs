@@ -360,7 +360,6 @@ namespace ClinicalXPDataConnections.Meta
                     row2.Height = 110;
                     row3.Height = 20;
 
-
                     quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
                     quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
                     quoteRef = quoteRef + "Consultant: " + referral.LeadClinician + Environment.NewLine;
@@ -378,7 +377,6 @@ namespace ClinicalXPDataConnections.Meta
                     {
                         row3.Cells[1].AddParagraph(_lvm.documentsContent.OurEmailAddress);
                     }
-
                 }
                 else
                 {
@@ -386,7 +384,6 @@ namespace ClinicalXPDataConnections.Meta
                     //contentOurAddress.Format.Font.Size = 12;
                     contentOurAddress.Format.Alignment = ParagraphAlignment.Right;
                 }
-
 
                 patAddress = _add.GetAddress("PT", refID);
 
@@ -415,7 +412,8 @@ namespace ClinicalXPDataConnections.Meta
                     address = _add.GetAddress("GP", refID);
                 }
 
-                if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4"))
+                if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4")
+                    || (clinicianCode != "" && clinicianCode != null))
                 {
                     ExternalClinician clinician = _externalClinicianData.GetClinicianDetails(clinicianCode);
                     name = clinician.TITLE + " " + clinician.FIRST_NAME + " " + clinician.NAME;
@@ -428,7 +426,6 @@ namespace ClinicalXPDataConnections.Meta
                     address += hospital.STATE + Environment.NewLine;
                     address += hospital.ZIP + Environment.NewLine;
                 }
-
 
                 row2.Cells[0].AddParagraph(address);
 
@@ -499,7 +496,6 @@ namespace ClinicalXPDataConnections.Meta
                 //////All letter templates need to be defined individually here////////////////////////            
                 ///////////////////////////////////////////////////////////////////////////////////////
                 ///////////////////////////////////////////////////////////////////////////////////////
-
 
 
                 //Ack letter
@@ -909,7 +905,7 @@ namespace ClinicalXPDataConnections.Meta
                         }
                     }
 
-                    content2 = _lvm.documentsContent.Para2 + " " + additionalText;
+                    content2 = _lvm.documentsContent.Para2 + Environment.NewLine + Environment.NewLine + additionalText;
                     if (isScreeningRels.GetValueOrDefault())
                     {
                         content3 = _lvm.documentsContent.Para8;
@@ -935,6 +931,10 @@ namespace ClinicalXPDataConnections.Meta
                             content5 = content5 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
                         }
                     }
+                    if(leafletID != 0)
+                    {
+                        content6 = _lvm.documentsContent.Para6;
+                    }
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
@@ -958,6 +958,11 @@ namespace ClinicalXPDataConnections.Meta
                     if (content5 != "")
                     {
                         Paragraph letterContent5 = section.AddParagraph(content5);
+                        spacer = section.AddParagraph();
+                    }
+                    if (content6 != "")
+                    {
+                        Paragraph letterContent6 = section.AddParagraph(content6);
                         spacer = section.AddParagraph();
                     }
                 }
@@ -1682,7 +1687,7 @@ namespace ClinicalXPDataConnections.Meta
 
                 if (docCode == "VHRProC")
                 {
-                    content1 = _lvm.documentsContent.Para1;
+                    content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + additionalText;
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
@@ -1935,7 +1940,18 @@ namespace ClinicalXPDataConnections.Meta
 
                 if (ccs[0] != "None") //assuming that if the first one is "None" then there are no CCs
                 {
-                    section.AddPageBreak();
+                    DocumentRenderer renderer = new DocumentRenderer(document); //we have to do a rendering pass to get the page count!
+                    
+                    renderer.PrepareDocument();
+
+                    int totalPages = renderer.FormattedDocument.PageCount;
+
+                    RenderInfo[] pageObjects = renderer.GetRenderInfoFromPage(totalPages); //get the last page and see if it actually has content
+
+                    if(pageObjects != null && pageObjects.Length >= 5) //test for blank page - add a page break if there isn't one
+                    {
+                        section.AddPageBreak();
+                    }                    
 
                     int ccLength = 50;
                     spacer = section.AddParagraph();

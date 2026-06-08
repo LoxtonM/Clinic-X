@@ -9,24 +9,33 @@ namespace ClinicX.Controllers
     public class LetterPreviewController : Controller
     {
         private readonly IConfiguration _config;
-        //private readonly ClinicalContext _context;
-        //private readonly DocumentContext _documentContext;
+        private readonly ClinicalContext _context;
+        private readonly DocumentContext _documentContext;
         private readonly LetterController _lc;
 
         public LetterPreviewController(IConfiguration config, LetterController lc, ClinicalContext context, DocumentContext documentContext)
         {
             _config = config;
             _lc = lc;
-            //_context = context;
-           // _documentContext = documentContext;
+            _context = context;
+            _documentContext = documentContext;
         }
 
-        public async Task<IActionResult> DoLetter(int docID, int mpi, int refID, string referrerCode)
+        public async Task<IActionResult> DoLetter(int docID, int mpi, int refID, string referrerCode, string? recipient, string? freeText)
         {
-            await _lc.DoPDF(docID, mpi, refID, User.Identity.Name, referrerCode, "", "", 0, "", false, false, 0, "", "", 0, "",
+            LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext);
+
+            await lc.DoPDF(docID, mpi, refID, User.Identity.Name, referrerCode, freeText, "", 0, "", false, false, 0, "", "", 0, recipient,
                         "", null, true, "", 0, true);
 
             return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
         }
     }
 }
+
+/*
+ * int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
+            string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
+            int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false, string? qrCodeText = "", int? leafletID = 0,
+            bool? adminToPrint = false
+*/

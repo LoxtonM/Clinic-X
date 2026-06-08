@@ -186,8 +186,8 @@
             {
                 <div class="row mb-5 g-5">
                     <div class="col-md-2"></div>
-                    <div class="col-md-4">
-                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Create Phenotips Record</a> <span class="redtext"> - this will push the patient directly into Phenotips (one-click process)</span>
+                    <div class="col-md-8">
+                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI asp-route-callingForm="ICP" asp-route-returnVariable=@Model.triage.ICPID>Create Phenotips Record</a> <span class="redtext"> - this will push the patient directly into Phenotips (one-click process)</span>
                     </div>
                 </div>
             }

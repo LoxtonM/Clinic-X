@@ -48,7 +48,9 @@
     <form id="frmDoLetter" asp-action="DoLetter">
         <div class="row mb-5 g-5">
             <input name="refID" id="txtRefID" asp-for=@Model.referral.refid hidden />
+            <input id="txtReferrerCode" asp-for=@Model.referral.ReferrerCode hidden />
             <input name="docCode" id="txtDocCode" hidden />
+            <input id="txtDocID" hidden />
             <input name="isPreview" id="txtIsPreview" hidden />
             <div class="col-md-4">
                 <select name="docID" id="docGroupStandard" hidden>
@@ -101,7 +103,7 @@
                 <label>Free text:</label>
             </div>
             <div class="col-md-4">
-                <textarea name="additionalText"></textarea>
+                <textarea name="additionalText" id="txtFreeText"></textarea>
             </div>
             <div class="col-md-2">
                 <label>Enclosures</label>
@@ -262,12 +264,14 @@
         if(document.getElementById("txtRefID").value == null || document.getElementById("txtRefID").value == "")
         {
             document.getElementById("txtRefID").value = document.getElementById("ddlRefID").value;
+            SetReferral();
             document.getElementById("divReferral").hidden = false;
         }
     }
 
     function SetDoccode()
     {
+        var docID = ""
         var docCode = "";
         var docGroup = "";
 
@@ -344,37 +348,38 @@
             {
                 recip = recipArray[i];
             }
-        }        
-        
-        
-        if(docCode == "O4" || docCode == "O4am") //because the "LetterTo" is "RD" - but that's "referrer" in every other letter! So... what the actual fuck, CGU_DB??
+        }      
+
+        if(docCode == "O4" || docCode == "O4am" || docCode == "VHRProC") //because the "LetterTo" is "RD" - but that's "referrer" in every other letter! So... what the actual fuck, CGU_DB??
         {
             //document.querySelector('#ddlExtClinician').closest('.choices').style.display = '';
             document.getElementById("divExtClinician").hidden = false;      
             screeningCoordinator.hidden = false;
-        }        
-        
-        switch(recip)
-        {
-            case "Other":
-                document.getElementById("divExtClinician").hidden = false;
-                if(docCode == "PC01")
-                {                    
-                    geneticsCentre.hidden = false;
-                }
-                else
-                {
-                    allHospitalList.hidden = false;
-                }
-                break;
-            case "Histo":
-                document.getElementById("divExtClinician").hidden = false;
-                histoList.hidden = false;
-                break;
-            default:
-                document.getElementById("divExtClinician").hidden = true;
         }
-
+        else
+        {
+        
+            switch(recip)
+            {
+                case "Other":
+                    document.getElementById("divExtClinician").hidden = false;
+                    if(docCode == "PC01" || docCode == "OOR1")
+                    {                    
+                        geneticsCentre.hidden = false;
+                    }
+                    else
+                    {
+                        allHospitalList.hidden = false;
+                    }
+                    break;
+                case "Histo":
+                    document.getElementById("divExtClinician").hidden = false;
+                    histoList.hidden = false;
+                    break;
+                default:
+                    document.getElementById("divExtClinician").hidden = true;
+            }
+        }
         /*
         if(recip == "Other")
         {
@@ -391,7 +396,34 @@
     {
         document.getElementById("txtIsPreview").value = "true";
         
-        document.getElementById("frmDoLetter").submit();
+        //document.getElementById("frmDoLetter").submit();
+        var _refID = document.getElementById("txtRefID").value;
+        var _referrerCode = document.getElementById("txtReferrerCode").value;
+        var _docCode = document.getElementById("txtDocCode").value;
+        var _docID = "" //something so simple as "open in a new window" has to be so fucking complicated!!!!!
+
+        var docCodeArray = [];
+        var docIDArray = []; //believe it or not, we have to do all this just to get the doc ID!!!
+
+        @foreach (var item in Model.docContentList)
+        {
+            @:docCodeArray.push("@item.DocCode");
+            @:docIDArray.push("@item.DocContentID");
+        }
+
+        for (var j = 0; j < docCodeArray.length; j++)
+        {
+            if(docCodeArray[j] == _docCode)
+            {
+                _docID = docIDArray[j];
+            }
+        }
+
+        var _url = "";
+        _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + _refID
+        + "&user=mnln&referrerCode=" + _referrerCode + "&isPreview=true&recipient=" + document.getElementById("txtRecipient").value + "&freeText=" + document.getElementById("txtFreeText").value;
+
+        window.open(_url, '_blank').focus();
     }
 
     function DoPrint()
@@ -404,6 +436,24 @@
     function SetReferral()
     {
         document.getElementById("txtRefID").value = document.getElementById("ddlRefID").value;
+
+
+        var refArray = [];
+        var refCodeArray = [];
+
+        @foreach (var item in Model.referralList)
+        {
+            @:refArray.push("@item.refid");
+            @:refCodeArray.push("@item.ReferrerCode");
+        }
+
+        for(var i = 0; i < refArray.length; i++)
+        {
+            if(refArray[i] == document.getElementById("txtRefID").value)
+            {
+                document.getElementById("txtReferrerCode").value = refCodeArray[i];
+            }
+        }
     }
 
     function SetOtherClinician(otherClinician) //because obviously we can't just use the list that's not hidden!
