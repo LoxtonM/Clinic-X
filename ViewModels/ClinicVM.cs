@@ -18,7 +18,8 @@ namespace ClinicX.ViewModels
         public Note clinicalNotes { get; set; }
         public List<Note> clinicalNotesList { get; set; }
         public List<Ethnicity> ethnicities { get; set; }
-        public Patient patient { get; set; }        
+        public Patient patient { get; set; }
+        public List<Appointment> outstandingClinicsList { get; set; }
         public List<Appointment> pastClinicsList { get; set; }
         public List<Appointment> currentClinicsList { get; set; }
         public List<Appointment> futureClinicsList { get; set; }

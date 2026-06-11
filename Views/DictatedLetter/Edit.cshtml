@@ -36,15 +36,15 @@
     }
 
 
-    <div class="row mb-2 mt-2 g-2">
-        <div class="col-md-2">
-            <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSaveLetter" />
+    <div class="row mb-2 mt-7 g-5 fixed-top">
+        <div class="col-md-1">
+            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveLetter" />
         </div>
         
-        <div class="col-md-2">
+        <div class="col-md-1">
             <form id="DictatedLetterDelete" asp-action="Delete">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
-                <input type="button" class="btn btn-default btn-outline-danger" value="Delete" id="btnReqDelete" />
+                <input type="button" class="btn btn-default btn-danger" value="Delete" id="btnReqDelete" />
                 <div class="row mb-1 g-1" id="ConfDelete" hidden>
                     <h6>Are you sure? You won't be able to undo this.</h6>
                     <input type="button" class="btn btn-default btn-danger" value="Yes" id="btnDelete"  />
@@ -896,6 +896,7 @@
 
         document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replaceAll(/&#x27;/g, "'").replaceAll(/&amp;/g, "&").replaceAll(/&#xD;&#xA;/g, "\n").replaceAll(/&#x27;/g, "'").replaceAll(/&#x9;/g, "")
         document.getElementById("txtSalutation").value = "Dear " + sName;
+        document.getElementById("txtisAddressChanged").value = "true";
     }
 
     function ShowCCClinician() 

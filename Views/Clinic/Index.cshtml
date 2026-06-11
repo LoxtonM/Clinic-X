@@ -132,10 +132,58 @@
             }
         </form>        
     </div>
+
+    <hr />
+
     <div class="d-grid">
         <form id="frmPastClinics">
             <div class="row g-5 mb-3">
                 <h2>Past clinics</h2>
+            </div>
+            
+            @if (Model.pastClinicsList.Count() == 0)
+            {
+                <h2 class="text-center">You have no clinics outstanding.</h2>
+            }
+            else
+            {
+                <div class="row g-5 mb-3">
+                    <h3>Outstanding:</h3>
+                </div>
+                <div class="row">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>CGU No</th>
+                                <th>Patient</th>
+                                <th>Clinic</th>
+                                <th>Booked Date</th>
+                                <th>Booked Time</th>
+                                <th>Indication Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.outstandingClinicsList)
+                            {   
+                                <tr>
+                                    <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID class="btn btn-success">Select</a></td>
+                                    <td>@item.CGU_No</td>
+                                    <td>@item.FIRSTNAME @item.LASTNAME</td>
+                                    <td>@item.Clinic</td>
+                                    <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                                    <td>@item.IndicationNotes</td>
+                                </tr>                                
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+
+            <div class="row g-5 mb-3">
+                <h3>Previous (completed):</h3>
             </div>
             <div class="row g-5 mb-3">
                 <div class="col-md-2" class="text-right">
@@ -144,6 +192,7 @@
                 <div class="col-md-4">
                     <input type="date" name="pastFilterDate" asp-for=@Model.pastClinicFilterDate /> 
                 </div>
+                @*
                 <div class="col-md-2">
                     <label>Show All:</label>
                 </div>
@@ -153,10 +202,13 @@
                 <div class="col-md-1">
                     <input type="text" id="txtIsShowAll" name="isShowOutstanding" asp-for=@Model.isShowAll hidden="true" />
                 </div>
+                *@
+                <div class="col-md-4"></div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-success">Update</button>
                 </div>
             </div>
+    
             <div class="row g-5 mb-3">                
                 <div class="col-2">
                 </div>

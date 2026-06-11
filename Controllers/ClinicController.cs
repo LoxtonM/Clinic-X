@@ -62,26 +62,31 @@ namespace ClinicX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Clinics", "", _ip.GetIPAddress());
 
-                if (pastFilterDate == null) //set default date to 30 days before today
+                if (pastFilterDate == null) //set default date to 90 days before today
                 {
                     pastFilterDate = DateTime.Parse(DateTime.Now.AddDays(-90).ToString());
                 }
 
-                if (futureFilterDate == null) //set default date to 30 days before today
+                if (futureFilterDate == null) //set default date to 30 days from today
                 {
-                    futureFilterDate = DateTime.Parse(DateTime.Now.AddDays(90).ToString());
+                    futureFilterDate = DateTime.Parse(DateTime.Now.AddDays(30).ToString());
                 }
 
                 var clinicListAll = await _clinicData.GetClinicList(User.Identity.Name);
+                //var clinicListAll = await _clinicData.GetClinicList("CGENNQC");
 
-                _cvm.pastClinicsList = clinicListAll.Where(c => c.BOOKED_DATE < DateTime.Today).ToList();
+                _cvm.pastClinicsList = clinicListAll.Where(c => c.BOOKED_DATE < DateTime.Today && c.Attendance != "NOT RECORDED").ToList();
                 _cvm.currentClinicsList = clinicListAll.Where(c => c.BOOKED_DATE == DateTime.Today).ToList();
                 _cvm.futureClinicsList = clinicListAll.Where(c => c.BOOKED_DATE > DateTime.Today).ToList();
+                _cvm.outstandingClinicsList = clinicListAll.Where(c => (c.Attendance == "NOT RECORDED" || c.Attendance == null) && c.BOOKED_DATE > DateTime.Parse("2012-01-01")).ToList();
+                //because obviously there are outstanding clinics from 2011 - there's no way these are getting completed, and everyone's just going to moan if they all turn up!
 
+                /*
                 if (!isShowAll.GetValueOrDefault())
                 {
                     _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.Attendance == "NOT RECORDED").ToList();
                 }
+                */
 
                 _cvm.pastClinicsList = _cvm.pastClinicsList.Where(c => c.BOOKED_DATE >= pastFilterDate).ToList();
                 _cvm.pastClinicsList = _cvm.pastClinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();

@@ -367,14 +367,19 @@
                 </div>
             </div>
         </div>
-        
 
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                Additional Notes:
-            </div>
-            <div class="col-md-4">
-                <textarea cols="100" rows="5" name="addNotes" id="txtAddNotes" asp-for=@Model.icpCancer.Comments></textarea>
+        <div class="d-grid mt-3 mb-5">
+            <button type="button" class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseAdditionalNotes" aria-expanded="true" aria-controls="collapseExample">Additional Notes (click to expand/hide)</button>
+        </div>
+        
+        <div class="collapse show" id="collapseAdditionalNotes">
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    Additional Notes:
+                </div>
+                <div class="col-md-4">
+                    <textarea cols="100" rows="5" name="addNotes" id="txtAddNotes" asp-for=@Model.icpCancer.Comments></textarea>
+                </div>
             </div>
         </div>
 

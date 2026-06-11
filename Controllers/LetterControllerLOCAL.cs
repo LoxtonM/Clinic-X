@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using static System.Net.Mime.MediaTypeNames;
 
 
@@ -398,21 +399,18 @@ namespace ClinicalXPDataConnections.Meta
                         address = patAddress;
                     }
                 }
-
-                if (_lvm.documentsContent.LetterTo == "RD")
+                else if (_lvm.documentsContent.LetterTo == "RD")
                 {
                     if (!_lvm.documentsContent.DocCode.Contains("O4")) //because somebody hard-coded this overriding feature in CGU_DB                    
                     {
                         address = _add.GetAddress("RD", refID);
                     }
                 }
-
-                if (_lvm.documentsContent.LetterTo == "GP")
+                else if (_lvm.documentsContent.LetterTo == "GP")
                 {
                     address = _add.GetAddress("GP", refID);
                 }
-
-                if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4")
+                else if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4")
                     || (clinicianCode != "" && clinicianCode != null))
                 {
                     ExternalClinician clinician = _externalClinicianData.GetClinicianDetails(clinicianCode);
@@ -931,7 +929,7 @@ namespace ClinicalXPDataConnections.Meta
                             content5 = content5 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
                         }
                     }
-                    if(leafletID != 0)
+                    if (leafletID != 0)
                     {
                         content6 = _lvm.documentsContent.Para6;
                     }
@@ -1941,17 +1939,17 @@ namespace ClinicalXPDataConnections.Meta
                 if (ccs[0] != "None") //assuming that if the first one is "None" then there are no CCs
                 {
                     DocumentRenderer renderer = new DocumentRenderer(document); //we have to do a rendering pass to get the page count!
-                    
+
                     renderer.PrepareDocument();
 
                     int totalPages = renderer.FormattedDocument.PageCount;
 
                     RenderInfo[] pageObjects = renderer.GetRenderInfoFromPage(totalPages); //get the last page and see if it actually has content
 
-                    if(pageObjects != null && pageObjects.Length >= 5) //test for blank page - add a page break if there isn't one
+                    if (pageObjects != null && pageObjects.Length >= 5) //test for blank page - add a page break if there isn't one
                     {
                         section.AddPageBreak();
-                    }                    
+                    }
 
                     int ccLength = 50;
                     spacer = section.AddParagraph();
@@ -1960,10 +1958,10 @@ namespace ClinicalXPDataConnections.Meta
                     //Add a page for all of the CC addresses (must be declared here or we can't use it)            
                     for (int i = 0; i < ccs.Length - 1; i++)
                     {
-                        string cc = "";                       
+                        string cc = "";
 
                         if (ccs[i] != null && ccs[i] != "" && ccs[i] != "None")
-                        {                          
+                        {
 
                             if (ccs[i].Contains("Ganesan")) //because of course it's hard-coded
                             {
@@ -2536,25 +2534,25 @@ namespace ClinicalXPDataConnections.Meta
         {
             //text = text.Replace("<div>", "");
             text = text.Replace("  ", " "); //because of the stupid double spaces, which are now causing line breaks for some reason!!!!!
-            
+
             text = text.Replace("<div><br></div>", "newline");
             text = text.Replace("</div>", "newline");
 
             //what utter fucking bullshit!!!
             //this line is making certain spaces now cause line breaks, for some reason - but only sometimes!!!
-            text = text.Replace(Environment.NewLine, "newline");            
+            text = text.Replace(Environment.NewLine, "newline");
             //I can't eliminate all of the single line breaks because that will fuck up all other letters!!!
             //WHY YOU GOTTA DO THIS TO ME???????
-            
-            text = text.Replace("<div>&nbsp;</div>", "newline");            
+
+            text = text.Replace("<div>&nbsp;</div>", "newline");
             text = text.Replace("newlinenewlinenewlinenewlinenewlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine); //don't fucking ask!!!
             text = text.Replace("newlinenewlinenewlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine);
             text = text.Replace("newlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine);
             text = text.Replace("newlinenewlinenewline", Environment.NewLine); //because there are SOOOOO many different ways of getting line breaks!!
             text = text.Replace("newlinenewline", System.Environment.NewLine);
-            
+
             text = text.Replace("newline", System.Environment.NewLine);
-            
+
             text = text.Replace("&nbsp;", " ");
 
             text = text.Replace("&amp;", "&");
