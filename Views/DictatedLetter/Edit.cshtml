@@ -834,6 +834,7 @@
         
         var sName = "";
         var sAddress = "";
+        var sSalutation = "";
 
         var clinicianArray = [];
         var titleArray = [];
@@ -858,9 +859,9 @@
             var nameToTest = clinicianArray[k];
             if (nameToTest == clinCode.value)
             {                
-                sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
+                sSalutation = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k]; //so we can have the addressee and salutation separate
                 facilityCode = facilityArray[k];
-                sName = sName + "\n" + jobTitleArray[k];
+                sName = sSalutation + "\n" + jobTitleArray[k];
             }
         }
 
@@ -895,7 +896,7 @@
         }        
 
         document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replaceAll(/&#x27;/g, "'").replaceAll(/&amp;/g, "&").replaceAll(/&#xD;&#xA;/g, "\n").replaceAll(/&#x27;/g, "'").replaceAll(/&#x9;/g, "")
-        document.getElementById("txtSalutation").value = "Dear " + sName;
+        document.getElementById("txtSalutation").value = sSalutation;
         document.getElementById("txtisAddressChanged").value = "true";
     }
 

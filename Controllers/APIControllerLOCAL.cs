@@ -483,9 +483,7 @@ namespace APIControllers.Controllers
                     apiCall = apiCall + "\"mrn\":\"" + $"{patient.CGU_No}" + "\","; //mrn needs to be the "External Identifier" - the CGU number in this case
                     apiCall = apiCall + "\"firstName\":\"" + $"{patient.FIRSTNAME}" + "\",\"lastName\":\"" + $"{patient.LASTNAME}" + "\"";
                     apiCall = apiCall + ",\"dateOfBirth\":{\"day\":" + dob.ToString() + ",\"month\":" + mob.ToString() + ",\"year\":" + yob.ToString() + "},";
-                    apiCall = apiCall + "\"associatedStudy\":null}";
-
-                    Console.WriteLine(apiCall);
+                    apiCall = apiCall + "\"associatedStudy\":\"xwiki:Studies.BWCH\"}";
 
                     request.AddJsonBody(apiCall, false);
                     var response = await client.PostAsync(request);

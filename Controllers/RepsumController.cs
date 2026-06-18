@@ -53,20 +53,27 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> PrepareRepsum(int id, int diaryID)
+        public async Task<IActionResult> PrepareRepsum(int id, int diaryID, bool isPreview)
         {
-            bool repsumDone = await DoRepsum(id, diaryID, User.Identity.Name); //should return success (or failure if something goes wrong in the creation process)
+            bool repsumDone = await DoRepsum(id, diaryID, User.Identity.Name, isPreview); //should return success (or failure if something goes wrong in the creation process)
 
             string message = "";           
 
             if(repsumDone) { message = "Final review complete - REPSUM has been created for filing in EDMS"; }
             else { message = "REPSUM failed - If the review has completed, please try from the letters menu"; }
 
-            return RedirectToAction("CancerReview", "Triage", new { id = id, message = message, success = repsumDone });
+            if (isPreview)
+            {
+                return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
+            }
+            else
+            {
+                return RedirectToAction("CancerReview", "Triage", new { id = id, message = message, success = repsumDone });
+            }
         }
 
 
-        public async Task<bool> DoRepsum(int icpID, int diaryID, string user) //actually builds the REPSUM print-out, and auto-saves it to EDMS
+        public async Task<bool> DoRepsum(int icpID, int diaryID, string user, bool isPreview) //actually builds the REPSUM print-out, and auto-saves it to EDMS
         {
             bool success = false;
 
@@ -208,33 +215,17 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        rRow.Cells[1].AddParagraph(r.RiskCode);
+                        if (r.RiskCode != null)
+                        {
+                            rRow.Cells[1].AddParagraph(r.RiskCode);
+                        }
                     }
-                    if (r.LifetimeRiskPercentage != null)
-                    {
-                        rRow.Cells[2].AddParagraph(r.LifetimeRiskPercentage.ToString());
-                    }
-                    if (r.R30_40 != null)
-                    {
-                        rRow.Cells[3].AddParagraph(r.R30_40.ToString());
-                    }
-                    if (r.R40_50 != null)
-                    {
-                        rRow.Cells[4].AddParagraph(r.R40_50.ToString());
-                    }
-                    if (calcTool != null)
-                    {
-                        rRow.Cells[5].AddParagraph(calcTool);
-                    }
-                    if (r.SurvSite != null)
-                    {
-                        rRow.Cells[6].AddParagraph(r.SurvSite);
-                    }
-                    //rRow.Borders.Bottom.Visible = false;
-                    if (rowCount == riskList.Count)
-                    {
-                        rRow.Borders.Bottom.Width = 0.25;
-                    }
+                    if (r.LifetimeRiskPercentage != null) { rRow.Cells[2].AddParagraph(r.LifetimeRiskPercentage.ToString()); }
+                    if (r.R30_40 != null) { rRow.Cells[3].AddParagraph(r.R30_40.ToString()); }
+                    if (r.R40_50 != null) { rRow.Cells[4].AddParagraph(r.R40_50.ToString()); }
+                    if (calcTool != null) { rRow.Cells[5].AddParagraph(calcTool); }
+                    if (r.SurvSite != null) { rRow.Cells[6].AddParagraph(r.SurvSite); }                    
+                    if (rowCount == riskList.Count) { rRow.Borders.Bottom.Width = 0.25; }
                 }
 
                 tableRisk.Columns[0].Borders.Left.Width = 0.25;
@@ -281,10 +272,7 @@ namespace ClinicX.Controllers
                         if (s.SurvFreq != null) { sRow.Cells[3].AddParagraph(s.SurvFreq); }
                         if (s.SurvType != null) { sRow.Cells[4].AddParagraph(s.SurvType); }
 
-                        if (rowCount == survList.Count)
-                        {
-                            sRow.Borders.Bottom.Width = 0.25;
-                        }
+                        if (rowCount == survList.Count) { sRow.Borders.Bottom.Width = 0.25; }
                     }
                 }
 
@@ -320,18 +308,14 @@ namespace ClinicX.Controllers
                     rowCount += 1;
                     MigraDoc.DocumentObjectModel.Tables.Row sRow = tableStudy.AddRow();
                     if (s.IdentifiedDate != null) { sRow.Cells[0].AddParagraph(s.IdentifiedDate.Value.ToString("dd/MM/yyyy")); }
-                    sRow.Cells[1].AddParagraph(s.StudyCode + "-" + s.StudyName);
+                    if (s.StudyCode != null && s.StudyName != null) { sRow.Cells[1].AddParagraph(s.StudyCode + "-" + s.StudyName); }
                     if (s.Status != null) { sRow.Cells[2].AddParagraph(s.Status); }
 
-                    if (rowCount == studyList.Count)
-                    {
-                        sRow.Borders.Bottom.Width = 0.25;
-                    }
+                    if (rowCount == studyList.Count) { sRow.Borders.Bottom.Width = 0.25; }
                 }
 
                 tableStudy.Columns[0].Borders.Left.Width = 0.25;
                 tableStudy.Columns[2].Borders.Right.Width = 0.25;
-
             }
 
             spacer = section.AddParagraph();
@@ -381,15 +365,11 @@ namespace ClinicX.Controllers
                     }
                     if (s.RelSurname != null) { sRow.Cells[5].AddParagraph($"{s.RelTitle} {s.RelForename1} {s.RelSurname}"); }
 
-                    if (rowCount == teList.Count)
-                    {
-                        sRow.Borders.Bottom.Width = 0.25;
-                    }
+                    if (rowCount == teList.Count) { sRow.Borders.Bottom.Width = 0.25; }
                 }
 
                 tableTE.Columns[0].Borders.Left.Width = 0.25;
                 tableTE.Columns[5].Borders.Right.Width = 0.25;
-
             }
 
 
@@ -432,10 +412,7 @@ namespace ClinicX.Controllers
                     if (a.Clinician != null) { sRow.Cells[3].AddParagraph(a.Clinician); }
                     if (a.Attendance != null) { sRow.Cells[4].AddParagraph(a.Attendance); }
 
-                    if (rowCount == appList.Count)
-                    {
-                        sRow.Borders.Bottom.Width = 0.25;
-                    }
+                    if (rowCount == appList.Count) { sRow.Borders.Bottom.Width = 0.25; }
                 }
 
                 tableApp.Columns[0].Borders.Left.Width = 0.25;
@@ -482,10 +459,7 @@ namespace ClinicX.Controllers
                     sRow.Cells[4].AddParagraph();
                     if (w.Comment != null) { sRow.Cells[5].AddParagraph(w.Comment); }
 
-                    if (rowCount == wlList.Count)
-                    {
-                        sRow.Borders.Bottom.Width = 0.25;
-                    }
+                    if (rowCount == wlList.Count) { sRow.Borders.Bottom.Width = 0.25; }
                 }
 
                 tableWL.Columns[0].Borders.Left.Width = 0.25;
@@ -555,9 +529,10 @@ namespace ClinicX.Controllers
                 int rowCount = 0;
 
                 foreach (var d in dList)
-                {
+                {                    
                     rowCount += 1;
                     MigraDoc.DocumentObjectModel.Tables.Row sRow = tableDiary.AddRow();
+
                     if (d.DiaryDate.HasValue)
                     {
                         sRow.Cells[0].AddParagraph(d.DiaryDate.Value.ToString("dd/MM/yyyy"));
@@ -566,22 +541,13 @@ namespace ClinicX.Controllers
                     {
                         sRow.Cells[0].AddParagraph("Unknown");
                     }
-                    sRow.Cells[1].AddParagraph(d.DiaryAction);
-                    if (d.DiaryText != null)
-                    {
-                        sRow.Cells[2].AddParagraph(d.DiaryText.Substring(0, Math.Min(d.DiaryText.Length, 1 + d.DiaryText.IndexOf(Environment.NewLine))));
-                    }
-                    if (d.DocCode != null)
-                    {
-                        sRow.Cells[3].AddParagraph(d.DocCode);
-                    }
+                    if (d.DiaryAction != null) { sRow.Cells[1].AddParagraph(d.DiaryAction); }
+                    if (d.DiaryText != null) { sRow.Cells[2].AddParagraph(d.DiaryText.Substring(0, Math.Min(d.DiaryText.Length, 1 + d.DiaryText.IndexOf(Environment.NewLine)))); }
+                    if (d.DocCode != null) { sRow.Cells[3].AddParagraph(d.DocCode); }
                     sRow.Cells[4].AddParagraph();
                     sRow.Cells[5].AddParagraph();
 
-                    if (rowCount == dList.Count && rdCount == 0)
-                    {
-                        sRow.Borders.Bottom.Width = 0.25;
-                    }
+                    if (rowCount == dList.Count && rdCount == 0) { sRow.Borders.Bottom.Width = 0.25; }
                 }
 
                 if (rList.Count > 0)
@@ -602,26 +568,11 @@ namespace ClinicX.Controllers
                             {
                                 rowCount += 1;
                                 MigraDoc.DocumentObjectModel.Tables.Row sRow = tableDiary.AddRow();
-                                if (d.DiaryDate != null)
-                                {
-                                    sRow.Cells[0].AddParagraph(d.DiaryDate.Value.ToString("dd/MM/yyyy"));
-                                }
-                                if (d.DiaryAction != null)
-                                {
-                                    sRow.Cells[1].AddParagraph(d.DiaryAction);
-                                }
-                                if (d.DiaryText != null)
-                                {
-                                    sRow.Cells[2].AddParagraph(d.DiaryText);
-                                }
-                                if (d.DocCode != null)
-                                {
-                                    sRow.Cells[3].AddParagraph(d.DocCode);
-                                }
-                                if (d.DiaryRec != null)
-                                {
-                                    sRow.Cells[4].AddParagraph(d.DiaryRec.Value.ToString("dd/MM/yyyy"));
-                                }
+                                if (d.DiaryDate != null) { sRow.Cells[0].AddParagraph(d.DiaryDate.Value.ToString("dd/MM/yyyy")); }
+                                if (d.DiaryAction != null) { sRow.Cells[1].AddParagraph(d.DiaryAction); }
+                                if (d.DiaryText != null) { sRow.Cells[2].AddParagraph(d.DiaryText); }
+                                if (d.DocCode != null) { sRow.Cells[3].AddParagraph(d.DocCode); }
+                                if (d.DiaryRec != null) { sRow.Cells[4].AddParagraph(d.DiaryRec.Value.ToString("dd/MM/yyyy")); }
                                 if (d.NotReturned)
                                 {
                                     sRow.Cells[5].AddParagraph("Yes");
@@ -631,10 +582,7 @@ namespace ClinicX.Controllers
                                     sRow.Cells[5].AddParagraph("No");
                                 }
 
-                                if (rowCount == dList.Count + rdList.Count)
-                                {
-                                    sRow.Borders.Bottom.Width = 0.25;
-                                }
+                                if (rowCount == dList.Count + rdList.Count) { sRow.Borders.Bottom.Width = 0.25; }
                             }
 
                         }
@@ -710,24 +658,10 @@ namespace ClinicX.Controllers
                     sRow.Cells[0].AddParagraph(f.RelSurname + ", " + f.RelForename1 + " " + f.RelForename2);
                     if(f.RelSex != null) { sRow.Cells[1].AddParagraph(f.RelSex); }
                     if (f.Alive != null) { sRow.Cells[2].AddParagraph(f.Alive); }
-                    if (f.RelDOB != null)
-                    {
-                        sRow.Cells[3].AddParagraph(f.RelDOB);
-                    }
-                    else
-                    {
-                        sRow.Cells[3].AddParagraph("");
-                    }
-                    if (f.RelDOD != null)
-                    {
-                        sRow.Cells[4].AddParagraph(f.RelDOD);
-                    }
-                    else
-                    {
-                        sRow.Cells[4].AddParagraph("");
-                    }
-                    sRow.Cells[5].AddParagraph(f.Diagnosis + " age " + f.AgeDiag + ", treated at " + f.Hospital);
-                    sRow.Cells[6].AddParagraph(f.InfoReq + " " + f.WhyNot);
+                    if (f.RelDOB != null) { sRow.Cells[3].AddParagraph(f.RelDOB); }                    
+                    if (f.RelDOD != null) { sRow.Cells[4].AddParagraph(f.RelDOD); }
+                    if (f.Diagnosis != null && f.AgeDiag != null && f.Hospital != null) { sRow.Cells[5].AddParagraph(f.Diagnosis + " age " + f.AgeDiag + ", treated at " + f.Hospital); }
+                    if (f.InfoReq != null && f.WhyNot != null) { sRow.Cells[6].AddParagraph(f.InfoReq + " " + f.WhyNot); }
                     if (f.Conf == "Other")
                     {
                         sRow.Cells[7].AddParagraph("No");
@@ -803,7 +737,6 @@ namespace ClinicX.Controllers
             pdf.PdfDocument.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf"));
 
 
-
             string fileCGU = patient.CGU_No.Replace(".", "-");
             string docCode = "REPSUM";
             string refIDString = icp.REFID.ToString();
@@ -811,17 +744,17 @@ namespace ClinicX.Controllers
             string dateTimeString = DateTime.Now.ToString("yyyyMMddHHmmss");
             string diaryIDString = diaryID.ToString();
 
-            //if (!isPreview.GetValueOrDefault())
-            //{
+            if (!isPreview)
+            {
             //System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
-            string edmsPath = await _constantsData.GetConstant("PrintPathEDMS", 1);
+                string edmsPath = await _constantsData.GetConstant("PrintPathEDMS", 1);
 
-            System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
-            //}
+                System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
+            }
+
             success = true;
 
             return success;
         }
     }
 }
-

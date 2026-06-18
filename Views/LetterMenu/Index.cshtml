@@ -291,7 +291,7 @@
 
         var docCodeArray = [];
         var recipArray = [];
-        //var recip = "";
+        var recip = "";
 
         //var clinCodeArray = [];
         //var clinNameArray = [];
@@ -420,9 +420,46 @@
         }
 
         var _url = "";
-        _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + _refID
-        + "&user=mnln&referrerCode=" + _referrerCode + "&isPreview=true&recipient=" + document.getElementById("txtRecipient").value + "&freeText=" + document.getElementById("txtFreeText").value;
 
+        if(_docCode == "REPSUM")
+        {
+            var _icpid=0;
+            var refIDArray = [];
+            var icpArray = [];
+            //and of course we need all this bullshit to get the ICPID
+            @foreach (var item in Model.icpCancerList)
+            {
+                @:refIDArray.push("@item.RefID");
+            }
+
+            @foreach (var item in Model.icpCancerList)
+            {
+                @:icpArray.push("@item.ICP_Cancer_ID");
+            }
+
+            for(var i = 0; i < refIDArray.length; i++)
+            {
+                if(refIDArray[i] == document.getElementById("txtRefID").value)
+                {
+                    _icpid = icpArray[i];
+                }
+            }
+
+            if(_icpid == 0)
+            {
+                window.alert("No ICP record found for this referral. Please make sure you have selected a cancer referral.");
+                return;
+            }
+            else
+            {
+                _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/Repsum/PrepareRepsum?id=" + _icpid + "&isPreview=true";
+            }
+        }
+        else
+        {
+            _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + _refID
+            + "&user=mnln&referrerCode=" + _referrerCode + "&isPreview=true&recipient=" + document.getElementById("txtRecipient").value + "&freeText=" + document.getElementById("txtFreeText").value;
+        }
         window.open(_url, '_blank').focus();
     }
 

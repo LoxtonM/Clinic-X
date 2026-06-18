@@ -84,6 +84,7 @@ namespace ClinicX.Controllers
             }
 
             _lvm.referralList = await _referralData.GetActiveReferralsListForPatient(mpi);
+            _lvm.icpCancerList = await _triageData.GetCancerICPListForPatient(mpi);
             _lvm.patient = await _patientData.GetPatientDetails(mpi);
             _lvm.patGP = await _externalClinicianData.GetPatientGPReferrer(mpi);
             clins.Add(_lvm.patGP);

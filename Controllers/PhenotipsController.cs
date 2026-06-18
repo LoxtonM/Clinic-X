@@ -98,9 +98,9 @@ namespace ClinicX.Controllers
             string sMessage = "";
             bool isSuccess = false;            
 
-            //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
+            APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
 
-            Int16 result = await _api.SchedulePPQ(mpi, pathway); //creates the PPQ, returns 1 (success), 0 (already exists), or -1 (failed)
+            Int16 result = await api.SchedulePPQ(mpi, pathway); //creates the PPQ, returns 1 (success), 0 (already exists), or -1 (failed)
 
             if (result == 1)
             {

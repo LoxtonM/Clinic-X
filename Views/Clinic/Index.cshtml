@@ -96,7 +96,7 @@
             </div>
             @if (Model.futureClinicsList.Count() == 0)
             {
-                <h2 class="text-center">You have no clinics scheduled before the above date.</h2>
+                <h2 class="text-center">You have no clinics scheduled before @Model.futureClinicFilterDate.ToString("dd/MM/yyyy").</h2>
             }
             else
             {
