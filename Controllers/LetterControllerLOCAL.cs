@@ -929,7 +929,7 @@ namespace ClinicalXPDataConnections.Meta
                             content5 = content5 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
                         }
                     }
-                    if (leafletID != 0)
+                    if (leafletID != 0 || (enclosures != "" && enclosures != null))
                     {
                         content6 = _lvm.documentsContent.Para6;
                     }
@@ -1921,7 +1921,7 @@ namespace ClinicalXPDataConnections.Meta
 
                     if (enclosures != "" && enclosures != null)
                     {
-                        paraEnclosures = paraEnclosures + Environment.NewLine + enclosures;
+                        paraEnclosures = paraEnclosures + Environment.NewLine + enclosures.Replace(",", Environment.NewLine);
                     }
 
                     if (leafletID != 0)

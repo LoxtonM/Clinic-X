@@ -143,8 +143,26 @@ namespace APIControllers.Controllers
                 var response = await client.PostAsync(request);
                                 
                 if (response.Content == "")
-                {
+                {                   
                     result = 1; //success result
+
+                    string ptID = await GetPhenotipsPatientID(patient.MPI);
+
+                    AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), 
+                        patient.POSTCODE, patient.SOCIAL_SECURITY);
+
+                    //Add the Study ID
+
+                    //apiURL = apiURLBase + $":443/rest/patients/{ptID}?policy=update";
+                    string apiURL2 = apiURLBase + $":443/rest/patients/{ptID}/study";
+                    var options2 = new RestClientOptions(apiURL2);
+                    var client2 = new RestClient(options2);
+                    var request2 = new RestRequest("");
+                    request2.AddHeader("authorization", $"Basic {authKey}");
+                    request2.AddHeader("X-Gene42-Secret", apiKey);
+                    string apiCall2 = "{\"studyId\":\"xwiki:Studies.BWCH\"}";
+                    request2.AddJsonBody(apiCall2, false);
+                    var response2 = await client2.PutAsync(request2);
                 }
                 else
                 {

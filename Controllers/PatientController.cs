@@ -103,6 +103,13 @@ namespace ClinicX.Controllers
                 _pvm.relatives = _pvm.relatives.Distinct().ToList(); //because there are dupes.
                 _pvm.appointmentList = _pvm.appointmentList.Distinct().ToList();
                 _pvm.icpCancerList = new List<ICPCancer>();                                
+                _pvm.icpList = new List<ICP>();
+
+                foreach(var item in _pvm.referralsActive)
+                {
+                    ICP icp = await _triageData.GetICPDetailsByRefID(item.refid);
+                    if (icp != null) { _pvm.icpList.Add(icp); }
+                }
 
                 if (patientsInPedigree.Count > 1 && !string.IsNullOrWhiteSpace(_pvm.patient.CGU_No)) //to do the fwd and back buttons across the pedigree
                 {                    

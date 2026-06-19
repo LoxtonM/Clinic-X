@@ -172,7 +172,11 @@
             const elements = document.querySelectorAll('.js-choice');
             elements.forEach(function(element) 
             {
-                element.choices = new Choices(element, {searchEnabled: true, shouldSort: false, searchResultLimit: -1});
+                element.choices = new Choices(element, {searchEnabled: true, shouldSort: false, searchResultLimit: -1, fuseOptions: {
+                threshold: 0.2, // Low threshold means strict matching (0.0 is perfect, 0.6 is default)
+                distance: 0,    // Force the match to be tightly grouped together
+                tokenize: true  // Helps match individual words in "Dr Baumgartner"
+                }});
             });
 
           // toastr js

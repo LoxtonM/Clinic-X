@@ -337,6 +337,10 @@ namespace ClinicX.Controllers
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genAddWL(SQL)" }); }
                 }
 
+                string qrCodeText = ""; //check and set up the Phenotips PPQ QR code if required
+                bool isPhenotipsAvailable = await _constantsData.GetConstant("PhenotipsURL", 2) == "1";
+
+                
                 if (tp2 == 2) //CTB letter
                 {
                     int success = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
@@ -410,8 +414,18 @@ namespace ClinicX.Controllers
                     int successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode); //to add diaryid to the letter output
                     int diaryID = diary.DiaryID;
-                    
-                    _lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID);
+
+                    string qrCodeText = ""; //check and set up the Phenotips PPQ QR code if required
+                    bool isPhenotipsAvailable = await _constantsData.GetConstant("PhenotipsURL", 2) == "1";
+                    bool isPhenotipsQR = _documentsData.GetDocumentDetailsByDocCode(docCode).Result.hasPhenotipsPPQ;
+
+                    if (isPhenotipsAvailable && isPhenotipsQR)
+                    {
+                        qrCodeText = await _api.GetPPQQRCode(mpi, referral.PATHWAY);                        
+                    }
+
+                    await _lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID, "", "", 0, "", "",
+                        null, false, qrCodeText);
                 }
 
                 if(icpAction.ID == 8)

@@ -31,7 +31,7 @@ namespace ClinicX.Controllers
             _referralDataAsync = referralDataAsync;
         }
 
-        public async Task<IActionResult> DoLetter(int docID, int mpi, int refID, string referrerCode, string? recipient, string? freeText)
+        public async Task<IActionResult> DoLetter(int docID, int mpi, int refID, string referrerCode, string? recipient, string? freeText, string? enclosures)
         {
             string qrCodeText = ""; //check and set up the Phenotips PPQ QR code if required
             bool isPhenotipsAvailable = await _constantsData.GetConstant("PhenotipsURL", 2) == "1";
@@ -51,7 +51,7 @@ namespace ClinicX.Controllers
 
             LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext);
 
-            await lc.DoPDF(docID, mpi, refID, User.Identity.Name, referrerCode, freeText, "", 0, "", false, false, 0, "", "", 0, recipient,
+            await lc.DoPDF(docID, mpi, refID, User.Identity.Name, referrerCode, freeText, enclosures, 0, "", false, false, 0, "", "", 0, recipient,
                         "", null, true, qrCodeText, 0, true);
 
             return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");

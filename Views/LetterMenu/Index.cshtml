@@ -103,13 +103,13 @@
                 <label>Free text:</label>
             </div>
             <div class="col-md-4">
-                <textarea name="additionalText" id="txtFreeText"></textarea>
+                <textarea name="additionalText" id="txtFreeText" cols="40" rows="5"></textarea>
             </div>
             <div class="col-md-2">
                 <label>Enclosures</label>
             </div>
             <div class="col-md-4">
-                <textarea name="enclosures"></textarea>
+                <textarea name="enclosures" id="txtEnclosures" cols="40" rows="5"></textarea>
             </div>
         </div>
 
@@ -120,6 +120,10 @@
             <div class="col-md-4">                
                 <select id="ddlScreeningCoordinator" hidden onchange=SetOtherClinician("screening")> @*inline is necessary because I can't pass a parameter otherwise*@
                     <option value="">Select ...</option>
+                    @if (Model.patGP != null)
+                    {
+                        <option value=@Model.patGP.MasterClinicianCode>@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME - GP</option>
+                    }
                     @foreach (var item in Model.screeningCoordinatorList)
                     {
                         <option value=@item.MasterClinicianCode>@item.Contact - @item.FacilityName</option>
@@ -127,6 +131,10 @@
                 </select>
                 <select id="ddlGeneticsCentre" hidden onchange=SetOtherClinician("genetics")>
                     <option value="">Select ...</option>
+                    @if (Model.patGP != null)
+                    {
+                        <option value=@Model.patGP.MasterClinicianCode>@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME - GP</option>
+                    }
                     @foreach (var item in Model.geneticsList)
                     {
                         <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
@@ -134,6 +142,10 @@
                 </select>
                 <select id="ddlHistoList" hidden onchange=SetOtherClinician("histo")>
                     <option value="">Select ...</option>
+                    @if(Model.patGP != null)
+                    {
+                        <option value=@Model.patGP.MasterClinicianCode>@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME - GP</option>
+                    }
                     @foreach (var item in Model.histoList)
                     {
                         <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
@@ -141,6 +153,10 @@
                 </select>
                 <select id="ddlBreastList" hidden onchange=SetOtherClinician("breast")>
                     <option value="">Select ...</option>
+                    @if (Model.patGP != null)
+                    {
+                        <option value=@Model.patGP.MasterClinicianCode>@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME - GP</option>
+                    }
                     @foreach (var item in Model.breastList)
                     {
                         <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
@@ -148,6 +164,10 @@
                 </select>
                 <select id="ddlAllHospitals" hidden onchange=SetOtherClinician("all")>
                     <option value="">Select ...</option>
+                    @if (Model.patGP != null)
+                    {
+                        <option value=@Model.patGP.MasterClinicianCode>@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME - GP</option>
+                    }
                     @foreach (var item in Model.externalClinicians)
                     {
                         <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
@@ -164,13 +184,19 @@
                 <label>Leaflets:</label>
             </div>
             <div class="col-md-4">
-                <select name="leafletID">
+                <select id="ddlLeaflets" class="w-100">
                     <option value="0" selected>Select...</option>
                     @foreach (var l in Model.leaflets)
                     {
                         <option value=@l.ID>@l.Code - @l.Name</option>
                     }
                 </select>
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-success" id="btnAddLeaflet">Add to Enclosures</button>
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-danger" id="btnClearLeaflets">Clear Enclosures</button>
             </div>
         </div>
 
@@ -200,6 +226,8 @@
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     document.getElementById("btnPrint").addEventListener("click", DoPrint);
     document.getElementById("ddlRefID").addEventListener("change", SetReferral);
+    document.getElementById("btnAddLeaflet").addEventListener("click", AddLeaflet);
+    document.getElementById("btnClearLeaflets").addEventListener("click", ClearLeaflets);
     window.addEventListener("load", ShowLetterMenu);
     
     function ShowLetterMenu()
@@ -394,6 +422,12 @@
 
     function DoPreview()
     {
+        if(document.getElementById("txtDocCode").value == "")
+        {
+            window.alert("No document selected");
+            return;
+        }
+
         document.getElementById("txtIsPreview").value = "true";
         
         //document.getElementById("frmDoLetter").submit();
@@ -458,13 +492,20 @@
         else
         {
             _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + _refID
-            + "&user=mnln&referrerCode=" + _referrerCode + "&isPreview=true&recipient=" + document.getElementById("txtRecipient").value + "&freeText=" + document.getElementById("txtFreeText").value;
+            + "&user=mnln&referrerCode=" + _referrerCode + "&isPreview=true&recipient=" + document.getElementById("txtRecipient").value + "&freeText=" + document.getElementById("txtFreeText").value + 
+            "&enclosures=" + document.getElementById("txtEnclosures").value;
         }
         window.open(_url, '_blank').focus();
     }
 
     function DoPrint()
     {
+        if(document.getElementById("txtDocCode").value == "")
+        {
+            window.alert("No document selected");
+            return;
+        }
+
         document.getElementById("txtIsPreview").value = "false";
 
         document.getElementById("frmDoLetter").submit();
@@ -520,6 +561,41 @@
                 clin.value = allHospitalList.value;
         }
 
+    }
+
+    function AddLeaflet()
+    {
+        var _encs = document.getElementById("txtEnclosures");
+        var _leaflets = document.getElementById("ddlLeaflets");
+
+        var idArray = [];
+        var codeArray = [];
+        var nameArray = [];
+
+        @foreach (var item in Model.leaflets) //yes, this is the ONLY way to get C# data into javascript without doing a post!
+        {
+            @:idArray.push("@item.ID");
+            @:codeArray.push("@item.Code");
+            @:nameArray.push("@item.Name");
+        }
+
+        for(var i = 0; i < idArray.length; i++)
+        {
+            if(idArray[i] == _leaflets.value)
+            {
+                if(_encs.value != "")
+                {
+                    _encs.value = _encs.value + ",\n";
+                }
+
+                _encs.value = _encs.value + codeArray[i] + " - " + nameArray[i];
+            }
+        }
+    }
+
+    function ClearLeaflets()
+    {
+        document.getElementById("txtEnclosures").value = "";
     }
 
 </script>

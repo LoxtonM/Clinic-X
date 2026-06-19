@@ -607,6 +607,7 @@
                             <td>Consultant</td>
                             <td>GC</td>
                             <td></td>
+                            <td></td>
                         </tr>
                     </thead>
                     <tbody>
@@ -632,6 +633,23 @@
                                 <td>@r.PATHWAY</td>
                                 <td>@r.LeadClinician</td>
                                 <td>@r.GC</td>
+
+                                @foreach (var i in Model.icpList)
+                                {
+                                    @if(i != null && !i.Triaged)
+                                    {
+                                        if (i.REFID == r.refid && !r.logicaldelete)
+                                        {
+                                            <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@i.ICPID>ICP Details</a></td>
+                                        }
+                                    }     
+                                    else
+                                    {
+                                        <td><button type="button" class="btn btn-success disabled">ICP missing or already triaged</button></td>
+                                    }
+                                }
+
+                                
                                 @if (r.PATHWAY != null)
                                 {
                                     @if (@r.PATHWAY.Contains("Cancer"))
