@@ -52,19 +52,25 @@
                 <label>NHS/Private</label>
             </div>
             <div class="col-md-2">
-                <label>NHS </label><input id="chkNHS" type="checkbox" asp-for=@Model.bloodForm.IsNHS disabled /> <label>Private </label><input id="chkPrivate" type="checkbox" disabled />                
+                <label>NHS </label><input id="chkNHS" type="checkbox" asp-for=@Model.bloodForm.IsNHS />
+                <label>Private </label><input id="chkPrivate" type="checkbox" />
+                <input name="isNHS" id="txtNHS" hidden />
             </div>
             <div class="col-md-1">
                 <label>Urgent/Routine</label>
             </div>
             <div class="col-md-2">
-                <label>Routine </label><input id="chkRoutine" type="checkbox" asp-for=@Model.bloodForm.IsRoutine disabled /> <label>Urgent </label><input id="chkUrgent" type="checkbox" disabled />                
+                <label>Routine </label><input id="chkRoutine" type="checkbox" asp-for=@Model.bloodForm.IsRoutine />
+                <label>Urgent</label><input id="chkUrgent" type="checkbox" />                
+                <input name="isRoutine" id="txtRoutine" hidden />
             </div>
             <div class="col-md-2">
                 <label>Inpatient/Outpatient</label>
             </div>
             <div class="col-md-2">
-                <label>Outpatient </label><input id="chkOutpatient" type="checkbox" disabled /> <label>Inpatient </label><input id="chkInpatient" type="checkbox" asp-for=@Model.bloodForm.IsInpatient disabled />
+                <label>Outpatient </label><input id="chkOutpatient" type="checkbox" />
+                <label>Inpatient</label><input id="chkInpatient" type="checkbox" asp-for=@Model.bloodForm.IsInpatient />
+                <input name="isInpatient" id="txtInpatient" hidden />
             </div>
         </div>
 
@@ -101,25 +107,25 @@
                 <label>Prenatal</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkPrenatal" asp-for=@Model.bloodForm.IsPrenatal disabled />
+                <input type="checkbox" id="chkPrenatal" asp-for=@Model.bloodForm.IsPrenatal /><input type="text" name="isPrenatal" id="txtPrenatal" hidden />
             </div>
             <div class="col-md-1">
                 <label>Presymptomatic</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkPresymptomatic" asp-for=@Model.bloodForm.IsPresymptomatic disabled />
+                <input type="checkbox" id="chkPresymptomatic" asp-for=@Model.bloodForm.IsPresymptomatic /><input type="text" name="isPresymptomatic" id="txtPresymptomatic" hidden />
             </div>
             <div class="col-md-1">
                 <label>Diagnostic</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkDiagnostic" asp-for=@Model.bloodForm.IsDiagnostic disabled />
+                <input type="checkbox" id="chkDiagnostic" asp-for=@Model.bloodForm.IsDiagnostic /><input type="text" name="isDiagnostic" id="txtDiagnostic" hidden />
             </div>
             <div class="col-md-1">
                 <label>Carrier</label>
             </div>
             <div class="col-md-2">
-                <input type="checkbox" id="chkCarrier" asp-for=@Model.bloodForm.IsCarrier disabled />
+                <input type="checkbox" id="chkCarrier" asp-for=@Model.bloodForm.IsCarrier /><input type="text" name="isCarrier" id="txtCarrier" hidden />
             </div>
         </div>
 
@@ -230,6 +236,16 @@
     document.getElementById("btnChangeName").addEventListener("click", ShowNameChangeForm);
     document.getElementById("DoFormLinkNameChange").addEventListener("click", DoBloodFormWithNameChange);
     document.getElementById("DoFormLinkNameChangePreview").addEventListener("click", DoBloodFormWithNameChangePreview);
+    document.getElementById("chkNHS").addEventListener("change", SetNHSPrivate1); //because we can't do this properly with just one function, obviously!!
+    document.getElementById("chkPrivate").addEventListener("change", SetNHSPrivate2);
+    document.getElementById("chkRoutine").addEventListener("change", SetRoutineUrgent1);
+    document.getElementById("chkUrgent").addEventListener("change", SetRoutineUrgent2);
+    document.getElementById("chkOutpatient").addEventListener("change", SetOutpatient);
+    document.getElementById("chkInpatient").addEventListener("change", SetInpatient);
+    document.getElementById("chkPrenatal").addEventListener("change", SetPrenatal);
+    document.getElementById("chkPresymptomatic").addEventListener("change", SetPresymptomatic);
+    document.getElementById("chkDiagnostic").addEventListener("change", SetDiagnostic);
+    document.getElementById("chkCarrier").addEventListener("change", SetCarrier);
     window.addEventListener("load", LoadForm);
 
 
@@ -264,13 +280,24 @@
         window.location.href = (surl);
     }
 
-
+    function SetCheckBoxes()
+    {
+        document.getElementById("txtNHS").value = document.getElementById("chkNHS").checked;
+        document.getElementById("txtRoutine").value = document.getElementById("chkRoutine").checked;
+        document.getElementById("txtInpatient").value = document.getElementById("chkInpatient").checked;
+        document.getElementById("txtPrenatal").value = document.getElementById("chkPrenatal").checked;
+        document.getElementById("txtPresymptomatic").value = document.getElementById("chkPresymptomatic").checked;
+        document.getElementById("txtDiagnostic").value = document.getElementById("chkDiagnostic").checked;
+        document.getElementById("txtCarrier").value = document.getElementById("chkCarrier").checked;
+    }
 
     function LoadForm()
     {
         document.getElementById("chkPrivate").checked = !document.getElementById("chkNHS").checked;
         document.getElementById("chkUrgent").checked = !document.getElementById("chkRoutine").checked;
         document.getElementById("chkOutpatient").checked = !document.getElementById("chkInpatient").checked;
+                  
+        SetCheckBoxes();
 
         var sampleType = document.getElementById("ddlSampleType");
 
@@ -291,6 +318,111 @@
         if(isTi == "True") { sampleType.value = "Ti"; }
         if(isCB == "True") { sampleType.value = "CB"; }
         if(isFB == "True") { sampleType.value = "FB"; }       
+    }
+
+    function SetNHSPrivate1()
+    {
+       document.getElementById("chkPrivate").checked = !document.getElementById("chkNHS").checked;
+
+       //because we can't just pass the value of the check box to the C#, oh no. That would be far too fucking simple!!!
+       if(document.getElementById("chkNHS").checked)
+       {
+           document.getElementById("txtNHS").value="true";
+       }
+       else
+       {
+           document.getElementById("txtNHS").value="false";
+       }
+    }
+
+    function SetNHSPrivate2()
+    {
+       document.getElementById("chkNHS").checked = !document.getElementById("chkPrivate").checked;
+
+       if(document.getElementById("chkNHS").checked)
+       {
+           document.getElementById("txtNHS").value="true";
+       }
+       else
+       {
+           document.getElementById("txtNHS").value="false";
+       }
+    }
+
+    function SetRoutineUrgent1()
+    {
+       document.getElementById("chkUrgent").checked = !document.getElementById("chkRoutine").checked;
+
+       if(document.getElementById("chkRoutine").checked)
+       {
+           document.getElementById("txtRoutine").value="true";
+       }
+       else
+       {
+           document.getElementById("txtRoutine").value="false";
+       }
+    }
+
+    function SetRoutineUrgent2()
+    {
+       document.getElementById("chkRoutine").checked = !document.getElementById("chkUrgent").checked;
+
+       if(document.getElementById("chkRoutine").checked)
+       {
+           document.getElementById("txtRoutine").value="true";
+       }
+       else
+       {
+           document.getElementById("txtRoutine").value="false";
+       }
+    }
+
+    function SetOutpatient()
+    {
+        document.getElementById("chkInpatient").checked = !document.getElementById("chkOutpatient").checked;
+
+        if(document.getElementById("chkInpatient").checked)
+        {
+            document.getElementById("txtInpatient").value = "true";
+        }
+        else
+        {
+            document.getElementById("txtInpatient").value = "false";
+        }
+    }
+
+    function SetInpatient()
+    {
+        document.getElementById("chkOutpatient").checked = !document.getElementById("chkInpatient").checked;
+
+        if(document.getElementById("chkInpatient").checked)
+        {
+            document.getElementById("txtInpatient").value = "true";
+        }
+        else
+        {
+            document.getElementById("txtInpatient").value = "false";
+        }
+    }
+
+    function SetPrenatal()
+    {
+        document.getElementById("txtPrenatal").value = document.getElementById("chkPrenatal").checked;
+    }
+
+    function SetPresymptomatic()
+    {
+        document.getElementById("txtPresymptomatic").value = document.getElementById("chkPresymptomatic").checked;
+    }
+
+    function SetDiagnostic()
+    {
+        document.getElementById("txtDiagnostic").value = document.getElementById("chkDiagnostic").checked;
+    }
+
+    function SetCarrier()
+    {
+        document.getElementById("txtCarrier").value = document.getElementById("chkCarrier").checked;
     }
 
 </script>

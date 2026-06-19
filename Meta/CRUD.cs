@@ -137,6 +137,9 @@ namespace ClinicX.Meta
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
             if (text == null) { text = ""; }
+            if (string1 == null) { string1 = ""; }
+            if (string2 == null) { string2 = ""; }
+            if (string3 == null) { string3 = ""; }
             if (string4 == null) { string4 = ""; }
             if (string5 == null) { string5 = ""; }
             if (string6 == null) { string6 = ""; }
