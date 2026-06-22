@@ -35,8 +35,15 @@
         <div class="row">
             <h1>Cancer ICP Review for @Model.patient.FIRSTNAME @Model.patient.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.icpCancer.CGU_No</a></h1>
         </div>
-        <div class="row">
-            <h4>DOB: @Model.patient.DOB.Value.ToString("dd/MM/yyyy")</h4>
+        <div class="row">            
+            @if (Model.patient.DOB != null)
+            {
+                <h4>Date of birth: @Model.patient.DOB.Value.ToString("dd/MM/yyyy") (current age: @Model.currentAge)</h4>
+            }
+            else
+            {
+                <h4>Date of birth: Not known</h4>
+            }            
         </div>
         <div class="row">
             <h4>NHS No: @Model.patient.SOCIAL_SECURITY</h4>

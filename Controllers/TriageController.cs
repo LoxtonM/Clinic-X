@@ -492,6 +492,7 @@ namespace ClinicX.Controllers
                 _ivm.documentList = _ivm.documentList.Where(d => (d.DocCode.StartsWith("O") && d.DocGroup == "Outcome") || d.DocCode.Contains("PrC")).ToList();
                 _ivm.docContentList = await _documentsData.GetDocumentsContentList();
                 _ivm.cancerReviewActionsLists = await _icpActionData.GetICPCancerReviewActionsList();
+                _ivm.currentAge = _ageCalculator.DateDifferenceDay(_ivm.patient.DOB.Value, DateTime.Now) / 365;
 
                 _ivm.message = message;
                 _ivm.success = success.GetValueOrDefault();

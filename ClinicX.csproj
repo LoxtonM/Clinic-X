@@ -32,6 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Audit.EntityFramework.Core" Version="32.2.0" />
+    <PackageReference Include="Audit.Mvc.Core" Version="32.2.0" />
+    <PackageReference Include="Audit.NET" Version="32.2.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />

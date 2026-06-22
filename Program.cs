@@ -1,5 +1,10 @@
 using APIControllers.Controllers;
 using APIControllers.Data;
+using Audit.Core;
+using Audit.Core.Providers;
+using Audit.EntityFramework;
+using Audit.EntityFramework.Providers;
+using Audit.Mvc;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicX.Controllers;
@@ -20,6 +25,8 @@ builder.Services.AddDbContext<ClinicXContext>(options => options.UseSqlServer(co
 builder.Services.AddDbContext<DocumentContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<LabContext>(options => options.UseSqlServer(config.GetConnectionString("ConStringLab")));
 builder.Services.AddDbContext<APIContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<ICaseloadDataAsync, CaseloadDataAsync>();
 builder.Services.AddScoped<IStaffUserDataAsync, StaffUserDataAsync>();
@@ -88,12 +95,24 @@ builder.Services.AddScoped<ConsentFormController>();
 builder.Services.AddScoped<ISocialServicePathwayDataAsync, SocialServicePathwayDataAsync>();
 builder.Services.AddScoped<IScreeningCoordinatorDataAsync, ScreeningCoordinatorDataAsync>();
 builder.Services.AddScoped<IPedigreeDataAsync, PedigreeDataAsync>();
+builder.Services.AddScoped<IAuditServiceAsync, AuditServiceAsync>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
    .AddCookie(options =>
    {
        options.LoginPath = "/Login/UserLogin";
    });
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AuditAttribute()
+    {
+        IncludeHeaders = true,
+        IncludeRequestBody = true,
+        IncludeModel = true,
+        EventTypeName = "{verb} {controller}/{action}"
+    });
+});
 
 
 builder.Services.AddMvc();
@@ -134,5 +153,70 @@ app.MapControllerRoute(
     name: "default",
     //pattern: "{controller=Login}/{action=UserLogin}/{id?}");
     pattern: "{controller=Home}/{action=Index}");
+
+var httpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
+
+Audit.Core.Configuration.AddCustomAction(ActionType.OnScopeCreated, scope =>
+{
+    var context = httpContextAccessor.HttpContext;
+    if (context?.User?.Identity?.IsAuthenticated == true)
+    {
+        scope.Event.Environment.UserName = context.User.Identity.Name;
+    }
+});
+
+Audit.Core.Configuration.Setup()
+    .UseConditional(c => c
+        .When(ev => ev is AuditEventEntityFramework,
+            new EntityFrameworkDataProvider(ef => ef
+                .UseDbContext<ClinicXContext>()
+                .AuditTypeMapper(t => typeof(AdminX.Models.AuditLog))
+                .AuditEntityAction<AdminX.Models.AuditLog>((ev, entry, audit) =>
+                {
+                    audit.UserId = ev.Environment.UserName;
+                    audit.EventType = ev.EventType;
+                    audit.DateTime = DateTime.UtcNow;
+                    audit.TableName = entry.Table;
+                    audit.Action = entry.Action;
+                    audit.OldValues = entry.ColumnValues.ContainsKey("Old") ? System.Text.Json.JsonSerializer.Serialize(entry.ColumnValues["Old"]) : null;
+                    audit.NewValues = entry.ColumnValues.ContainsKey("New") ? System.Text.Json.JsonSerializer.Serialize(entry.ColumnValues["New"]) : null;
+                    audit.IpAddress = ev.Environment.CustomFields.ContainsKey("IpAddress") ? ev.Environment.CustomFields["IpAddress"]?.ToString() : null;
+                })
+                .IgnoreMatchedProperties(true)
+            )
+        )
+        .When(ev => ev is AuditEventMvcAction,
+            new DynamicAsyncDataProvider(d => d
+                .OnInsert(async ev =>
+                {
+                    using (var scope = app.Services.CreateScope())
+                    {
+                        var ctx = scope.ServiceProvider.GetRequiredService<ClinicXContext>();
+                        var mvcData = ev.GetMvcAuditAction();
+
+                        var log = new AdminX.Models.AuditLog
+                        {
+                            UserId = ev.Environment.UserName ?? "Anonymous",
+                            EventType = ev.EventType,
+                            DateTime = DateTime.UtcNow,
+                            TableName = mvcData.ControllerName,
+                            Action = mvcData.ActionName,
+
+                            NewValues = mvcData.ActionParameters != null
+                                        ? System.Text.Json.JsonSerializer.Serialize(mvcData.ActionParameters)
+                                        : null,
+
+                            IpAddress = ev.Environment.CustomFields.ContainsKey("IpAddress")
+                                        ? ev.Environment.CustomFields["IpAddress"]?.ToString()
+                                        : null
+                        };
+
+                        ctx.AuditLogs.Add(log);
+                        await ctx.SaveChangesAsync();
+                    }
+                })
+            )
+        )
+    );
 
 app.Run();

@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AdminX.Models;
 using ClinicX.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClinicX.Data
 {
@@ -31,5 +32,6 @@ namespace ClinicX.Data
         public DbSet<StaffOptions> StaffOptions { get; set; }
         public DbSet<SocialServicePathway> SocialServicePathway { get; set; }
         public DbSet<ScreeningCoordinator> ScreeningCoordinator { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
     }
 }
