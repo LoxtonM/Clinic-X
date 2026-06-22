@@ -43,11 +43,12 @@
 
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
-                    <label>Date of Birth</label>
+                    <label class="w-100">Date of Birth:</label>
                 </div>
                 <div class="col-md-2">
                     <input id="dobSearch" class="w-100" type="date" name="dob" asp-for=@Model.dobSearch />
                 </div>
+                
                 <div class="col-md-3">
                     <label class="w-100">NHS Number (without spaces):</label>
                 </div>
@@ -58,12 +59,18 @@
 
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
-                    <label>Telephone number:</label>
+                    <label class="w-100">Postcode:</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="pcSearch" class="w-100" type="text" name="postCode" asp-for=@Model.postcodeSearch />
+                </div>
+                <div class="col-md-2">
+                    <label class ="w-100">Telephone number:</label>
                 </div>
                 <div class="col-md-2">
                     <input id="telSearch" class="w-100" type="text" name="telNo" asp-for=@Model.telNoSearch/>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="w-100">Email address:</label>
                 </div>
                 <div class="col-md-2">

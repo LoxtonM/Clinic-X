@@ -15,5 +15,6 @@ namespace ClinicX.ViewModels
         public string staffCode {  get; set; }
         public string telNoSearch { get; set; }
         public string emailSearch { get; set; }
+        public string postcodeSearch { get; set; }
     }
 }

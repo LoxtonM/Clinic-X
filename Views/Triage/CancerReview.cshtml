@@ -151,6 +151,8 @@
     <div class="collapse" id="collapseRiskItems">
         @if (Model.riskList.Count() > 0)
         {
+            <h2>Risk items</h2>
+
             <table class="table">
                 <thead>
                     <tr>
@@ -225,6 +227,60 @@
                 <a type="button" class="btn btn-default btn-success" asp-controller="RiskAndSurveillance" asp-action="AddNewRisk" asp-route-id=@Model.icpCancer.ICPID>Add New Risk</a>
             </div>
         </div>
+
+        @if(Model.surveillanceList.Count() > 0)
+        {
+            <h2>Surveillance Recommended</h2>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Gene Change</th>
+                        <th>Frequency</th>
+                        <th>Start Age</th>
+                        <th>End Age</th>
+                        <th>Recommended By</th>
+                        <th>Site</th>
+                        <th>Hospital</th>
+                        <th>Use in letter</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.surveillanceList)
+                    {
+                        <tr>
+                            <td><a class="btn btn-success" asp-controller="RiskAndSurveillance" asp-action="SurvDetails" asp-route-id=@item.SurvRecID>Select</a></td>
+                            <td>@item.GeneChangeDescription</td>
+                            <td>@item.SurvFreq</td>
+                            <td>@item.SurvStartAge</td>
+                            <td>@item.SurvStopAge</td>
+                            <td>@item.Clinician</td>
+                            <td>@item.SurvSite</td>
+                            <td>@item.SurvRecHoCode</td>
+                            @if (item.UseLetter.GetValueOrDefault())
+                            {
+                                <td><a type="button" class="btn btn-default btn-outline-success" asp-controller="RiskAndSurveillance" asp-action="SetSurvUsingLetter" asp-route-id=@item.SurvRecID asp-route-isUsingLetter="false">Yes</a></td>
+                            }
+                            else
+                            {
+                                <td><a type="button" class="btn btn-default btn-outline-success" asp-controller="RiskAndSurveillance" asp-action="SetSurvUsingLetter" asp-route-id=@item.SurvRecID asp-route-isUsingLetter="true">No</a></td>
+                            }
+                            @if (item.SurvDisc)
+                            {
+                                <td>Discontinued on @item.SurvDiscDate.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
         @if (Model.eligibilityList.Count() > 0)
         {
             <h2>Testing Eligibility</h2>
@@ -356,7 +412,7 @@
                     <label>Free text:</label>
                 </div>
                 <div class="col-md-8">
-                    <textarea rows="8" cols="400" class="w-100" name="freeText1" spellcheck="true"></textarea>
+                    <textarea rows="8" cols="400" class="w-100" name="freeText1" id="txtFreeText" spellcheck="true"></textarea>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -497,7 +553,7 @@
 
         var _url = "";
         _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + "@Model.icpCancer.RefID"
-        + "&user=mnln&referrerCode=" + "@Model.referralDetails.ReferrerCode" + "&isPreview=true";
+        + "&user=mnln&referrerCode=" + "@Model.referralDetails.ReferrerCode" + "&isPreview=true&freeText=" + document.getElementById("txtFreeText").value;
 
         window.open(_url, '_blank').focus();
 

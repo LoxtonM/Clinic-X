@@ -28,7 +28,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob, string? telNo, string? email, bool? isLimitCGUNumber = false)
+        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob, string? telNo, string? email, string? postCode, bool? isLimitCGUNumber = false)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace ClinicX.Controllers
                 string searchTerm = "";
                 _pvm.staffCode = staffCode;
 
-                if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")) || telNo != null || email != null)
+                if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")) || telNo != null || email != null || postCode != null)
                 {
                     _pvm.patientsList = new List<Patient>(); //because null
 
@@ -139,6 +139,20 @@ namespace ClinicX.Controllers
                         }
                         searchTerm = searchTerm + "," + "EmailAddress=" + email;
                         _pvm.emailSearch = email;
+                    }
+
+                    if (postCode != null)
+                    {
+                        if (searchTerm == "")
+                        {
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByPostCode(postCode);
+                        }
+                        else
+                        {
+                            _pvm.patientsList = _pvm.patientsList.Where(p => p.POSTCODE == postCode).ToList();
+                        }
+                        searchTerm = searchTerm + "," + "PostCode=" + postCode;
+                        _pvm.postcodeSearch = postCode;
                     }
 
                     _pvm.patientsList = _pvm.patientsList.OrderBy(p => p.LASTNAME).ThenBy(p => p.FIRSTNAME).ToList();
