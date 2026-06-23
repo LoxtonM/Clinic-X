@@ -882,5 +882,29 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-returnToCons" });
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> TriagedICP(int id)
+        {
+            _ivm.icpGeneral = await _triageData.GetGeneralICPDetailsByICPID(id);
+            _ivm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(id);
+            _ivm.cancerActionsList = await _icpActionData.GetICPCancerActionsList();
+            _ivm.generalActionsList = await _icpActionData.GetICPGeneralActionsList();
+            _ivm.generalActionsList2 = await _icpActionData.GetICPGeneralActionsList2();
+            _ivm.priorityList = await _priorityData.GetPriorityList();
+            var clins = await _staffUser.GetClinicalStaffList();
+            _ivm.GAs = clins.Where(s => s.POSITION == ("Genomics Associate") || s.POSITION == ("Genomic Associate")).ToList();
+            _ivm.GenPs = clins.Where(s => s.POSITION == ("Genomics Practitioner") || s.POSITION == ("Genomics Practitioner")).ToList();
+            _ivm.clinicalFacilityList = await _triageData.GetClinicalFacilitiesList();
+            _ivm.clinicalFacilityList = _ivm.clinicalFacilityList.OrderBy(f => f.NAME).ToList();
+
+            _ivm.icp = await _triageData.GetICPDetails(id);
+            _ivm.referralDetails = await _referralData.GetReferralDetails(_ivm.icp.REFID);
+
+            _ivm.patient = await _patientData.GetPatientDetails(_ivm.icp.MPI);
+
+
+            return View(_ivm);
+        }
     }
 }

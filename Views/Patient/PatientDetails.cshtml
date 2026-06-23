@@ -641,12 +641,15 @@
                                     {
                                         if (i.REFID == r.refid && !r.logicaldelete)
                                         {
-                                            <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@i.ICPID>ICP Details</a></td>
+                                            <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@i.ICPID>View/Triage ICP</a></td>
                                         }
                                     }     
                                     else
                                     {
-                                        <td><button type="button" class="btn btn-success disabled">ICP missing or already triaged</button></td>
+                                        if (i.REFID == r.refid && !r.logicaldelete)
+                                        {
+                                            <td><a type="button" class="btn btn-success" asp-controller="Triage" asp-action="TriagedICP" asp-route-id=@i.ICPID>View ICP</a></td>
+                                        }
                                     }
                                 }
 

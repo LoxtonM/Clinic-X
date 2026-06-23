@@ -1,0 +1,420 @@
+﻿@model ClinicX.ViewModels.ICPVM
+@{
+    ViewData["Title"] = "Clinic-X - ICP Details";
+}
+
+@{
+    ViewData["Title"] = "ClinicX - ICP Details";
+    ViewData["Page"] = "/ Triage / ICP Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Create Quick Contact", "AddNew", "Clinic", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        @*Html.ActionLink("Create New Clinical Note", "Create", "ClinicalNote", new { id=Model.triage.RefID }, new { @class = "btn btn-success m-1" }),*@
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
+        Html.ActionLink("Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
+    };
+}
+
+<div class="container card">
+
+    <h1>ICP Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h1>
+
+    <div class="container">
+        <dl class="row">
+            <dt class="col-sm-6"></dt>
+            <dt class="col-sm-2">
+            </dt>
+            <dt class="col-sm-2">                
+            </dt>
+            <dt class="col-sm-2">
+                
+            </dt>
+
+            <dt class="col-sm-2">
+                Patient name:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.patient.FIRSTNAME) @Html.DisplayFor(model => model.patient.LASTNAME)
+            </dd>
+            <dt class="col-sm-2">
+                NHS Number:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.patient.SOCIAL_SECURITY)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.patient.DOB):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.patient.DOB) <span>&emsp;&emsp;<b>Age:</b> @Model.patientAge years</span> <span>&emsp;&emsp;<b>Gender:</b> @Model.patient.SEX</span>
+            </dd>
+            <dt class="col-sm-2">
+                Address:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.patientAddress)
+            </dd>
+
+            <hr />
+            
+            <dt class="col-sm-2">
+                Referral Consultant:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.referralDetails.LeadClinician)
+            </dd>
+            <dt class="col-sm-2">
+                Referral GC:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.referralDetails.GC)
+            </dd>
+            <dt class="col-sm-2">
+                Admin Contact:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.referralDetails.AdminContact)
+            </dd>
+            <dt class="col-sm-2">
+                Referral Date:
+            </dt>
+            <dd class="col-sm-5">
+                @Html.DisplayFor(model => model.referralDetails.RefDate) @if (Model.referralAgeDays != null)
+                {
+                    <span>&emsp;&emsp;<b>Referral Age:</b> @Model.referralAgeDays days (@Model.referralAgeWeeks weeks)</span>
+                }
+            </dd>
+            
+            
+            @if (Model.breachDate != null) 
+            {
+                <dt class="col-sm-2">
+                    Breach Date:
+                </dt>
+                <dd class="col-sm-3">
+                    @Model.breachDate.ToString("dd/MM/yyyy")
+                </dd>
+            }
+            <dt class="col-sm-2">
+                Pathway:
+            </dt>
+            <dd class="col-sm-10" id="referralPathway">
+                @Html.DisplayFor(model => model.referralDetails.PATHWAY)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.patient.CGU_No)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.patient.CGU_No)
+            </dd>
+            <dt class="col-sm-2">
+                Referred By:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.referralDetails.ReferringClinician) - @Html.DisplayFor(model => model.referralDetails.ReferringFacility)
+            </dd>
+            <dt class="col-sm-2">
+                Indication:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.referralDetails.INDICATION)
+            </dd>
+        </dl>        
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <b>Indication Notes:</b>
+                </div>
+                <div class="col-md-4">                    
+                    <textarea id="txtIndicationNotes" rows="5" cols="40" asp-for=@Model.referralDetails.REASON_FOR_REFERRAL name="indicationNotes" disabled></textarea>
+                </div>
+                <div class="col-md-2">
+                </div>
+            </div>   
+            
+    </div>
+
+
+    <div class="row mb-5 g-5">
+        @if (Model.isPhenotipsAvailable)
+        {
+            if (Model.isPatientInPhenotips)
+            {
+                <div class="row mb-1 g-1">
+                    <div class="col-md-2"></div>
+                    @if (Model.referralDetails.PATHWAY.Contains("Cancer"))
+                    {
+                        @if (!Model.isCancerPPQScheduled)
+                        {
+                            <div class="col-md-4">
+                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        if (!Model.isGeneralPPQScheduled)
+                        {
+                            <div class="col-md-4">
+                                <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Schedule General PPQ</a>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="row mb-5 g-5">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI asp-route-callingForm="ICP" asp-route-returnVariable=@Model.triage.ICPID>Create Phenotips Record</a> <span class="redtext"> - this will push the patient directly into Phenotips (one-click process)</span>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+
+    
+    @if(Model.icpGeneral != null)    
+    {
+        <div class="row">
+            <div class="col-md-2">
+                <label>Treatment Pathway:</label>
+            </div>
+            <div class="col-md-5">
+                <select id="ddlTreatPath1" asp-for=@Model.triage.TreatPath disabled>
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.generalActionsList)
+                    {
+                        <option value=@item.ID>@item.Action</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Waiting List Priority</label>
+            </div>
+            <div class="col-md-2">
+                <select id="ddlPriority" disabled >
+                    @foreach (var item in Model.priorityList)
+                    {
+                        <option value=@item.PriorityLevel>@item.CLASS - @item.DESCRIPTION</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <select id="ddlTreatPath2-Clinic" asp-for=@Model.triage.TreatPath2 disabled>
+                    <option value="" selected>Select...</option>
+                    @foreach (var item in Model.generalActionsList2)
+                    {
+                        if (item.Clinic == true)
+                        {
+                            <option value=@item.ID>@item.Action</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <select id="ddlTreatPath2-NoClinic" asp-for=@Model.triage.TreatPath2 disabled>
+                    <option value="" selected>Select...</option>
+                    @foreach (var item in Model.generalActionsList2)
+                    {
+                        if (item.Clinic == false)
+                        {
+                            <option value=@item.ID>@item.Action</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row mb-2 g-2" id="clicsActions" hidden>
+            
+            <div class="col-md-2">Request photos</div>
+            <div class="col-md-2">
+                <select name="requestPhotos" id="ddlRequestPhotos">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="col-md-2">Request development form</div>
+            <div class="col-md-2">
+                <select name="requestDevForm" id="ddlRequestDevForm">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+        </div>
+
+        
+
+        <div id="WaitingListDetails">
+            <div class="row mb-5 g-5">
+                <h5 id="lblWaitingList">Waiting list details:</h5>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-4">
+                    <label for="ddlGa" id="lblGa">Genomics Associate:</label>
+                </div>
+                <div class="col-md-4">
+                    <select id="ddlGa" name="ga">
+                        <option value="" selected></option>
+                        @foreach (var c in Model.GAs)
+                        {
+                            <option value=@c.STAFF_CODE>@c.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-4">
+                    <label for="ddlGenP" id="lblGenP">Genomics Practitioner:</label>
+                </div>
+                <div class="col-md-4">
+                    <select id="ddlGenP" name="genp">
+                        <option value="" selected></option>
+                        @foreach (var c in Model.GenPs)
+                        {
+                            <option value=@c.STAFF_CODE>@c.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label for="ddlFacility" id="lblFacility">Clinic:</label>
+                </div>
+
+                <div class="col-md-6">
+                    <select id="ddlFacility" name="facility">
+                        <option value="" selected></option>
+                        @foreach (var f in Model.clinicalFacilityList)
+                        {
+                            <option value=@f.FACILITY>@f.FACILITY - @f.NAME</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div class="row mb-5 g-5">
+
+                <div class="col-md-2">
+                    <label for="ddlIsSPR" id="lblIsSPR">Suitable for SpR:</label>
+                </div>
+                <div class="col-md-2">
+                    <select id="ddlIsSPR" name="isSPR">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="ddlIsChild" id="lblIsChild">Is child required:</label>
+                </div>
+
+                <div class="col-md-2">
+                    <select id="ddlIsChild" name="isChild" asp-for=@Model.isChild>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label for="txtComment" id="lblComment">Comments:</label>
+                </div>
+                <div class="col-md-5">
+                    <textarea rows="5" cols="40" id="txtComment" name="comment"></textarea>
+                </div>
+                <div class="col-md-2">
+                    <label for="txtDuration" id="lblDuration">Duration:</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="txtDuration" name="duration" value="45" disabled />
+                </div>
+
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <button type="button" id="btnGeneralTriage" class="btn btn-default btn-outline-success">Complete Triage</button>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    
+        <div id="metadata-cancer" hidden>
+            <input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <label>Action on Referral Letter</label>
+            </div>
+            <div class="col-md-10">
+                <select id="ddlCancerAction" name=action>
+                    @foreach (var item in @Model.cancerActionsList)
+                    {
+                        <option value=@item.ID>@item.Action</option>
+                    }
+                </select>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    }
+
+    @if (Model.icpCancer != null)
+    {
+        <div class="row mb-5 g-5">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    }
+           
+
+        
+
+
+</div>
+
+
+
+@if (Model.staffOptions != null) //because otherwise it throws a fit if it's null!
+{
+    <script>
+        window.addEventListener("load", AutoLoadEDMS);
+
+        function AutoLoadEDMS()
+        {
+            if (@(Model.staffOptions != null ? "true" : "false"))
+            {
+                if ("@Model.staffOptions.Automated_GEMR_Open" === "true") //automated GEMR open if true
+                {
+                    if ("@Model.patient.Patient_Dctm_Sts" == 5)
+                    {
+                        window.open("@Model.edmsLink" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie");
+                    }
+                }
+            }
+        }
+    </script>
+}
