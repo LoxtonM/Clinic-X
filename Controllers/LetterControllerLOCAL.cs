@@ -399,12 +399,12 @@ namespace ClinicalXPDataConnections.Meta
                         address = patAddress;
                     }
                 }
-                else if (_lvm.documentsContent.LetterTo == "RD")
+                else if (_lvm.documentsContent.LetterTo == "RD" && !_lvm.documentsContent.DocCode.Contains("O4"))
                 {
-                    if (!_lvm.documentsContent.DocCode.Contains("O4")) //because somebody hard-coded this overriding feature in CGU_DB                    
-                    {
+                    //if () //because somebody hard-coded this overriding feature in CGU_DB                    
+                    //{
                         address = _add.GetAddress("RD", refID);
-                    }
+                    //}
                 }
                 else if (_lvm.documentsContent.LetterTo == "GP")
                 {
@@ -1093,11 +1093,31 @@ namespace ClinicalXPDataConnections.Meta
                 //O4
                 if (docCode == "O4")
                 {
-                    List<Risk> _riskList = new List<Risk>();
-                    RiskData _rData = new RiskData(_clinContext);
+
+                    Table tableo4 = section.AddTable();
+                    Column contentPatAddress = tableo4.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = tableo4.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Center;
+                    Column contentPatNHS = tableo4.AddColumn();
+                    contentPatNHS.Format.Alignment = ParagraphAlignment.Right;
+                    tableo4.Rows.Height = 50;
+                    tableo4.Columns.Width = 150;
+                    Row row1_1 = tableo4.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
+                    row1_1.Cells[1].AddParagraph(patDOB.ToString("dd/MM/yyyy"));
+                    row1_1.Cells[2].AddParagraph("NHS number: " + patNHSNo);
+                    spacer = section.AddParagraph();
+
+                    List<PatientRisk> _riskList = new List<PatientRisk>();
+                    List<Surveillance> _survList = new List<Surveillance>();
+                    RiskDataAsync _rData = new RiskDataAsync(_clinContext);
                     Surveillance _surv = new Surveillance();
-                    SurveillanceData _survData = new SurveillanceData(_clinContext);
-                    _riskList = _rData.GetRiskListByRefID(refID);
+                    SurveillanceDataAsync _survData = new SurveillanceDataAsync(_clinContext);
+                    _riskList = await _rData.GetPatientRiskList(refID);
+                    
 
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para7;
@@ -1127,49 +1147,78 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     foreach (var item in _riskList)
                     {
-                        string riskText = item.SurvSite + " cancer risk category:";
+                        if (item.IncludeLetter != 0)
+                        {
+                            string riskText = item.SurvSite + " cancer risk category:";
 
-                        Table riskTable = section.AddTable();
-                        Column riskCol1 = riskTable.AddColumn();
-                        riskCol1.Width = 180;
-                        Column riskCol2 = riskTable.AddColumn();
-                        Column riskCol3 = riskTable.AddColumn();
-                        riskCol3.Width = 150;
-                        Column riskCol4 = riskTable.AddColumn();
-                        Row riskRow1 = riskTable.AddRow();
-                        Row riskRow2 = riskTable.AddRow();
-                        Row riskRow3 = riskTable.AddRow();
-                        riskRow1.Cells[0].AddParagraph().AddFormattedText(riskText, TextFormat.Bold);
-                        riskRow1.Cells[1].AddParagraph().AddFormattedText(item.RiskName, TextFormat.Bold).Color = Colors.Red;
-                        riskRow1.Cells[2].AddParagraph().AddFormattedText("Lifetime risk (%):", TextFormat.Bold);
-                        riskRow1.Cells[3].AddParagraph().AddFormattedText(item.LifetimeRiskPercentage.ToString(), TextFormat.Bold).Color = Colors.Red;
-                        riskRow2.Cells[0].AddParagraph().AddFormattedText("10 year risk age 30-40 (%):", TextFormat.Bold);
-                        riskRow2.Cells[1].AddParagraph().AddFormattedText(item.R30_40.ToString(), TextFormat.Bold).Color = Colors.Red;
-                        riskRow2.Cells[2].AddParagraph().AddFormattedText("10 year risk age 50-60 (%):", TextFormat.Bold);
-                        riskRow2.Cells[3].AddParagraph().AddFormattedText(item.R50_60.ToString(), TextFormat.Bold).Color = Colors.Red;
-                        riskRow3.Cells[0].AddParagraph().AddFormattedText("10 year risk age 40-50 (%):", TextFormat.Bold);
-                        riskRow3.Cells[1].AddParagraph().AddFormattedText(item.R40_50.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            Table riskTable = section.AddTable();
+                            Column riskCol1 = riskTable.AddColumn();
+                            riskCol1.Width = 180;
+                            Column riskCol2 = riskTable.AddColumn();
+                            Column riskCol3 = riskTable.AddColumn();
+                            riskCol3.Width = 150;
+                            Column riskCol4 = riskTable.AddColumn();
+                            Row riskRow1 = riskTable.AddRow();
+                            Row riskRow2 = riskTable.AddRow();
+                            Row riskRow3 = riskTable.AddRow();
+                            riskRow1.Cells[0].AddParagraph().AddFormattedText(riskText, TextFormat.Bold);
+                            riskRow1.Cells[1].AddParagraph().AddFormattedText(item.RiskName, TextFormat.Bold).Color = Colors.Red;
+                            riskRow1.Cells[2].AddParagraph().AddFormattedText("Lifetime risk (%):", TextFormat.Bold);
+                            riskRow1.Cells[3].AddParagraph().AddFormattedText(item.LifetimeRiskPercentage.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            if (item.R30_40 != null)
+                            {
+                                riskRow2.Cells[0].AddParagraph().AddFormattedText("10 year risk age 30-40 (%):", TextFormat.Bold);
+                                riskRow2.Cells[1].AddParagraph().AddFormattedText(item.R30_40.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            }
+                            if (item.R50_60 != null)
+                            {
+                                riskRow2.Cells[2].AddParagraph().AddFormattedText("10 year risk age 50-60 (%):", TextFormat.Bold);
+                                riskRow2.Cells[3].AddParagraph().AddFormattedText(item.R50_60.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            }
+                            if (item.R40_50 != null)
+                            {
+                                riskRow3.Cells[0].AddParagraph().AddFormattedText("10 year risk age 40-50 (%):", TextFormat.Bold);
+                                riskRow3.Cells[1].AddParagraph().AddFormattedText(item.R40_50.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            }
+                        }
 
+                        var survs = await _survData.GetSurveillanceListByRiskID(item.RiskID);
+                        foreach (var srv in survs)
+                        {
+                            _survList.Add(srv);
+                        }
                     }
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    foreach (var item in _riskList)
-                    {
-                        _surv = _survData.GetSurvDetails(item.RiskID);
-                        string contentSurv = item.SurvSite + " surveillance ";
-                        if (item.SurvType != null)
-                        {
-                            contentSurv += " by " + item.SurvType;
-                        }
-                        contentSurv += " - " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
 
-                        if (item.SurvStopAge != null)
-                        {
-                            contentSurv = contentSurv + " to " + item.SurvStopAge.ToString();
+
+
+                    foreach (var item in _survList)
+                    {
+                        if (item != null)
+                        {                            
+                            if (item.UseLetter.GetValueOrDefault())
+                            {
+                                if (item.SurvSite != null && item.SurvFreq != null)
+                                {
+                                    string contentSurv = item.SurvSite + " surveillance ";
+                                    if (item.SurvType != null)
+                                    {
+                                        contentSurv += " by " + item.SurvType;
+                                    }
+                                    contentSurv += " - " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
+
+                                    if (item.SurvStopAge != null)
+                                    {
+                                        contentSurv = contentSurv + " to " + item.SurvStopAge.ToString();
+                                    }
+                                    Paragraph letterContent3 = section.AddParagraph();
+                                    letterContent3.AddFormattedText(contentSurv, TextFormat.Bold);
+                                }
+                            }
                         }
-                        Paragraph letterContent3 = section.AddParagraph();
-                        letterContent3.AddFormattedText(contentSurv, TextFormat.Bold);
+                       
                     }
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content3);
@@ -1882,7 +1931,10 @@ namespace ClinicalXPDataConnections.Meta
 
                 //tf.DrawString("Letter code: " + docCode, font, XBrushes.Black, new XRect(400, 800, 500, 20));
                 spacer = section.AddParagraph();
-                sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                if (sigFilename == null || sigFilename == "")
+                {
+                    sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                }
 
                 if (docCode != "DT15")
                 {

@@ -219,43 +219,49 @@ namespace ClinicX.Controllers
         {
             try
             {
-                DateTime dDateDictated = new DateTime();
+                _lvm.dictatedLetters = await _dictatedLetterData.GetDictatedLetterDetails(dID); //so all this is necessary because it's wiping all the disabled fields!!!
 
-                if (dateDictated != null) { dDateDictated = DateTime.Parse(dateDictated); }
-                else { dDateDictated = DateTime.Parse("1900-01-01"); } //set a default if no value
-
-                if (enclosures == null) { enclosures = ""; } //more potential nulls that have to be set to default values
-                if (letterContentBold == null) { letterContentBold = ""; }
-                if (letterContent == null) { letterContent = ""; }
-
-                //trial - see if partial edits can work
-
-                if (status == null) { status = ""; }
-                if (secTeam == null) { secTeam = ""; }
-                if (consultant == null) { consultant = ""; }
-                if (gc == null) { gc = ""; }
-                if (salutation == null) { salutation = ""; }
-                if (letterFromCode == null) { letterFromCode = ""; }
-                if (letterToCode == null) { letterToCode = ""; }
-                if (isClockStop == null) { isClockStop = false; }                
-
-                //two updates required - one to update the addressee (if addressee has changed)
-                if (isAddresseeChanged)
+                if (_lvm.dictatedLetters.Status != "For Printing") //we have to stop it from updating everything if it's previewed when approved.
                 {
-                    int success2 = await _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, salutation, letterToCode, letterFromCode, letterTo, User.Identity.Name, 
-                        null, null, false, false, 0,0,0, letterRe);
 
-                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
-                }
+                    DateTime dDateDictated = new DateTime();
 
-                int success = await _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, isClockStop, false, 0, 0, 0, 
-                    secTeam, consultant, gc, 0,0,0,0,0, comments, salutation, letterRe);
+                    if (dateDictated != null) { dDateDictated = DateTime.Parse(dateDictated); }
+                    else { dDateDictated = DateTime.Parse("1900-01-01"); } //set a default if no value
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
+                    if (enclosures == null) { enclosures = ""; } //more potential nulls that have to be set to default values
+                    if (letterContentBold == null) { letterContentBold = ""; }
+                    if (letterContent == null) { letterContent = ""; }
 
-                if(ccAddress != null)
-                {
-                    return RedirectToAction("AddCCToDOT", new { dID = dID, cc = ccAddress });
+                    //trial - see if partial edits can work
+
+                    if (status == null) { status = ""; }
+                    if (secTeam == null) { secTeam = ""; }
+                    if (consultant == null) { consultant = ""; }
+                    if (gc == null) { gc = ""; }
+                    if (salutation == null) { salutation = ""; }
+                    if (letterFromCode == null) { letterFromCode = ""; }
+                    if (letterToCode == null) { letterToCode = ""; }
+                    if (isClockStop == null) { isClockStop = false; }
+
+                    //two updates required - one to update the addressee (if addressee has changed)
+                    if (isAddresseeChanged)
+                    {
+                        int success2 = await _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, salutation, letterToCode, letterFromCode, letterTo, User.Identity.Name,
+                            null, null, false, false, 0, 0, 0, letterRe);
+
+                        if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
+                    }
+
+                    int success = await _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, isClockStop, false, 0, 0, 0,
+                        secTeam, consultant, gc, 0, 0, 0, 0, 0, comments, salutation, letterRe);
+
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
+
+                    if (ccAddress != null)
+                    {
+                        return RedirectToAction("AddCCToDOT", new { dID = dID, cc = ccAddress });
+                    }
                 }
 
                 if(doPreview.GetValueOrDefault())

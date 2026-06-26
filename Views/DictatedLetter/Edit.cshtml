@@ -217,7 +217,7 @@
             </div>
 
             <div class="row mb-5">
-                <div class="col-md-1 text-right">Secreterial Team:</div>
+                <div class="col-md-1 text-right">Secretarial Team:</div>
                 <div class="col-md-2">
                     <select class="w-100" id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="secTeam">
                         <option value="">Select...</option>
@@ -561,7 +561,7 @@
             document.getElementById("btnEDMS").hidden = true;
         }        
     }
-
+    
     function LoadLetter() 
     {        
         if (document.getElementById("ddlLetterStatus").value == "For Approval") //enable/disable fields if approved or not
@@ -579,6 +579,13 @@
             document.getElementById("ddlLetterTo").disabled = true;
             document.getElementById("ddlLetterFrom").disabled = true;
             document.getElementById("letterText").contentEditable = false;
+            document.getElementById("txtLetterRe").disabled = true;
+            document.getElementById("txtSalutation").disabled = true;
+            document.getElementById("ddlSecTeam").disabled = true;
+            document.getElementById("ddlConsultant").disabled = true;
+            document.getElementById("ddlGC").disabled = true;
+            document.getElementById("txtDateDictated").disabled = true;
+            document.getElementById("txtEnclosures").disabled = true;            
         }
         else
         {
@@ -1180,7 +1187,7 @@
         }
         if (document.getElementById("ddlSecTeam").value == "") 
         {
-            window.alert("Please select a secreterial team.")
+            window.alert("Please select a secretarial team.")
             return 0;
         }
         if (document.getElementById("ddlConsultant").value == "") 
@@ -1207,23 +1214,7 @@
         {
             window.alert("Please specify a dictated date.")
             return 0;
-        }
-
-        /*
-        if(document.getElementById("lblLetterRe").innerHTML.match("add patients via the"))
-        {
-            window.alert("Please specify a patient.");
-            return 0;
-        } 
-        */
-
-       /*
-       if(document.getElementById("txtLetterRe").value = "")
-       {
-           window.alert("Please specify a patient.");
-            return 0;
-       }
-       */
+        }        
 
         return 1;
     }
