@@ -119,20 +119,7 @@
             </div>
         </div>
 
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Free text:</label>
-            </div>
-            <div class="col-md-4">
-                <textarea name="additionalText" id="txtFreeText" cols="40" rows="5"></textarea>
-            </div>
-            <div class="col-md-2">
-                <label>Enclosures (please separate by comma)</label>
-            </div>
-            <div class="col-md-4">
-                <textarea name="enclosures" id="txtEnclosures" cols="40" rows="5"></textarea>
-            </div>
-        </div>
+        
 
         <div class="row mb-5 g-5" hidden id="divExtClinician">
             <div class="col-md-2">
@@ -143,55 +130,55 @@
                     <option value="">Select ...</option>
                     @if (Model.patGP != null)
                     {
-                        <option value=@Model.patGP.MasterClinicianCode>@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME - GP</option>
+                        <option value=@Model.patGP.MasterClinicianCode>GP - @Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME</option>
                     }
                     @foreach (var item in Model.screeningCoordinatorList)
                     {
-                        <option value=@item.MasterClinicianCode>@item.Contact - @item.FacilityName</option>
+                        <option value=@item.MasterClinicianCode>@item.FacilityName - @item.Contact</option>
                     }
                 </select>
                 <select id="ddlGeneticsCentre" hidden onchange=SetOtherClinician("genetics")>
                     <option value="">Select ...</option>
                     @if (Model.patGP != null)
                     {
-                        <option value=@Model.patGP.MasterClinicianCode>@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME - GP</option>
+                        <option value=@Model.patGP.MasterClinicianCode>GP - @Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME</option>
                     }
                     @foreach (var item in Model.geneticsList)
                     {
-                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                        <option value=@item.MasterClinicianCode>@item.FACILITY - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
                     }
                 </select>
                 <select id="ddlHistoList" hidden onchange=SetOtherClinician("histo")>
                     <option value="">Select ...</option>
                     @if(Model.patGP != null)
                     {
-                        <option value=@Model.patGP.MasterClinicianCode>@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME - GP</option>
+                        <option value=@Model.patGP.MasterClinicianCode>GP - @Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME</option>
                     }
                     @foreach (var item in Model.histoList)
                     {
-                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                        <option value=@item.MasterClinicianCode>@item.FACILITY - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
                     }
                 </select>
                 <select id="ddlBreastList" hidden onchange=SetOtherClinician("breast")>
                     <option value="">Select ...</option>
                     @if (Model.patGP != null)
                     {
-                        <option value=@Model.patGP.MasterClinicianCode>@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME - GP</option>
+                        <option value=@Model.patGP.MasterClinicianCode>GP - @Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME</option>
                     }
                     @foreach (var item in Model.breastList)
                     {
-                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                        <option value=@item.MasterClinicianCode>@item.FACILITY - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
                     }
                 </select>
                 <select id="ddlAllHospitals" hidden onchange=SetOtherClinician("all")>
                     <option value="">Select ...</option>
                     @if (Model.patGP != null)
                     {
-                        <option value=@Model.patGP.MasterClinicianCode>@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME - GP</option>
+                        <option value=@Model.patGP.MasterClinicianCode>GP - @Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME</option>
                     }
                     @foreach (var item in Model.externalClinicians)
                     {
-                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                        <option value=@item.MasterClinicianCode>@item.FACILITY - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
                     }
                 </select>
                 <input id="txtRecipient" name="otherClinician" hidden /> @*because we can't have multiple "name=" fields and just use the one that's not hidden! That would be too simple.*@
@@ -206,7 +193,37 @@
                 <input type="text" id="txtSiteText" name="siteText" />
             </div>
         </div>
+        <div class="row mb-5 g-5" hidden id="divGermline">
+            <div class="col-md-2">
+                <label>Germline Analysis:</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" id="txtGermline" name="freeText1" />
+            </div>
+        </div>
+        <div class="row mb-5 g-5" hidden id="divSomatic">
+            <div class="col-md-2">
+                <label>Somatic Analysis:</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" id="txtSomatic" name="freeText2" />
+            </div>
+        </div>
 
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Free text:</label>
+            </div>
+            <div class="col-md-4">
+                <textarea name="additionalText" id="txtFreeText" cols="40" rows="5"></textarea>
+            </div>
+            <div class="col-md-2">
+                <label>Enclosures (please separate by comma)</label>
+            </div>
+            <div class="col-md-4">
+                <textarea name="enclosures" id="txtEnclosures" cols="40" rows="5"></textarea>
+            </div>
+        </div>
 
 
         <div class="row mb-5 g-5">
@@ -342,6 +359,8 @@
         var cancerStuff = document.getElementById("divCancerStuff");
 
         cancerStuff.hidden = true;
+        document.getElementById("divGermline").hidden = true;
+        document.getElementById("divSomatic").hidden = true;
 
         //var clinList = document.getElementById("ddlExtClinician");
         var screeningCoordinator = document.getElementById("ddlScreeningCoordinator");
@@ -445,9 +464,10 @@
         if(docCode == "DT11" || docCode == "DT11e" || docCode == "DT12" || docCode == "DT12e" || docCode == "DT13" || docCode == "DT14" || docCode == "DT15" || docCode == "DT16")
         {
             cancerStuff.hidden = false;
-            if(docCode == "DT15" || docCode == "DT16")
+            if(docCode == "DT15")
             {
-                //more stuff
+                document.getElementById("divGermline").hidden = false;
+                document.getElementById("divSomatic").hidden = false;
             }
         }        
         
@@ -538,7 +558,8 @@
         {
             _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + _refID
             + "&user=mnln&referrerCode=" + _referrerCode + "&isPreview=true&recipient=" + document.getElementById("txtRecipient").value + "&freeText=" + document.getElementById("txtFreeText").value + 
-            "&enclosures=" + document.getElementById("txtEnclosures").value + "&siteText=" + document.getElementById("txtSiteText").value + "&relID=" + document.getElementById("ddlRelative").value;
+            "&enclosures=" + document.getElementById("txtEnclosures").value + "&siteText=" + document.getElementById("txtSiteText").value + "&relID=" + document.getElementById("ddlRelative").value + 
+            "&freeText1=" + document.getElementById("txtGermline").value + "&freeText2=" + document.getElementById("txtSomatic").value;
         }       
 
         window.open(_url, '_blank').focus();

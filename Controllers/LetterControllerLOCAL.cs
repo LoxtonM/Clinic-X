@@ -1488,7 +1488,7 @@ namespace ClinicalXPDataConnections.Meta
                     contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
                     Column contentPatDOB = table1.AddColumn();
                     contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
-                    table1.Rows.Height = 50;
+                    table1.Rows.Height = 20;
                     table1.Columns.Width = 150;
                     contentRe.Width = 20;
                     Row row1_1 = table1.AddRow();
@@ -1544,7 +1544,7 @@ namespace ClinicalXPDataConnections.Meta
                     contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
                     Column contentPatDOB = table1.AddColumn();
                     contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
-                    table1.Rows.Height = 50;
+                    table1.Rows.Height = 20;
                     table1.Columns.Width = 150;
                     contentRe.Width = 20;
                     Row row1_1 = table1.AddRow();
@@ -1596,7 +1596,7 @@ namespace ClinicalXPDataConnections.Meta
                     contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
                     Column contentPatDOB = table1.AddColumn();
                     contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
-                    table1.Rows.Height = 50;
+                    table1.Rows.Height = 20;
                     table1.Columns.Width = 150;
                     contentRe.Width = 20;
                     Row row1_1 = table1.AddRow();
@@ -1650,7 +1650,7 @@ namespace ClinicalXPDataConnections.Meta
                     contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
                     Column contentPatDOB = table1.AddColumn();
                     contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
-                    table1.Rows.Height = 50;
+                    table1.Rows.Height = 20;
                     table1.Columns.Width = 150;
                     contentRe.Width = 20;
                     Row row1_1 = table1.AddRow();
@@ -1736,11 +1736,30 @@ namespace ClinicalXPDataConnections.Meta
                     string somatic = freeText2;
                     string furtherDetails = additionalText;
 
-                    Paragraph letterContentPatName = section.AddParagraph();
-                    letterContentPatName.AddFormattedText("Re: " + patName + "\t CGUno: " + _lvm.patient.CGU_No, TextFormat.Bold);
+                    Table table1 = section.AddTable();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = table1.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table1.Rows.Height = 20;
+                    table1.Columns.Width = 150;
+                    contentRe.Width = 20;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re:");
+                    if (relID == 0)
+                    {
+                        row1_1.Cells[1].AddParagraph(patName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
+                    }
+                    else
+                    {
+                        row1_1.Cells[1].AddParagraph(relName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + relDOB);
+                    }
 
-                    Paragraph letterContentPatDOB = section.AddParagraph();
-                    letterContentPatDOB.AddFormattedText("Date of birth: " + patDOB.ToString("dd/MM/yyyy") + "\t NHS number: " + _lvm.patient.SOCIAL_SECURITY, TextFormat.Bold);
                     spacer = section.AddParagraph();
                     string titleText = "Request for formalin-fixed paraffin embedded (FFPE) tissue to enable genetic tissue";
                     Paragraph letterTitle = section.AddParagraph();
@@ -1853,11 +1872,61 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                 }
 
+                //DT16
+                if (docCode == "DT16")
+                {
+                    pageCount = 2;
+                    string germline = freeText1;
+                    string somatic = freeText2;
+                    string furtherDetails = additionalText;
+
+                    Table table1 = section.AddTable();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = table1.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table1.Rows.Height = 20;
+                    table1.Columns.Width = 150;
+                    contentRe.Width = 20;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re:");
+                    if (relID == 0)
+                    {
+                        row1_1.Cells[1].AddParagraph(patName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
+                    }
+                    else
+                    {
+                        row1_1.Cells[1].AddParagraph(relName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + relDOB);
+                    }
+
+                    spacer = section.AddParagraph();                                        
+                    content1 = _lvm.documentsContent.Para1;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph();
+                    letterContent3.AddFormattedText(_lvm.documentsContent.Para10, TextFormat.Bold);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para8);
+                    spacer = section.AddParagraph();
+
+
+                }
+
                 //PC01
                 if (docCode == "PC01")
                 {
-                    string relDets = "Re: Affected relative's details" + patName + "  Date of birth: " + patDOB.ToString("dd/MM/yyyy");
-                    string patDets = "Our patient's details:" + _lvm.patient.Title + " " + _lvm.patient.FIRSTNAME + " " + _lvm.patient.LASTNAME +
+                    string relDets = "Re: Affected relative's details: " + patName + "  Date of birth: " + patDOB.ToString("dd/MM/yyyy");
+                    string patDets = "Our patient's details: " + _lvm.patient.Title + " " + _lvm.patient.FIRSTNAME + " " + _lvm.patient.LASTNAME +
                         " Date of birth: " + _lvm.patient.DOB.Value.ToString("dd/MM/yyyy");
 
                     Paragraph letterContentRelDets = section.AddParagraph(relDets);
@@ -1870,7 +1939,12 @@ namespace ClinicalXPDataConnections.Meta
                     content2 = _lvm.documentsContent.Para10;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(content3);
+                    content3 = _lvm.documentsContent.Para5;
+                    Paragraph letterContent3 = section.AddParagraph();
+                    letterContent3.AddFormattedText(content3, TextFormat.Bold);
+                    spacer = section.AddParagraph();
+                    content4 = _lvm.documentsContent.Para3;
+                    Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
                 }
 
