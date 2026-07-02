@@ -235,7 +235,7 @@ namespace ClinicX.Controllers
         
         [HttpPost]
         public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, 
-            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm, string? ga, string? genp, int? closeReferral, string? indicationNotes)
+            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm, string? ga, string? genp, bool? closeReferral, bool? stopClock, string? indicationNotes)
         {
             try
             {
@@ -372,9 +372,16 @@ namespace ClinicX.Controllers
                     _lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer);
                 }
 
-                if(closeReferral == 1)
+                if(closeReferral.GetValueOrDefault())
                 {
                     int success3 = await _crud.CallStoredProcedure("Referral", "Close", refID,0,0,"","","","",User.Identity.Name, null,null,false,false);
+
+                    if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-closeReferral(SQL)" }); }
+                }
+
+                if (stopClock.GetValueOrDefault())
+                {
+                    int success3 = await _crud.CallStoredProcedure("Referral", "Stop Clock", refID, 0, 0, "", "", "", "", User.Identity.Name, null, null, false, false);
 
                     if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-closeReferral(SQL)" }); }
                 }

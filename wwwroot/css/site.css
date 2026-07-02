@@ -43,3 +43,10 @@ body {
 .bodyStyle {
     font-size: 14px;
 }
+
+.choices__list--dropdown{
+    min-width: 100% !important;
+    width: max-content !important;
+    max-width: 450px !important;
+    white-space: nowrap !important;
+}

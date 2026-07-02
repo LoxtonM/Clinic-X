@@ -28,6 +28,8 @@
             </select>
         </div>
     </div>
+
+    
     
 
     <div class="row mb-5 g-5">
@@ -36,7 +38,7 @@
                 <option value="">Select Group</option>
                 <option value="Standard">Standard</option>
                 <option value="MEDREC">Medical Records Requests</option>
-                <option value="DNATS">DNA</option>
+                <option value="DNATS">DNA/Screening Requests</option>
                 <option value="Outcome">Outcome</option>
                 <option value="Reports">Reports</option>
                 <option value="Other">Other</option>
@@ -46,6 +48,10 @@
 
     
     <form id="frmDoLetter" asp-action="DoLetter">
+
+        
+
+
         <div class="row mb-5 g-5">
             <input name="refID" id="txtRefID" asp-for=@Model.referral.refid hidden />
             <input id="txtReferrerCode" asp-for=@Model.referral.ReferrerCode hidden />
@@ -89,10 +95,25 @@
                     }
                 </select>
                 <select name="docID" id="docGroupOther" hidden>
-                    <option value="" selected>Select</option>
+                    <option value="" selected>Select...</option>
                     @foreach (var item in Model.docsListOther)
                     {
                         <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5" id="divRelatives">
+            <div class="col-md-2">
+                <label>Relative: (leave blank to use proband)</label>
+            </div>
+            <div class="col-md-4">
+                <select id="ddlRelative">
+                    <option value=0 selected>Select...</option>
+                    @foreach (var item in Model.relativeList)
+                    {
+                        <option value=@item.relsid>@item.RelForename1 @item.RelSurname</option>
                     }
                 </select>
             </div>
@@ -106,7 +127,7 @@
                 <textarea name="additionalText" id="txtFreeText" cols="40" rows="5"></textarea>
             </div>
             <div class="col-md-2">
-                <label>Enclosures</label>
+                <label>Enclosures (please separate by comma)</label>
             </div>
             <div class="col-md-4">
                 <textarea name="enclosures" id="txtEnclosures" cols="40" rows="5"></textarea>
@@ -174,6 +195,15 @@
                     }
                 </select>
                 <input id="txtRecipient" name="otherClinician" hidden /> @*because we can't have multiple "name=" fields and just use the one that's not hidden! That would be too simple.*@
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5" hidden id="divCancerStuff">
+            <div class="col-md-2">
+                <label>Site:</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" id="txtSiteText" name="siteText" />
             </div>
         </div>
 
@@ -309,6 +339,9 @@
         var outcomeLetters = document.getElementById("docGroupOutcome");
         var reports = document.getElementById("docGroupReports");
         var otherLetters = document.getElementById("docGroupOther");
+        var cancerStuff = document.getElementById("divCancerStuff");
+
+        cancerStuff.hidden = true;
 
         //var clinList = document.getElementById("ddlExtClinician");
         var screeningCoordinator = document.getElementById("ddlScreeningCoordinator");
@@ -408,23 +441,35 @@
                     document.getElementById("divExtClinician").hidden = true;
             }
         }
-        /*
-        if(recip == "Other")
+
+        if(docCode == "DT11" || docCode == "DT11e" || docCode == "DT12" || docCode == "DT12e" || docCode == "DT13" || docCode == "DT14" || docCode == "DT15" || docCode == "DT16")
         {
-            if(docCode == "PC01")
+            cancerStuff.hidden = false;
+            if(docCode == "DT15" || docCode == "DT16")
             {
-                document.getElementById("divExtClinician").hidden = false;
-                geneticsCentre.hidden = false;
+                //more stuff
             }
-        }
-        */
+        }        
+        
+       ClearLeaflets();
+       document.getElementById("txtFreeText").value = "";
     }
 
     function DoPreview()
     {
-        if(document.getElementById("txtDocCode").value == "")
+        var _docCode = document.getElementById("txtDocCode").value;
+
+        if(_docCode == "")
         {
             window.alert("No document selected");
+            return;
+        }
+
+        if((document.getElementById("ddlScreeningCoordinator").hidden == false || document.getElementById("ddlGeneticsCentre").hidden == false ||
+        document.getElementById("ddlHistoList").hidden == false || document.getElementById("ddlBreastList").hidden == false ||
+        document.getElementById("ddlAllHospitals").hidden == false) && document.getElementById("txtRecipient").value == "")
+        {
+            window.alert("Please select a recipient for this letter.");
             return;
         }
 
@@ -493,16 +538,27 @@
         {
             _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + _refID
             + "&user=mnln&referrerCode=" + _referrerCode + "&isPreview=true&recipient=" + document.getElementById("txtRecipient").value + "&freeText=" + document.getElementById("txtFreeText").value + 
-            "&enclosures=" + document.getElementById("txtEnclosures").value;
-        }
+            "&enclosures=" + document.getElementById("txtEnclosures").value + "&siteText=" + document.getElementById("txtSiteText").value + "&relID=" + document.getElementById("ddlRelative").value;
+        }       
+
         window.open(_url, '_blank').focus();
     }
 
     function DoPrint()
     {
-        if(document.getElementById("txtDocCode").value == "")
+        var _docCode = document.getElementById("txtDocCode").value;
+                
+        if(_docCode == "")
         {
             window.alert("No document selected");
+            return;
+        }
+
+        if((document.getElementById("ddlScreeningCoordinator").hidden == false || document.getElementById("ddlGeneticsCentre").hidden == false ||
+        document.getElementById("ddlHistoList").hidden == false || document.getElementById("ddlBreastList").hidden == false ||
+        document.getElementById("ddlAllHospitals").hidden == false) && document.getElementById("txtRecipient").value == "")
+        {
+            window.alert("Please select a recipient for this letter.");
             return;
         }
 

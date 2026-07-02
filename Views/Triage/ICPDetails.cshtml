@@ -280,13 +280,21 @@
         </div>
 
         <div class="row mb-2 g-2" id="closeReferral" hidden> @*close referral - only available with certain options*@
-            <div class="col-md-2">Close referral and stop clock?</div>
+            <div class="col-md-2">Close referral?</div>
             <div class="col-md-2">
                 <select name="closeReferral">
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
                 </select>
             </div>
+            <div class="col-md-2">Stop clock?</div>
+            <div class="col-md-2">
+                <select name="stopClock">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </div>
+
         </div>
 
         <div id="WaitingListDetails">

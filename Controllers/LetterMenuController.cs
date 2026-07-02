@@ -27,10 +27,12 @@ namespace ClinicX.Controllers
         private readonly IScreeningCoordinatorDataAsync _screeningCoordinatorData;
         private readonly IApiController _api;
         private readonly IConstantsDataAsync _constantsData;
+        private readonly IRelativeDataAsync _relativeData;
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documentsData, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController letterController, ICRUD crud,
             IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData, ITriageDataAsync triageData, 
-            IScreeningCoordinatorDataAsync screeningCoordinatorData, IApiController api, IConstantsDataAsync constantsData, ClinicalContext context, DocumentContext documentContext) 
+            IScreeningCoordinatorDataAsync screeningCoordinatorData, IApiController api, IConstantsDataAsync constantsData, IRelativeDataAsync relativeData,
+            ClinicalContext context, DocumentContext documentContext) 
         {
             _config = config;   
             _context = context;
@@ -46,6 +48,7 @@ namespace ClinicX.Controllers
             _externalClinicianData = externalClinicianData;
             _triageData = triageData;
             _screeningCoordinatorData = screeningCoordinatorData;
+            _relativeData = relativeData;
             _api = api;
             _constantsData = constantsData;
         }
@@ -91,12 +94,11 @@ namespace ClinicX.Controllers
             clins = clins.Distinct().OrderBy(c => c.FACILITY).ToList();
 
             _lvm.externalClinicians = clins;            
-            _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
-            _lvm.breastList = clinList.Where(c => c.POSITION.Contains("Breast") || c.SPECIALITY.Contains("Breast")).ToList();
-            _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).ToList();
+            _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).OrderBy(c => c.FACILITY).ToList();
+            _lvm.breastList = clinList.Where(c => c.POSITION.Contains("Breast") || c.SPECIALITY.Contains("Breast")).OrderBy(c => c.FACILITY).ToList();
+            _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).OrderBy(c => c.FACILITY).ToList();
             
             
-
             _lvm.screeningCoordinatorList = await _screeningCoordinatorData.GetScreeningCoordinatorList();
 
             _lvm.leaflets = new List<Leaflet>();
@@ -117,11 +119,14 @@ namespace ClinicX.Controllers
                 _lvm.leaflets = await _leafletData.GetAllLeafletsList(); //in case there is no referral pathway listed
             }
 
+            _lvm.relativeList = await _relativeData.GetRelativesList(mpi);
+
             return View(_lvm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> DoLetter(int refID, string docCode, bool isPreview, string? additionalText, string? enclosures, string? otherClinician, int? leafletID = 0)
+        public async Task<IActionResult> DoLetter(int refID, string docCode, bool isPreview, string? additionalText, string? enclosures, string? otherClinician, 
+            string? siteText, int? leafletID = 0)
         {
             var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
             int docID = 0;
@@ -172,7 +177,7 @@ namespace ClinicX.Controllers
                 }
 
                 await lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician,
-                        "", null, isPreview, qrCodeText, leafletID, true);
+                        siteText, null, isPreview, qrCodeText, leafletID, true);
             }
 
             if(isPreview)
