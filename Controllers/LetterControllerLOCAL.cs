@@ -907,7 +907,7 @@ namespace ClinicalXPDataConnections.Meta
                             if (item.UseLetter.GetValueOrDefault())
                             {
                                 contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
-                                if (item.SurvStopAge != 0)
+                                if (item.SurvStopAge != 0 && item.SurvStopAge != null)
                                 {
                                     contentscreening += " to " + item.SurvStopAge.ToString();
                                 }
@@ -1054,7 +1054,8 @@ namespace ClinicalXPDataConnections.Meta
                     RiskData _rData = new RiskData(_clinContext);
                     Surveillance _surv = new Surveillance();
                     SurveillanceData _survData = new SurveillanceData(_clinContext);
-                    _riskList = _rData.GetRiskListByRefID(refID);
+                    //_riskList = _rData.GetRiskListByRefID(refID);
+                    _riskList = _rData.GetRiskListForPatient(mpi);
 
                     content1 = _lvm.documentsContent.Para1;
 
@@ -1065,7 +1066,7 @@ namespace ClinicalXPDataConnections.Meta
                             _surv = _survData.GetSurvDetails(item.RiskID);
 
                             content2 = item.SurvSite + " surveillance " + " by " + item.SurvType + " " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
-                            if (item.SurvStopAge != 0)
+                            if (item.SurvStopAge != 0 && item.SurvStopAge != null)
                             {
                                 content2 += " to " + item.SurvStopAge.ToString();
                             }
@@ -1129,8 +1130,9 @@ namespace ClinicalXPDataConnections.Meta
                     RiskDataAsync _rData = new RiskDataAsync(_clinContext);
                     Surveillance _surv = new Surveillance();
                     SurveillanceDataAsync _survData = new SurveillanceDataAsync(_clinContext);
-                    _riskList = await _rData.GetPatientRiskList(refID);
-                    
+                    //_riskList = await _rData.GetPatientRiskList(refID);
+                    _riskList = await _rData.GetPatientRiskList(mpi);
+
 
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para7;
@@ -1222,7 +1224,7 @@ namespace ClinicalXPDataConnections.Meta
                                     }
                                     contentSurv += " - " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
 
-                                    if (item.SurvStopAge != null)
+                                    if (item.SurvStopAge != 0 && item.SurvStopAge != null)
                                     {
                                         contentSurv = contentSurv + " to " + item.SurvStopAge.ToString();
                                     }
@@ -1925,12 +1927,16 @@ namespace ClinicalXPDataConnections.Meta
                 //PC01
                 if (docCode == "PC01")
                 {
-                    string relDets = "Re: Affected relative's details: " + patName + "  Date of birth: " + patDOB.ToString("dd/MM/yyyy");
+                    if (relName != "")
+                    {
+                        string relDets = "Re: Affected relative's details: " + relName + "  Date of birth: " + relDOB;
+                        Paragraph letterContentRelDets = section.AddParagraph(relDets);
+                        spacer = section.AddParagraph();
+                    }
+
                     string patDets = "Our patient's details: " + _lvm.patient.Title + " " + _lvm.patient.FIRSTNAME + " " + _lvm.patient.LASTNAME +
                         " Date of birth: " + _lvm.patient.DOB.Value.ToString("dd/MM/yyyy");
-
-                    Paragraph letterContentRelDets = section.AddParagraph(relDets);
-                    spacer = section.AddParagraph();
+                    
                     Paragraph letterContentPatDets = section.AddParagraph(patDets);
                     spacer = section.AddParagraph();
                     content1 = _lvm.documentsContent.Para2;

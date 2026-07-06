@@ -228,7 +228,7 @@ namespace ClinicX.Controllers
                         if(item.ProtectedAddress) { _pvm.isProtectedAddress = true; }
                     }
                 }
-                
+                _pvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View(_pvm);
             }

@@ -42,5 +42,6 @@ namespace ClinicX.ViewModels
         public bool isProtectedAddress { get; set; }
         public string? cguNumber { get; set; }
         public List<Patient> patientsList { get; set; }
+        public bool isLive { get; set; }
     }
 }

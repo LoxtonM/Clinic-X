@@ -78,7 +78,8 @@ namespace ClinicX.Controllers
                 _cvm.pastClinicsList = clinicListAll.Where(c => c.BOOKED_DATE < DateTime.Today && c.Attendance != "NOT RECORDED").ToList();
                 _cvm.currentClinicsList = clinicListAll.Where(c => c.BOOKED_DATE == DateTime.Today).ToList();
                 _cvm.futureClinicsList = clinicListAll.Where(c => c.BOOKED_DATE > DateTime.Today).ToList();
-                _cvm.outstandingClinicsList = clinicListAll.Where(c => (c.Attendance == "NOT RECORDED" || c.Attendance == null) && c.BOOKED_DATE > DateTime.Parse("2012-01-01")).ToList();
+                _cvm.outstandingClinicsList = clinicListAll.Where(c => (c.Attendance == "NOT RECORDED" || c.Attendance == null) 
+                && c.BOOKED_DATE < DateTime.Today && c.BOOKED_DATE > DateTime.Parse("2012-01-01")).ToList();
                 //because obviously there are outstanding clinics from 2011 - there's no way these are getting completed, and everyone's just going to moan if they all turn up!
 
                 /*
@@ -94,6 +95,7 @@ namespace ClinicX.Controllers
                 _cvm.futureClinicsList = _cvm.futureClinicsList.Where(c => c.BOOKED_DATE <= futureFilterDate).OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
                 _cvm.pastClinicFilterDate = pastFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
                 _cvm.futureClinicFilterDate = futureFilterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
+                _cvm.outstandingClinicsList = _cvm.outstandingClinicsList.OrderBy(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
                 _cvm.isShowAll = isShowAll.GetValueOrDefault();
 
                 _cvm.message = message;
