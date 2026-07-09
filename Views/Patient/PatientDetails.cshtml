@@ -992,7 +992,7 @@
         if ("@(Model.patient.DCTM_Folder_ID)" != "") 
         {            
             document.getElementById("btnEDMS").href = "@Model.edmsLink";
-            
+            //document.getElementById("btnEDMS").href = "@Model.edmsLink"  + "folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";            
         }
         else
         {

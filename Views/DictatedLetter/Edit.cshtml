@@ -549,6 +549,13 @@
     document.getElementById("ddlClockStop").addEventListener("change", SetClockStop);
     window.addEventListener("load", LoadLetter);
     window.addEventListener("load", LoadEDMSLink);
+    document.addEventListener("input", OnInputChange);
+
+    function OnInputChange() 
+    {
+        document.getElementById("btnApprove").disabled = true;
+        document.getElementById("btnApprove").value = "Save letter before approving";
+    }
 
     function LoadEDMSLink() 
     {

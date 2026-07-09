@@ -1,6 +1,7 @@
 ﻿using APIControllers.Controllers;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
+using ClinicalXPDataConnections.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +14,7 @@ namespace ClinicX.Controllers
 {
     public class PatientController : Controller
     {
-        //private readonly ClinicalContext _clinContext;
+        private readonly ClinicalContext _clinContext;
         //private readonly DocumentContext _docContext;
         //private readonly APIContext _apiContext;
         private readonly PatientVM _pvm;
@@ -39,9 +40,10 @@ namespace ClinicX.Controllers
 
         public PatientController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, IPathwayDataAsync pathwayData, IAlertDataAsync alertData, 
             IReferralDataAsync referralData, IDiaryDataAsync diaryData, IHPOCodeDataAsync hPOCodeData, IAuditService auditService, IConstantsDataAsync constantsData, IAgeCalculator ageCalculator,
-            ITriageDataAsync triageData, IClinicDataAsync clinicData, IApiController aPIController, IPhenotipsMirrorDataAsync phenotipsMirrorData, IExternalFacilityDataAsync extFac, IPedigreeDataAsync pedigreeData, ICRUD crud)
+            ITriageDataAsync triageData, IClinicDataAsync clinicData, IApiController aPIController, IPhenotipsMirrorDataAsync phenotipsMirrorData, IExternalFacilityDataAsync extFac, IPedigreeDataAsync pedigreeData, 
+            ICRUD crud, ClinicalContext context)
         {
-            //_clinContext = context;
+            _clinContext = context;
             //_docContext = docContext;
             //_apiContext = apiContext;
             _config = config;
@@ -89,7 +91,7 @@ namespace ClinicX.Controllers
 
                 var patientsInPedigree = await _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
 
-                _pvm.relatives = await _relativeData.GetRelativesList(id);
+                _pvm.relatives = await _relativeData.GetRelativesListForFamily(id);                
                 _pvm.hpoTermDetails = await _hpoData.GetHPOTermsAddedList(id);
                 _pvm.referralsActive = await _referralData.GetActiveReferralsListForPatient(id);
                 _pvm.referralsComplete = await _referralData.GetCompleteReferralsListForPatient(id);
@@ -100,7 +102,7 @@ namespace ClinicX.Controllers
                 _pvm.diary = diaryList.Where(d => d.DocCode == null || (d.DocCode != "REPSUM" && d.DocCode != "HS")).ToList(); //was hoping to do this filtering in the view but that stops the REPSUM from working!
                 _pvm.gpFac = await _extFacility.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
 
-                _pvm.relatives = _pvm.relatives.Distinct().ToList(); //because there are dupes.
+                _pvm.relatives = _pvm.relatives.Distinct().OrderBy(r => r.Name).ToList(); //because there are dupes.
                 _pvm.appointmentList = _pvm.appointmentList.Distinct().ToList();
                 _pvm.icpCancerList = new List<ICPCancer>();                                
                 _pvm.icpList = new List<ICP>();
@@ -359,8 +361,8 @@ namespace ClinicX.Controllers
         {
             //Process.Start($"G:\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
             Process.Start($"\\\\zion.matrix.local\\dfsrootbwh\\cling\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
-        }
+        }      
 
-       
+
     }
 }

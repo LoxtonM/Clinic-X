@@ -9,6 +9,7 @@ using MigraDoc.Rendering;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf;
+using System;
 using System.Drawing;
 using System.Net;
 using System.Text;
@@ -452,7 +453,7 @@ namespace ClinicalXPDataConnections.Meta
                 string relName = "";
                 string relDOB = "Unknown";
 
-                if (relID != 0)
+                if (relID != 0 && relID != null)
                 {
                     _lvm.relative = _relativeData.GetRelativeDetails(relID.GetValueOrDefault());
                     relName = _lvm.relative.RelForename1 + " " + _lvm.relative.RelSurname;                    
@@ -485,9 +486,17 @@ namespace ClinicalXPDataConnections.Meta
                 switch (_lvm.documentsContent.LetterFrom)
                 {
                     case "GC":
-                        var gc = _staffUser.GetStaffMemberDetailsByStaffCode(referral.GC_CODE);
-                        signOff = gc.NAME + Environment.NewLine + gc.POSITION;
-                        sigFilename = gc.StaffForename + gc.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        if (_lvm.staffMember.CLINIC_SCHEDULER_GROUPS == "Admin")
+                        {
+                            var gc = _staffUser.GetStaffMemberDetailsByStaffCode(referral.GC_CODE);
+                            signOff = gc.NAME + Environment.NewLine + gc.POSITION;
+                            sigFilename = gc.StaffForename + gc.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        }
+                        else
+                        {
+                            signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                            sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";                            
+                        }
                         break;
                     case "Cons":
                         var cons = _staffUser.GetStaffMemberDetailsByStaffCode(referral.PATIENT_TYPE_CODE);
@@ -906,10 +915,18 @@ namespace ClinicalXPDataConnections.Meta
                         {
                             if (item.UseLetter.GetValueOrDefault())
                             {
-                                contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
-                                if (item.SurvStopAge != 0 && item.SurvStopAge != null)
+                                if (item.SurvFreqCode == "Single")
                                 {
-                                    contentscreening += " to " + item.SurvStopAge.ToString();
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq.ToUpper() + " by " + item.SurvType + " at the age of " + item.SurvStartAge.ToString();
+                                }
+                                else
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
+
+                                    if (item.SurvStopAge != 0 && item.SurvStopAge != null)
+                                    {
+                                        contentscreening += " to " + item.SurvStopAge.ToString();
+                                    }
                                 }
                                 contentscreening += Environment.NewLine;
                             }
@@ -1059,6 +1076,7 @@ namespace ClinicalXPDataConnections.Meta
 
                     content1 = _lvm.documentsContent.Para1;
 
+                    /*
                     foreach (var item in _riskList)
                     {
                         if (item.IncludeLetter.GetValueOrDefault() > 0)
@@ -1072,13 +1090,41 @@ namespace ClinicalXPDataConnections.Meta
                             }
                         }
                     }
+                    */
+
+                    string contentscreening = "";
+                    var screening = _survData.GetSurveillanceList(mpi);
+                    if (screening.Count > 0)
+                    {
+                        foreach (var item in screening)
+                        {
+                            if (item.UseLetter.GetValueOrDefault())
+                            {
+                                if (item.SurvFreqCode == "Single")
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq.ToUpper() + " by " + item.SurvType + " at the age of " + item.SurvStartAge.ToString();
+                                }
+                                else
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
+
+                                    if (item.SurvStopAge != 0 && item.SurvStopAge != null)
+                                    {
+                                        contentscreening += " to " + item.SurvStopAge.ToString();
+                                    }
+                                }
+                                contentscreening += Environment.NewLine;
+                            }
+                        }
+                    }
                     content3 = _lvm.documentsContent.Para3;
 
                     content4 = _lvm.documentsContent.Para4;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    Paragraph letterContent2 = section.AddParagraph();
+                    letterContent2.AddFormattedText(contentscreening, TextFormat.Bold);
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
@@ -1162,7 +1208,7 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     foreach (var item in _riskList)
                     {
-                        if (item.IncludeLetter != 0)
+                        if (item.IncludeLetter != 0 && item.RiskName != null)
                         {
                             string riskText = item.SurvSite + " cancer risk category:";
 
@@ -1208,7 +1254,7 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
 
 
-
+                    /*
                     foreach (var item in _survList)
                     {
                         if (item != null)
@@ -1232,9 +1278,39 @@ namespace ClinicalXPDataConnections.Meta
                                     letterContent3.AddFormattedText(contentSurv, TextFormat.Bold);
                                 }
                             }
+                        }                       
+                    }*/
+
+                    string contentscreening = "";
+                    var screening = await _survData.GetSurveillanceList(mpi);
+                    
+                    if (screening.Count > 0)
+                    {
+                        foreach (var item in screening)
+                        {
+                            if (item.UseLetter.GetValueOrDefault())
+                            {
+                                if (item.SurvFreqCode == "Single")
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq.ToUpper() + " by " + item.SurvType + " at the age of " + item.SurvStartAge.ToString();
+                                }
+                                else
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
+
+                                    if (item.SurvStopAge != 0 && item.SurvStopAge != null)
+                                    {
+                                        contentscreening += " to " + item.SurvStopAge.ToString();
+                                    }
+                                }
+                                contentscreening += Environment.NewLine;
+                            }
                         }
-                       
                     }
+
+                    Paragraph letterContent3 = section.AddParagraph();
+                    letterContent3.AddFormattedText(contentscreening, TextFormat.Bold);
+
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();

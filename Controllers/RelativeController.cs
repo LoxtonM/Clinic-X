@@ -22,11 +22,14 @@ namespace ClinicX.Controllers
         private readonly IStaffUserDataAsync _staffUser;
         private readonly IPatientDataAsync _patientData;
         private readonly IRelativeDataAsync _relativeData;
+        private readonly IRelativeDiagnosisDataAsync _relativeDiagnosisData;
+        private readonly IRelativeDiaryDataAsync _relativeDiaryData;
         private readonly IApiController _api;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public RelativeController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, ICRUD crud, IApiController api, IAuditService audit)
+        public RelativeController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, ICRUD crud, IApiController api, 
+            IAuditService audit, IRelativeDiaryDataAsync relativeDiaryData, IRelativeDiagnosisDataAsync relativeDiagnosisData)
         {
             //_clinContext = context;
             //_cXContext = cXContext;
@@ -35,6 +38,8 @@ namespace ClinicX.Controllers
             _staffUser = staffUserData;
             _patientData = patientData;
             _relativeData = relativeData;
+            _relativeDiagnosisData = relativeDiagnosisData;
+            _relativeDiaryData = relativeDiaryData;
             _rdvm = new RelativeDiagnosisVM();
             _rvm = new RelativeVM();
             _api = api;
@@ -69,11 +74,14 @@ namespace ClinicX.Controllers
                 string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - View Relative", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rdvm.relativeDetails = await _relativeData.GetRelativeDetails(id);
-                var pat = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
-                _rdvm.MPI = pat.MPI;
+                _rvm.relativeDetails = await _relativeData.GetRelativeDetails(id);
+                _rvm.relativeDiagnosisList = await _relativeDiagnosisData.GetRelativeDiagnosisList(id);
+                _rvm.relativeDiaryList = await _relativeDiaryData.GetRelativeDiaryList(id);
+
+                var pat = await _patientData.GetPatientDetailsByWMFACSID(_rvm.relativeDetails.WMFACSID);
+                _rvm.MPI = pat.MPI;
                 
-                return View(_rdvm);
+                return View(_rvm);
             }
             catch (Exception ex)
             {

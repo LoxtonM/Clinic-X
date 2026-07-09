@@ -58,9 +58,19 @@
                                     @if (surv.RiskID == item.RiskID)
                                     {
                                         <span>@surv.SurvFreqCode - age @surv.SurvStartAge</span>
-                                        @if (surv.SurvStopAge > 0)
+
+                                        if (surv.SurvStopAge != 0 && surv.SurvStopAge != null)
                                         {
                                             <span> to @surv.SurvStopAge</span>
+                                        }
+
+                                        if (surv.SurvFreqCode == "Single")
+                                        {
+                                            <span> (once)</span>
+                                        }
+                                        else
+                                        {
+                                            <span> ongoing</span>
                                         }
                                         <br />
                                     }

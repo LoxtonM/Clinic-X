@@ -1,4 +1,4 @@
-﻿@model ClinicX.ViewModels.RelativeDiagnosisVM
+﻿@model ClinicX.ViewModels.RelativeVM
 
 @{
     ViewData["Title"] = "ClinicX - Relatives Details";
@@ -10,21 +10,24 @@
     ViewBag.HomeButton = new[]
     {
         Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id=Model.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Record Diary", "Index", "RelativeDiary", new { relID=Model.relativeDetails.relsid }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Record Diagnoses", "Index", "RelativeDiagnosis", new { relID=Model.relativeDetails.relsid }, new { @class = "btn btn-success m-1" }),
     };
 }
 
-<div class="container">    
+<div class="container card">    
 
-    <div class="row mb-5">
+    @*
+    <div class="row mb-2 card-body">
         <hr />
     </div>
+    *@
 
-    <div class="row mb-5 g-5">
+    <div class="row mb-2 g-2">
         <h1>Relative Details for @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelSurname)</h1>
     </div>
 
-    <div class="row mb-5 g-5">
+    <div class="row mb-2 g-2 card-body">
         <dl class="row">        
             <dt class="col-sm-2">
                 Full Name:
@@ -84,7 +87,91 @@
         </dl>
     </div>
 
-    <div class="row mb-5 g-5">
+    <div class="row mb-2 g-2 card-body">
+        <hr />
+    </div>
+    
+    <div class="row mb-2 g-2">
+        <h1>Diary</h1>
+    </div>
+
+    <div class="row mb-2 g-2 card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                    <th>Received?</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.relativeDiaryList)
+                {
+                    <tr>
+                        @if (@item.DiaryDate != null)
+                        {
+                            <td>@item.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <td>@item.DiaryAction</td>
+                        <td>@item.DiaryText</td>
+                        @if (@item.DiaryRec != null)
+                        {
+                            <td>@item.DiaryRec.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+
+    <div class="row mb-2 g-2 card-body">
+        <hr />
+    </div>
+
+    <div class="row mb-2 g-2">
+        <h1>Diagnoses</h1>
+    </div>
+
+    <div class="row mb-2 g-2 card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Diagnosis</th>
+                    <th>Age at Diagnosis</th>
+                    <th>Hospital</th>
+                    <th>CReg Code</th>
+                    <th>Site Code</th>
+                    <th>Confirmed?</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.relativeDiagnosisList)
+                {
+                    <tr>
+                        <td>@item.Diagnosis</td>                        
+                        <td>@item.AgeDiag</td>
+                        <td>@item.Hospital</td>
+                        <td>@item.CRegCode</td>
+                        <td>@item.SiteCode</td>
+                        <td>@item.Confirmed</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+
+    <div class="row mb-2 g-2">
         <div class="col-md-2">
             <a type="button" class="btn btn-default btn-success" asp-action="Edit" asp-route-id="@Model.relativeDetails.relsid">Edit</a>
         </div>

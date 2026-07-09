@@ -11,6 +11,8 @@ namespace ClinicX.ViewModels
         public List<Relative> phenotipsRelativesList { get; set; }
         public List<Relative> cgudbRelativesList { get; set; }
         public List<Relation> relationslist { get; set; }
+        public List<RelativeDiary> relativeDiaryList { get; set; }
+        public List<RelativesDiagnosis> relativeDiagnosisList { get; set; }
 
         public int MPI { get; set; }
         public int WMFACSID { get; set; }

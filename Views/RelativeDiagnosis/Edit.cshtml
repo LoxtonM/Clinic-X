@@ -13,17 +13,17 @@
     ViewBag.HomeButton = new[]
     {
         @*Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id=Model.MPI }, new { @class = "btn btn-success m-1" }),*@
-        Html.ActionLink("Back to Relative", "RelativeDetails", "Relative", new { relID=Model.relativesDiagnosis.RelsID }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Relative", "RelativeDetails", "Relative", new { id=Model.relativesDiagnosis.RelsID }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Back to Diagnosis List", "Index", "RelativeDiagnosis", new { relID=Model.relativesDiagnosis.RelsID }, new { @class = "btn btn-success m-1" }),
     };
 }
 
-<div class="container">
+<div class="container card">
 
-    <div class="row g-5 mb-5">
+    <div class="row g-2 mb-2">
         <h1>Add new diagnosis</h1>
     </div>
-    <div class="row g-5 mb-5">
+    <div class="row g-2 mb-2 card-body">
         <form id="frmAddNew" asp-action="Edit">
             <div class="row g-5 mb-5">
                 <h2>Diagnosis Details:</h2>

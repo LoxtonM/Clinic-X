@@ -247,6 +247,15 @@
     document.getElementById("chkDiagnostic").addEventListener("change", SetDiagnostic);
     document.getElementById("chkCarrier").addEventListener("change", SetCarrier);
     window.addEventListener("load", LoadForm);
+    document.addEventListener("input", OnInputChange);
+
+    function OnInputChange()
+    {        
+        document.getElementById("DoFormLinkStandard").hidden = true;
+        document.getElementById("DoFormLinkNameChange").disabled = true;
+        document.getElementById("DoFormLinkStandardPreview").hidden = true;
+        document.getElementById("DoFormLinkNameChangePreview").disabled = true;        
+    }
 
 
     function ShowNameChangeForm()

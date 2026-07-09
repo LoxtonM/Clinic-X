@@ -1,0 +1,111 @@
+﻿@model ClinicX.ViewModels.RelativeDiaryVM
+
+@{
+    ViewData["Title"] = "ClinicX - Relatives' Diary";
+    ViewData["Page"] = "/ Relative Diary / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Relative", "RelativeDetails", "Relative", new { id=Model.relativeDetails.relsid }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container card">
+    @if (Model.relativeDiaryList.Count() > 0)
+    {
+        <div class="row mb-2 g-2">
+            <h1>Diary for relative @Model.relativeDetails.RelForename1 @Model.relativeDetails.RelSurname</h1>
+        </div>
+
+        <div class="row mb-2 g-2 card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Diary With</th>                        
+                        <th>Action</th>
+                        <th>Letter</th>
+                        <th>Clinician</th>
+                        <th>Source</th>
+                        <th>Date</th>
+                        <th>Reminder 1</th>
+                        <th>Received</th>
+                        <th>Return expected</th>
+                        <th>Extra text</th>
+                       
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.relativeDiaryList)
+                    {
+                        <tr>
+                            <td><a type="button" class="btn btn-success" asp-controller="RelativeDiary" asp-action="Edit" asp-route-diaryId=@item.DiaryID>Edit</a></td>
+                            <td>@item.DiaryWith</td>
+                            <td>@item.DiaryAction</td>
+                            <td>@item.DocCode</td>
+                            <td>@item.RelDiaryClinCode</td>
+                            <td>@item.SourceCode</td>
+                            @if (@item.DiaryDate != null)
+                            {
+                                <td>@item.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            @if(item.DiaryRem1 != null)
+                            {
+                                <td>@item.DiaryRem1.Value.ToString("dd/MM.yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            @if (@item.DiaryRec != null)
+                            {
+                                <td>@item.DiaryRec.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            @if(item.NotReturned)
+                            {
+                                <td>No</td>
+                            }
+                            else
+                            {
+                                <td>Yes</td>
+                            }
+                            <td>@item.LetterExtra</td>
+                            
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    }
+    else
+    {
+        <h1>No diary entries exists for this relative</h1>
+    }
+    <div class="row mb-2 g-2 card-body">
+        <div class="col-md-2">
+            <div col-md-2>
+                <a class="btn btn-default btn-success" asp-controller="RelativeDiary" asp-action="AddNew" asp-route-relId=@Model.relativeDetails.relsid>Add New</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="metadata" hidden>
+        <span id="theurl">@Context.Request.Path</span>
+        <span id="thehost">@Context.Request.Host</span>
+        <span id="count">@Model.relativeDiaryList.Count()</span>
+    </div>
+</div>
+</div>

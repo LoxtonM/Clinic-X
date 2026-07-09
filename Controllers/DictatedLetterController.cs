@@ -333,7 +333,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Approve(int dID, bool? isCloseReferral=false, bool? isClockStop=false)
         {
             try
-            {                
+            {
                 int success = await _crud.CallStoredProcedure("Letter", "Approve", dID, 0, 0, "", "", "", "", User.Identity.Name, null, null, isCloseReferral, isClockStop);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-approve(SQL)" }); }

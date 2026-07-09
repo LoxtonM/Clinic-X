@@ -1,0 +1,181 @@
+﻿@model ClinicX.ViewModels.RelativeDiaryVM
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    ViewData["Title"] = "ClinicX - Add New Relatives' Diary";
+    ViewData["Page"] = "/ Relative Diary / Add New";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Relative", "RelativeDetails", "Relative", new { relID=Model.relativeDetails.relsid }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Diary List", "Index", "RelativeDiary", new { relID=Model.relativeDetails.relsid }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container card">
+
+    <div class="row g-2 mb-2">
+        <h1>Add new diagnosis</h1>
+    </div>
+    <div class="row g-2 mb-2 card-body">
+        <form id="frmAddNew" asp-action="Edit">
+            <div class="row g-5 mb-5">
+                <h2>Diary Details:</h2>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2">
+                    <label class="w-100">Date</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="date" name="diaryDate" asp-for=@Model.relativeDiaryDetails.DiaryDate disabled />
+                </div>
+                <div class="col-md-2">
+                    <label class="w-100">Diary With</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" name="diaryWith" asp-for=@Model.relativeDiaryDetails.DiaryWith>
+                        <option value="" selected>Select...</option>
+                        <option value="Admin">Admin</option>
+                        @foreach (var item in Model.staffMembersList)
+                        {
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
+                        }
+                    </select>
+                </div>
+
+
+                
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2">
+                    <label class="w-100">Action</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" name="actionCode" asp-for=@Model.relativeDiaryDetails.DiaryAction">
+                        <option value="" selected>Select...</option>
+                        @foreach (var item in Model.actionCodeList)
+                        {
+                            <option value=@item.ActionCode>@item.ActionCode - @item.Action</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="w-100">Letter Code</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" name="docCode" asp-for=@Model.relativeDiaryDetails.DocCode>
+                        <option value="" selected>Select...</option>
+                        @foreach (var item in Model.docCodes)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="w-100">Clinician</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" name="clinician" asp-for=@Model.relativeDiaryDetails.RelDiaryClinCode>
+                        <option value="" selected>Select...</option>
+                        @foreach (var item in Model.diaryClinicianList)
+                        {
+                            <option value=@item.Code>@item.Name</option>
+                        }
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="row g-5 mb-5">
+                <div class="col-md-2">
+                    <label class="w-100">Source</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" name="source" asp-for=@Model.relativeDiaryDetails.SourceCode>
+                        <option value="" selected>Select...</option>
+                        @foreach (var item in Model.sources)
+                        {
+                            <option value=@item.Code>@item.Name</option>
+                        }
+                    </select>
+                </div>      
+                <div class="col-md-2">
+                    <label class="w-100">Extra Text</label>
+                </div>
+                <div class="col-md-6">
+                    <textarea name="extraText" asp-for=@Model.relativeDiaryDetails.LetterExtra></textarea>
+                </div>
+            </div>
+
+            <div class="row g-5 mb-5">
+                <div class="col-md-2">
+                    <label class="w-100">Reminder</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="date" name="firstRemDate" asp-for=@Model.relativeDiaryDetails.DiaryRem1 />
+                </div>
+                <div class="col-md-2">
+                    <label class="w-100">Received</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="date" name="recDate" asp-for=@Model.relativeDiaryDetails.DiaryRec />
+                </div>
+                <div class="col-md-2">
+                    <label class="w-100">Return Expected?</label>
+                </div>
+                <div class="col-md-2">
+                    <select name="returnNotExpected" asp-for=@Model.relativeDiaryDetails.NotReturned>
+                        <option value="false" selected>Yes</option>
+                        <option value="true">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="metadata" hidden>
+                <input name="diaryId" asp-for=@Model.relativeDiaryDetails.DiaryID />
+            </div>
+        </form>
+
+        <div class="row g-5 mb-5">
+            <div class="col-md-2">
+                <input type="button" class="btn btn-default btn-outline-success" value="Save" id="btnSave" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    document.getElementById("btnSave").addEventListener("click", AddDiary);
+
+    function AddDiary()
+    {
+
+        if (CheckFormValid() == 1)
+        {
+            document.getElementById("frmAddNew").submit();
+        }
+    }
+
+    function CheckFormValid()
+    { //validation to ensure all required data is entered
+
+        /*
+        if (document.getElementById("txtDiag").value == null || document.getElementById("txtDiag").value == "")
+        {
+            window.alert("Please enter a diagnosis.");
+            return 0;
+        }
+        */
+
+        return 1;
+    }
+
+</script>

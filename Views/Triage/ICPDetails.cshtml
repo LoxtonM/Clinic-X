@@ -622,7 +622,6 @@
         document.getElementById("formICPCancer").hidden = true;
         var _facility = document.getElementById("ddlFacility");
         var _facilityLabel = document.getElementById("lblFacility");
-
         if (_rp.match("Gen*"))
         {
             document.getElementById("formICPGeneral").hidden = false;
@@ -689,6 +688,11 @@
             {
                 document.getElementById("btnGeneralTriage").hidden = false;
             }
+
+            if(_tp2c.value != "" || _tp2nc.value != "")
+            {
+                DoTreatPath2();
+            }
         }
 
         else
@@ -701,11 +705,7 @@
             //    document.getElementById("btnICPReview").hidden = false; //createNSResolver we can't do this, because there's no way toolbar get the LoadICP review ID.
             //}
         }
-
-        if(_tp2c.value != "" || _tp2nc.value != "")
-        {
-            DoTreatPath2();
-        }
+       
         LoadEDMSLink();
         //AutoLoadEDMS();
     }

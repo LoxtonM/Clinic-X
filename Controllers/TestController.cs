@@ -172,7 +172,7 @@ namespace ClinicX.Controllers
                     }
                 }
                 _tvm.bloodFormList = await _bloodFormData.GetBloodFormList(id);
-                _tvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1) + _tvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
+                _tvm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1) + _tvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
                 _tvm.success = success.GetValueOrDefault();
                 _tvm.message = message;
 
