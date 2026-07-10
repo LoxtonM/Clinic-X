@@ -191,7 +191,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddNew(int wmfacsid, string title, string forename1, 
-            string forename2, string surname, string relation, string sDOB, string sDOD, 
+            string forename2, string surname, string relation, string dob, string dod, 
             int isAffected, string sex)
         {
             try
@@ -201,18 +201,18 @@ namespace ClinicX.Controllers
                 DateTime birthDate = new DateTime();
                 DateTime deathDate = new DateTime();
 
-                if (sDOB != null)
+                if (dob != null)
                 {
-                    birthDate = DateTime.Parse(sDOB);
+                    birthDate = DateTime.Parse(dob);
                 }
                 else
                 {
                     birthDate = DateTime.Parse("1/1/1900");
                 }
 
-                if (sDOD != null)
+                if (dod != null)
                 {
-                    deathDate = DateTime.Parse(sDOD);
+                    deathDate = DateTime.Parse(dod);
                 }
                 else
                 {

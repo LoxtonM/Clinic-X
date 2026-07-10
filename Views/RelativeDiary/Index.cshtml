@@ -97,7 +97,12 @@
     <div class="row mb-2 g-2 card-body">
         <div class="col-md-2">
             <div col-md-2>
-                <a class="btn btn-default btn-success" asp-controller="RelativeDiary" asp-action="AddNew" asp-route-relId=@Model.relativeDetails.relsid>Add New</a>
+                <a class="btn btn-default btn-success" asp-controller="RelativeDiary" asp-action="AddNew" asp-route-relId=@Model.relativeDetails.relsid>Add New Entry</a>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div col-md-2>
+                <a class="btn btn-default btn-success" asp-controller="LetterMenu" asp-action="Index" asp-route-mpi=@Model.patient.MPI asp-route-relID=@Model.relativeDetails.relsid>Send Letter</a>
             </div>
         </div>
     </div>

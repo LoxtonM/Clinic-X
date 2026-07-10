@@ -1996,8 +1996,6 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para8);
                     spacer = section.AddParagraph();
-
-
                 }
 
                 //PC01
@@ -2006,14 +2004,16 @@ namespace ClinicalXPDataConnections.Meta
                     if (relName != "")
                     {
                         string relDets = "Re: Affected relative's details: " + relName + "  Date of birth: " + relDOB;
-                        Paragraph letterContentRelDets = section.AddParagraph(relDets);
+                        Paragraph letterContentRelDets = section.AddParagraph();
+                        letterContentRelDets.AddFormattedText(relDets, TextFormat.Bold);
                         spacer = section.AddParagraph();
                     }
 
                     string patDets = "Our patient's details: " + _lvm.patient.Title + " " + _lvm.patient.FIRSTNAME + " " + _lvm.patient.LASTNAME +
                         " Date of birth: " + _lvm.patient.DOB.Value.ToString("dd/MM/yyyy");
                     
-                    Paragraph letterContentPatDets = section.AddParagraph(patDets);
+                    Paragraph letterContentPatDets = section.AddParagraph();
+                    letterContentPatDets.AddFormattedText(patDets, TextFormat.Bold);
                     spacer = section.AddParagraph();
                     content1 = _lvm.documentsContent.Para2;
                     Paragraph letterContent1 = section.AddParagraph(content1);

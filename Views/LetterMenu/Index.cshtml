@@ -15,7 +15,14 @@
 
 <div class="container">
     <div class="row mb-5 g-5">
-        <h1>Letters for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</h1>
+        @if(Model.selectedRelativeID == 0)
+        {
+            <h1>Letters for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</h1>
+        }
+        else
+        {
+            <h1>Letters for relative of @Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</h1>
+        }
     </div>
 
     <div class="row mb-5 g-5" id="divReferral" hidden> @*we can't just have it conditionally appear, because Javascript.*@
@@ -109,7 +116,7 @@
                 <label>Relative: (leave blank to use proband)</label>
             </div>
             <div class="col-md-4">
-                <select id="ddlRelative">
+                <select id="ddlRelative" name="RelID" asp-for=@Model.selectedRelativeID>
                     <option value=0 selected>Select...</option>
                     @foreach (var item in Model.relativeList)
                     {

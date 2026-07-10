@@ -25,5 +25,6 @@ namespace ClinicX.ViewModels
         public ExternalCliniciansAndFacilities patGP { get; set; }
         public List<ScreeningCoordinator> screeningCoordinatorList { get; set; }
         public List<Relative> relativeList { get; set; }
+        public int selectedRelativeID { get; set; }
     }
 }

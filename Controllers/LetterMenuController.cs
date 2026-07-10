@@ -28,10 +28,11 @@ namespace ClinicX.Controllers
         private readonly IApiController _api;
         private readonly IConstantsDataAsync _constantsData;
         private readonly IRelativeDataAsync _relativeData;
+        private readonly IRelativeDiaryDataAsync _relativeDiaryData;
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documentsData, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController letterController, ICRUD crud,
             IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData, ITriageDataAsync triageData, 
-            IScreeningCoordinatorDataAsync screeningCoordinatorData, IApiController api, IConstantsDataAsync constantsData, IRelativeDataAsync relativeData,
+            IScreeningCoordinatorDataAsync screeningCoordinatorData, IApiController api, IConstantsDataAsync constantsData, IRelativeDataAsync relativeData, IRelativeDiaryDataAsync relativeDiaryData,
             ClinicalContext context, DocumentContext documentContext) 
         {
             _config = config;   
@@ -49,12 +50,13 @@ namespace ClinicX.Controllers
             _triageData = triageData;
             _screeningCoordinatorData = screeningCoordinatorData;
             _relativeData = relativeData;
+            _relativeDiaryData = relativeDiaryData;
             _api = api;
             _constantsData = constantsData;
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(int? refID, int mpi)
+        public async Task<IActionResult> Index(int? refID, int mpi, int? relID = 0)
         {
             if (refID != null)
             {
@@ -121,12 +123,14 @@ namespace ClinicX.Controllers
 
             _lvm.relativeList = await _relativeData.GetRelativesList(mpi);
 
+            _lvm.selectedRelativeID = relID.GetValueOrDefault();
+
             return View(_lvm);
         }
 
         [HttpPost]
         public async Task<IActionResult> DoLetter(int refID, string docCode, bool isPreview, string? additionalText, string? enclosures, string? otherClinician, 
-            string? siteText, int? leafletID = 0)
+            string? siteText, int? leafletID = 0, int? relID = 0)
         {
             var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
             int docID = 0;
@@ -144,12 +148,26 @@ namespace ClinicX.Controllers
 
             if (!isPreview) //don't create a diary entry for every time we preview the letter!!
             {
-                int success = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
+                if (relID == 0)
+                {
+                    int success = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name, null, null, false, false);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DoLetter-diary insert(SQL)" }); }
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DoLetter-diary insert(SQL)" }); }
 
-                var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
-                diaryID = diary.DiaryID; //get the diary ID of the entry just created to add to the letter's filename
+                    var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
+
+                    diaryID = diary.DiaryID; //get the diary ID of the entry just created to add to the letter's filename
+                }
+                else 
+                {
+                    int success = await _crud.CallStoredProcedure("RelativeDiary", "Create", relID.GetValueOrDefault(), 0, 0, "", "L", docCode, "", User.Identity.Name, DateTime.Now, null, false, false);
+
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DoLetter-diary insert(SQL)" }); }
+
+                    var diary = await _relativeDiaryData.GetLatestDiaryByDocCode(relID.GetValueOrDefault(), docCode);
+
+                    diaryID = diary.DiaryID;
+                }
             }
 
             LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
