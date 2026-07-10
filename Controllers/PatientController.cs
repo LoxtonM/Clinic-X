@@ -1,12 +1,14 @@
 ﻿using APIControllers.Controllers;
+using APIControllers.Data;
+using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using ClinicalXPDataConnections.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -16,7 +18,7 @@ namespace ClinicX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         //private readonly DocumentContext _docContext;
-        //private readonly APIContext _apiContext;
+        private readonly APIContext _apiContext;
         private readonly PatientVM _pvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserDataAsync _staffUser;        
@@ -41,11 +43,11 @@ namespace ClinicX.Controllers
         public PatientController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, IPathwayDataAsync pathwayData, IAlertDataAsync alertData, 
             IReferralDataAsync referralData, IDiaryDataAsync diaryData, IHPOCodeDataAsync hPOCodeData, IAuditService auditService, IConstantsDataAsync constantsData, IAgeCalculator ageCalculator,
             ITriageDataAsync triageData, IClinicDataAsync clinicData, IApiController aPIController, IPhenotipsMirrorDataAsync phenotipsMirrorData, IExternalFacilityDataAsync extFac, IPedigreeDataAsync pedigreeData, 
-            ICRUD crud, ClinicalContext context)
+            ICRUD crud, ClinicalContext context, APIContext apiContext)
         {
             _clinContext = context;
             //_docContext = docContext;
-            //_apiContext = apiContext;
+            _apiContext = apiContext;
             _config = config;
             _pvm = new PatientVM();
             _staffUser = staffUserData;
@@ -174,9 +176,11 @@ namespace ClinicX.Controllers
 
                         if(mirror.FamilyID == null || mirror.FamilyID == "")
                         {
+                            //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
+                            //await api.SynchroniseMirrorWithPhenotips(id);
                             await _api.SynchroniseMirrorWithPhenotips(id);
                         }
-                        
+
                         var cancerPPQExists = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer");
                         var generalPPQExists = _api.CheckPPQExists(_pvm.patient.MPI, "General");
                         var cancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer");

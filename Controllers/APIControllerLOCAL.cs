@@ -1,6 +1,7 @@
 ﻿using APIControllers.Data;
 using APIControllers.Meta;
 using APIControllers.Models;
+using ClinicX.ViewModels;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -267,6 +268,10 @@ namespace APIControllers.Controllers
                 {
                     famID = famID.Substring(famID.Length - 10); //because it puts "xwiki..." at the start
                 }
+
+                await UpdatePhenotipsFamily(famID, patient.PEDNO); //update the family record in Phenotips to match the PEDNO in
+
+
                 string firstName = dynJson.patient_name.first_name;
                 string lastName = dynJson.patient_name.last_name;
 
@@ -728,6 +733,20 @@ namespace APIControllers.Controllers
                 var response = await client.PutAsync(request);
             }
         }
+
+        public async Task UpdatePhenotipsFamily(string famID, string pedno)
+        {
+            apiURL = apiURLBase + $":443/rest/families/{famID}";
+            var options = new RestClientOptions(apiURL);
+            var client = new RestClient(options);
+            var request = new RestRequest("");
+            request.AddHeader("accept", "application/json");
+            request.AddHeader("authorization", "Basic " + authKey);
+            request.AddHeader("X-Gene42-Secret", apiKey);
+            request.AddJsonBody("{\"externalId\":\""+ pedno + "\"}", false);
+            var response = await client.PutAsync(request);
+        }
+
 
         public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
         {
