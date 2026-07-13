@@ -267,9 +267,8 @@ namespace APIControllers.Controllers
                 if (famID != null)
                 {
                     famID = famID.Substring(famID.Length - 10); //because it puts "xwiki..." at the start
-                }
-
-                await UpdatePhenotipsFamily(famID, patient.PEDNO); //update the family record in Phenotips to match the PEDNO in
+                    await UpdatePhenotipsFamily(famID, patient.PEDNO); //update the family record in Phenotips to match the PEDNO in
+                }               
 
 
                 string firstName = dynJson.patient_name.first_name;
