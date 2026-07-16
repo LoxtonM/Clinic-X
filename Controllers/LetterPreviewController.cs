@@ -1,10 +1,8 @@
 ﻿using APIControllers.Controllers;
-using APIControllers.Data;
+//using APIControllers.Data;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
-using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ClinicX.Controllers
 {
@@ -13,14 +11,14 @@ namespace ClinicX.Controllers
         private readonly IConfiguration _config;
         private readonly ClinicalContext _context;
         private readonly DocumentContext _documentContext;
-        private readonly APIContext _apiContext;
+        //private readonly APIContext _apiContext;
         private readonly LetterController _lc;
         private readonly IConstantsDataAsync _constantsData;
         private readonly IDocumentsDataAsync _documentsData;
         private readonly IApiController _api;
         private readonly IReferralDataAsync _referralDataAsync;
 
-        public LetterPreviewController(IConfiguration config, LetterController lc, ClinicalContext context, DocumentContext documentContext, APIContext apiContext,
+        public LetterPreviewController(IConfiguration config, LetterController lc, ClinicalContext context, DocumentContext documentContext, // APIContext apiContext,
             IConstantsDataAsync constantsData, IDocumentsDataAsync documentsData, IApiController api, IReferralDataAsync referralDataAsync)
         {
             _config = config;
@@ -29,7 +27,7 @@ namespace ClinicX.Controllers
             _documentContext = documentContext;
             _constantsData = constantsData;
             _documentsData = documentsData;
-            _apiContext = apiContext;
+            //_apiContext = apiContext;
             _api = api;
             _referralDataAsync = referralDataAsync;
         }
@@ -63,10 +61,3 @@ namespace ClinicX.Controllers
         }
     }
 }
-
-/*
- * int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
-            string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
-            int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false, string? qrCodeText = "", int? leafletID = 0,
-            bool? adminToPrint = false
-*/

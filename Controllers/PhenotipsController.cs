@@ -1,5 +1,5 @@
 ﻿using APIControllers.Controllers;
-using APIControllers.Data;
+//using APIControllers.Data;
 //using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
@@ -7,7 +7,6 @@ using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using System.Runtime.CompilerServices;
 
 
 namespace ClinicX.Controllers
@@ -16,7 +15,7 @@ namespace ClinicX.Controllers
     {
         //private readonly ClinicalContext _clinContext;
         //private readonly DocumentContext _docContext;
-        private readonly APIContext _apiContext;
+        //private readonly APIContext _apiContext;
         private readonly IConfiguration _config;
         private readonly IApiController _api;
         private readonly IPatientDataAsync _patientData;
@@ -24,12 +23,11 @@ namespace ClinicX.Controllers
         private readonly PhenotipsVM _pvm;
         private readonly LetterController _lc;
 
-        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController lc,
-            APIContext aPIContext)
+        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController lc) //, APIContext aPIContext)
         {
             //_clinContext = clinContext;
             //_docContext = docContext;
-            _apiContext = aPIContext;
+            //_apiContext = aPIContext;
             _config = config;
             _api = aPIController;
             _patientData = patientData;

@@ -2,7 +2,6 @@
 using APIControllers.Meta;
 using APIControllers.Models;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -426,7 +425,7 @@ namespace APIControllers.Controllers
                 foreach (var rel in relListAll)
                 {
                     if (relData.GetRelativeDetailsByName(rel.RelForename1, rel.RelSurname).Count() == 0 &&
-                            rel.RelForename1 != patient.FIRSTNAME && rel.RelSurname != patient.LASTNAME)
+                            !(rel.RelForename1 == patient.FIRSTNAME && rel.RelSurname == patient.LASTNAME))
                     {
                         relatives.Add(new Relative
                         {

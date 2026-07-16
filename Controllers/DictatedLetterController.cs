@@ -6,8 +6,6 @@ using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ClinicalXPDataConnections.Data;
 
 namespace ClinicX.Controllers
@@ -20,7 +18,6 @@ namespace ClinicX.Controllers
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;        
         private readonly IPatientDataAsync _patientData;
-        private readonly IRelativeDataAsync _relativeData;
         private readonly IStaffUserDataAsync _staffUser;
         private readonly IActivityDataAsync _activityData;
         private readonly IDictatedLetterDataAsync _dictatedLetterData;
@@ -32,7 +29,7 @@ namespace ClinicX.Controllers
 
         public DictatedLetterController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IActivityDataAsync activityData, IDictatedLetterDataAsync dictatedLetterData,
             IExternalClinicianDataAsync externalClinicianData, IExternalFacilityDataAsync externalFacilityData, ICRUD crud, IConstantsDataAsync constantsData, LetterController letterController, 
-            IAuditService auditService, IRelativeDataAsync relativeData, ClinicalContext clinicalContext, DocumentContext documentContext)
+            IAuditService auditService, ClinicalContext clinicalContext, DocumentContext documentContext)
         {
             _clinContext = clinicalContext;
             _docContext = documentContext;
@@ -48,7 +45,6 @@ namespace ClinicX.Controllers
             _lc = letterController;
             _audit = auditService;
             _constantsData = constantsData;
-            _relativeData = relativeData;
         }
 
         [Authorize]

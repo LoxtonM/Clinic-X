@@ -8,6 +8,7 @@ using ClinicX.Meta;
 using APIControllers.Controllers;
 //using APIControllers.Data;
 
+
 namespace ClinicX.Controllers
 {
     public class RelativeController : Controller
@@ -29,10 +30,11 @@ namespace ClinicX.Controllers
         private readonly IAuditService _audit;
 
         public RelativeController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, ICRUD crud, IApiController api, 
-            IAuditService audit, IRelativeDiaryDataAsync relativeDiaryData, IRelativeDiagnosisDataAsync relativeDiagnosisData)
+            IAuditService audit, IRelativeDiaryDataAsync relativeDiaryData, IRelativeDiagnosisDataAsync relativeDiagnosisData)//, APIContext aPIContext)
         {
             //_clinContext = context;
             //_cXContext = cXContext;
+            //_apiContext = aPIContext;
             _config = config;
             _crud = crud;
             _staffUser = staffUserData;
@@ -252,7 +254,8 @@ namespace ClinicX.Controllers
 
                 List<APIControllers.Models.Relative> ptRels = new List<APIControllers.Models.Relative>();
 
-                //TestAPIController apitest = new TestAPIController(_apiContext, _config);
+                //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
+                
                 ptRels = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
 
                 _rvm.phenotipsRelativesList = new List<ClinicalXPDataConnections.Models.Relative>();

@@ -1,9 +1,7 @@
 ﻿using ClinicalXPDataConnections.Meta;
-using ClinicalXPDataConnections.Models;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace ClinicX.Controllers
 {

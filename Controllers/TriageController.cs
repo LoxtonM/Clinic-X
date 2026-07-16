@@ -6,9 +6,7 @@ using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Linq;
 using APIControllers.Controllers;
 
 namespace ClinicX.Controllers

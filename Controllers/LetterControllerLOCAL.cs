@@ -2,20 +2,16 @@
 using ClinicalXPDataConnections.Models;
 using ClinicalXPDataConnections.ViewModels;
 using HtmlAgilityPack;
-//using Microsoft.Office.Interop.Outlook;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf;
-using System;
 using System.Drawing;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace ClinicalXPDataConnections.Meta
