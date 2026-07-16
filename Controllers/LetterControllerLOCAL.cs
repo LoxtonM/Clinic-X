@@ -592,9 +592,18 @@ namespace ClinicalXPDataConnections.Meta
                 {
                     pageCount = 2; //because this can't happen automatically, obviously, so we have to hard code it!
 
-                    content1 = _lvm.documentsContent.Para1 + " " + referrerName + " " + _lvm.documentsContent.Para2 +
-                        Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para3 +
-                        Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
+                    content1 = _lvm.documentsContent.Para1 + " " + referrerName + " " + _lvm.documentsContent.Para2 + Environment.NewLine + Environment.NewLine;
+
+                    if (qrCodeText != null && qrCodeText != "")
+                    {
+                        content1 += _lvm.documentsContent.Para6 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para7;
+                    }
+                    else
+                    {
+                        content1 += _lvm.documentsContent.Para3;
+                    }
+                    content1 += Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
+
                     content2 = _lvm.documentsContent.Para5;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
@@ -707,11 +716,26 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para3);
-                    spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para4);
-                    spacer = section.AddParagraph();
-                    Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para5);
+                    if(qrCodeText != null && qrCodeText != "")
+                    {
+                        Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para6);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para7);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para8);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para9);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent6 = section.AddParagraph(_lvm.documentsContent.Para10);
+                    }
+                    else
+                    {
+                        Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para3);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para4);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para5);
+                    }                    
                 }
 
                 if (docCode == "RejFHAW")

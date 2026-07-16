@@ -200,7 +200,11 @@ namespace ClinicX.Controllers
                     return RedirectToAction("PatientDetails", "Patient", new { id = patient.MPI, message = "Not a valid email address.", success = false });
                 }
 
-                return Redirect("mailto:" + patient.EmailAddress + "?subject=Phenotips PPQ&body=Here is your Phenotips PPQ link:%0D%0A%0D%0A" + ppqURL + "%0D%0A%0D%0APlease complete this asap.");
+                string emailSubject = "Your Phenotips PPQ Link";
+                string encodedPpqURL = Uri.EscapeDataString(ppqURL);
+
+                //return Redirect($"mailto:{patient.EmailAddress}?subject=Phenotips PPQ&body=Here is your Phenotips PPQ link:%0D%0A%0D%0A{encodedPpqURL}%0D%0A%0D%0APlease complete this form when convenient.");
+                return Redirect($"mailto:{patient.EmailAddress}?subject={emailSubject}&body=Please complete your PPQ with the link below:%0D%0A%0D%0A{encodedPpqURL}");
             }
             else
             {

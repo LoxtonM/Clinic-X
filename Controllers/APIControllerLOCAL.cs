@@ -1,7 +1,6 @@
 ﻿using APIControllers.Data;
 using APIControllers.Meta;
 using APIControllers.Models;
-using ClinicX.ViewModels;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -473,17 +472,16 @@ namespace APIControllers.Controllers
 
             string pID = "";
             string ppqID;
-            if (ppqType == "Cancer")
+            if (ppqType.Trim() == "Cancer")
             {
-                ppqID = "bwch_cancer";
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 1);
             }
             else
             {
-                ppqID = "bwch_general";
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 2);
             }
 
             pID = GetPhenotipsPatientID(id).Result;
-            Console.WriteLine(GetPPQUrl(patient.MPI, ppqType));
 
             if (!CheckPPQExists(id, ppqType).Result)
             {
@@ -530,13 +528,13 @@ namespace APIControllers.Controllers
 
             string pID = "";
             string ppqID;
-            if (ppqType == "Cancer")
+            if (ppqType.Trim() == "Cancer")
             {
-                ppqID = "cancer";
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 1);
             }
             else
             {
-                ppqID = "general";
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 2);
             }
 
             pID = GetPhenotipsPatientID(id).Result;
@@ -577,13 +575,13 @@ namespace APIControllers.Controllers
 
             string pID = "";
             string ppqID;
-            if (ppqType == "Cancer")
+            if (ppqType.Trim() == "Cancer")
             {
-                ppqID = "cancer";
+                ppqID =  _constants.GetConstant("PhenotipsPPQIDs", 1);
             }
             else
             {
-                ppqID = "general";
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 2);
             }
 
             pID = GetPhenotipsPatientID(id).Result;
@@ -624,13 +622,13 @@ namespace APIControllers.Controllers
 
             string pID = "";
             string ppqID;
-            if (ppqType == "Cancer")
+            if (ppqType.Trim() == "Cancer")
             {
-                ppqID = "cancer";
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 1);
             }
             else
             {
-                ppqID = "general";
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 2);
             }
 
             pID = GetPhenotipsPatientID(id).Result;
@@ -673,13 +671,13 @@ namespace APIControllers.Controllers
 
             string pID = "";
             string ppqID;
-            if (ppqType == "Cancer")
+            if (ppqType.Trim() == "Cancer")
             {
-                ppqID = "cancer";
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 1);
             }
             else
             {
-                ppqID = "general";
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 2);
             }
 
             pID = GetPhenotipsPatientID(id).Result;

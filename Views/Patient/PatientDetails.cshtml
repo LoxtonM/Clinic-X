@@ -78,7 +78,7 @@
                                     {
                                         @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Get Cancer PPQ URL</a>*@
                                         <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="true" >Email Cancer PPQ URL</a>
-                                        <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="false">View Cancer PPQ URL</a>
+                                        <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-isEmail="false">Display Cancer PPQ URL</a>
                                         @*<a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PhenotipsQRLink" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">View PPQ QR Code</a>*@
                                         @*<a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="SendPhenotipsLetter" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Send Phenotips Letter (Cancer)</a>*@
                                     }
@@ -87,7 +87,7 @@
                                     {
                                         @*<a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="GetPPQUrl" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General"asp-route-isEmail="true">Get General PPQ URL</a>*@
                                         <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="true">Email General PPQ URL</a>
-                                        <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="false">Email General PPQ URL</a>
+                                        <a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="CreatePhenotipsEmail" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-isEmail="false">Display General PPQ URL</a>
                                         @*<a class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="SendPhenotipsLetter" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Send Phenotips Letter (General)</a>*@
                                     }
                                 }

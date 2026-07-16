@@ -118,7 +118,7 @@ namespace ClinicX.Controllers
                 tf.DrawString(altPatName, font, XBrushes.Black, new XRect(pageEdge + 60, totalLength, 100, 20));
             }
             tf.DrawString("Consultant/Clinician:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + pageWidth / 2 + 5, totalLength, 100, 20));
-            tf.DrawString(staffMember.NAME, font, XBrushes.Black, new XRect(pageEdge + pageWidth / 2 + 100, totalLength, 100, 20));
+            tf.DrawString(staffMember.NAME, font, XBrushes.Black, new XRect(pageEdge + pageWidth / 2 + 100, totalLength, 300, 20));
             totalLength += 17;
             //surname/phone number
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge, totalLength, pageWidth / 2, 20));
@@ -333,7 +333,7 @@ namespace ClinicX.Controllers
             totalLength += 10;
             if (bloodForm.TestingRequirements != null)
             {
-                tf.DrawString(bloodForm.TestingRequirements, font, XBrushes.Black, new XRect(pageEdge + 20, totalLength, 400, 50));
+                tf.DrawString(bloodForm.TestingRequirements, font, XBrushes.Black, new XRect(pageEdge + 20, totalLength, 1000, 50));
             }
             totalLength += 34;
             //Clinical Utility section (NEW)

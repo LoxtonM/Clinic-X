@@ -1,4 +1,5 @@
 ﻿using APIControllers.Controllers;
+using APIControllers.Data;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
@@ -12,13 +13,14 @@ namespace ClinicX.Controllers
         private readonly IConfiguration _config;
         private readonly ClinicalContext _context;
         private readonly DocumentContext _documentContext;
+        private readonly APIContext _apiContext;
         private readonly LetterController _lc;
         private readonly IConstantsDataAsync _constantsData;
         private readonly IDocumentsDataAsync _documentsData;
         private readonly IApiController _api;
         private readonly IReferralDataAsync _referralDataAsync;
 
-        public LetterPreviewController(IConfiguration config, LetterController lc, ClinicalContext context, DocumentContext documentContext, 
+        public LetterPreviewController(IConfiguration config, LetterController lc, ClinicalContext context, DocumentContext documentContext, APIContext apiContext,
             IConstantsDataAsync constantsData, IDocumentsDataAsync documentsData, IApiController api, IReferralDataAsync referralDataAsync)
         {
             _config = config;
@@ -27,6 +29,7 @@ namespace ClinicX.Controllers
             _documentContext = documentContext;
             _constantsData = constantsData;
             _documentsData = documentsData;
+            _apiContext = apiContext;
             _api = api;
             _referralDataAsync = referralDataAsync;
         }
@@ -46,6 +49,7 @@ namespace ClinicX.Controllers
 
                 if (isPhenotipsQR)
                 {
+                    //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
                     qrCodeText = await _api.GetPPQQRCode(mpi, pathway);
                 }
             }
