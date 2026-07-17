@@ -15,5 +15,6 @@ namespace ClinicX.ViewModels
         public List<Document> docCodes { get; set; }
         public List<RelativeDiarySource> sources { get; set; }
         public List<DiaryClinician> diaryClinicianList { get; set; }
+        public bool isLive { get; set; }
     }
 }

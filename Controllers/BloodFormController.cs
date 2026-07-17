@@ -35,8 +35,10 @@ namespace ClinicX.Controllers
 
 
 
-        public async Task CreateBloodForm(int bloodFormID, string user, string? altPatName = "", bool? isPreview = false)
+        public async Task<bool> CreateBloodForm(int bloodFormID, string user, string? altPatName = "", bool? isPreview = false)
         {
+            bool success = false;
+
             StaffMember staffMember = await _staffUser.GetStaffMemberDetails(user);
             BloodForm bloodForm = await _bloodFormData.GetBloodFormDetails(bloodFormID);
             Test test = await _testData.GetTestDetails(bloodForm.TestID);
@@ -966,11 +968,19 @@ namespace ClinicX.Controllers
                     }
                     votFolder = votFolder + staffMember.StaffForename + " " + staffMember.StaffSurname;
                 }
-                if (!File.Exists($@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Blood Form_{patient.CGU_No}.pdf"))
+                if (File.Exists($@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Blood Form_{patient.CGU_No}.pdf"))
                 {
-                    System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\bloodform-{user}.pdf", $@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Blood Form_{patient.CGU_No}.pdf");
+                    System.IO.File.Delete($@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Blood Form_{patient.CGU_No}.pdf");                    
                 }
+                System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\bloodform-{user}.pdf", $@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Blood Form_{patient.CGU_No}.pdf");
+
+                if (File.Exists($@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Blood Form_{patient.CGU_No}.pdf"))
+                {
+                    success = true;
+                }                
             }
+
+            return success;
         }
     }
 }

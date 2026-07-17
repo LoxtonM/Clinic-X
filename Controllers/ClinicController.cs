@@ -27,15 +27,17 @@ namespace ClinicX.Controllers
         private readonly IDiseaseDataAsync _diseaseData;
         private readonly IDictatedLetterDataAsync _dictatedLetterData;
         private readonly IClinicalNoteDataAsync _clinicalNoteData;
+        private readonly IConstantsDataAsync _constantsData;
 
         public ClinicController(IConfiguration config, IPatientDataAsync patientData, IReferralDataAsync referralData, IActivityDataAsync activityData, IStaffUserDataAsync staffUserData,
             IClinicDataAsync clinicData, ICRUD crud, IAuditService auditService, IOutcomeDataAsync outcomeData, IClinicVenueDataAsync clinicVenueData, IActivityTypeDataAsync activityTypeData, 
-            IDiseaseDataAsync diseaseData, IDictatedLetterDataAsync dictatedLetterData, IClinicalNoteDataAsync clinicalNoteData)
+            IDiseaseDataAsync diseaseData, IDictatedLetterDataAsync dictatedLetterData, IClinicalNoteDataAsync clinicalNoteData, IConstantsDataAsync constantsData)
         {
             //_clinContext = context;
             _config = config;
             _cvm = new ClinicVM();
             _patientData = patientData;
+            _constantsData = constantsData;
             _referralData = referralData;
             _activityData = activityData;
             _staffUser = staffUserData;
@@ -100,6 +102,7 @@ namespace ClinicX.Controllers
 
                 _cvm.message = message;
                 _cvm.success = success.GetValueOrDefault();
+                _cvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View(_cvm);               
             }
@@ -158,7 +161,14 @@ namespace ClinicX.Controllers
                     }
 
                     _cvm.seenByString = _cvm.seenByString + $" on {_cvm.Clinic.BOOKED_DATE.Value.ToString("dd/MM/yyyy")} at {arrivalTime}";
-                }                
+                }
+
+                string edmsBaseURL = await _constantsData.GetConstant("GEMRLink", 1);
+
+                if (!string.IsNullOrWhiteSpace(edmsBaseURL) && !string.IsNullOrWhiteSpace(_cvm.patient.DCTM_Folder_ID))
+                {
+                    _cvm.edmsLink = edmsBaseURL + _cvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
+                }
 
 
                 if (_cvm.Clinic == null)

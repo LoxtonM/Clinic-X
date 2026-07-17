@@ -17,6 +17,23 @@
 
 
 <div class="container">
+
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
     <div id="metadata" hidden>
         <span id="theurl">@Context.Request.Path</span>
         <span id="thehost">@Context.Request.Host</span>        

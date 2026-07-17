@@ -15,5 +15,6 @@ namespace ClinicX.ViewModels
         public List<Review> reviewList { get; set; }
         public int daysToReview { get; set; }
         public int daysOverdue { get; set; }
+        public bool isLive { get; set; }
     }
 }

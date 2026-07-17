@@ -20,5 +20,6 @@ namespace ClinicX.ViewModels
         public List<Note> clinicalNotesList { get; set; }       
         public Patient patient { get; set; }
         public int noteCount { get; set; }
+        public bool isLive { get; set; }
     }
 }

@@ -37,6 +37,6 @@ namespace ClinicX.ViewModels
         public string regionNameSelected { get; set; }
         public List<int> years { get; set; }
         public List<Pathway> pathways { get; set; }
-        public Dictionary<string, string> geographicalRegions { get; set; }
+        public Dictionary<string, string> geographicalRegions { get; set; }        
     }
 }

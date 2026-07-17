@@ -140,7 +140,7 @@ namespace ClinicX.Controllers
             tf.DrawString("Data Storage", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 15, totalLength, page.Width - 20, 20));
             totalLength += 15;
             tf.DrawString("5.", font, XBrushes.Black, new XRect(pageEdge + 10, totalLength, 20, 40));
-            tf.DrawString("Data generated from this genetic test will be stored to allow possible 5. future interpretations.", font, XBrushes.Black, new XRect(pageEdge + 30, totalLength, page.Width - 60, 40));
+            tf.DrawString("Data generated from this genetic test will be stored to allow possible future interpretations.", font, XBrushes.Black, new XRect(pageEdge + 30, totalLength, page.Width - 60, 40));
             totalLength += 20;            
             tf.DrawString("Health Records", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 15, totalLength, page.Width - 20, 20));
             totalLength += 15;
@@ -175,15 +175,20 @@ namespace ClinicX.Controllers
             tf.DrawString("Name:_________________________ Date of Birth: ____ / ____ / ______ Postcode: _________________", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 35, totalLength, page.Width - 60, 20));
             totalLength += 25;
             tf.DrawString("Relationship:___________________________________________________________________________", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 35, totalLength, page.Width - 60, 20));
-            totalLength += 23;
+            totalLength += 33;
             tf.DrawString(staffMember.NAME, fontSmall, XBrushes.Black, new XRect(pageEdge + 115, totalLength, page.Width - 60, 20));
             totalLength += 2;
             tf.DrawString("Clinician Name:_________________________ Clinician Signature: ______________________", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 35, totalLength, page.Width - 60, 20));
 
+            
+            string sigFilename = $"{staffMember.StaffForename.Replace(" ", "")}{staffMember.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
 
-            ///////////////////////////////
-            ///logic to do actual form
-            //////////////////////////////
+            if (File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
+            {
+                XImage sig = XImage.FromFile(@$"wwwroot\Signatures\{sigFilename}");
+                gfx.DrawImage(sig, 375, totalLength - 22, sig.PixelWidth/2, sig.PixelHeight/2);
+            }
+
 
             document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\consentform-{user}.pdf"));
 
@@ -215,10 +220,11 @@ namespace ClinicX.Controllers
                     }
                     votFolder = votFolder + staffMember.StaffForename + " " + staffMember.StaffSurname;
                 }
-                if (!File.Exists($@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Consent Form_{patient.CGU_No}.pdf"))
+                if (File.Exists($@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Consent Form_{patient.CGU_No}.pdf"))
                 {
-                    System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\consentform-{user}.pdf", $@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Consent Form_{patient.CGU_No}.pdf");
+                    File.Delete($@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Consent Form_{patient.CGU_No}.pdf");
                 }
+                System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\consentform-{user}.pdf", $@"\\zion.matrix.local\dfsrootbwh\cling\Virtual Out-trays (letter enclosures)\{votFolder}\Consent Form_{patient.CGU_No}.pdf");
             }
 
             return true;

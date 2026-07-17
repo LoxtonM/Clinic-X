@@ -88,7 +88,9 @@ namespace ClinicX.Controllers
                 {
                     _cvm.isSupervisor = true; //only supervisors should be able to see certain functions
                 }
-                
+
+                _cvm.isLive = _config.GetValue<bool>("IsLive");
+
                 return View(_cvm);
             }
             catch (Exception ex) 

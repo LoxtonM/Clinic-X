@@ -21,6 +21,6 @@ namespace ClinicX.ViewModels
         public List<Gender> genderList { get; set; }
         public int MPI { get; set; }
         public int WMFACSID { get; set; }
-
+        public bool isLive { get; set; }
     }
 }

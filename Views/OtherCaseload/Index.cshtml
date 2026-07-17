@@ -11,6 +11,10 @@
 }
 
 <div class="container card">
+    @if (!Model.isLive)
+    {
+        <h1 class="text-center redtext">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
+    }
     <div class="row mb-2 g-2">
         <div class="col-md-8">
             @if(Model.caseLoad.Count() > 0)

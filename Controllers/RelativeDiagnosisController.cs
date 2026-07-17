@@ -49,7 +49,10 @@ namespace ClinicX.Controllers
                 _rdvm.relativeDetails = await _relativeData.GetRelativeDetails(relID);
                 var pat = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
                 _rdvm.MPI = pat.MPI;
-                _rdvm.relativesDiagnosisList = await _relativeDiagnosisData.GetRelativeDiagnosisList(relID);                
+                _rdvm.relativesDiagnosisList = await _relativeDiagnosisData.GetRelativeDiagnosisList(relID);
+
+                _rdvm.isLive = _config.GetValue<bool>("IsLive");
+
                 return View(_rdvm);
             }
             catch (Exception ex)

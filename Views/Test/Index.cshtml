@@ -16,6 +16,10 @@
 
 
 <div class="container card"> 
+    @if (!Model.isLive)
+    {
+        <h1 class="text-center redtext">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
+    }
     @if (Model.tests.Count() >= 1)
     {
         <h1 class="text-center">Tests for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.patient.CGU_No</a></h1>

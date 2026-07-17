@@ -42,6 +42,7 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Diagnosis", "", _ip.GetIPAddress());
                 _dvm.diagnosisList = await _diseaseData.GetDiseaseListByPatient(id);
                 _dvm.patient = await _patientData.GetPatientDetails(id);
+                _dvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View(_dvm);
             }

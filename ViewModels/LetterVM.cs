@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ClinicalXPDataConnections.Models;
 using ClinicX.Models;
-using Microsoft.Identity.Client;
 
 namespace ClinicX.ViewModels
 {
@@ -19,5 +18,6 @@ namespace ClinicX.ViewModels
         public DictatedLetter dictatedLetter { get; set; }
         public Test test { get; set; }
         public BloodForm bloodForm { get; set; }
+        public bool isLive { get; set; }
     }
 }

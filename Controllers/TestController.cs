@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using ClinicX.ViewModels;
-using System.Data;
-using ClinicalXPDataConnections.Meta;
 using ClinicX.Meta;
 //using ClinicX.Data;
 using ClinicX.Models;
+using ClinicX.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Data;
+using System.Runtime.Intrinsics.Arm;
 //using Microsoft.Office.Interop.Outlook;
 
 namespace ClinicX.Controllers
@@ -69,6 +70,8 @@ namespace ClinicX.Controllers
                 _tvm.patient = await _patientData.GetPatientDetails(id);
                 _tvm.tests = await _testData.GetTestListByPatient(id);
                 _tvm.tests = _tvm.tests.OrderBy(t => t.ExpectedDate).ToList();
+
+                _tvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View(_tvm);
             }
@@ -322,7 +325,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> BloodFormEdit(int bloodFormID) //save data to use in the blood form preview
+        public async Task<IActionResult> BloodFormEdit(int bloodFormID, string? message, bool? success) //save data to use in the blood form preview
         {
             var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = user.STAFF_CODE;
@@ -336,7 +339,8 @@ namespace ClinicX.Controllers
             _tvm.sampleTypes = await _sampleData.GetSampleTypeList();
             _tvm.sampleRequirementList = await _sampleData.GetSampleRequirementsList();
 
-
+            _tvm.message = message;
+            _tvm.success = success.GetValueOrDefault();
 
             return View(_tvm);
         }
@@ -371,14 +375,27 @@ namespace ClinicX.Controllers
 
             //BloodFormData bfData = new BloodFormData(_cXContext);
             BloodForm bf = await _bloodFormData.GetBloodFormDetails(bloodFormID);
-            int testID = bf.TestID;
+            int testID = bf.TestID;            
 
-            
-
-            await _bfc.CreateBloodForm(bloodFormID, User.Identity.Name, altPatName, isPreview);
-
+            bool bloodFormCreated = await _bfc.CreateBloodForm(bloodFormID, User.Identity.Name, altPatName, isPreview);
+            string message = "";
             //return RedirectToAction("Edit", new { id = testID});
-            return File($"~/StandardLetterPreviews/bloodform-{User.Identity.Name}.pdf", "Application/PDF");
+            if (isPreview.GetValueOrDefault())
+            {
+                return File($"~/StandardLetterPreviews/bloodform-{User.Identity.Name}.pdf", "Application/PDF");
+            }
+            else
+            {
+                if (bloodFormCreated)
+                {
+                    message = "Blood form printed to your VOT";
+                }
+                else
+                {
+                    message = "Blood form creation failed :(";
+                }
+                return RedirectToAction("BloodFormEdit", new { bloodFormID = bloodFormID, message = message, success = bloodFormCreated });
+            }
         }
     }
 }

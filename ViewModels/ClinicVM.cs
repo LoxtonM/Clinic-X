@@ -35,5 +35,7 @@ namespace ClinicX.ViewModels
         public List<Diagnosis> diagnosisList { get; set; }
         public string message { get; set; }
         public bool success { get; set; }
+        public string edmsLink { get; set; }
+        public bool isLive { get; set; }
     }
 }

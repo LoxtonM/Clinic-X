@@ -29,5 +29,6 @@ namespace ClinicX.ViewModels
         public int refID { get; set; }
         public int riskID { get; set; }
         public string staffCode { get; set; }
+        public bool isLive { get; set; }
     }
 }

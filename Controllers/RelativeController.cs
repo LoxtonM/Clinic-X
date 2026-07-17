@@ -57,6 +57,7 @@ namespace ClinicX.Controllers
                 string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relatives", "", _ip.GetIPAddress());
+                _rvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View();
             }

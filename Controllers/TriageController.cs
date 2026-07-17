@@ -1,4 +1,5 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿using APIControllers.Controllers;
+using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 //using ClinicX.Data;
@@ -7,7 +8,7 @@ using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
-using APIControllers.Controllers;
+using System.Runtime.Intrinsics.Arm;
 
 namespace ClinicX.Controllers
 {
@@ -106,7 +107,9 @@ namespace ClinicX.Controllers
                 _ivm.icpCancerListOwn = icpCancerList.Where(r => r.GC_CODE == _ivm.staffCode).ToList(); //ones directly for the GC to "Review"
                 icpCancerList = icpCancerList.Where(r => r.ToBeReviewedby != null).ToList(); //because it keeps throwing a hissy fit!!
                 _ivm.icpCancerListOther = icpCancerList.Where(r => r.ToBeReviewedby.ToUpper() == User.Identity.Name.ToUpper()).ToList(); //ones from another GC, for a GC or Consultant to "Final Review"
-                
+
+                _ivm.isLive = _config.GetValue<bool>("IsLive");
+
                 return View(_ivm);
             }
             catch (Exception ex)

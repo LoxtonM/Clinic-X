@@ -33,5 +33,6 @@ namespace ClinicX.ViewModels
         public List<Patient> relativesList { get; set; }
         public string message { get; set; }
         public bool success { get; set; }
+        public bool isLive { get; set; }
     }
 }

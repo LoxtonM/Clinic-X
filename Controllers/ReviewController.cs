@@ -56,6 +56,8 @@ namespace ClinicX.Controllers
 
                 _rvm.reviewList = await _reviewData.GetReviewsList(User.Identity.Name);
 
+                _rvm.isLive = _config.GetValue<bool>("IsLive");
+
                 return View(_rvm);
             }
             catch (Exception ex)

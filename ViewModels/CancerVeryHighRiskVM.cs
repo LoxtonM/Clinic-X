@@ -12,5 +12,6 @@ namespace ClinicX.ViewModels
         public UntestedVHRGroup untestedVHRGroup { get; set; }
         public string message { get; set; }
         public bool success { get; set; }
+        public bool isLive { get; set; }
     }
 }

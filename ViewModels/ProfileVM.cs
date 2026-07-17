@@ -10,5 +10,6 @@ namespace ClinicX.ViewModels
         public string message { get; set; }
         public List<PatientTitle> titles { get; set; }
         public bool success { get; set; }
+        public bool isLive { get; set; }
     }
 }

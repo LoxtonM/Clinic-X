@@ -26,5 +26,6 @@ namespace ClinicX.ViewModels
         public List<ScreeningCoordinator> screeningCoordinatorList { get; set; }
         public List<Relative> relativeList { get; set; }
         public int selectedRelativeID { get; set; }
+        public bool isLive { get; set; }
     }
 }

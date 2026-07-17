@@ -72,5 +72,6 @@ namespace ClinicX.ViewModels
         public string phenotipsLink { get; set; }
         public int currentAge { get; set; }
         public ICP icp { get; set; }
+        public bool isLive { get; set; }
     }
 }

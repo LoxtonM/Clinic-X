@@ -11,12 +11,13 @@
     {
         Html.ActionLink("Clinics Index", "Index", "Clinic", new {  }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Record Outcome", "Edit", "Clinic", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Record Diagnoses", "Index", "Diagnosis", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Record Tests", "Index", "Test", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
+        @*Html.ActionLink("Record Outcome", "Edit", "Clinic", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" }),*@
+        Html.ActionLink("Diagnoses", "Index", "Diagnosis", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Tests", "Index", "Test", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Clinical Notes", "Index", "ClinicalNote", new { id=Model.Clinic.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Dictate Letter", "Create", "DictatedLetter", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Schedule Review", "Create", "Review", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" })
+        Html.ActionLink("Schedule Review", "Create", "Review", new { id=Model.Clinic.RefID }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
     };
 }
 
@@ -40,7 +41,12 @@
 
     <div class ="mb-2 g-2">
         <div class="row mt-2">
-            <h1>@Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.Clinic.MPI>@Model.Clinic.CGU_No</a></h1>
+            <div class="col-md-10">
+                <h1>@Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.Clinic.MPI>@Model.Clinic.CGU_No</a></h1>
+            </div>
+            <div class="col-md-2">
+                <a type="button" class="btn btn-success" asp-controller="Clinic" asp-action="Edit" asp-route-id=@Model.Clinic.RefID>Record Outcome</a>
+            </div>
         </div>
         <div class="row">
             <h4>DOB: @Model.patient.DOB.Value.ToString("dd/MM/yyyy")</h4>
@@ -90,7 +96,7 @@
                 @Html.DisplayNameFor(model => model.Clinic.Clinic):
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Clinic.Clinic)
+                @Html.DisplayFor(model => model.Clinic.Clinic) with @Html.DisplayFor(model => model.Clinic.Clinician)
             </dd>
             @if (Model.Clinic.Notes != null)
             {
@@ -217,7 +223,25 @@
 
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     window.addEventListener("load", LoadClinic);
-    
+    window.addEventListener("load", LoadEDMSLink);
+
+    function LoadEDMSLink()
+    {
+        //document.getElementById("btnPatientDocuments").hidden = true;
+
+        //only load EDMS link if there actually is one
+        if ("@(Model.patient.DCTM_Folder_ID)" != "")
+        {
+            document.getElementById("btnEDMS").href = "@Model.edmsLink";            
+        }
+        else
+        {
+            document.getElementById("btnEDMS").hidden = true;
+        }       
+
+    }
+
+
     function GoBack()
     {
         window.history.back();

@@ -15,5 +15,6 @@ namespace ClinicX.ViewModels
         public List<HPOExtractedTerms> hpoExtractedTerms { get; set;}
         public StaffMember staffMember { get; set; }
         public string searchTerm { get; set; }
+        public bool isLive { get; set; }
     }
 }

@@ -43,5 +43,6 @@ namespace ClinicX.ViewModels
         public string? cguNumber { get; set; }
         public List<Patient> patientsList { get; set; }
         public bool isLive { get; set; }
+        public string fileLocation { get; set; }
     }
 }

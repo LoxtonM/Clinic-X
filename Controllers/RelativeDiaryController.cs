@@ -7,6 +7,7 @@ namespace ClinicX.Controllers
 {
     public class RelativeDiaryController : Controller
     {
+        private readonly IConfiguration _config;
         private readonly IRelativeDataAsync _relativeData;
         private readonly IRelativeDiaryDataAsync _relativeDiaryData;
         private readonly IPatientDataAsync _patientData;
@@ -18,9 +19,10 @@ namespace ClinicX.Controllers
         private readonly IDiaryClinicianDataAsync _diaryClinicianData;
         private readonly RelativeDiaryVM _rdvm;
 
-        public RelativeDiaryController(IRelativeDataAsync relativeData, IRelativeDiaryDataAsync relativeDiaryData, IPatientDataAsync patientData, IRelativeDiarySourceDataAsync relativeDiarySourceData,
+        public RelativeDiaryController(IConfiguration config, IRelativeDataAsync relativeData, IRelativeDiaryDataAsync relativeDiaryData, IPatientDataAsync patientData, IRelativeDiarySourceDataAsync relativeDiarySourceData,
             IStaffUserDataAsync staffUserData, IDocumentsDataAsync documentsData, IDiaryActionDataAsync diaryActionData,  ICRUD crud, IDiaryClinicianDataAsync diaryClinicianData)
         {
+            _config = config;
             _relativeData = relativeData;
             _relativeDiaryData = relativeDiaryData;
             _patientData = patientData;
@@ -40,13 +42,15 @@ namespace ClinicX.Controllers
                 _rdvm.relativeDetails = await _relativeData.GetRelativeDetails(relId);
                 _rdvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
                 _rdvm.relativeDiaryList = await _relativeDiaryData.GetRelativeDiaryList(relId);
+
+                _rdvm.isLive = _config.GetValue<bool>("IsLive");            
+
+                return View(_rdvm);
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RelativeDiary" });
             }
-
-            return View(_rdvm);
         }
 
         [HttpGet]

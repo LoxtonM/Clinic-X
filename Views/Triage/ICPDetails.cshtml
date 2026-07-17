@@ -73,6 +73,23 @@
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.patientAddress)
             </dd>
+            <dt class="col-sm-2">
+                Contact numbers:
+            </dt>
+            <dd class="col-sm-10">
+                @if(Model.patient.TEL != null && Model.patient.TEL != "")
+                {
+                    <span><b>Home:</b> @Html.DisplayFor(model => model.patient.TEL) </span>
+                }
+                @if (Model.patient.WORKTEL != null && Model.patient.WORKTEL != "")
+                {
+                    <span><b>Work:</b> @Html.DisplayFor(model => model.patient.WORKTEL) </span>
+                }
+                @if (Model.patient.PtTelMobile != null && Model.patient.PtTelMobile != "")
+                {
+                    <span><b>Mobile:</b> @Html.DisplayFor(model => model.patient.PtTelMobile) </span>
+                }                
+            </dd>
 
             <hr />
 

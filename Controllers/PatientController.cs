@@ -88,7 +88,14 @@ namespace ClinicX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                var patientsInPedigree = await _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
+                var ped = await _pedigreeData.GetPedigree(_pvm.patient.PEDNO);
+
+                var patientsInPedigree = await _patientData.GetPatientsInPedigree(ped.PEDNO);
+
+                if (ped.File_Dctm_Sts == 0)
+                {
+                    _pvm.fileLocation = ped.FILE_LOCATION;
+                }
 
                 _pvm.relatives = await _relativeData.GetRelativesListForFamily(id);                
                 _pvm.hpoTermDetails = await _hpoData.GetHPOTermsAddedList(id);

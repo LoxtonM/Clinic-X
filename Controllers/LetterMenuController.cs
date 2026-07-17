@@ -125,6 +125,8 @@ namespace ClinicX.Controllers
 
             _lvm.selectedRelativeID = relID.GetValueOrDefault();
 
+            _lvm.isLive = _config.GetValue<bool>("IsLive");
+
             return View(_lvm);
         }
 

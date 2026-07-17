@@ -13,9 +13,9 @@ namespace ClinicX.ViewModels
         public List<Relation> relationslist { get; set; }
         public List<RelativeDiary> relativeDiaryList { get; set; }
         public List<RelativesDiagnosis> relativeDiagnosisList { get; set; }
-
         public int MPI { get; set; }
         public int WMFACSID { get; set; }
+        public bool isLive { get; set; }
 
     }
 }

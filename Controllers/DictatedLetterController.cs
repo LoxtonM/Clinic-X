@@ -65,6 +65,7 @@ namespace ClinicX.Controllers
 
                 _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
                 _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
+                _lvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View(_lvm);
             }
