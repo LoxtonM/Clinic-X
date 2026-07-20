@@ -136,6 +136,9 @@
             <div class="col-md-2">
                 <button type="submit" class="btn btn-default btn-outline-success">Save</button>
             </div>            
+            <div class="col-md-2">
+                <a type="button" class="btn btn-default btn-outline-danger" asp-controller="Triage" asp-action="CancerReview" asp-route-id=@Model.icpCancer.ICP_Cancer_ID>Cancel</a>
+            </div>
         </div>
     </form>
 

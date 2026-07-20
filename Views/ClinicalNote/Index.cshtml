@@ -11,7 +11,7 @@
     {
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
         Html.ActionLink("Clinics Index", "Index", "Clinic", new {  }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Create New", "ChooseAppt", "ClinicalNote", new { id = Model.patient.MPI}, new { @class = "btn btn-success m-1" })
+        @*Html.ActionLink("Create New", "ChooseAppt", "ClinicalNote", new { id = Model.patient.MPI}, new { @class = "btn btn-success m-1" })*@
     };
 }
 
@@ -71,6 +71,12 @@
                 }
             </tbody>
         </table>      
+    </div>
+
+    <div class="row g-5 mb-5">
+        <div col-md-2></div>
+        <div col-md-2><a type="button" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="ChooseAppt" asp-route-id=@Model.patient.MPI>Add New</a></div>        
+        <div col-md-8></div>
     </div>
 </div>
 

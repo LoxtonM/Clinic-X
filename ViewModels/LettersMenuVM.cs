@@ -27,5 +27,7 @@ namespace ClinicX.ViewModels
         public List<Relative> relativeList { get; set; }
         public int selectedRelativeID { get; set; }
         public bool isLive { get; set; }
+        public bool success { get; set; }
+        public string message { get; set; }
     }
 }

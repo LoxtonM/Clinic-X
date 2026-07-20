@@ -405,6 +405,8 @@ namespace ClinicX.Controllers
                 int refID = icp.REFID;
                 Referral referral = await _referralData.GetReferralDetails(refID);
                 string referrer = referral.ReferrerCode;
+                bool printSuccess = false;
+                string message = "";
 
                 CRUD _crud = new CRUD(_config);
                 int success = await _crud.CallStoredProcedure("ICP Cancer", "Triage", icpID, action, 0, "", "", "", "", User.Identity.Name);
@@ -432,8 +434,19 @@ namespace ClinicX.Controllers
                         qrCodeText = await _api.GetPPQQRCode(mpi, referral.PATHWAY);                        
                     }
 
-                    await _lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID, "", "", 0, "", "",
+                    LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+
+                    printSuccess = await lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID, "", "", 0, "", "",
                         null, false, qrCodeText);
+
+                    if(printSuccess)
+                    {
+                        message = docCode + " letter successfully printed to EDMS";
+                    }
+                    else
+                    {
+                        message = "Print failed :( ";
+                    }
                 }
 
                 if(icpAction.ID == 8)
@@ -449,7 +462,7 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("CancerReview", "Triage", new { id = _ivm.icpCancer.ICP_Cancer_ID });
+                    return RedirectToAction("CancerReview", "Triage", new { id = _ivm.icpCancer.ICP_Cancer_ID, success=printSuccess, message=message });
                 }
             }
             catch (Exception ex)
@@ -520,6 +533,8 @@ namespace ClinicX.Controllers
         {
             var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = user.STAFF_CODE;
+            bool printSuccess = false;
+            string message = "";
 
             _ivm.icpCancer = await _triageData.GetCancerICPDetails(id);
             var icpDetails = await _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
@@ -537,13 +552,8 @@ namespace ClinicX.Controllers
             {
                 letterAlreadyDone = true;
             }
-
-            
-                        
             
             if (toBeReviewedBy == null) { toBeReviewedBy = ""; }//because the default value isn't being assigned for some reason!            
-
-            
 
 
             reviewBy = user.STAFF_CODE;
@@ -594,7 +604,7 @@ namespace ClinicX.Controllers
                             LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
                             Referral refer = await _referralData.GetReferralDetails(refID);
                             
-                            await lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryIDLetter, freeText1, "", 0,
+                            printSuccess = await lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryIDLetter, freeText1, "", 0,
                             "", "", null, false, "", leafletID);
                         }
 

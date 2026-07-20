@@ -14,10 +14,28 @@
 }
 
 <div class="container">
+
     @if (!Model.isLive)
     {
         <h1 class="text-center redtext">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
     }
+
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
     <div class="row mb-5 g-5">
         @if(Model.selectedRelativeID == 0)
         {

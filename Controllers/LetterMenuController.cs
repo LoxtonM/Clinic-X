@@ -56,7 +56,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(int? refID, int mpi, int? relID = 0)
+        public async Task<IActionResult> Index(int? refID, int mpi, int? relID = 0, bool? success = false, string? message = "")
         {
             if (refID != null)
             {
@@ -127,6 +127,9 @@ namespace ClinicX.Controllers
 
             _lvm.isLive = _config.GetValue<bool>("IsLive");
 
+            _lvm.success = success.GetValueOrDefault();
+            _lvm.message = message;
+
             return View(_lvm);
         }
 
@@ -136,6 +139,8 @@ namespace ClinicX.Controllers
         {
             var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
             int docID = 0;
+            bool printSuccess = false;
+            string message = "";
 
             if (docCode != "REPSUM")
             {
@@ -196,8 +201,17 @@ namespace ClinicX.Controllers
                     }
                 }
 
-                await lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician,
+                printSuccess = await lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", 0, otherClinician,
                         siteText, null, isPreview, qrCodeText, leafletID, true);
+
+                if (printSuccess)
+                {
+                    message = docCode + " letter successfully printed to EDMS";
+                }
+                else
+                {
+                    message = "Print failed :(";
+                }
             }
 
             if(isPreview)
@@ -205,7 +219,9 @@ namespace ClinicX.Controllers
                 return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
 
-            return RedirectToAction("Index", new { refID = refID, mpi = mpi });
+            
+
+            return RedirectToAction("Index", new { refID = refID, mpi = mpi, success=printSuccess, message=message });
         }
     }
 }

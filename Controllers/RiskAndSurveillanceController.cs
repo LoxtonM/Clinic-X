@@ -226,6 +226,7 @@ namespace ClinicX.Controllers
                 _rsvm.survSiteCodes = await _survCodesData.GetSurvSiteCodesList();
                 _rsvm.survTypeCodes = await _survCodesData.GetSurvTypeCodesList();
                 _rsvm.survFreqCodes = await _survCodesData.GetSurvFreqCodesList();
+                _rsvm.geneChange = await _geneChange.GetGeneChangeList();
                 _rsvm.discontinuedReasonCodes = await _survCodesData.GetDiscReasonCodesList();
                 _rsvm.staffMembersList = await _staffUser.GetClinicalStaffList();
                 _rsvm.staffCode = staffCode;
@@ -253,14 +254,14 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddNewSurveillance(int riskID, string siteCode, string typeCode, string clinCode, 
+        public async Task<IActionResult> AddNewSurveillance(int riskID, string siteCode, string typeCode, string clinCode, string geneChange,
             DateTime recDate, int startAge, int endAge, string frequency, bool isUseLetter, bool isYN, string? discReason)
         {
             try
             {
                 if(discReason == null) { discReason = ""; } //because SQL doesn't like nulls
                 
-                int success = await _crud.CallStoredProcedure("Surveillance", "Create", riskID, startAge, endAge, siteCode, typeCode, clinCode, "",
+                int success = await _crud.CallStoredProcedure("Surveillance", "Create", riskID, startAge, endAge, siteCode, typeCode, clinCode, geneChange,
                     User.Identity.Name, recDate, null, isUseLetter, isYN, 0, 0, 0, frequency, discReason);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addSurv(SQL)" }); }
@@ -336,6 +337,7 @@ namespace ClinicX.Controllers
                 _rsvm.surveillanceDetails = await _survData.GetSurvDetails(id);
                 _rsvm.riskDetails = await _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
                 _rsvm.survFreqCodes = await _survCodesData.GetSurvFreqCodesList();
+                _rsvm.survTypeCodes = await _survCodesData.GetSurvTypeCodesList();
                 _rsvm.discontinuedReasonCodes = await _survCodesData.GetDiscReasonCodesList();
                 int mpi = _rsvm.surveillanceDetails.MPI;
 
@@ -351,7 +353,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> EditSurveillance(int id, string geneChange, DateTime discDate, int startAge, int endAge, string frequency, bool isDisc, string? discReason,
-            bool isUseLetter)
+            bool isUseLetter, string survType)
         {
             try
             {
@@ -362,7 +364,7 @@ namespace ClinicX.Controllers
 
                 if(discDate == null || discDate == DateTime.Parse("0001-01-01")) { discDate = DateTime.Parse("1900-01-01"); } //because Javascript has it as "0001-01-01" but SQL needs it to be "1900-01-01"
 
-                _crud.CallStoredProcedure("Surveillance", "Edit", id, startAge, endAge, geneChange, frequency, discReason, "", User.Identity.Name, discDate, null, isDisc, isUseLetter);
+                _crud.CallStoredProcedure("Surveillance", "Edit", id, startAge, endAge, geneChange, frequency, discReason, survType, User.Identity.Name, discDate, null, isDisc, isUseLetter);
 
                 return RedirectToAction("SurvDetails", "RiskAndSurveillance", new { id = id });
             }

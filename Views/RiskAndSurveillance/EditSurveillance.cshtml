@@ -15,13 +15,13 @@
     };
 }
 
-<div class="container">
+<div class="container card">
    
     <hr />
 
     <h1>@Model.surveillanceDetails.SurvSite Surveillance Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
 
-    <div class="d-grid">
+    <div class="card-body">
         
 
         <form asp-action="EditSurveillance">
@@ -29,6 +29,19 @@
                 <input type="text" name="id" asp-for=@Model.surveillanceDetails.SurvRecID />
             </div>
             <dl class="row">
+                <dt class="col-sm-2">
+                    Type:
+                </dt>
+                <dd class="col-sm-10">
+                    <select name="survType" asp-for=@Model.surveillanceDetails.SurvTypeCode>
+                        @foreach (var item in Model.survTypeCodes)
+                        {
+                            <option value=@item.SurvTypeCode>@item.SurvType</option>
+                        }
+                    </select>
+                </dd>
+
+                <dl class="row">
                 <dt class="col-sm-2">
                     Frequency:
                 </dt>
@@ -72,9 +85,7 @@
                         }
                     </select>
                 </dd>
-
             </dl>
-
             <div class="row mb-2 g-2">
                 <div class="col-md-2">
                     <label>Select Gene Change</label>
@@ -105,6 +116,9 @@
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-default btn-outline-success">Save</button>
                 </div>
+                    <div class="col-md-2">
+                        <a type="button" class="btn btn-default btn-outline-danger" asp-controller="RiskAndSurveillance" asp-action="SurvDetails" asp-route-id=@Model.surveillanceDetails.SurvRecID>Cancel</a>
+                    </div>
             </div>
         </form>
     </div>
