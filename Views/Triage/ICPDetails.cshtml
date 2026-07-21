@@ -538,9 +538,11 @@
         document.getElementById("lblGenP").hidden = true;
         document.getElementById("ddlGenP").hidden = true;
         document.getElementById("closeReferral").hidden = true;
+        _facility.hidden = false;
+        _facilityLabel.hidden = false;
 
         if (!document.getElementById("ddlTreatPath2-Clinic").hidden)
-        {
+        {            
             _tp2 = document.getElementById("ddlTreatPath2-Clinic");
 
             if (_tp2.value == "" ||  _tp2.value == "1" || _tp2.value == "6" || _tp2.value == "7" || _tp2.value == "8")
@@ -549,8 +551,7 @@
             }
             else
             {
-                document.getElementById("WaitingListDetails").hidden = false;
-
+                document.getElementById("WaitingListDetails").hidden = false;                
                 if(_tp2.value == "3")
                 {
                     document.getElementById("clicsActions").hidden = false;

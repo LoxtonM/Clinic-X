@@ -94,6 +94,8 @@ namespace ClinicX.Controllers
                 _tvm.tests = await _testData.GetTestListByUser(User.Identity.Name);
                 _tvm.tests = _tvm.tests.OrderBy(t => t.ExpectedDate).ToList();
 
+                _tvm.isLive = _config.GetValue<bool>("IsLive");
+
                 return View(_tvm);
             }
             catch (System.Exception ex)

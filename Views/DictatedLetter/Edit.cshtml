@@ -552,9 +552,12 @@
     document.addEventListener("input", OnInputChange);
 
     function OnInputChange() 
-    {
-        document.getElementById("btnApprove").disabled = true;
-        document.getElementById("btnApprove").value = "Save letter before approving";
+    {        
+        if(event.target.name!="isClockStop") //exempt ClockStop menu from the script
+        {
+            document.getElementById("btnApprove").disabled = true;
+            document.getElementById("btnApprove").value = "Save letter before approving";            
+        }
     }
 
     function LoadEDMSLink() 
