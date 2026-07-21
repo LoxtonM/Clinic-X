@@ -217,6 +217,25 @@ namespace ClinicX.Controllers
             _pvm.ppqURL = ppqLink;
 
             return View(_pvm); //returns the URL in a web page to copy/paste
-        }        
+        }
+
+        public async Task<IActionResult> CancelPPQ(int mpi, string pathway)
+        {
+            bool isSuccess = false;
+            string sMessage = "";
+
+            isSuccess = await _api.CancelPPQ(mpi, pathway); //cancels the PPQ, returns true (success) or false (failed)
+
+            if(isSuccess)
+            {
+                sMessage = "PPQ successfully cancelled!";
+            }
+            else
+            {
+                sMessage = "Failed to cancel PPQ.";
+            }
+
+            return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using APIControllers.Data;
 using APIControllers.Meta;
 using APIControllers.Models;
+using ClinicX.ViewModels;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 using RestSharp;
@@ -23,6 +24,7 @@ namespace APIControllers.Controllers
         Task<bool> CheckPPQSubmitted(int id, string ppqType);
         Task<string> GetPPQUrl(int id, string ppqType); //gets the patient facing URL of the PPQ
         Task<string> GetPPQQRCode(int id, string ppqType); //gets the patient facing QR code of the PPQ
+        Task<bool> CancelPPQ(int id, string ppqType);
         void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo); //adds patient to the Clinical_XP mirror table
         Task<List<HPOTerm>> GetHPOCodes(string searchTerm); //gets matching HPO codes
         Task<HPOTerm> GetHPODataByTermCode(string hpoTermCode); //gets the HPO entry details from the code
@@ -710,6 +712,76 @@ namespace APIControllers.Controllers
                 }                
             }
             return result;
+        }
+
+        public async Task<string> GetPPQID(int id, string ppqType)
+        {
+            var patient = _APIPatientData.GetPatientDetails(id);
+            string result = "";
+
+            string pID = "";
+            string ppqID;
+            if (ppqType.Trim() == "Cancer")
+            {
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 1);
+            }
+            else
+            {
+                ppqID = _constants.GetConstant("PhenotipsPPQIDs", 2);
+            }
+
+            pID = GetPhenotipsPatientID(id).Result;
+
+            if (pID != "" && pID != null)
+            {
+                if (CheckPPQExists(id, ppqType).Result)
+                {
+
+                    DateTime DOB = patient.DOB.GetValueOrDefault();
+                    int yob = DOB.Year;
+                    int mob = DOB.Month;
+                    int dob = DOB.Day;
+
+                    apiURL = apiURLBase + ":443/rest/questionnaire-scheduler/search";
+                    var options = new RestClientOptions(apiURL);
+                    var client = new RestClient(options);
+                    var request = new RestRequest("");
+                    request.AddHeader("authorization", $"Basic {authKey}");
+                    request.AddHeader("X-Gene42-Secret", apiKey);
+                    string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
+
+                    request.AddJsonBody(apiCall, false);
+                    var response = await client.PostAsync(request);                    
+
+                    if (response.Content.Contains("requestGuid"))
+                    {
+                        dynamic dynJson = JsonConvert.DeserializeObject(response.Content);
+                        result = dynJson.scheduleRequests[0].requestGuid;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public async Task<bool> CancelPPQ(int id, string ppqType)
+        {
+            var patient = _APIPatientData.GetPatientDetails(id);
+            bool success = false;
+            string ppqId = await GetPPQID(id, ppqType);
+
+            apiURL = apiURLBase + $":443/rest/questionnaire-scheduler/cancel";
+            var options = new RestClientOptions(apiURL);
+            var client = new RestClient(options);
+            var request = new RestRequest("");
+            request.AddHeader("content-type", "application/json");
+            request.AddHeader("authorization", $"Basic {authKey}");
+            request.AddHeader("X-Gene42-Secret", apiKey);
+            string apiCall = "{\"requestGuid\":\"" + $"{ppqId}" + "\"}";            
+            request.AddJsonBody(apiCall, false);
+            var response = await client.PostAsync(request);
+            success = true;
+
+            return success;
         }
 
         public async Task SetPhenotipsOwner(int id, string userName) //might not be necessary anymore...
