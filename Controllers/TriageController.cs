@@ -514,6 +514,8 @@ namespace ClinicX.Controllers
                 _ivm.docContentList = await _documentsData.GetDocumentsContentList();
                 _ivm.cancerReviewActionsLists = await _icpActionData.GetICPCancerReviewActionsList();
                 _ivm.currentAge = _ageCalculator.DateDifferenceDay(_ivm.patient.DOB.Value, DateTime.Now) / 365;
+                var priorityList = await _priorityData.GetPriorityList();
+                _ivm.priorityList = priorityList.OrderByDescending(p => p.PriorityLevel).ToList();
 
                 _ivm.message = message;
                 _ivm.success = success.GetValueOrDefault();
@@ -527,7 +529,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CancerReview(int id, string finalReview, string? clinician = "", string? clinic = "", string? comments = "", 
+        public async Task<IActionResult> CancerReview(int id, string finalReview, int priorityLevel, string? clinician = "", string? clinic = "", string? comments = "", 
             string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "", string? freeText1="", int? leafletID = 0) //, 
             
         {
@@ -572,7 +574,7 @@ namespace ClinicX.Controllers
 
                     if (clinician != null && clinician != "" && _ivm.icpCancer.WaitingListVenue != null)
                     {
-                        int successWL = await _crud.CallStoredProcedure("Waiting List", "Create", mpi, 50, refID, clinic, "Cancer", clinician, comments,
+                        int successWL = await _crud.CallStoredProcedure("Waiting List", "Create", mpi, priorityLevel, refID, clinic, "Cancer", clinician, comments,
                             User.Identity.Name, null, null, false, false); //where is "not for cross booking" stored?
 
                         if (successWL == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canAddWL(SQL)" }); }
@@ -920,7 +922,10 @@ namespace ClinicX.Controllers
             _ivm.referralDetails = await _referralData.GetReferralDetails(_ivm.icp.REFID);
 
             _ivm.patient = await _patientData.GetPatientDetails(_ivm.icp.MPI);
-
+            if (_ivm.patient.DOB != null)
+            {
+                _ivm.patientAge = _ageCalculator.DateDifferenceYear(_ivm.patient.DOB.GetValueOrDefault(), DateTime.Today);
+            }
 
             return View(_ivm);
         }

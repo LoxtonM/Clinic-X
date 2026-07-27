@@ -44,6 +44,11 @@ body {
     font-size: 14px;
 }
 
+.checkboxStyle {
+    width: 20px;
+    height: 20px
+}
+
 .choices__list--dropdown{
     min-width: 100% !important;
     width: max-content !important;

@@ -58,7 +58,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(int id)
+        public async Task<IActionResult> Index(int id, string? message, bool? success = false)
         {
             try
             {
@@ -71,6 +71,8 @@ namespace ClinicX.Controllers
                 _tvm.tests = await _testData.GetTestListByPatient(id);
                 _tvm.tests = _tvm.tests.OrderBy(t => t.ExpectedDate).ToList();
 
+                _tvm.success = success.GetValueOrDefault();
+                _tvm.message = message;
                 _tvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View(_tvm);
@@ -82,7 +84,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> AllOutstandingTests()
+        public async Task<IActionResult> AllOutstandingTests(string? message, bool? success = false)
         {
             try
             {
@@ -93,7 +95,8 @@ namespace ClinicX.Controllers
 
                 _tvm.tests = await _testData.GetTestListByUser(User.Identity.Name);
                 _tvm.tests = _tvm.tests.OrderBy(t => t.ExpectedDate).ToList();
-
+                _tvm.success = success.GetValueOrDefault();
+                _tvm.message = message;
                 _tvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View(_tvm);
@@ -147,7 +150,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit(int id, string? message, bool? success)
+        public async Task<IActionResult> Edit(int id, string? message, bool? success, string? callingForm)
         {
             try
             {
@@ -180,6 +183,7 @@ namespace ClinicX.Controllers
                 _tvm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1) + _tvm.patient.DCTM_Folder_ID + "/cg_view_pedigree_patie";
                 _tvm.success = success.GetValueOrDefault();
                 _tvm.message = message;
+                _tvm.callingForm = callingForm;
 
                 return View(_tvm);
             }
@@ -190,7 +194,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int testID, string result, string comments, string receivedDate, string givenDate, int complete)
+        public async Task<IActionResult> Edit(int testID, string result, string comments, string receivedDate, string givenDate, int complete, string? callingForm)
         {
             try
             {
@@ -198,6 +202,9 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
+
+                bool isSuccess = false;
+                string message = "";
 
                 DateTime dateReceived = new DateTime();
                 DateTime dateGiven = new DateTime();
@@ -233,7 +240,22 @@ namespace ClinicX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-edit(SQL)" }); }
 
-                return RedirectToAction("AllOutstandingTests");
+                //return RedirectToAction("AllOutstandingTests");
+
+                if(success == 1)
+                {
+                    isSuccess = true;
+                    message = "Saved!";
+                }
+
+                if (callingForm == "Index")
+                {
+                    return RedirectToAction(callingForm, new {id = mpi, success=isSuccess, message=message});
+                }
+                else
+                {
+                    return RedirectToAction(callingForm, new { success = isSuccess, message = message });
+                }
             }
             catch (System.Exception ex)
             {

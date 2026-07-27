@@ -385,14 +385,24 @@
             </div>
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
+                    <label>Priority:</label>
+                </div>
+                <div class="col-md-2">
+                    <select name="priority">
+                        @foreach(var item in Model.priorityList)
+                        {
+                            <option value=@item.PriorityLevel>@item.CLASS</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
                     <label>Not for cross booking:</label>
                 </div>
                 <div class="col-md-2">
-                    <input id="chkNotForCrossBooking" type="checkbox" class="form-check" />
-                </div>
-                <div class="col-md-2">
+                    <input id="chkNotForCrossBooking" type="checkbox" class="checkboxStyle" />                
                     <input id="txtNotForCrossBooking" name="isNotForCrossBooking" hidden />
                 </div>
+
             </div>
         </div>
 

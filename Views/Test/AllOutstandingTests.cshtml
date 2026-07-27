@@ -12,6 +12,21 @@
     {
         <h1 class="text-center redtext">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
     }
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
     @if  (Model.tests.Count() == 0)
     {    
         <h1 class="text-center">There are no tests outstanding.</h1>    
@@ -38,7 +53,7 @@
                     @foreach (var item in Model.tests)
                     {
                         <tr>
-                            <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID class="btn btn-success">Select</a></td>
+                            <td><a asp-controller="Test" asp-action="Edit" asp-route-id=@item.TestID asp-route-callingForm="AllOutstandingTests" class="btn btn-success">Select</a></td>
                             <td>@item.TEST</td>
                             <td>@item.FIRSTNAME @item.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@item.MPI>@item.CGU_No</a></td>
                             @if (@item.DATE_REQUESTED.HasValue)

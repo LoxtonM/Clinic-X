@@ -116,7 +116,7 @@
                     }
                     else
                     {
-                        <a id="btnPhenotips" class="btn btn-default btn-outline-danger" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Create Phenotips Record</a> <span class="redtext"> - this will push the patient directly into Phenotips (one-click process)</span>
+                        <a id="btnPhenotips" class="btn btn-default btn-outline-info" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Create Phenotips Record</a> <span class="redtext"> - this will push the patient directly into Phenotips (one-click process)</span>
                     }
                 }
             @*}*@
@@ -703,7 +703,7 @@
         <div class="row">
             <div class="col-md-10"></div>
             <div class="col-md-2">
-                <label>Show inactive:</label><input type="checkbox" id="chkShowInactive" />
+                <label>Show inactive:</label><input type="checkbox" id="chkShowInactive"  class="checkboxStyle" />
             </div>
         </div>
 
