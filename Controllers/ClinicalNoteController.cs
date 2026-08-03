@@ -52,7 +52,8 @@ namespace ClinicX.Controllers
 
                 _cvm.clinicalNotesList = await _clinicalNoteData.GetClinicalNoteList(id);
                 _cvm.patient = await _patientData.GetPatientDetails(id);
-                _cvm.noteCount = _cvm.clinicalNotesList.Count();                
+                _cvm.noteCount = _cvm.clinicalNotesList.Count();
+                _cvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View(_cvm);
             }

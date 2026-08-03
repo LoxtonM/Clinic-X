@@ -70,6 +70,8 @@ namespace ClinicX.Controllers
                 _rsvm.riskList = await _riskData.GetRiskListForPatient(mpi);
                 _rsvm.surveillanceList = await _survData.GetSurveillanceList(mpi);
 
+                _rsvm.isLive = _config.GetValue<bool>("IsLive");
+
                 return View(_rsvm);
             }
             catch (Exception ex)

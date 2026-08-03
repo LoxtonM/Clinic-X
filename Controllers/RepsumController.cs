@@ -208,7 +208,10 @@ namespace ClinicX.Controllers
                     string calcTool = "Unknown"; //because of course there's fucking nulls!!!
                     if (r.CalculationToolUsed != null) { calcTool = r.CalculationToolUsed; }
 
-                    rRow.Cells[0].AddParagraph(r.RiskDate.Value.ToString("dd/MM/yyyy"));
+                    if (r.RiskDate.HasValue)
+                    {
+                        rRow.Cells[0].AddParagraph(r.RiskDate.Value.ToString("dd/MM/yyyy"));
+                    }
                     if (r.RiskName != null)
                     {
                         rRow.Cells[1].AddParagraph(r.RiskName);
