@@ -174,7 +174,7 @@
                     }
                     @foreach (var item in Model.geneticsList)
                     {
-                        <option value=@item.MasterClinicianCode>@item.FACILITY - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
+                        <option value=@item.MasterClinicianCode>@item.FACILITY - @item.SPECIALITY - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.POSITION</option>
                     }
                 </select>
                 <select id="ddlHistoList" hidden onchange=SetOtherClinician("histo")>

@@ -779,8 +779,8 @@ namespace ClinicalXPDataConnections.Meta
                     contentRe.AddFormattedText("Re: " + patName + ", " + patDOB.ToString("dd/MM/yyyy"), TextFormat.Bold);
                     Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
-                    spacer = section.AddParagraph();
+                    //Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
+                    //spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para3);
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);

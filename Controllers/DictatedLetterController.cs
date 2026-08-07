@@ -287,15 +287,14 @@ namespace ClinicX.Controllers
 
                 var act = await _activityData.GetActivityDetails(id); //to get the letter we just created
 
-                //List<DictatedLetter> dotList = await _dictatedLetterData.GetDictatedLettersList(staffCode);
-
                 List<DictatedLetter> dotList = await _dictatedLetterData.GetDictatedLettersForPatient(act.MPI);
 
-                dotList = dotList.Where(l => l.RefID == id).OrderByDescending(l => l.CreatedDate).ToList();
+                //dotList = dotList.Where(l => l.RefID == id).OrderByDescending(l => l.CreatedDate).ToList();
+                dotList = dotList.Where(l => l.RefID == id).OrderByDescending(l => l.DoTID).ToList();
                 DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
                 int dID = dot.DoTID;
                 var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);
-                int mpi = letter.MPI.GetValueOrDefault(); //because clearly we can't do it in one line, that would be way too fucking convenient!!!
+                int mpi = letter.MPI.GetValueOrDefault();
 
                 int success2 = await _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "Draft", "", "", "", User.Identity.Name); //add the patient to the DOT
 

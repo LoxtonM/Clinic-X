@@ -70,11 +70,11 @@
                                 {
                                     if (Model.referralsActiveCancer.Count > 0)
                                     {
-                                        <a id="btnPhenotips" class="btn btn-default btn-outline-info" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer">Schedule Cancer PPQ</a>
+                                        <a id="btnPhenotips" class="btn btn-default btn-outline-info" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="Cancer" asp-route-callingForm="PatientDetails">Schedule Cancer PPQ</a>
                                     }
                                     if (Model.referralsActiveGeneral.Count > 0)
                                     {
-                                        <a id="btnPhenotips" class="btn btn-default btn-outline-info" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General">Schedule General PPQ</a>
+                                        <a id="btnPhenotips" class="btn btn-default btn-outline-info" asp-controller="Phenotips" asp-action="CreatePPQ" asp-route-mpi=@Model.patient.MPI asp-route-pathway="General" asp-route-callingForm="PatientDetails">Schedule General PPQ</a>
                                     }
                                 }
                                 else

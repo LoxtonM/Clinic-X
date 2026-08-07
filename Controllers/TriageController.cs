@@ -169,7 +169,8 @@ namespace ClinicX.Controllers
 
                 if (_ivm.patient.DOB != null)
                 {
-                    _ivm.patientAge = _ageCalculator.DateDifferenceYear(_ivm.patient.DOB.GetValueOrDefault(), DateTime.Today);
+                    _ivm.patientAge = _ageCalculator.DateDifferenceDay(_ivm.patient.DOB.Value, DateTime.Now) / 365;
+                    //_ivm.patientAge = _ageCalculator.DateDifferenceYear(_ivm.patient.DOB.GetValueOrDefault(), DateTime.Today);
                 }
                 _ivm.patientAddress = _ivm.patient.ADDRESS1; //build the address string - making sure to ignore the nulls
                 if (_ivm.patient.ADDRESS2 != null) { _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.ADDRESS2; }
@@ -207,7 +208,7 @@ namespace ClinicX.Controllers
                         var generalPPQExists = _api.CheckPPQExists(_ivm.patient.MPI, "General");
                         var cancerPPQComplete = _api.CheckPPQSubmitted(_ivm.patient.MPI, "Cancer");
                         var generalPPQComplete = _api.CheckPPQSubmitted(_ivm.patient.MPI, "General");
-                        var phenotipsID = _api.GetPhenotipsPatientID(id);
+                        var phenotipsID = _api.GetPhenotipsPatientID(_ivm.patient.MPI);
 
                         await Task.WhenAll(cancerPPQExists, generalPPQExists, cancerPPQComplete, generalPPQComplete, phenotipsID);
 
@@ -348,8 +349,9 @@ namespace ClinicX.Controllers
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genDiaryUpdate(SQL)" }); }
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, "CTBAck");
                     int diaryID = diary.DiaryID;
-                    
-                    _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
+
+                    LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+                    lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
                 }                
 
                 if (tp2 == 6) //Dictate letter

@@ -235,7 +235,7 @@ namespace ClinicX.Controllers
 
                 AgeCalculator ageCalc = new AgeCalculator(); //to display patient's current age (requested feature)
 
-                int ddYear = ageCalc.DateDifferenceYear(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now);
+                int ddYear = ageCalc.DateDifferenceDay(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now) / 365;
                 int ddMonth = ageCalc.DateDifferenceMonth(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now);
                 
                 if(ddMonth <= 0)

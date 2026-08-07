@@ -91,10 +91,10 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> CreatePPQ(int mpi, string? pathway)
+        public async Task<IActionResult> CreatePPQ(int mpi, string? pathway, string? callingForm, int? icpID)
         {
             string sMessage = "";
-            bool isSuccess = false;            
+            bool isSuccess = false;
 
             //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
 
@@ -113,8 +113,18 @@ namespace ClinicX.Controllers
             {
                 sMessage = "PPQ creation failed :(";
             }
-
-            return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
+            if (callingForm == "PatientDetails")
+            {
+                return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
+            }
+            else if (callingForm == "ICPDetails")
+            {
+                return RedirectToAction("ICPDetails", "Triage", new { id = icpID, success = isSuccess, message = sMessage });
+            }
+            else
+            {
+                return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
+            }
         }
 
         [Authorize]
