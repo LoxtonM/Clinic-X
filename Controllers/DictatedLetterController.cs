@@ -281,7 +281,7 @@ namespace ClinicX.Controllers
             {
                 var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = user.STAFF_CODE;
-                int success = await _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", staffCode, "", User.Identity.Name);
+                int success = await _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "Draft", "", staffCode, "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
 
@@ -296,7 +296,7 @@ namespace ClinicX.Controllers
                 var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);
                 int mpi = letter.MPI.GetValueOrDefault();
 
-                int success2 = await _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "Draft", "", "", "", User.Identity.Name); //add the patient to the DOT
+                int success2 = await _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
 
                 if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addPt(SQL)" }); }
 

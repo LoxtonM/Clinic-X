@@ -15,6 +15,23 @@
     {
         <h1 class="text-center redtext">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
     }
+
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
     <div class="row mb-2 g-2">
         <div class="col-md-8">
             @if(Model.caseLoad.Count() > 0)
@@ -43,7 +60,7 @@
                 </div>
                 <div class="col-md-3">                    
                     <select name="staffCode" asp-for=@Model.staffCode>                        
-                        @*<option value="">All</option>*@ @*Sorry but doing this makes it unacceptably slow :( *@
+                        <option value="All">All</option> @*Sorry but doing this makes it unacceptably slow :( *@
                         @foreach(var item in Model.clinicians)
                         {
                             <option value=@item.STAFF_CODE>@item.NAME</option>

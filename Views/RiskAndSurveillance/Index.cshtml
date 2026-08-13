@@ -90,6 +90,11 @@
     {
         <h2>There are no risk items added</h2>
     }
+    <div class="row">
+        <div class="col-md-2">
+            <a type="button" class="btn btn-success" asp-controller="RiskAndSurveillance" asp-action="ChooseActivity" asp-route-mpi=@Model.patient.MPI>Add New Risk</a>
+        </div>
+    </div>
 </div>
 
 <script>

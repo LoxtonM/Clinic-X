@@ -171,11 +171,11 @@ namespace ClinicX.Controllers
             {
                 if (pathway == "Cancer") //sends either ClicsFHF or Kc letter
                 {
-                    _lc.DoPDF(156, mpi, referral.refid, User.Identity.Name, referral.ReferrerCode, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, true, result);
+                    await _lc.DoPDF(156, mpi, referral.refid, User.Identity.Name, referral.ReferrerCode, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, true, result, 0, true);
                 }
                 else
                 {
-                    _lc.DoPDF(191, mpi, referral.refid, User.Identity.Name, referral.ReferrerCode, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, true, result);
+                    await _lc.DoPDF(191, mpi, referral.refid, User.Identity.Name, referral.ReferrerCode, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, true, result, 0, true);
                 }
 
                 System.IO.File.Delete($"wwwroot\\Images\\qrCode-{user}.jpg");

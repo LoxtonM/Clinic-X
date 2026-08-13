@@ -43,11 +43,29 @@ namespace ClinicX.Controllers
             {
                 var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string userStaffCode = user.STAFF_CODE;
-                                
+
+                List<Caseload> caseLoad = new List<Caseload>();
+
                 if (staffCode == null)
                 {
                     staffCode = userStaffCode;
                 }                
+
+                if(staffCode == "All")
+                {
+                    if(clType == null || clType == "")
+                    {
+                        _cvm.message = "You need to select a type if you want all clinicians";
+                    }
+                    else
+                    {
+                        caseLoad = await _caseloadData.GetCaseloadListByType(clType);
+                    }
+                }
+                else
+                {
+                    caseLoad = await _caseloadData.GetCaseloadList(staffCode);
+                }
 
                 _cvm.isSupervisor = false;
                 
@@ -55,16 +73,17 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(userStaffCode, "ClinicX - Caseloads", "StaffCode=" + staffCode, _ip.GetIPAddress());
 
                 _cvm.staffCode = staffCode;
-                var caseLoad = await _caseloadData.GetCaseloadList(staffCode);
+                //caseLoad = await _caseloadData.GetCaseloadList(staffCode);
                 caseLoad = caseLoad.OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();
                 _cvm.clinicians = await _staffUser.GetClinicalStaffList();
-                if (staffCode != null && staffCode != "")
+                
+                if (staffCode != null && staffCode != "All")
                 {
                     _cvm.name = await _staffUser.GetStaffNameFromStaffCode(staffCode);
                 }
                 else
                 {
-                    _cvm.name = "All clinicians";
+                    _cvm.name = "All Clinicians (" + clType + "s)";
                 }
 
                 if (clType != null && clType != "")

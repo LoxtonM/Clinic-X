@@ -2507,6 +2507,11 @@ namespace ClinicalXPDataConnections.Meta
 
                 if (!isPreview.GetValueOrDefault())
                 {
+                    if(!adminToPrint.GetValueOrDefault())
+                    {
+                        printCount = 0;
+                    }
+
                     string edmsPath = _constantsData.GetConstant("PrintPathEDMS", 1);
                     File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
 

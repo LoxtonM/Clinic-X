@@ -16,7 +16,7 @@ namespace ClinicX.Controllers
         //private readonly ClinicalContext _clinContext;
         //private readonly ClinicXContext _cXContext;
         private readonly RiskSurveillanceVM _rsvm;
-        private readonly IConfiguration _config;        
+        private readonly IConfiguration _config;
         private readonly IPatientDataAsync _patientData;
         private readonly IStaffUserDataAsync _staffUser;
         private readonly ITriageDataAsync _triageData;
@@ -29,12 +29,14 @@ namespace ClinicX.Controllers
         private readonly IGeneChangeDataAsync _geneChange;
         private readonly IGeneCodeDataAsync _geneCode;
         private readonly IRelativeDataAsync _relData;
+        private readonly IReferralDataAsync _refData;
+        private readonly IAgeCalculator _ageCalculator;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
         public RiskAndSurveillanceController(IConfiguration config, IPatientDataAsync patientData, IStaffUserDataAsync staffUserData, ITriageDataAsync triageData, IRiskDataAsync riskData,
             ISurveillanceDataAsync surveillanceData, IRiskCodesDataAsync riskCodesData, ISurveillanceCodesDataAsync surveillanceCodesData, ITestEligibilityDataAsync testEligibilityData,
-            IMiscData miscData, IGeneChangeDataAsync geneChangeData, IGeneCodeDataAsync geneCodeData, IRelativeDataAsync relativeData, ICRUD crud,IAuditService auditService)
+            IMiscData miscData, IGeneChangeDataAsync geneChangeData, IGeneCodeDataAsync geneCodeData, IRelativeDataAsync relativeData, IReferralDataAsync refData, ICRUD crud, IAuditService auditService, IAgeCalculator ageCalculator)
         {
             //_clinContext = context;
             //_cXContext = cXContext;
@@ -52,8 +54,10 @@ namespace ClinicX.Controllers
             _geneChange = geneChangeData;
             _geneCode = geneCodeData;
             _relData = relativeData;
+            _refData = refData;
             _crud = crud;
             _audit = auditService;
+            _ageCalculator = ageCalculator;
         }
 
         [Authorize]
@@ -111,13 +115,13 @@ namespace ClinicX.Controllers
                 string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rsvm.geneChange= await _geneChange.GetGeneChangeList();
+                _rsvm.geneChange = await _geneChange.GetGeneChangeList();
                 _rsvm.surveillanceDetails = await _survData.GetSurvDetails(id);
                 _rsvm.riskDetails = await _riskData.GetRiskDetails(_rsvm.surveillanceDetails.RiskID);
                 int mpi = _rsvm.surveillanceDetails.MPI;
 
                 _rsvm.patient = await _patientData.GetPatientDetails(mpi);
-                
+
                 return View(_rsvm);
             }
             catch (Exception ex)
@@ -136,15 +140,15 @@ namespace ClinicX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + survID.ToString(), _ip.GetIPAddress());
                 var risk = await _survData.GetSurvDetails(survID);
-                int riskID = risk.RiskID;                
+                int riskID = risk.RiskID;
 
                 int success = await _crud.CallStoredProcedure("Surveillance", "Add Gene Change", survID, geneChange, 0, "", "", "", "",
                     User.Identity.Name, null, null, false, false);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RiskSurv-addRisk(QSL)" }); }
-                               
-                
-                return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = riskID });               
+
+
+                return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = riskID });
             }
             catch (Exception ex)
             {
@@ -183,13 +187,13 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddNewRisk(int refID, string riskCode, string siteCode, string clinCode, 
-            DateTime riskDate, float lifetimePercent, string comments, float f2529, float f3040, float f4050, 
+        public async Task<IActionResult> AddNewRisk(int refID, string riskCode, string siteCode, string clinCode,
+            DateTime riskDate, float lifetimePercent, string comments, float f2529, float f3040, float f4050,
             float f5060, bool isUseLetter, string tool)
         {
             try
             {
-                if(isUseLetter == null) { isUseLetter = false; } //because somehow it's getting nulls sometimes!
+                if (isUseLetter == null) { isUseLetter = false; } //because somehow it's getting nulls sometimes!
 
                 int success = await _crud.CallStoredProcedure("Risk", "Create", refID, 0, 0, riskCode, siteCode, clinCode, comments,
                     User.Identity.Name, riskDate, null, isUseLetter, false, 0, 0, 0, tool, "", "", lifetimePercent,
@@ -209,7 +213,7 @@ namespace ClinicX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RiskSurv-addRisk" });
             }
-        }        
+        }
 
         [HttpGet]
         [Authorize]
@@ -237,11 +241,11 @@ namespace ClinicX.Controllers
 
                 int ddYear = ageCalc.DateDifferenceDay(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now) / 365;
                 int ddMonth = ageCalc.DateDifferenceMonth(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now);
-                
-                if(ddMonth <= 0)
+
+                if (ddMonth <= 0)
                 {
                     ddYear -= 1;
-                    ddMonth += 12; 
+                    ddMonth += 12;
                 }
 
                 _rsvm.patientAge = $"{ddYear} years {ddMonth} months";
@@ -261,8 +265,8 @@ namespace ClinicX.Controllers
         {
             try
             {
-                if(discReason == null) { discReason = ""; } //because SQL doesn't like nulls
-                
+                if (discReason == null) { discReason = ""; } //because SQL doesn't like nulls
+
                 int success = await _crud.CallStoredProcedure("Surveillance", "Create", riskID, startAge, endAge, siteCode, typeCode, clinCode, geneChange,
                     User.Identity.Name, recDate, null, isUseLetter, isYN, 0, 0, 0, frequency, discReason);
 
@@ -312,7 +316,7 @@ namespace ClinicX.Controllers
                 var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());                                
+                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _crud.CallStoredProcedure("Risk", "Edit", id, useLetter, 0, riskCode, siteCode, clinCode, comments, User.Identity.Name, null, null, false, false,
                     0, 0, 0, "", tool, "", f2529, f3040, f4050, f5060, lifetimePercent);
@@ -364,7 +368,7 @@ namespace ClinicX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk Details", "ID=" + id.ToString(), _ip.GetIPAddress());
 
-                if(discDate == null || discDate == DateTime.Parse("0001-01-01")) { discDate = DateTime.Parse("1900-01-01"); } //because Javascript has it as "0001-01-01" but SQL needs it to be "1900-01-01"
+                if (discDate == null || discDate == DateTime.Parse("0001-01-01")) { discDate = DateTime.Parse("1900-01-01"); } //because Javascript has it as "0001-01-01" but SQL needs it to be "1900-01-01"
 
                 _crud.CallStoredProcedure("Surveillance", "Edit", id, startAge, endAge, geneChange, frequency, discReason, survType, User.Identity.Name, discDate, null, isDisc, isUseLetter);
 
@@ -392,12 +396,12 @@ namespace ClinicX.Controllers
                 _rsvm.icpCancer = await _triageData.GetCancerICPDetails(id);
                 _rsvm.patient = await _patientData.GetPatientDetails(_rsvm.icpCancer.MPI);
                 _rsvm.eligibilityList = await _testEligibilityData.GetTestingEligibilityList(_rsvm.patient.MPI);
-                _rsvm.refID = _rsvm.icpCancer.RefID;                
+                _rsvm.refID = _rsvm.icpCancer.RefID;
                 _rsvm.geneCode = await _geneCode.GetGeneCodeList();
                 _rsvm.staffCode = staffCode;
                 _rsvm.calculationTools = await _riskCodesData.GetCalculationToolsList();
                 _rsvm.relatives = await _relData.GetRelativesList(_rsvm.patient.MPI);
-                
+
                 return View(_rsvm);
             }
             catch (Exception ex)
@@ -407,7 +411,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewTestingEligibility(int refID, int gene, string tool, string score, string offerTest, int? relative=0)
+        public async Task<IActionResult> AddNewTestingEligibility(int refID, int gene, string tool, string score, string offerTest, int? relative = 0)
         {
             try
             {
@@ -418,9 +422,9 @@ namespace ClinicX.Controllers
 
                 ICP icp = await _triageData.GetICPDetailsByRefID(refID);
                 _rsvm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
-                                
+
                 bool isRelative = false; //set a bool based in an int
-                if(relative != 0) { isRelative = true; }
+                if (relative != 0) { isRelative = true; }
 
                 if (score == null) { score = ""; }
 
@@ -442,7 +446,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> EditTestingEligibilityDetails(int id)
         {
             _rsvm.eligibilityDetails = await _testEligibilityData.GetTestingEligibilityDetails(id);
-            _rsvm.patient = await _patientData.GetPatientDetails(_rsvm.eligibilityDetails.MPI);            
+            _rsvm.patient = await _patientData.GetPatientDetails(_rsvm.eligibilityDetails.MPI);
             _rsvm.relatives = await _relData.GetRelativesList(_rsvm.patient.MPI);
             ICP icp = await _triageData.GetICPDetailsByRefID(_rsvm.eligibilityDetails.RefID);
             _rsvm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
@@ -491,6 +495,34 @@ namespace ClinicX.Controllers
 
             //return RedirectToAction("CancerReview", "Triage", new { id = icpID });
             return RedirectToAction("RiskDetails", "RiskAndSurveillance", new { id = _rsvm.surveillanceDetails.RiskID });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ChooseActivity(int mpi, string? message, bool? success)
+        {
+            _rsvm.patient = await _patientData.GetPatientDetails(mpi);
+            _rsvm.referralList = await _refData.GetReferralsList(mpi);
+            _rsvm.currentAge = _ageCalculator.DateDifferenceDay(_rsvm.patient.DOB.Value, DateTime.Now) / 365;
+
+            _rsvm.message = message;
+            _rsvm.success = success.GetValueOrDefault();
+            _rsvm.isLive = _config.GetValue<bool>("IsLive");
+
+            return View(_rsvm);
+        }
+
+        public async Task<IActionResult> SelectReferral(int id)
+        {
+            var referral = await _refData.GetReferralDetails(id);
+            var icp = await _triageData.GetICPDetailsByRefID(id);
+            var icpCancer = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+
+            if(icpCancer == null)
+            {
+                return RedirectToAction("ChooseActivity", "RiskAndSurveillance", new { mpi = referral.MPI, message="No Cancer ICP Found", success=false });
+            }
+
+            return RedirectToAction("AddNewRisk", "RiskAndSurveillance", new { id = icpCancer.ICPID });
         }
     }
 }

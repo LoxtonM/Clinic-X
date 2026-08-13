@@ -351,7 +351,7 @@ namespace ClinicX.Controllers
                     int diaryID = diary.DiaryID;
 
                     LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
-                    lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
+                    await lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID, "", "", 0, "", "", null, false, "", 0, true);
                 }                
 
                 if (tp2 == 6) //Dictate letter
@@ -372,7 +372,7 @@ namespace ClinicX.Controllers
 
                 if (tp2 == 7) //Reject letter
                 {                    
-                    _lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer);
+                    await _lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, false, "", 0, true);
                 }
 
                 if(closeReferral.GetValueOrDefault())
@@ -439,7 +439,7 @@ namespace ClinicX.Controllers
                     LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
 
                     printSuccess = await lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID, "", "", 0, "", "",
-                        null, false, qrCodeText);
+                        null, false, qrCodeText, 0, true);
 
                     if(printSuccess)
                     {
@@ -609,7 +609,7 @@ namespace ClinicX.Controllers
                             Referral refer = await _referralData.GetReferralDetails(refID);
                             
                             printSuccess = await lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryIDLetter, freeText1, "", 0,
-                            "", "", null, false, "", leafletID);
+                            "", "", null, false, "", leafletID, true);
                         }
 
                         if (successDiaryLetter == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canDiaryUpdate(SQL)" }); }
@@ -698,8 +698,8 @@ namespace ClinicX.Controllers
                     int diaryID = diary.DiaryID;
 
                     var refer = await _referralData.GetReferralDetails(refID);
-                    _lc.DoPDF(docID, mpi, refID, User.Identity.Name, refer.ReferrerCode, additionalText, "", 0, "",
-                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview);
+                    await _lc.DoPDF(docID, mpi, refID, User.Identity.Name, refer.ReferrerCode, additionalText, "", 0, "",
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview, "", 0, true);
                 }
 
                 if (docID2 != null && docID2 != 0)
@@ -712,8 +712,8 @@ namespace ClinicX.Controllers
                     int diaryID = diary.DiaryID;
 
                     var refer = await _referralData.GetReferralDetails(refID);
-                    _lc.DoPDF(docID2, mpi, refID, User.Identity.Name, refer.ReferrerCode, additionalText, "", 0, "",
-                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview);
+                    await _lc.DoPDF(docID2, mpi, refID, User.Identity.Name, refer.ReferrerCode, additionalText, "", 0, "",
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview, "", 0, true);
                 }
 
                 if (docID3 != null && docID3 != 0)
@@ -726,8 +726,8 @@ namespace ClinicX.Controllers
                     int diaryID = diary.DiaryID;
 
                     var refer = await _referralData.GetReferralDetails(refID);
-                    _lc.DoPDF(docID3, mpi, refID, User.Identity.Name, refer.ReferrerCode, additionalText, "", 0, "",
-                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview);
+                    await _lc.DoPDF(docID3, mpi, refID, User.Identity.Name, refer.ReferrerCode, additionalText, "", 0, "",
+                        false, false, 0, freeText1, freeText2, relID, clinicianCode, siteText, diagDate, isPreview, "", 0, true);
                 }
                 if (!isPreview.GetValueOrDefault())
                 {

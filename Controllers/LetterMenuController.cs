@@ -142,7 +142,7 @@ namespace ClinicX.Controllers
             bool printSuccess = false;
             string message = "";
 
-            if (docCode != "REPSUM")
+            if (docCode != "REPSUM" && docCode != "HS")
             {
                 docID = doc.DocContentID;
             }
@@ -185,6 +185,13 @@ namespace ClinicX.Controllers
                 var icpC = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
 
                 return RedirectToAction("PrepareRepsum", "Repsum", new { id = icpC.ICP_Cancer_ID, diaryID = diaryID });
+            }            
+            else if (docCode == "HS")
+            {
+                var icp = await _triageData.GetICPDetailsByRefID(refID);
+                var icpC = await _triageData.GetCancerICPDetailsByICPID(icp.ICPID);
+
+                return RedirectToAction("PrepareHS", "HS", new { id = icpC.ICP_Cancer_ID, diaryID = diaryID });
             }
             else
             {

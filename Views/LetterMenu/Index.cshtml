@@ -549,7 +549,7 @@
 
         var _url = "";
 
-        if(_docCode == "REPSUM")
+        if(_docCode == "REPSUM" || _docCode == "HS")
         {
             var _icpid=0;
             var refIDArray = [];
@@ -580,9 +580,17 @@
             }
             else
             {
-                _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/Repsum/PrepareRepsum?id=" + _icpid + "&isPreview=true";
+                if(_docCode == "REPSUM")
+                {
+                    _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/Repsum/PrepareRepsum?id=" + _icpid + "&isPreview=true";
+                }
+                else if(_docCode == "HS")
+                {
+                    _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/HS/PrepareHS?id=" + _icpid + "&isPreview=true";
+                }
             }
-        }
+            
+        }        
         else
         {
             _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + _refID

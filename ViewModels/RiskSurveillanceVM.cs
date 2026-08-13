@@ -25,10 +25,14 @@ namespace ClinicX.ViewModels
         public List<GeneChange> geneChange { get; set; }
         public List<GeneCode> geneCode { get; set; }
         public List<Relative> relatives { get; set; }
+        public List<Referral> referralList { get; set; }
         public string patientAge { get; set; }
         public int refID { get; set; }
         public int riskID { get; set; }
         public string staffCode { get; set; }
         public bool isLive { get; set; }
+        public int currentAge { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
     }
 }
