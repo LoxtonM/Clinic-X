@@ -871,8 +871,7 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     if (content2 != null && content2 != "")
                     {
-                        Paragraph letterContent2 = section.AddParagraph();
-                        letterContent2.AddFormattedText(content2, TextFormat.Bold);
+                        Paragraph letterContent2 = section.AddParagraph(content2);
                         spacer = section.AddParagraph();
                     }
                     Paragraph letterContent3 = section.AddParagraph(content3);

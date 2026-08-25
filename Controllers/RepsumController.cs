@@ -53,13 +53,32 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> PrepareRepsum(int id, int diaryID, bool isPreview)
+        public async Task<IActionResult> PrepareRepsum(int id, int diaryID, bool isPreview, string? docCode)
         {
             bool repsumDone = await DoRepsum(id, diaryID, User.Identity.Name, isPreview); //should return success (or failure if something goes wrong in the creation process)
 
             string message = "";           
 
-            if(repsumDone) { message = "Final review complete - REPSUM has been created for filing in EDMS"; }
+            if(repsumDone) 
+            {
+                message = "Final review complete - REPSUM";
+                
+                if(docCode != null && docCode != "DOT") 
+                { 
+                    message += $" and {docCode} have"; 
+                }                
+                else
+                {
+                    message += " has";
+                }
+
+                message += " been created for filing in EDMS"; 
+
+                if(docCode == "DOT")
+                {
+                    message += " and DOT draft has been created";
+                }
+            }
             else { message = "REPSUM failed - If the review has completed, please try from the letters menu"; }
 
             if (isPreview)

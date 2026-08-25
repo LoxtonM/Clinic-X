@@ -1,5 +1,4 @@
 ﻿using ClinicalXPDataConnections.Models;
-using ClinicX.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicX.ViewModels
@@ -39,10 +38,12 @@ namespace ClinicX.ViewModels
         public List<ICP> icpList { get; set; }
         public string edmsLink { get; set; }
         public string phenotipsLink { get; set; }
+        public string ptID { get; set; }
         public bool isProtectedAddress { get; set; }
         public string? cguNumber { get; set; }
         public List<Patient> patientsList { get; set; }
         public bool isLive { get; set; }
         public string fileLocation { get; set; }
+        public List<PhenotipsPatient> phenotipsPatients { get; set; }
     }
 }

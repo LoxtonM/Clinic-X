@@ -199,11 +199,14 @@ namespace ClinicX.Controllers
                         _pvm.isGeneralPPQScheduled = await generalPPQExists;
                         _pvm.isCancerPPQComplete = await cancerPPQComplete;
                         _pvm.isGeneralPPQComplete = await generalPPQComplete;
-                        string ptID = await phenotipsID;
+                        _pvm.ptID = await phenotipsID;
 
                         string baseURL = await _constantsData.GetConstant("PhenotipsURL", 1);
 
-                        if(!string.IsNullOrWhiteSpace(baseURL) && !string.IsNullOrWhiteSpace(ptID)) { _pvm.phenotipsLink = baseURL.TrimEnd('/') + "/" + ptID; }
+                        if(!string.IsNullOrWhiteSpace(baseURL) && !string.IsNullOrWhiteSpace(_pvm.ptID)) 
+                        { 
+                            _pvm.phenotipsLink = baseURL.TrimEnd('/'); 
+                        }
                     }
                 }
 
@@ -238,6 +241,21 @@ namespace ClinicX.Controllers
                         if(item.ProtectedAddress) { _pvm.isProtectedAddress = true; }
                     }
                 }
+
+                _pvm.phenotipsPatients = new List<PhenotipsPatient>();
+
+                var family = await _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
+
+                foreach (var item in family)
+                {
+                    var pat = await _phenotipsMirrorData.GetPhenotipsPatientByID(item.MPI);
+
+                    if(pat != null)
+                    {                         
+                        _pvm.phenotipsPatients.Add(pat);
+                    }                    
+                }
+
                 _pvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View(_pvm);

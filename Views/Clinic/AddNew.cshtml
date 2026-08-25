@@ -69,7 +69,7 @@
                             Time Spent:
                         </dt>
                         <dd class="col-sm-1">
-                            <input class="w-100" name="timeSpent" />
+                            <input class="w-100" name="timeSpent" id="txtDuration" />
                         </dt>
                         <dd class="col-sm-9"></dt>
                     </dl>
@@ -318,11 +318,14 @@
     function DoSubmit()
     { //because we can't do the email and redirect back to the normal page, oh no! That would be far too helpful.
 
-        document.getElementById("ContactDetails").hidden = true;
-        document.getElementById("TelAdmin").hidden = true;
-        document.getElementById("SavedMessage").hidden = false;
-        document.getElementById("btnCompleteCOF").disabled=true;        
-        document.getElementById("ContactOutcome").submit();
+        if(CheckFormValid() == 1)
+        {
+            document.getElementById("ContactDetails").hidden = true;
+            document.getElementById("TelAdmin").hidden = true;
+            document.getElementById("SavedMessage").hidden = false;
+            document.getElementById("btnCompleteCOF").disabled=true;        
+            document.getElementById("ContactOutcome").submit();
+        }
     }
 
     function ShowAppType()
@@ -340,6 +343,40 @@
     function SetAddAsNote()
     {        
         document.getElementById("txtAddAsNote").value = document.getElementById("chkAddAsNote").checked;
+    }
+
+
+    function CheckFormValid()
+    { //validation to ensure all required data is entered
+        if (document.getElementById("ddlRefID").value == null || document.getElementById("ddlRefID").value == "")
+        {
+            window.alert("Please select a referral.");
+            return 0;
+        }
+
+        if (document.getElementById("ddlAppType").value == null || document.getElementById("ddlAppType").value == "")
+        {
+            window.alert("Please select a contact type.");
+            return 0;
+        }
+
+        if (document.getElementById("txtBookedDate").value == null || document.getElementById("txtBookedDate").value == "")
+        {
+            window.alert("Please specify a date.");
+            return 0;
+        }
+        if (document.getElementById("txtBookedTime").value == null || document.getElementById("txtBookedTime").value == "")
+        {
+            window.alert("Please specify a time.");
+            return 0;
+        }
+        if (document.getElementById("txtDuration").value == null || document.getElementById("txtDuration").value == "")
+        {
+            window.alert("Please specify a duration.");
+            return 0;
+        }           
+
+        return 1;
     }
     
 

@@ -116,7 +116,28 @@
                     }
                     else
                     {
-                        <a id="btnPhenotips" class="btn btn-default btn-outline-info" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Create Phenotips Record</a> <span class="redtext"> - this will push the patient directly into Phenotips (one-click process)</span>
+                        <div class="row mb-1 g-1">
+                            <div class="col-md-12">
+                                <a id="btnPhenotips" class="btn btn-default btn-outline-info" asp-controller="Phenotips" asp-action="PushPatientToPt" asp-route-mpi=@Model.patient.MPI>Create Phenotips Record</a> <span class="redtext"> - this will push the patient directly into Phenotips (one-click process)</span>
+                            </div>
+                        </div>
+
+                        @if (Model.phenotipsPatients.Count > 0)
+                        {
+                            <div class="row">
+                                <h2>Family members currently in Phenotips:</h2>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <ul>
+                                        @foreach(var item in Model.phenotipsPatients)
+                                        {
+                                            <li>@item.CGUNumber - @item.FirstName @item.LastName</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
                     }
                 }
             @*}*@
@@ -1009,7 +1030,7 @@
          //also load Phenotips link if there is one
         if("@(Model.isPatientInPhenotips)" == "True")
         {
-            document.getElementById("btnPhenotips").href = "@Model.phenotipsLink";
+            document.getElementById("btnPhenotips").href = "@Model.phenotipsLink" + "/" + "@Model.ptID";
         }
         else
         {

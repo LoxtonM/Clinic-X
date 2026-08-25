@@ -244,7 +244,7 @@ namespace ClinicX.Controllers
 
                 if (ddMonth <= 0)
                 {
-                    ddYear -= 1;
+                    //ddYear -= 1;
                     ddMonth += 12;
                 }
 
