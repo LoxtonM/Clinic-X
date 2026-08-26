@@ -201,7 +201,9 @@ namespace ClinicX.Controllers
 
                         if (mirror.FamilyID == null || mirror.FamilyID == "")
                         {
-                            await _api.SynchroniseMirrorWithPhenotips(id);
+                            //on the 26th of August 2026, I officially changed the below to use "_ivm.patient.MPI"
+                            await _api.SynchroniseMirrorWithPhenotips(_ivm.patient.MPI);
+                            //so if this somehow reverts back to using "id" again, then we have a serious fucking problem!!!
                         }
 
                         var cancerPPQExists = _api.CheckPPQExists(_ivm.patient.MPI, "Cancer");
@@ -618,7 +620,7 @@ namespace ClinicX.Controllers
                         LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
                         Referral refer = await _referralData.GetReferralDetails(refID);
 
-                        printSuccess = await lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, "", "", 0, "", false, false, diaryIDLetter, freeText1, "", 0,
+                        printSuccess = await lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, freeText1, "", 0, "", false, false, diaryIDLetter, "", "", 0,
                             "", "", null, false, "", leafletID, true);
                     }
 
