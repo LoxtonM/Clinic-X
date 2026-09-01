@@ -1184,6 +1184,7 @@ namespace ClinicalXPDataConnections.Meta
                             }
                         }
                     }
+                    spacer = section.AddParagraph();
 
                     content4 = _lvm.documentsContent.Para4;
                     content5 = _lvm.documentsContent.Para5;
@@ -1267,7 +1268,7 @@ namespace ClinicalXPDataConnections.Meta
 
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para2;
-                    //content4 = _lvm.documentsContent.Para3;
+                    content3 = _lvm.documentsContent.Para3;
 
                     string selectDistrict = "";
                     string survWhen = "";
@@ -1417,7 +1418,8 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    
+
+                    /*
                     foreach (var item in _riskList)
                     {
                         /*
@@ -1443,8 +1445,7 @@ namespace ClinicalXPDataConnections.Meta
                         riskRow2.Cells[3].AddParagraph().AddFormattedText(item.R50_60.ToString(), TextFormat.Bold).Color = Colors.Red;
                         riskRow3.Cells[0].AddParagraph().AddFormattedText("10 year risk age 40-50 (%):", TextFormat.Bold);
                         riskRow3.Cells[1].AddParagraph().AddFormattedText(item.R40_50.ToString(), TextFormat.Bold).Color = Colors.Red;
-                        */
-
+                        
                         var survs = await _survData.GetSurveillanceListByRiskID(item.RiskID);
                         foreach (var srv in survs)
                         {
@@ -1477,6 +1478,39 @@ namespace ClinicalXPDataConnections.Meta
                             }
                         }
                     }
+                    */
+
+                    string contentscreening = "";
+                    var screening = await _survData.GetSurveillanceList(mpi);
+
+                    if (screening.Count > 0)
+                    {
+                        foreach (var item in screening)
+                        {
+                            if (item.UseLetter.GetValueOrDefault())
+                            {
+                                if (item.SurvFreqCode == "Single")
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq.ToUpper() + " by " + item.SurvType + " at the age of " + item.SurvStartAge.ToString();
+                                }
+                                else
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
+
+                                    if (item.SurvStopAge != 0 && item.SurvStopAge != null)
+                                    {
+                                        contentscreening += " to " + item.SurvStopAge.ToString();
+                                    }
+                                }
+                                contentscreening += Environment.NewLine;
+                            }
+                        }
+                    }
+
+                    Paragraph letterContentScreen = section.AddParagraph();
+                    letterContentScreen.AddFormattedText(contentscreening, TextFormat.Bold);
+
+                    spacer = section.AddParagraph();
 
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent2 = section.AddParagraph(content2);
