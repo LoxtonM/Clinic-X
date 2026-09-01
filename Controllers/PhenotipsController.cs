@@ -1,5 +1,5 @@
 ﻿using APIControllers.Controllers;
-//using APIControllers.Data;
+using APIControllers.Data;
 //using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
@@ -23,7 +23,7 @@ namespace ClinicX.Controllers
         private readonly PhenotipsVM _pvm;
         private readonly LetterController _lc;
 
-        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController lc) //, APIContext aPIContext)
+        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController lc)//, APIContext aPIContext)
         {
             //_clinContext = clinContext;
             //_docContext = docContext;
@@ -42,9 +42,12 @@ namespace ClinicX.Controllers
             string sMessage = "";
             bool isSuccess = false;
 
-            Int16 result = await _api.PushPtToPhenotips(mpi); //initiates the push, returns 1 (success), 0 (already exists), or -1 (failed)
+            //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
 
-            if(result==1)
+            Int16 result = await _api.PushPtToPhenotips(mpi); //initiates the push, returns 1 (success), 0 (already exists), or -1 (failed)
+            //Int16 result = await api.PushPtToPhenotips(mpi); //initiates the push, returns 1 (success), 0 (already exists), or -1 (failed)
+
+            if (result==1)
             {                
                 string ptID = await _api.GetPhenotipsPatientID(mpi);
                 Patient patient = await _patientData.GetPatientDetails(mpi);
@@ -81,6 +84,8 @@ namespace ClinicX.Controllers
 
         async Task AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
         {
+            lastname = lastname.Replace("'", "''"); //for all the Irish names! (why can't they have normal surnames like Smith, or Jones, and Davies? ;) )
+
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
             SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"

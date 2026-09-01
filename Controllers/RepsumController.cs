@@ -56,7 +56,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> PrepareRepsum(int id, int diaryID, bool isPreview, string? docCode)
         {
             bool repsumDone = await DoRepsum(id, diaryID, User.Identity.Name, isPreview); //should return success (or failure if something goes wrong in the creation process)
-
+            bool isO4Required = false;
             string message = "";           
 
             if(repsumDone) 
@@ -78,6 +78,10 @@ namespace ClinicX.Controllers
                 {
                     message += " and DOT draft has been created";
                 }
+                else if(docCode == "O2" || docCode == "O3")
+                {
+                    isO4Required = true;
+                }
             }
             else { message = "REPSUM failed - If the review has completed, please try from the letters menu"; }
 
@@ -87,7 +91,7 @@ namespace ClinicX.Controllers
             }
             else
             {
-                return RedirectToAction("CancerReview", "Triage", new { id = id, message = message, success = repsumDone });
+                return RedirectToAction("CancerReview", "Triage", new { id = id, message = message, success = repsumDone, o4Required = isO4Required });
             }
         }
 

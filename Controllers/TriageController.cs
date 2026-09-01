@@ -478,7 +478,7 @@ namespace ClinicX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> CancerReview(int id, string? message, bool? success)
+        public async Task<IActionResult> CancerReview(int id, string? message, bool? success, bool? o4Required = false)
         {
             try
             {
@@ -524,6 +524,7 @@ namespace ClinicX.Controllers
 
                 _ivm.message = message;
                 _ivm.success = success.GetValueOrDefault();
+                _ivm.isO4Required = o4Required.GetValueOrDefault();
 
                 return View(_ivm);
             }
@@ -580,7 +581,7 @@ namespace ClinicX.Controllers
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canReview" }); }
 
             if (finalReview == "Yes")
-            {
+            {                
                 //if (letter != null && letter != 0 && !letterAlreadyDone) //don't want to do the letter and diary every single time!!!
                 //{
                 _ivm.cancerAction = await _icpActionData.GetICPCancerAction(letter.GetValueOrDefault());
@@ -631,11 +632,11 @@ namespace ClinicX.Controllers
                 int successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "REPSUM", "", "", User.Identity.Name, null, null, false, false);
                 var diary = await _diaryData.GetLatestDiaryByRefID(refID, "REPSUM");
 
-                int diaryID = diary.DiaryID;
+                int diaryID = diary.DiaryID;                
 
                 return RedirectToAction("PrepareRepsum", "Repsum", new { id = id, diaryID = diaryID, docCode }); //redirects to REPSUM controller, which should redirect back here when done
                 //we HAVE to do it this way or it won't update the data model
-            }
+            }            
 
             return RedirectToAction("CancerReview", new { id = id });
         }        
