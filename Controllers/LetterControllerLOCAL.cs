@@ -1192,8 +1192,12 @@ namespace ClinicalXPDataConnections.Meta
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph();
-                    letterContent2.AddFormattedText(contentscreening, TextFormat.Bold);
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph(content3);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContentScreening = section.AddParagraph();
+                    letterContentScreening.AddFormattedText(contentscreening, TextFormat.Bold);
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
