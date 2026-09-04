@@ -245,7 +245,7 @@ namespace ClinicX.Controllers
                 if (ddMonth <= 0)
                 {
                     //ddYear -= 1;
-                    ddMonth += 12;
+                    ddMonth += 11; //because apparently 12 gets the wrong result
                 }
 
                 _rsvm.patientAge = $"{ddYear} years {ddMonth} months";

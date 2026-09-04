@@ -1297,7 +1297,7 @@ namespace ClinicalXPDataConnections.Meta
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    /*
+                    
                     foreach (var item in _riskList)
                     {
                         if (item.IncludeLetter != 0 && item.RiskName != null)
@@ -1314,6 +1314,7 @@ namespace ClinicalXPDataConnections.Meta
                             Row riskRow1 = riskTable.AddRow();
                             Row riskRow2 = riskTable.AddRow();
                             Row riskRow3 = riskTable.AddRow();
+                            riskTable.Rows.Height = 10;
                             riskRow1.Cells[0].AddParagraph().AddFormattedText(riskText, TextFormat.Bold);
                             riskRow1.Cells[1].AddParagraph().AddFormattedText(item.RiskName, TextFormat.Bold).Color = Colors.Red;
                             riskRow1.Cells[2].AddParagraph().AddFormattedText("Lifetime risk (%):", TextFormat.Bold);
@@ -1334,21 +1335,22 @@ namespace ClinicalXPDataConnections.Meta
                                 riskRow3.Cells[1].AddParagraph().AddFormattedText(item.R40_50.ToString(), TextFormat.Bold).Color = Colors.Red;
                             }
                         }
-
+                        /*
                         var survs = await _survData.GetSurveillanceListByRiskID(item.RiskID);
                         foreach (var srv in survs)
                         {
                             _survList.Add(srv);
                         }
+                        */
                     }
-                    spacer = section.AddParagraph();
-                    */
                     
                     string contentscreening = "";
                     var screening = await _survData.GetSurveillanceList(mpi);
                     
                     if (screening.Count > 0)
                     {
+                        contentscreening = "Our current guidelines would suggest surveillance as outlined below:" + Environment.NewLine + Environment.NewLine;
+
                         foreach (var item in screening)
                         {
                             if (item.UseLetter.GetValueOrDefault())
@@ -1373,7 +1375,7 @@ namespace ClinicalXPDataConnections.Meta
 
                     Paragraph letterContentScreen = section.AddParagraph();
                     letterContentScreen.AddFormattedText(contentscreening, TextFormat.Bold);
-
+                    spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
 
@@ -1483,12 +1485,61 @@ namespace ClinicalXPDataConnections.Meta
                         }
                     }
                     */
+                    _riskList = await _rData.GetPatientRiskList(mpi);
+
+                    foreach (var item in _riskList)
+                    {
+                        if (item.IncludeLetter != 0 && item.RiskName != null)
+                        {
+                            string riskText = item.SurvSite + " cancer risk category:";
+
+                            Table riskTable = section.AddTable();
+                            Column riskCol1 = riskTable.AddColumn();
+                            riskCol1.Width = 180;
+                            Column riskCol2 = riskTable.AddColumn();
+                            Column riskCol3 = riskTable.AddColumn();
+                            riskCol3.Width = 150;
+                            Column riskCol4 = riskTable.AddColumn();
+                            Row riskRow1 = riskTable.AddRow();
+                            Row riskRow2 = riskTable.AddRow();
+                            Row riskRow3 = riskTable.AddRow();
+                            riskTable.Rows.Height = 10;
+                            riskRow1.Cells[0].AddParagraph().AddFormattedText(riskText, TextFormat.Bold);
+                            riskRow1.Cells[1].AddParagraph().AddFormattedText(item.RiskName, TextFormat.Bold).Color = Colors.Red;
+                            riskRow1.Cells[2].AddParagraph().AddFormattedText("Lifetime risk (%):", TextFormat.Bold);
+                            riskRow1.Cells[3].AddParagraph().AddFormattedText(item.LifetimeRiskPercentage.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            if (item.R30_40 != null)
+                            {
+                                riskRow2.Cells[0].AddParagraph().AddFormattedText("10 year risk age 30-40 (%):", TextFormat.Bold);
+                                riskRow2.Cells[1].AddParagraph().AddFormattedText(item.R30_40.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            }
+                            if (item.R50_60 != null)
+                            {
+                                riskRow2.Cells[2].AddParagraph().AddFormattedText("10 year risk age 50-60 (%):", TextFormat.Bold);
+                                riskRow2.Cells[3].AddParagraph().AddFormattedText(item.R50_60.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            }
+                            if (item.R40_50 != null)
+                            {
+                                riskRow3.Cells[0].AddParagraph().AddFormattedText("10 year risk age 40-50 (%):", TextFormat.Bold);
+                                riskRow3.Cells[1].AddParagraph().AddFormattedText(item.R40_50.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            }
+                        }
+                        /*
+                        var survs = await _survData.GetSurveillanceListByRiskID(item.RiskID);
+                        foreach (var srv in survs)
+                        {
+                            _survList.Add(srv);
+                        }
+                        */
+                    }
 
                     string contentscreening = "";
                     var screening = await _survData.GetSurveillanceList(mpi);
 
                     if (screening.Count > 0)
                     {
+                        contentscreening = "Our current guidelines would suggest surveillance as outlined below:" + Environment.NewLine + Environment.NewLine;
+
                         foreach (var item in screening)
                         {
                             if (item.UseLetter.GetValueOrDefault())
