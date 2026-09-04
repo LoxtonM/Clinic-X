@@ -474,7 +474,7 @@ namespace ClinicalXPDataConnections.Meta
                 //if (_documentsData.GetDocumentData(docCode).HasAdditionalActions)
                 if (docCode != "CF01" && docCode != "MRP" && docCode != "MRR" && adminToPrint == true) //apparently these types are hard-coded
                 {
-                    printCount += 1;
+                    printCount += 1; //set so that at least one print task will be generated
                 }
 
                 int totalLength = 400; //used for spacing - so the paragraphs can dynamically resize
@@ -2559,7 +2559,7 @@ namespace ClinicalXPDataConnections.Meta
                 {
                     if(!adminToPrint.GetValueOrDefault())
                     {
-                        printCount = 0;
+                        printCount = 0; //if it's not to be printed, and just for filing, reset it to 0 (or it'll create a task)
                     }
 
                     string edmsPath = _constantsData.GetConstant("PrintPathEDMS", 1);

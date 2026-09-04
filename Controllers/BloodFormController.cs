@@ -19,15 +19,18 @@ namespace ClinicX.Controllers
         private readonly IBloodFormDataAsync _bloodFormData;
         private readonly IStaffUserDataAsync _staffUser;
         private readonly ITestDataAsync _testData;
+        private readonly IConstantsDataAsync _constantsData;
         //private readonly IClinicDataAsync _clinicData;
         
 
-        public BloodFormController(IConfiguration config, IPatientDataAsync patientData, IBloodFormDataAsync bloodFormData, IStaffUserDataAsync staffUserData, ITestDataAsync testData)
+        public BloodFormController(IConfiguration config, IPatientDataAsync patientData, IBloodFormDataAsync bloodFormData, IStaffUserDataAsync staffUserData, ITestDataAsync testData,
+            IConstantsDataAsync constantsData)
         {
             //_clinContext = clinContext;  
             //_cxContext = cxContext;            
             _patientData = patientData;
             _bloodFormData = bloodFormData;
+            _constantsData = constantsData;
             _staffUser = staffUserData;
             _testData = testData;
             //_clinicData = clinicData;
@@ -89,7 +92,7 @@ namespace ClinicX.Controllers
             tf.DrawString("Email:", fontSmallBold, XBrushes.Black, new XRect(25, totalLength, page.Width, 50));
             tf.DrawString("bwc.genetics.lab@nhs.net", fontSmallUnderlined, XBrushes.Blue, new XRect(50, totalLength, page.Width, 50));
             totalLength += 10;
-
+            
             gfx.DrawRectangle(XBrushes.Green, new XRect(pageEdge, totalLength, pageWidth, 20));
             totalLength += 2;
             tf.DrawString("RARE DISEASE AND REPRODUCTIVE GENOMICS TEST REQUEST", font, XBrushes.White, new XRect(100, totalLength, page.Width, 20));
@@ -149,7 +152,8 @@ namespace ClinicX.Controllers
             tf.DrawString(patient.SEX, font, XBrushes.Black, new XRect(pageWidth / 2 - 50, totalLength, 50, 20));
             tf.DrawString("Email address:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + pageWidth / 2 + 5, totalLength, 200, 20));
             totalLength += 10;
-            tf.DrawString("genetics.ipt@nhs.net", fontSmallUnderlined, XBrushes.Blue, new XRect(pageEdge + pageWidth / 2 + 50, totalLength, 200, 20));
+            string emailAddress = await _constantsData.GetConstant("LabReportsEmail", 1);
+            tf.DrawString(emailAddress, fontSmallUnderlined, XBrushes.Blue, new XRect(pageEdge + pageWidth / 2 + 50, totalLength, 200, 20));
             totalLength += 8;
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge, totalLength, pageWidth / 2, 20));
             totalLength += 1;
