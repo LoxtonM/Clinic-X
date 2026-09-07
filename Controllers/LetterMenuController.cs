@@ -95,19 +95,20 @@ namespace ClinicX.Controllers
             clins.Add(_lvm.patGP);
             clins = clins.Distinct().OrderBy(c => c.FACILITY).ToList();
 
-            _lvm.externalClinicians = clins;            
+            _lvm.externalClinicians = clins;
             _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).OrderBy(c => c.FACILITY).ToList();
             _lvm.breastList = clinList.Where(c => c.POSITION.Contains("Breast") || c.SPECIALITY.Contains("Breast")).OrderBy(c => c.FACILITY).ToList();
             _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).OrderBy(c => c.FACILITY).ToList();
-            
-            
+
             _lvm.screeningCoordinatorList = await _screeningCoordinatorData.GetScreeningCoordinatorList();
 
+            _lvm.screeningCoordinatorList = _lvm.screeningCoordinatorList.OrderBy(c => c.Contact).ToList();
+
             _lvm.leaflets = new List<Leaflet>();
-            
+
             if (refID != null)
             {
-                if (_lvm.referral.PATHWAY.Trim() == "Cancer") //because obviously it's not "cancer" it's "cancer space".
+                if (_lvm.referral.PATHWAY.Trim() == "Cancer") //because obviously it's not "cancer" it's "cancer     ".
                 {
                     _lvm.leaflets = await _leafletData.GetCancerLeafletsList();
                 }

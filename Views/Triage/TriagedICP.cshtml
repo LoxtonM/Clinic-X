@@ -187,8 +187,7 @@
                 <label>Treatment Pathway:</label>
             </div>
             <div class="col-md-5">
-                <select id="ddlTreatPath1" asp-for=@Model.triage.TreatPath disabled>
-                    <option value="">Select...</option>
+                <select id="ddlTreatPath1" asp-for=@Model.icpGeneral.TreatPath disabled>
                     @foreach (var item in Model.generalActionsList)
                     {
                         <option value=@item.ID>@item.Action</option>
@@ -207,162 +206,162 @@
                 </select>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-                <select id="ddlTreatPath2-Clinic" asp-for=@Model.triage.TreatPath2 disabled>
-                    <option value="" selected>Select...</option>
-                    @foreach (var item in Model.generalActionsList2)
-                    {
-                        if (item.Clinic == true)
+        @if (Model.icpGeneral.TreatPath == 3 || Model.icpGeneral.TreatPath == 4 || Model.icpGeneral.TreatPath == 5)
+        {
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <select id="ddlTreatPath2-Clinic" asp-for=@Model.icpGeneral.TreatPath2>
+                        @foreach (var item in Model.generalActionsList2)
                         {
-                            <option value=@item.ID>@item.Action</option>
+                            if (item.Clinic == true)
+                            {
+                                <option value=@item.ID>@item.Action</option>
+                            }
                         }
-                    }
-                </select>
+                    </select>
+                </div>
+                <div class="col-md-2"></div>
             </div>
-            <div class="col-md-2"></div>
-        </div>
-        <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-                <select id="ddlTreatPath2-NoClinic" asp-for=@Model.triage.TreatPath2 disabled>
-                    <option value="" selected>Select...</option>
-                    @foreach (var item in Model.generalActionsList2)
-                    {
-                        if (item.Clinic == false)
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <select id="ddlTreatPath2-NoClinic" asp-for=@Model.icpGeneral.TreatPath2 disabled>
+                        <option value="" selected>Select...</option>
+                        @foreach (var item in Model.generalActionsList2)
                         {
-                            <option value=@item.ID>@item.Action</option>
+                            if (item.Clinic == false)
+                            {
+                                <option value=@item.ID>@item.Action</option>
+                            }
                         }
-                    }
-                </select>
+                    </select>
+                </div>
+                <div class="col-md-2"></div>
             </div>
-            <div class="col-md-2"></div>
-        </div>
+        }
         <div class="row mb-2 g-2" id="clicsActions" hidden>
             
             <div class="col-md-2">Request photos</div>
             <div class="col-md-2">
-                <select name="requestPhotos" id="ddlRequestPhotos">
+                <select name="requestPhotos" id="ddlRequestPhotos" disabled>
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </select>
             </div>
             <div class="col-md-2">Request development form</div>
             <div class="col-md-2">
-                <select name="requestDevForm" id="ddlRequestDevForm">
+                <select name="requestDevForm" id="ddlRequestDevForm" disabled>
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </select>
             </div>
         </div>
 
-        
 
-        <div id="WaitingListDetails">
-            <div class="row mb-5 g-5">
-                <h5 id="lblWaitingList">Waiting list details:</h5>
-            </div>
-            <div class="row mb-5 g-5">
-                <div class="col-md-4">
-                    <label for="ddlGa" id="lblGa">Genomics Associate:</label>
+        @if (Model.icpGeneral.TreatPath == 3 || Model.icpGeneral.TreatPath == 4 || Model.icpGeneral.TreatPath == 5)
+        {
+            <div id="WaitingListDetails">
+                <div class="row mb-5 g-5">
+                    <h5 id="lblWaitingList">Waiting list details:</h5>
                 </div>
-                <div class="col-md-4">
-                    <select id="ddlGa" name="ga">
-                        <option value="" selected></option>
-                        @foreach (var c in Model.GAs)
-                        {
-                            <option value=@c.STAFF_CODE>@c.NAME</option>
-                        }
-                    </select>
+                <div class="row mb-5 g-5">
+                    <div class="col-md-4">
+                        <label for="ddlGa" id="lblGa">Genomics Associate:</label>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="ddlGa" name="ga" disabled>
+                            <option value="" selected></option>
+                            @foreach (var c in Model.GAs)
+                            {
+                                <option value=@c.STAFF_CODE>@c.NAME</option>
+                            }
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="row mb-5 g-5">
-                <div class="col-md-4">
-                    <label for="ddlGenP" id="lblGenP">Genomics Practitioner:</label>
-                </div>
-                <div class="col-md-4">
-                    <select id="ddlGenP" name="genp">
-                        <option value="" selected></option>
-                        @foreach (var c in Model.GenPs)
-                        {
-                            <option value=@c.STAFF_CODE>@c.NAME</option>
-                        }
-                    </select>
-                </div>
-            </div>
-
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <label for="ddlFacility" id="lblFacility">Clinic:</label>
+                <div class="row mb-5 g-5">
+                    <div class="col-md-4">
+                        <label for="ddlGenP" id="lblGenP">Genomics Practitioner:</label>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="ddlGenP" name="genp" disabled>
+                            <option value="" selected></option>
+                            @foreach (var c in Model.GenPs)
+                            {
+                                <option value=@c.STAFF_CODE>@c.NAME</option>
+                            }
+                        </select>
+                    </div>
                 </div>
 
-                <div class="col-md-6">
-                    <select id="ddlFacility" name="facility">
-                        <option value="" selected></option>
-                        @foreach (var f in Model.clinicalFacilityList)
-                        {
-                            <option value=@f.FACILITY>@f.FACILITY - @f.NAME</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-4"></div>
-            </div>
-            <div class="row mb-5 g-5">
+                <div class="row mb-5 g-5">
+                    <div class="col-md-2">
+                        <label for="ddlFacility" id="lblFacility">Clinic:</label>
+                    </div>
 
-                <div class="col-md-2">
-                    <label for="ddlIsSPR" id="lblIsSPR">Suitable for SpR:</label>
+                    <div class="col-md-6">
+                        <select id="ddlFacility" name="facility" disabled>
+                            <option value="" selected></option>
+                            @foreach (var f in Model.clinicalFacilityList)
+                            {
+                                <option value=@f.FACILITY>@f.FACILITY - @f.NAME</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4"></div>
                 </div>
-                <div class="col-md-2">
-                    <select id="ddlIsSPR" name="isSPR">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="ddlIsChild" id="lblIsChild">Is child required:</label>
-                </div>
+                <div class="row mb-5 g-5">
 
-                <div class="col-md-2">
-                    <select id="ddlIsChild" name="isChild" asp-for=@Model.isChild>
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <label for="txtComment" id="lblComment">Comments:</label>
-                </div>
-                <div class="col-md-5">
-                    <textarea rows="5" cols="40" id="txtComment" name="comment"></textarea>
-                </div>
-                <div class="col-md-2">
-                    <label for="txtDuration" id="lblDuration">Duration:</label>
-                </div>
-                <div class="col-md-2">
-                    <input id="txtDuration" name="duration" value="45" disabled />
-                </div>
+                    <div class="col-md-2">
+                        <label for="ddlIsSPR" id="lblIsSPR">Suitable for SpR:</label>
+                    </div>
+                    <div class="col-md-2">
+                        <select id="ddlIsSPR" name="isSPR" disabled>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="ddlIsChild" id="lblIsChild">Is child required:</label>
+                    </div>
 
+                    <div class="col-md-2">
+                        <select id="ddlIsChild" name="isChild" asp-for=@Model.isChild disabled>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-5 g-5">
+                    <div class="col-md-2">
+                        <label for="txtComment" id="lblComment">Comments:</label>
+                    </div>
+                    <div class="col-md-5">
+                        <textarea rows="5" cols="40" id="txtComment" name="comment" disabled></textarea>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtDuration" id="lblDuration">Duration:</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input id="txtDuration" name="duration" value="45" disabled />
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="row mb-5 g-5">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-                <button type="button" id="btnGeneralTriage" class="btn btn-default btn-outline-success">Complete Triage</button>
-            </div>
-            <div class="col-md-2"></div>
-        </div>
-    
-        <div id="metadata-cancer" hidden>
-            <input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />
-        </div>
+        }
+    }
+
+    @if (Model.icpCancer != null)
+    {
+       
         <div class="row">
             <div class="col-md-2">
                 <label>Action on Referral Letter</label>
             </div>
             <div class="col-md-10">
-                <select id="ddlCancerAction" name=action>
+                <select id="ddlCancerAction" name=action disabled>
                     @foreach (var item in @Model.cancerActionsList)
                     {
                         <option value=@item.ID>@item.Action</option>
@@ -378,21 +377,6 @@
             </div>
         </div>
     }
-
-    @if (Model.icpCancer != null)
-    {
-        <div class="row mb-5 g-5">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-                
-            </div>
-            <div class="col-md-2"></div>
-        </div>
-    }
-           
-
-        
-
 
 </div>
 
