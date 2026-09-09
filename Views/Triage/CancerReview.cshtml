@@ -481,36 +481,43 @@
             </div>
         </div>
 
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                Final Review Complete:
+        @if(Model.icpCancer.FinalReviewed != null)
+        {
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    Final Review Complete:
+                </div>
+                <div class="col-md-4">
+                    <select id="ddlFinalReviewComplete" name="finalReview">
+                        <option value="No">No - save only</option>
+                        <option value="Provisional">No - mark as provisional reviewed</option>
+                        <option value="Yes">Yes - complete and remove from list</option>
+                        @*<option value="Complete">Completed</option>*@
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    To Be Reviewed By:
+                </div>
+                <div class="col-md-4">
+                    <select id="ddlToBeReviewedBy" name="toBeReviewedBy" asp-for=@Model.icpCancer.ToBeReviewedby>
+                        <option value="">Select...</option>
+                        @foreach(var item in Model.staffMembers)
+                        {
+                            <option value=@item.EMPLOYEE_NUMBER>@item.NAME</option>
+                        }
+                    </select>
+                </div>
             </div>
-            <div class="col-md-4">
-                <select id="ddlFinalReviewComplete" name="finalReview">
-                    <option value="No">No - save only</option>
-                    <option value="Provisional">No - mark as provisional reviewed</option>
-                    <option value="Yes">Yes - complete and remove from list</option>
-                    @*<option value="Complete">Completed</option>*@
-                </select>
+        }
+
+        @if (Model.icpCancer.FinalReviewed != null)
+        {
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <button type="button" id="btnSave" class="btn btn-default btn-outline-success">Save</button>
+                </div>
             </div>
-            <div class="col-md-2">
-                To Be Reviewed By:
-            </div>
-            <div class="col-md-4">
-                <select id="ddlToBeReviewedBy" name="toBeReviewedBy" asp-for=@Model.icpCancer.ToBeReviewedby>
-                    <option value="">Select...</option>
-                    @foreach(var item in Model.staffMembers)
-                    {
-                        <option value=@item.EMPLOYEE_NUMBER>@item.NAME</option>
-                    }
-                </select>
-            </div>
-        </div>
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <button type="button" id="btnSave" class="btn btn-default btn-outline-success">Save</button>
-            </div>
-        </div>
+        }
     </form>    
 
     <div class="row mb-5 g-5">        

@@ -1,5 +1,5 @@
 ﻿using APIControllers.Controllers;
-//using APIControllers.Data;
+using ClinicX.Data;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +11,7 @@ namespace ClinicX.Controllers
         private readonly IConfiguration _config;
         private readonly ClinicalContext _context;
         private readonly DocumentContext _documentContext;
+        private readonly ClinicXContext _clinicXContext;
         //private readonly APIContext _apiContext;
         private readonly LetterController _lc;
         private readonly IConstantsDataAsync _constantsData;
@@ -18,12 +19,13 @@ namespace ClinicX.Controllers
         private readonly IApiController _api;
         private readonly IReferralDataAsync _referralDataAsync;
 
-        public LetterPreviewController(IConfiguration config, LetterController lc, ClinicalContext context, DocumentContext documentContext, // APIContext apiContext,
+        public LetterPreviewController(IConfiguration config, LetterController lc, ClinicalContext context, DocumentContext documentContext, ClinicXContext clinicXContext,// APIContext apiContext,
             IConstantsDataAsync constantsData, IDocumentsDataAsync documentsData, IApiController api, IReferralDataAsync referralDataAsync)
         {
             _config = config;
             _lc = lc;
             _context = context;
+            _clinicXContext = clinicXContext;
             _documentContext = documentContext;
             _constantsData = constantsData;
             _documentsData = documentsData;
@@ -52,7 +54,7 @@ namespace ClinicX.Controllers
                 }
             }
 
-            LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext);
+            LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext, _clinicXContext);
 
             await lc.DoPDF(docID, mpi, refID, User.Identity.Name, referrerCode, freeText, enclosures, 0, "", false, false, 0, freeText1, freeText2, relID, recipient,
                         siteText, null, true, qrCodeText, 0, true);

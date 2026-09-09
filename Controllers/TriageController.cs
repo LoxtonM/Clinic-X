@@ -2,7 +2,7 @@
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-//using ClinicX.Data;
+using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +15,7 @@ namespace ClinicX.Controllers
     public class TriageController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        //private readonly ClinicXContext _cXContext;
+        private readonly ClinicXContext _cXContext;
         private readonly DocumentContext _docContext;
         private readonly ICPVM _ivm;
         private readonly LetterController _lc;
@@ -53,10 +53,10 @@ namespace ClinicX.Controllers
             ICancerRequestDataAsync cancerRequestData, IExternalClinicianDataAsync externalClinicianData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IDocumentsDataAsync documentsData, ICRUD crud, 
             LetterController letterController, IAuditService auditService, IAgeCalculator ageCalculator, IPatientDataAsync patientData, ILeafletDataAsync leafletData, IConstantsDataAsync constantsData,
             IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData, IDictatedLetterDataAsync dictatedLetterData, IPhenotipsMirrorDataAsync phenotipsMirrorData,
-            IApiController apiController, ClinicalContext clinContext, DocumentContext docContext)
+            IApiController apiController, ClinicalContext clinContext, DocumentContext docContext, ClinicXContext cXContext)
         {
             _clinContext = clinContext;
-            //_cXContext = cXContext;
+            _cXContext = cXContext;
             _docContext = docContext;
             _config = config;
             _ivm = new ICPVM();
@@ -353,7 +353,7 @@ namespace ClinicX.Controllers
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, "CTBAck");
                     int diaryID = diary.DiaryID;
 
-                    LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+                    LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext, _cXContext);
                     await lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID, "", "", 0, "", "", null, false, "", 0, true);
                 }                
 
@@ -439,7 +439,7 @@ namespace ClinicX.Controllers
                         qrCodeText = await _api.GetPPQQRCode(mpi, referral.PATHWAY);                        
                     }
 
-                    LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+                    LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext, _cXContext);
 
                     printSuccess = await lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID, "", "", 0, "", "",
                         null, false, qrCodeText, 0, true);
@@ -618,7 +618,7 @@ namespace ClinicX.Controllers
                     }
                     else
                     {
-                        LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+                        LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext, _cXContext);
                         Referral refer = await _referralData.GetReferralDetails(refID);
 
                         printSuccess = await lc.DoPDF(letterID, mpi, refID, User.Identity.Name, refer.ReferrerCode, freeText1, "", 0, "", false, false, diaryIDLetter, "", "", 0,

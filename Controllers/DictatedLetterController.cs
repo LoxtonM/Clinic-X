@@ -1,7 +1,7 @@
 ﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-//using ClinicX.Data;
+using ClinicX.Data;
 using ClinicX.Meta;
 using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +13,7 @@ namespace ClinicX.Controllers
     public class DictatedLetterController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly ClinicXContext _clinXContext;
         private readonly DocumentContext _docContext;
         private readonly LetterController _lc;
         private readonly DictatedLetterVM _lvm;
@@ -29,10 +30,11 @@ namespace ClinicX.Controllers
 
         public DictatedLetterController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IActivityDataAsync activityData, IDictatedLetterDataAsync dictatedLetterData,
             IExternalClinicianDataAsync externalClinicianData, IExternalFacilityDataAsync externalFacilityData, ICRUD crud, IConstantsDataAsync constantsData, LetterController letterController, 
-            IAuditService auditService, ClinicalContext clinicalContext, DocumentContext documentContext)
+            IAuditService auditService, ClinicalContext clinicalContext, DocumentContext documentContext, ClinicXContext clinicXContext)
         {
             _clinContext = clinicalContext;
             _docContext = documentContext;
+            _clinXContext = clinicXContext;
             _config = config;
             _lvm = new DictatedLetterVM();
             _staffUser = staffUserData;
@@ -440,7 +442,7 @@ namespace ClinicX.Controllers
             try
             {
                 //_lc.PrintDOTPDF(dID, User.Identity.Name, true);
-                LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext); //for testing purposes
+                LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext, _clinXContext); //for testing purposes
                 lc.PrintDOTPDF(dID, User.Identity.Name, true); //FOR TESTING ONLY - production should use the data library instead
                 
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
