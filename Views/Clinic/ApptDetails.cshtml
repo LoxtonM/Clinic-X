@@ -54,6 +54,12 @@
         <div class="row">
             <h4>NHS No: @Model.patient.SOCIAL_SECURITY</h4>
         </div>
+        <div class="row">
+            <h4>Contact number(s):</h4> 
+            @if (@Model.patient.TEL != null){<h5>Home: @Model.patient.TEL </h5>}
+            @if (@Model.patient.WORKTEL != null){<h5>Work: @Model.patient.WORKTEL </h5>}
+            @if (@Model.patient.PtTelMobile != null){<h5>Mobile: @Model.patient.PtTelMobile </h5>}
+        </div>
     </div>
 
     <hr />

@@ -398,7 +398,7 @@
                     <label>Priority:</label>
                 </div>
                 <div class="col-md-2">
-                    <select name="priorityLevel">
+                    <select name="priorityLevel" id="ddlPriority">
                         @foreach(var item in Model.priorityList)
                         {
                             <option value=@item.PriorityLevel>@item.CLASS</option>
@@ -455,7 +455,7 @@
                     <label>Leaflets:</label>
                 </div>
                 <div class="col-md-6">
-                    <select name="leafletID">
+                    <select name="leafletID" id="ddlLeaflets">
                         <option value="0" selected>Select...</option>
                         @foreach(var l in Model.leaflets)
                         {
@@ -481,7 +481,7 @@
             </div>
         </div>
 
-        @if(Model.icpCancer.FinalReviewed != null)
+        @if(Model.icpCancer.FinalReviewed == null)
         {
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
@@ -510,14 +510,13 @@
             </div>
         }
 
-        @if (Model.icpCancer.FinalReviewed != null)
-        {
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <button type="button" id="btnSave" class="btn btn-default btn-outline-success">Save</button>
-                </div>
+        
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="button" id="btnSave" class="btn btn-default btn-outline-success">Save</button>
             </div>
-        }
+        </div>
+        
     </form>    
 
     <div class="row mb-5 g-5">        
@@ -586,12 +585,7 @@
             {
                 _docID = docIDArray[j];
             }
-        }
-
-        //int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
-            //string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
-            //int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false, string? qrCodeText = "", int? leafletID = 0,
-            //bool? adminToPrint = false
+        }        
 
         var _url = "";
         _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + "@Model.icpCancer.RefID"
@@ -605,34 +599,19 @@
     {
         var _reviewOption = document.getElementById("ddlLetter");       
         var _clinic = document.getElementById("ddlClinic");
-        var _finalreview = document.getElementById("ddlFinalReviewComplete");
-        var _toBeReviewed = document.getElementById("ddlToBeReviewedBy");
-
-        /*
-        if (_reviewOption.value != 1) 
-        { 
-            _reviewOption.disabled = true;
-        }
         
-        if (_clinic.value != "") 
-        {
-            _clinic.disabled = true;
-            document.getElementById("ddlClinician").disabled = true;
-            document.getElementById("txtComments").disabled = true;
-        }
-        */
-
         if("@Model.icpCancer.FinalReviewed" != null && "@Model.icpCancer.FinalReviewed" != "")
         {
             _reviewOption.disabled = true;
             _clinic.disabled = true;
             document.getElementById("ddlClinician").disabled = true;
             document.getElementById("txtComments").disabled = true;
-            _finalreview.value = "Complete";
-            _finalreview.disabled = true;
-            _toBeReviewed.disabled = true;
+            document.getElementById("txtFreeText").disabled = true;
+            document.getElementById("ddlLeaflets").disabled = true;
             document.getElementById("btnSave").disabled = true;
             document.getElementById("txtAddNotes").disabled = true;
+            document.getElementById("ddlPriority").disabled = true;
+            document.getElementById("chkNotForCrossBooking").disabled = true;
         }
 
     }

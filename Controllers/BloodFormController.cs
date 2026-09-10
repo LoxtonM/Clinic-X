@@ -90,7 +90,8 @@ namespace ClinicX.Controllers
             tf.DrawString("0121 335 8036", fontSmall, XBrushes.Black, new XRect(50, totalLength, page.Width, 50));
             totalLength += 10;
             tf.DrawString("Email:", fontSmallBold, XBrushes.Black, new XRect(25, totalLength, page.Width, 50));
-            tf.DrawString("bwc.genetics.lab@nhs.net", fontSmallUnderlined, XBrushes.Blue, new XRect(50, totalLength, page.Width, 50));
+            string emailAddressLab = await _constantsData.GetConstant("LabReportsEmail", 1);
+            tf.DrawString(emailAddressLab, fontSmallUnderlined, XBrushes.Blue, new XRect(50, totalLength, page.Width, 50));
             totalLength += 10;
             
             gfx.DrawRectangle(XBrushes.Green, new XRect(pageEdge, totalLength, pageWidth, 20));

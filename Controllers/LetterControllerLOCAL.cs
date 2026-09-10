@@ -14,6 +14,7 @@ using System.Drawing;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 
 namespace ClinicalXPDataConnections.Meta
@@ -64,7 +65,7 @@ namespace ClinicalXPDataConnections.Meta
 
 
         //Creates a preview of the DOT letter
-        public void PrintDOTPDF(int dID, string user, bool isPreview)
+        public async Task PrintDOTPDF(int dID, string user, bool isPreview)
         {
 
             _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
@@ -201,29 +202,59 @@ namespace ClinicalXPDataConnections.Meta
                 contentLetterContent.AddFormattedText(letterContent, TextFormat.NotBold);
             }
 
-
-
-            string signOff = _lvm.dictatedLetter.LetterFrom;
-            StaffMember signatory = _staffUser.GetStaffMemberDetailsByStaffCode(_lvm.dictatedLetter.LetterFromCode);
-
-            string sigFilename = $"{signatory.StaffForename.Replace(" ", "")}{signatory.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
-
-
-
+            
+            
             spacer = section.AddParagraph();
             spacer = section.AddParagraph();
 
             Paragraph contentSignOff = section.AddParagraph("Yours sincerely,");
 
             spacer = section.AddParagraph();
-            Paragraph contentSig = section.AddParagraph();
-            if (File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
-            {
-                MigraDoc.DocumentObjectModel.Shapes.Image sig = contentSig.AddImage(@$"wwwroot\Signatures\{sigFilename}");
-            }
-            spacer = section.AddParagraph();
-            Paragraph contentSignOffName = section.AddParagraph(signOff);
 
+            string signOff = _lvm.dictatedLetter.LetterFrom;
+
+            StaffMember signatory = _staffUser.GetStaffMemberDetailsByStaffCode(_lvm.dictatedLetter.LetterFromCode);
+            
+            string sigFilename = $"{signatory.StaffForename.Replace(" ", "")}{signatory.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
+
+            if (_lvm.dictatedLetter.ApprovedBy != null && (_lvm.dictatedLetter.LetterFromCode != _lvm.dictatedLetter.ApprovedBy))
+            {
+                StaffMember signatory2 = _staffUser.GetStaffMemberDetailsByStaffCode(_lvm.dictatedLetter.ApprovedBy);
+                string sigFilename2 = $"{signatory2.StaffForename.Replace(" ", "")}{signatory2.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
+                string signOff2 = signatory2.NAME + Environment.NewLine + signatory2.POSITION; 
+
+                Table tableSigs = section.AddTable();
+                Column sig1Col = tableSigs.AddColumn();
+                Column sig2Col = tableSigs.AddColumn();
+                tableSigs.Columns.Width = 300;                
+                Row sigRow = tableSigs.AddRow();
+                sigRow.Height = 40;
+                Row signoffRow = tableSigs.AddRow();
+                signoffRow.Height = 20;
+
+                if (File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
+                {
+                    MigraDoc.DocumentObjectModel.Shapes.Image sig1 = sigRow.Cells[0].AddImage(@$"wwwroot\Signatures\{sigFilename}");
+                }
+                if (File.Exists(@$"wwwroot\Signatures\{sigFilename2}"))
+                {
+                    MigraDoc.DocumentObjectModel.Shapes.Image sig2 = sigRow.Cells[1].AddImage(@$"wwwroot\Signatures\{sigFilename2}");
+                }
+
+                signoffRow.Cells[0].AddParagraph(signOff);
+                signoffRow.Cells[1].AddParagraph(signOff2);
+            }
+
+            else
+            {
+                Paragraph contentSig = section.AddParagraph();
+                if (File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
+                {
+                    MigraDoc.DocumentObjectModel.Shapes.Image sig = contentSig.AddImage(@$"wwwroot\Signatures\{sigFilename}");
+                }
+                spacer = section.AddParagraph();
+                Paragraph contentSignOffName = section.AddParagraph(signOff);
+            }
             if (_lvm.dictatedLetter.Enclosures != null)
             {
                 spacer = section.AddParagraph();
@@ -289,12 +320,8 @@ namespace ClinicalXPDataConnections.Meta
 
 
                 File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"{edmspath}\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{dID.ToString()}.pdf");
-
-                //System.IO.File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{dID.ToString()}.pdf");
-
-                /*                 
-                can't actually print it because there's no way to give it your username, so it'll all be under the server's name
-                */
+                                
+                //can't actually print it because there's no way to give it your username, so it'll all be under the server's name                
             }
         }
 
