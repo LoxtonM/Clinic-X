@@ -507,6 +507,15 @@
         </div>
 
         <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden>            
+            <div class="col-md-2">
+                <label>Stop the clock:</label>
+            </div>
+            <div class="col-md-2">
+                <select asp-for=@Model.activityDetails.ClockStop id="ddlClockStop" name="isClockStop" class="w-100">  @*for some reason I can't set the EventListener below!!!*@                  
+                    <option value="True">Yes</option>
+                    <option value="False" selected>No</option>
+                </select>
+            </div>            
             <div class="col-md-3">
                 <label>Do you want to close the referral?</label>
             </div>
@@ -518,16 +527,7 @@
             </div>
             <div class="col-md-1">
                 <button type="button" class="btn btn-default btn-primary" id="btnCancel" onclick="ApproveLetter(-1)">Cancel</button>
-            </div>
-            <div class="col-md-2">
-                <label>Stop the clock:</label>
-            </div>
-            <div class="col-md-2">
-                <select asp-for=@Model.activityDetails.ClockStop id="ddlClockStop" name="isClockStop" class="w-100">  @*for some reason I can't set the EventListener below!!!*@                  
-                    <option value="True">Yes</option>
-                    <option value="False" selected>No</option>
-                </select>
-            </div>
+            </div>            
         </div>
     </div>
 </div>

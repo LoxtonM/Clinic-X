@@ -148,7 +148,7 @@ namespace ClinicalXPDataConnections.Meta
             if (_lvm.dictatedLetter.LetterRe != null)
             {
                 Paragraph contentLetterRe = section.AddParagraph();
-                contentLetterRe.AddFormattedText(_lvm.dictatedLetter.LetterRe, TextFormat.Bold);
+                contentLetterRe.AddFormattedText("Re: " + _lvm.dictatedLetter.LetterRe, TextFormat.Bold);
                 spacer = section.AddParagraph();
 
             }
@@ -1397,14 +1397,17 @@ namespace ClinicalXPDataConnections.Meta
                         }
                         */
                     }
-                    
+
+                    spacer = section.AddParagraph();
+
+                    Paragraph letterContentGuidline = section.AddParagraph("Our current guidelines would suggest surveillance as outlined below:");
+                    spacer = section.AddParagraph();
+
                     string contentscreening = "";
                     var screening = await _survData.GetSurveillanceList(mpi);
                     
                     if (screening.Count > 0)
                     {
-                        contentscreening = "Our current guidelines would suggest surveillance as outlined below:" + Environment.NewLine + Environment.NewLine;
-
                         foreach (var item in screening)
                         {
                             if (item.UseLetter.GetValueOrDefault())
