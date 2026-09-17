@@ -1,8 +1,6 @@
 ﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Models;
 using ClinicalXPDataConnections.ViewModels;
-using ClinicX.Data;
-using ClinicX.Meta;
 using HtmlAgilityPack;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
@@ -14,7 +12,6 @@ using System.Drawing;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 
 namespace ClinicalXPDataConnections.Meta
@@ -22,8 +19,7 @@ namespace ClinicalXPDataConnections.Meta
 
     public class LetterControllerLOCAL
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly ClinicXContext _clinicXContext;
+        private readonly ClinicalContext _clinContext;        
         private readonly DocumentContext _docContext;
         private readonly LetterVM _lvm;
         private readonly IPatientData _patientData;
@@ -41,11 +37,10 @@ namespace ClinicalXPDataConnections.Meta
         private readonly ISurveillanceDataAsync _survData;
         private readonly IScreeningServiceDataAsync _screeningServiceData;
 
-        public LetterControllerLOCAL(ClinicalContext clinContext, DocumentContext docContext, ClinicXContext clinicXContext) //to be used for testing only
+        public LetterControllerLOCAL(ClinicalContext clinContext, DocumentContext docContext) //to be used for testing only
         {
             _clinContext = clinContext;
-            _docContext = docContext;
-            _clinicXContext = clinicXContext;
+            _docContext = docContext;            
             _lvm = new LetterVM();
             _patientData = new PatientData(_clinContext);
             _relativeData = new RelativeData(_clinContext);
@@ -60,7 +55,7 @@ namespace ClinicalXPDataConnections.Meta
             _leafletData = new LeafletData(_docContext);
             _alertData = new AlertData(_clinContext);
             _survData = new SurveillanceDataAsync(_clinContext);
-            _screeningServiceData = new ScreeningServiceDataAsync(_clinicXContext);
+            _screeningServiceData = new ScreeningServiceDataAsync(_clinContext);
         }
 
 
@@ -2314,7 +2309,7 @@ namespace ClinicalXPDataConnections.Meta
                     letterContentPt.AddFormattedText(patName + ", DOB:" + patDOB.ToString("dd/MM/yyyy") ?? "DOB unknown", TextFormat.Bold);
                     spacer = section.AddParagraph();
 
-                    content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + additionalText;
+                    content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + additionalText; //apparently we don't need the risk etc, just the additional text
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();

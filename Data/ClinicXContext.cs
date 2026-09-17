@@ -20,9 +20,7 @@ namespace ClinicX.Data
         public DbSet<DiscontinuedReasonCodes> DiscontinuedReasonCodes { get; set; }
         public DbSet<CalculationTool> CalculationTools { get; set; }
         public DbSet<CancerRequests> CancerRequests { get; set; }        
-        public DbSet<GeneChange> GeneChange { get; set; }        
-        public DbSet<ScreeningService> ScreeningService { get; set; }
-        public DbSet<ScreeningServiceGPCode> ScreeningServiceGPCode { get; set; }
+        public DbSet<GeneChange> GeneChange { get; set; }                
         public DbSet<BreastSurgeryHistory> BreastSurgeryHistory { get; set; }        
         public DbSet<GeneCode> GeneCode { get; set; }
         public DbSet<BloodForm> BloodForm { get; set; }

@@ -6,7 +6,6 @@ using ClinicX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using APIControllers.Controllers;
-using ClinicX.Data;
 
 namespace ClinicX.Controllers
 {
@@ -14,7 +13,6 @@ namespace ClinicX.Controllers
     {
         private readonly IConfiguration _config;
         private readonly ClinicalContext _context;
-        private readonly ClinicXContext _clinicXContext;
         private readonly DocumentContext _documentContext;
         private readonly IDocumentsDataAsync _documentsData;
         private readonly IPatientDataAsync _patientData;
@@ -35,12 +33,11 @@ namespace ClinicX.Controllers
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documentsData, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController letterController, ICRUD crud,
             IDiaryDataAsync diaryData, ILeafletDataAsync leafletData, IExternalClinicianDataAsync externalClinicianData, ITriageDataAsync triageData, 
             IScreeningCoordinatorDataAsync screeningCoordinatorData, IApiController api, IConstantsDataAsync constantsData, IRelativeDataAsync relativeData, IRelativeDiaryDataAsync relativeDiaryData,
-            ClinicalContext context, DocumentContext documentContext, ClinicXContext clinicXContext) 
+            ClinicalContext context, DocumentContext documentContext) 
         {
             _config = config;   
             _context = context;
-            _documentContext = documentContext;
-            _clinicXContext = clinicXContext;
+            _documentContext = documentContext;            
             _documentsData = documentsData;
             _patientData = patientData;
             _referralData = referralData;
@@ -181,7 +178,7 @@ namespace ClinicX.Controllers
                 }
             }
 
-            LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext, _clinicXContext); //to test
+            LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //to test
 
             if (docCode == "REPSUM")
             {

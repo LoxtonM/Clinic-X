@@ -161,33 +161,7 @@ namespace ClinicX.Models
         public bool Inuse { get; set; }
     }
 
-    [Table("ListScreeningServiceDetails", Schema = "dbo")]
-    public class ScreeningService
-    {
-        [Key]
-        public string ScreeningOfficeCode { get; set; }
-        public string BreastScreeningService { get; set; }
-        public string Contact {  get; set; }
-        public string Telephone { get; set; }
-        public string Add1 { get; set; }
-        public string Add2 { get; set; }
-        public string Add3 { get; set; }
-        public string Add4 { get; set; }
-        public string? Add5 { get; set; }
-        public string? Add6 { get; set; }
-        public string? Add7 { get; set; }
-        public string? Add8 { get; set; }
-        public string? Add9 { get; set; }
-        public string? Add10 { get; set; }
-    }
-
-    [Table("ListScreeningServiceGPCodes", Schema = "dbo")]
-    public class ScreeningServiceGPCode
-    {
-        [Key]
-        public string GPCode { get; set; }
-        public string ScreeningOfficeCode { get; set; }        
-    }
+    
 
     [Table("PatientBreastSurgeryImplantsHistory", Schema = "dbo")]
     public class BreastSurgeryHistory
