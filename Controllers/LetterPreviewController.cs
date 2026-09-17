@@ -33,7 +33,13 @@ namespace ClinicX.Controllers
 
         public async Task<IActionResult> DoLetter(int docID, int mpi, int refID, string referrerCode, string? recipient, string? freeText, string? enclosures, 
             string? siteText, int? relID, string? freeText1 = "", string? freeText2 = "")
-        {
+        { 
+            if (referrerCode == null)
+            {
+                string message = "No referrer code is set for this referral. Please set a referrer code before printing letters.";
+                return RedirectToAction("Index", "LetterMenu", new { refID = refID, mpi = mpi, success = false, message = message });
+            }
+
             string qrCodeText = ""; //check and set up the Phenotips PPQ QR code if required
             bool isPhenotipsAvailable = await _constantsData.GetConstant("PhenotipsURL", 2) == "1";
 

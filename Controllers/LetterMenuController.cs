@@ -153,6 +153,11 @@ namespace ClinicX.Controllers
             int mpi = _lvm.patient.MPI;
             int diaryID = 0;
 
+            if(_lvm.referral.ReferrerCode == null)
+            {
+                message = "No referrer code is set for this referral. Please set a referrer code before printing letters.";
+                return RedirectToAction("Index", new { refID = refID, mpi = mpi, success = printSuccess, message = message });
+            }
 
             if (!isPreview) //don't create a diary entry for every time we preview the letter!!
             {
