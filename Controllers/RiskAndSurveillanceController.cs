@@ -240,16 +240,17 @@ namespace ClinicX.Controllers
                 AgeCalculator ageCalc = new AgeCalculator(); //to display patient's current age (requested feature)
 
                 int ddYear = ageCalc.DateDifferenceDay(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now) / 365;
-                int ddMonth = ageCalc.DateDifferenceMonth(_rsvm.patient.DOB.GetValueOrDefault(), DateTime.Now);
+                
+                int ddMonth = ageCalc.DateDifferenceMonth(DateTime.Now, _rsvm.patient.DOB.GetValueOrDefault());
 
                 if (ddMonth <= 0)
                 {
-                    //ddYear -= 1;
+                    ddYear -= 1;
                     ddMonth += 11; //because apparently 12 gets the wrong result
-                }
+                }                
 
                 _rsvm.patientAge = $"{ddYear} years {ddMonth} months";
-
+                
                 return View(_rsvm);
             }
             catch (Exception ex)

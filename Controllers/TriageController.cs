@@ -942,6 +942,11 @@ namespace ClinicX.Controllers
                 _ivm.patientAge = _ageCalculator.DateDifferenceYear(_ivm.patient.DOB.GetValueOrDefault(), DateTime.Today);
             }
 
+            if (_ivm.referralDetails.ClockStartDate != null)
+            {
+                _ivm.breachDate = _ivm.referralDetails.ClockStartDate.Value.AddDays(7 * 18);
+            }
+
             return View(_ivm);
         }
     }

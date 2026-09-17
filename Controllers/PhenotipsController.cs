@@ -20,10 +20,11 @@ namespace ClinicX.Controllers
         private readonly IApiController _api;
         private readonly IPatientDataAsync _patientData;
         private readonly IReferralDataAsync _referralData;
+        private readonly IPhenotipsMirrorDataAsync _phenotipsData;
         private readonly PhenotipsVM _pvm;
         private readonly LetterController _lc;
 
-        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, LetterController lc)//, APIContext aPIContext)
+        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, IReferralDataAsync referralData, IPhenotipsMirrorDataAsync phenotipsData, LetterController lc)//, APIContext aPIContext)
         {
             //_clinContext = clinContext;
             //_docContext = docContext;
@@ -32,6 +33,7 @@ namespace ClinicX.Controllers
             _api = aPIController;
             _patientData = patientData;
             _referralData = referralData;
+            _phenotipsData = phenotipsData;
             _pvm = new PhenotipsVM();
             _lc = lc;
         } 
@@ -57,6 +59,15 @@ namespace ClinicX.Controllers
             }
             else if (result == 0)
             {
+                var pat =  await _phenotipsData.GetPhenotipsPatientByID(mpi); //check for mirror table entry
+
+                if(pat == null)
+                {
+                    string ptID = await _api.GetPhenotipsPatientID(mpi);
+                    Patient patient = await _patientData.GetPatientDetails(mpi);
+                    await AddPatientToPhenotipsMirrorTable(ptID, mpi, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), patient.POSTCODE, patient.SOCIAL_SECURITY);
+                }
+
                 sMessage = "Patient already exists in Phenotips!";
             }
             else

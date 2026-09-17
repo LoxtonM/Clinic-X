@@ -134,7 +134,7 @@
                                 <label>Add As Clinical Note:</label>
                             </div>
                             <div class="col-md-2">
-                                <input type="checkbox" id="chkAddAsNote" class="checkboxStyle" />
+                                <input type="checkbox" id="chkAddAsNote" class="checkboxStyle" checked />
                                 <input name="isAddAsNote" type="text" id="txtAddAsNote" hidden />
                             </div>
                         </div>
@@ -304,6 +304,8 @@
     {       
         var today = new Date();
         document.getElementById("txtBookedDate").value = today.toISOString().slice(0,10);
+
+        SetAddAsNote();
     }
 
     function SetContactDate()
