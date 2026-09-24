@@ -33,10 +33,11 @@
                 <thead>
                     <tr>
                         <th>CGU No</th>
-                        <th>Patient</th>
+                        @*<th>Patient</th>*@
                         <th>Letter To</th>
                         <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>
                         <th>Status</th>
+                        <th>Created by</th>
                         <th>Comments</th>
                     </tr>
                 </thead>
@@ -47,7 +48,7 @@
                         {
                             <tr>
                                 <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-success">@item.CGU_No</a></td>
-                                <td>@item.Patient</td>
+                                @*<td>@item.Patient</td>*@
                                 <td>@item.LetterTo</td>
                                 @if (@item.DateDictated.HasValue)
                                 {
@@ -58,6 +59,7 @@
                                     <td></td>
                                 }
                                 <td>@item.Status</td>
+                                <td>@item.CreatedBy</td>
                                 <td>@item.Comments</td>
                             </tr>
                         }

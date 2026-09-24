@@ -17,7 +17,7 @@
             <thead>
                 <tr>
                     <th>Lab number</th>
-                    <th>Date Obtained</th>
+                    <th>Sample Date</th>
                     <th>Date Received</th>
                     <th>Report Date</th>
                     <th>Report Status</th>
@@ -76,6 +76,7 @@
             <thead>
                 <tr>
                     <th>Lab number</th>
+                    <th>Sample Date</th>
                     <th>Date Requested</th>
                     <th>Report Date</th>
                     <th>Report Status</th>
@@ -88,6 +89,14 @@
                 {
                     <tr>
                         <td><a type="button" class="btn btn-outline-primary" asp-controller="LabReport" asp-action="SampleDetails" asp-route-labno=@item.LABNO>@item.LABNO</a></td>
+                        @if (@item.DATE_OBTAINED != null)
+                        {
+                            <td><span hidden>@item.DATE_OBTAINED.Value.ToString("yyyyMMdd")</span>@item.DATE_OBTAINED.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>
+                        }
                         @if (@item.DATEREQUESTED != null)
                         {
                             <td><span hidden>@item.DATEREQUESTED.Value.ToString("yyyyMMdd")</span>@item.DATEREQUESTED.Value.ToString("dd/MM/yyyy")</td>

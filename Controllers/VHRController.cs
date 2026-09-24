@@ -151,7 +151,7 @@ public class VHRController : Controller
                 "Mobile number: " + _lvm.patient.PtTelMobile + Environment.NewLine + gpDets;
 
             vhrTf.DrawString(content1, fontSmall, XBrushes.Black, new XRect(50, totalLengthVHR, 500, 80));
-            content2 = "NHS No: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine +
+            content2 = "NHS No: " + _lvm.patient.NHSNumber + Environment.NewLine +
                     "DOB: " + _lvm.patient.DOB.Value.ToString("dd/MM/yyyy") + Environment.NewLine + Environment.NewLine +
                     "Home number: " + _lvm.patient.PtTelMobile;
 
@@ -685,7 +685,7 @@ public class VHRController : Controller
 
             vhrTf.DrawString("Re: " + patName, fontBold, XBrushes.Black, new XRect(60, totalLengthVHR, 500, 15));
             vhrTf.DrawString(_lvm.patient.DOB.Value.ToString("dd/MM/yyyy"), fontBold, XBrushes.Black, new XRect(200, totalLengthVHR, 500, 15));
-            vhrTf.DrawString("NHS number: " + _lvm.patient.SOCIAL_SECURITY, fontBold, XBrushes.Black, new XRect(350, totalLengthVHR, 500, 15));
+            vhrTf.DrawString("NHS number: " + _lvm.patient.NHSNumber, fontBold, XBrushes.Black, new XRect(350, totalLengthVHR, 500, 15));
             totalLengthVHR += 15;
             vhrTf.DrawString(patAddress, fontBold, XBrushes.Black, new XRect(80, totalLengthVHR, 500, 100));
             totalLengthVHR += 100;

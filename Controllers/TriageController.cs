@@ -44,7 +44,6 @@ namespace ClinicX.Controllers
         private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
         private readonly IApiController _api;
 
-
         public TriageController(IConfiguration config, IStaffUserDataAsync staffUserData, IPathwayDataAsync pathwayData, IPriorityDataAsync priorityData, IReferralDataAsync referralData, ITriageDataAsync triageData,
             IICPActionDataAsync iCPActionData, IRiskDataAsync riskData, ISurveillanceDataAsync surveillanceData, ITestEligibilityDataAsync testEligibilityData, IDiaryDataAsync diaryData, IRelativeDataAsync relativeData,
             ICancerRequestDataAsync cancerRequestData, IExternalClinicianDataAsync externalClinicianData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IDocumentsDataAsync documentsData, ICRUD crud, 
@@ -767,11 +766,11 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Risk and Surveillance", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.riskDetails = await _riskData.GetRiskDetails(id);
-                var pat = await _referralData.GetReferralDetails(_ivm.riskDetails.RefID);
-                int mpi = pat.MPI;
+                var refer = await _referralData.GetReferralDetails(_ivm.riskDetails.RefID);
+                int mpi = refer.MPI;
+                var pat = await _patientData.GetPatientDetails(mpi);
                 _ivm.surveillanceList = await _survData.GetSurveillanceList(mpi);
                 _ivm.surveillanceList = _ivm.surveillanceList.Where(s => s.RiskID == id).ToList();
-
                 return View(_ivm);
             }
             catch (Exception ex)

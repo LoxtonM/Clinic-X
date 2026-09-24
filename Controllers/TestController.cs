@@ -277,7 +277,6 @@ namespace ClinicX.Controllers
             _tvm.sampleTypes = await _sampleData.GetSampleTypeList();
             _tvm.sampleRequirementList = await _sampleData.GetSampleRequirementsList();
 
-            
             List<Appointment> apptList = await _clinicData.GetClinicByPatientsList(_tvm.test.MPI);
             apptList = apptList.Where(a => a.Attendance == "NOT RECORDED" && a.BOOKED_DATE >= DateTime.Now).OrderBy(a => a.BOOKED_DATE).ToList();
             //apptList = apptList.Where(a => a.BOOKED_DATE > DateTime.Now).ToList();
@@ -359,7 +358,7 @@ namespace ClinicX.Controllers
             _tvm.bloodForm = await _bloodFormData.GetBloodFormDetails(bloodFormID);
             _tvm.test = await _testData.GetTestDetails(_tvm.bloodForm.TestID);
             _tvm.patient = await _patientData.GetPatientDetails(_tvm.test.MPI);
-            
+
             _tvm.sampleTypes = await _sampleData.GetSampleTypeList();
             _tvm.sampleRequirementList = await _sampleData.GetSampleRequirementsList();
 

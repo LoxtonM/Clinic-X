@@ -35,7 +35,7 @@ namespace ClinicX.Controllers
         private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
         private readonly IExternalFacilityDataAsync _extFacility;
         private readonly IPedigreeDataAsync _pedigreeData;
-        private readonly ICRUD _crud;
+        private readonly ICRUD _crud;        
 
         public PatientController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IRelativeDataAsync relativeData, IPathwayDataAsync pathwayData, IAlertDataAsync alertData, 
             IReferralDataAsync referralData, IDiaryDataAsync diaryData, IHPOCodeDataAsync hPOCodeData, IAuditService auditService, IConstantsDataAsync constantsData, IAgeCalculator ageCalculator,
@@ -111,9 +111,9 @@ namespace ClinicX.Controllers
                 _pvm.relatives = _pvm.relatives.Distinct().OrderBy(r => r.Name).ToList(); //because there are dupes.
                 _pvm.appointmentList = _pvm.appointmentList.Distinct().ToList();
                 _pvm.icpCancerList = new List<ICPCancer>();                                
-                _pvm.icpList = new List<ICP>();
+                _pvm.icpList = new List<ICP>();                
 
-                foreach(var item in _pvm.referralsActive)
+                foreach (var item in _pvm.referralsActive)
                 {
                     ICP icp = await _triageData.GetICPDetailsByRefID(item.refid);
                     if (icp != null) { _pvm.icpList.Add(icp); }

@@ -83,7 +83,6 @@ namespace ClinicX.Controllers
 
                 _rvm.reviewList = await _reviewData.GetReviewsListForPatient(id);
                 _rvm.patient = await _patientData.GetPatientDetails(id);
-
                 return View(_rvm);
             }
             catch (Exception ex)

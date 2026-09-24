@@ -175,7 +175,6 @@ namespace ClinicX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-
                 _cvm.message = message;
                 _cvm.success = success.GetValueOrDefault();
 
