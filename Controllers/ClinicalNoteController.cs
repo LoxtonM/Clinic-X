@@ -121,6 +121,7 @@ namespace ClinicX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Clinical Note", "ClinicalNoteID=" + id.ToString(), _ip.GetIPAddress());
 
+                _cvm.noteTypeList = await _clinicalNoteData.GetNoteTypesList();
                 _cvm.clinicalNote = await _clinicalNoteData.GetClinicalNoteDetails(id);
                 _cvm.patient = await _patientData.GetPatientDetails(_cvm.clinicalNote.MPI.GetValueOrDefault());
 
@@ -134,7 +135,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]        
-        public async Task<IActionResult> Edit(int noteID, string clinicalNote, bool isFinalised)
+        public async Task<IActionResult> Edit(int noteID, string clinicalNote, string noteType, bool isFinalised)
         {
             try
             {
@@ -144,7 +145,7 @@ namespace ClinicX.Controllers
                 }
 
                 int success = await _crud.CallStoredProcedure("Clinical Note", "Update", noteID, 0, 0, 
-                    "", "", "", clinicalNote, User.Identity.Name);
+                    noteType, "", "", clinicalNote, User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="ClinicalNote-edit(SQL)" }); }
 

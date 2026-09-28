@@ -38,7 +38,13 @@
                     Note Type:
                 </div>
                 <div class="col-md-4">                
-                    <input id="txtNoteType" asp-for=@Model.clinicalNote.NoteType readonly="readonly" />
+                    @*<input id="txtNoteType" asp-for=@Model.clinicalNote.NoteType />*@
+                    <select id="ddlNoteType" asp-for=@Model.clinicalNote.NoteType name="noteType">
+                        @foreach(var item in Model.noteTypeList)
+                        {
+                            <option value=@item.NoteType>@item.NoteType</option>
+                        }
+                    </select>
                 </div>
                 <div class="col-md-6"></div>
             </div>
@@ -46,7 +52,7 @@
             <div class="row mb-5">
                 <div class="col-md-2">Details:</div>
                 <div class="col-md-8">
-                    <textarea id="txtClinicalNote" rows="20" cols="120" asp-for=@Model.clinicalNote.ClinicalNote name="clinicalNote"></textarea>
+                    <textarea id="txtClinicalNote" rows="20" cols="120" asp-for=@Model.clinicalNote.ClinicalNote name="clinicalNote" spellcheck="true"></textarea>
                 </div>
                 <div class="col-md-2"></div>
             </div>
@@ -85,7 +91,7 @@
         //document.getElementById("metadata").hidden = true;
         if (document.getElementById("txtDCTMSts").value != 0)
         {
-            document.getElementById("txtNoteType").disabled = true;
+            document.getElementById("ddlNoteType").disabled = true;
             document.getElementById("txtClinicalNote").disabled = true;
             document.getElementById("btnSaveNote").hidden = true;
             document.getElementById("btnFinalise").hidden = true;

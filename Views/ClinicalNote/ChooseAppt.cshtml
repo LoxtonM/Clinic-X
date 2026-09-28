@@ -28,7 +28,8 @@
                     <th></th>                
                     <th>Clinic</th>
                     <th>@Html.DisplayNameFor(model => model.Clinic.BOOKED_DATE)</th>
-                    <th>@Html.DisplayNameFor(model => model.Clinic.BOOKED_TIME)</th>                
+                    <th>@Html.DisplayNameFor(model => model.Clinic.BOOKED_TIME)</th>      
+                    <th>Outcome</th>
                 </tr>
             </thead>
             <tbody>           
@@ -39,6 +40,7 @@
                         <td>@item.Clinic</td>
                         <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
                         <td>@item.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                        <td>@item.Attendance</td>
                     </tr>                   
                 }          
             </tbody>

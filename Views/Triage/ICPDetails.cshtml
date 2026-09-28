@@ -672,10 +672,6 @@
 
             if (_gc == "True") //gc triaged
             {
-                //var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
-                //var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
-                //document.getElementById("ddlIsSPR").hidden = true;                
-
                 if (!_tp2c.hidden)
                 {
                     _tp2c.disabled = true;
@@ -694,7 +690,6 @@
                         document.getElementById("ddlGenP").hidden = false;
                         _facility.hidden = true;
                     }
-
                 }
 
                 if (!_tp2nc.hidden)
@@ -719,25 +714,18 @@
 
         else
         {
-            document.getElementById("formICPCancer").hidden = false;
-
-            
-           // if(!= 0)
-            //{
-            //    document.getElementById("btnICPReview").hidden = false; //createNSResolver we can't do this, because there's no way toolbar get the LoadICP review ID.
-            //}
+            document.getElementById("formICPCancer").hidden = false;            
         }
        
         LoadEDMSLink();
-        //AutoLoadEDMS();
     }
 
 
     function DoGeneralTriage()
     {
-        var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
-        var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
-        var _facility = document.getElementById("ddlFacility");
+        //var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
+        //var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
+        //var _facility = document.getElementById("ddlFacility");
                
         if (CheckFormValid() == 1)
         {
@@ -749,10 +737,7 @@
     {
         document.getElementById("formICPCancer").submit();
     }
-
     
-
-
 
     function CheckFormValid()
     { //validation to ensure all required data is entered

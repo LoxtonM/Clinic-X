@@ -457,6 +457,8 @@ namespace ClinicalXPDataConnections.Meta
                         //if () //because somebody hard-coded this overriding feature in CGU_DB                    
                         //{
                         address = _add.GetAddress("RD", refID);
+                        ExternalClinician clinician = _externalClinicianData.GetClinicianDetails(referrer);
+                        salutation = clinician.TITLE + " " + clinician.FIRST_NAME + " " + clinician.NAME;
                         //}
                     }
                     else if (_lvm.documentsContent.LetterTo == "GP")

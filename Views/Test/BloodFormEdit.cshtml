@@ -77,8 +77,8 @@
                 <label>Urgent/Routine</label>
             </div>
             <div class="col-md-2">
-                <label>Routine </label><input id="chkRoutine" type="checkbox" asp-for=@Model.bloodForm.IsRoutine />
-                <label>Urgent</label><input id="chkUrgent" type="checkbox" />                
+                <label>Routine </label><input id="chkRoutine" type="checkbox" />
+                <label>Urgent</label><input id="chkUrgent" type="checkbox"  />
                 <input name="isRoutine" id="txtRoutine" hidden />
             </div>
             <div class="col-md-2">
@@ -319,6 +319,17 @@
 
     function LoadForm()
     {
+        var isRoutine = "@Model.bloodForm.IsRoutine";        
+        
+        if(isRoutine == "False") //because it can't just render it as the actual value, oh no! THat would be far too simple.
+        {
+            document.getElementById("chkRoutine").checked = false;
+        }
+        else
+        {
+            document.getElementById("chkRoutine").checked = true;
+        }
+        
         document.getElementById("chkPrivate").checked = !document.getElementById("chkNHS").checked;
         document.getElementById("chkUrgent").checked = !document.getElementById("chkRoutine").checked;
         document.getElementById("chkOutpatient").checked = !document.getElementById("chkInpatient").checked;
