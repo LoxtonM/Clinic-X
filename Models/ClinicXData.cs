@@ -262,16 +262,7 @@ namespace ClinicX.Models
         public string Staff_Code { get; set; }
         public bool Automated_GEMR_Open { get; set; }
         public string GEMR_browser { get; set; }
-    }
-
-    [Table("ICP_SSP", Schema = "dbo")]
-    public class SocialServicePathway
-    {
-        [Key]
-        public int SSPID { get; set; }
-        public int ICPID { get; set; }
-        public bool IsActive { get; set; }
-    }
+    }    
 
     [Keyless]
     [Table("ViewScreeningCoordinators", Schema = "dbo")]
