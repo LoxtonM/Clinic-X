@@ -162,7 +162,7 @@ namespace ClinicX.Controllers
             totalLength += 1;
             tf.DrawString("Ethnicity:", fontSmallBold, XBrushes.Black, new XRect(pageEdge + 5, totalLength, 100, 20));
             totalLength += 1;
-            tf.DrawString(patient.Ethnic, font, XBrushes.Black, new XRect(pageEdge + 50, totalLength, 250, 20));
+            tf.DrawString(patient.Ethnic ?? "Unknown", font, XBrushes.Black, new XRect(pageEdge + 50, totalLength, 250, 20)); //because null. Obviously.
             totalLength += 16;
 
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge, totalLength, pageWidth / 2, 20));
@@ -354,18 +354,30 @@ namespace ClinicX.Controllers
             totalLength += 4;
             tf.DrawString("Patient management (determining therapeutic decisions and/or clinical investigations and/or surveillance programme)", fontSmall, XBrushes.Black, new XRect(pageEdge + 40, totalLength, 500, 20));            
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge + 10, totalLength, 10, 10));           
-            totalLength += 1;
+            totalLength += 1;            
             gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + 11, totalLength, 8, 8));
+            if (bloodForm.isPatientManagement)
+            {
+                gfx.DrawString(tick, symbols, XBrushes.Black, pageEdge + 11, totalLength + 6);
+            }
             totalLength += 20;
             tf.DrawString("Patient, parents or adult relative reproductive decision making", fontSmall, XBrushes.Black, new XRect(pageEdge + 40, totalLength, 500, 20));            
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge + 10, totalLength, 10, 10));
             totalLength += 1;
             gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + 11, totalLength, 8, 8));
+            if (bloodForm.isReproductiveDecisionMaking)
+            {
+                gfx.DrawString(tick, symbols, XBrushes.Black, pageEdge + 11, totalLength + 6);
+            }
             totalLength += 20;
             tf.DrawString("Unaffected relatives are seeking predictive testing", fontSmall, XBrushes.Black, new XRect(pageEdge + 40, totalLength, 500, 20));            
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge + 10, totalLength, 10, 10));
             totalLength += 1;
             gfx.DrawRectangle(XBrushes.White, new XRect(pageEdge + 11, totalLength, 8, 8));
+            if (bloodForm.isRelativePredictiveTesting)
+            {
+                gfx.DrawString(tick, symbols, XBrushes.Black, pageEdge + 11, totalLength + 6);
+            }
             totalLength += 18;
             //tick boxes for testing requirements
             gfx.DrawRectangle(XBrushes.Black, new XRect(pageEdge, totalLength, pageWidth / 5, 20));

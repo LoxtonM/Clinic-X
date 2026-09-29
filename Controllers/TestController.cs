@@ -300,11 +300,12 @@ namespace ClinicX.Controllers
         [HttpPost]
         public async Task<IActionResult> NewBloodForm(int testID, int iSampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
             DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isUrgent, string? relname, string sampleDetails, bool isInpatient, string? relNumber,
-            bool isPrenatal, bool isPresymptomatic, bool isDiagnostic, bool isCarrier, string? prenatalType, string? prenatalRisk, int? gestation)
+            bool isPrenatal, bool isPresymptomatic, bool isDiagnostic, bool isCarrier, bool isPatientManagement, bool isReproductiveDecisionMaking, bool isRelativePredictiveTesting, 
+            string? prenatalType, string? prenatalRisk, int? gestation)
         {
             int success = _crud.CallPatientBloodFormCRUD("Create", testID, iSampleRequirements, gestation.GetValueOrDefault(), 0, 0, 0, 0, clinicalDetails, testingRequirements, 
                 sampleType, relativeDetails, User.Identity.Name, prenatalType, prenatalRisk, relname, relNumber, "", nextAppDate, relDOB, isNHS, isUrgent, isInpatient, 
-                isPrenatal, isPresymptomatic, isDiagnostic, isCarrier);
+                isPrenatal, isPresymptomatic, isDiagnostic, isCarrier, isPatientManagement, isReproductiveDecisionMaking, isRelativePredictiveTesting);
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Test-edit(SQL)" }); }
 
@@ -371,7 +372,8 @@ namespace ClinicX.Controllers
         [HttpPost]
         public async Task<IActionResult> BloodFormEdit(int bloodFormID, string sampleRequirements, string? clinicalDetails, string? testingRequirements, string sampleType, string relativeDetails,
             DateTime? nextAppDate, DateTime? relDOB, bool isNHS, bool isRoutine, string? relname, string sampleDetails, bool isInpatient, string? relNumber,
-            bool isPrenatal, bool isPresymptomatic, bool isDiagnostic, bool isCarrier, string? prenatalType, string? prenatalRisk, int? gestation)
+            bool isPrenatal, bool isPresymptomatic, bool isDiagnostic, bool isCarrier, bool isPatientManagement, bool isReproductiveDecisionMaking, bool isRelativePredictiveTesting, 
+            string? prenatalType, string? prenatalRisk, int? gestation)
         {
             _tvm.bloodForm = await _bloodFormData.GetBloodFormDetails(bloodFormID);
             _tvm.test = await _testData.GetTestDetails(_tvm.bloodForm.TestID);
@@ -382,7 +384,7 @@ namespace ClinicX.Controllers
 
             int iSuccess = _crud.CallPatientBloodFormCRUD("Edit", bloodFormID, 0, gestation.GetValueOrDefault(), 0, 0, 0, 0, clinicalDetails, testingRequirements,
                 sampleType, relativeDetails, User.Identity.Name, prenatalType, prenatalRisk, relname, relNumber, sampleRequirements, nextAppDate, relDOB, isNHS, isRoutine, isInpatient,
-                isPrenatal, isPresymptomatic, isDiagnostic, isCarrier);
+                isPrenatal, isPresymptomatic, isDiagnostic, isCarrier, isPatientManagement, isReproductiveDecisionMaking, isRelativePredictiveTesting);
 
             return RedirectToAction("BloodFormEdit", new { bloodFormID = bloodFormID });
         }

@@ -20,7 +20,7 @@ namespace ClinicX.Meta
         public int CallPatientBloodFormCRUD(string sOperation, int int1, int int2, int int3, int int4, int int5, int int6, int int7,
             string string1, string string2, string string3, string text, string sLogin, string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "",
              DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false, bool? bool4 = false, bool? 
-            bool5 = false, bool? bool6 = false, bool? bool7 = false, bool? bool8 = false);
+            bool5 = false, bool? bool6 = false, bool? bool7 = false, bool? bool8 = false, bool? bool9 = false, bool? bool10 = false);
 
         public int SetupOfflineDatabase(string staffCode, DateTime dateFrom, DateTime dateTo);
     }
@@ -130,7 +130,7 @@ namespace ClinicX.Meta
         public int CallPatientBloodFormCRUD(string sOperation, int int1, int int2, int int3, int int4, int int5, int int6, int int7,
             string string1, string string2, string string3, string text, string sLogin, string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "",
              DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false, bool? bool4 = false, bool?
-            bool5 = false, bool? bool6 = false, bool? bool7 = false, bool? bool8 = false)
+            bool5 = false, bool? bool6 = false, bool? bool7 = false, bool? bool8 = false, bool? bool9 = false, bool? bool10 = false)
         { //same as the standard CRUD but because there are a lot more variables to use here
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
@@ -177,6 +177,8 @@ namespace ClinicX.Meta
             cmd.Parameters.Add("@bool6", SqlDbType.VarChar).Value = bool6;
             cmd.Parameters.Add("@bool7", SqlDbType.VarChar).Value = bool7;
             cmd.Parameters.Add("@bool8", SqlDbType.VarChar).Value = bool8;
+            cmd.Parameters.Add("@bool9", SqlDbType.VarChar).Value = bool9;
+            cmd.Parameters.Add("@bool10", SqlDbType.VarChar).Value = bool10;
 
             if (HttpContext != null)
             {

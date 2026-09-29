@@ -39,7 +39,7 @@
         <span id="thehost">@Context.Request.Host</span>        
     </div>
 
-    <h1>Blood form for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+    <h1>Blood form for @Model.patient.FIRSTNAME @Model.patient.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a> </h1>
 
     <div class="row mb-5 g-5">
         <div class="col-md-2">
@@ -115,6 +115,30 @@
             </div>
             <div class="col-md-4">
                 <input type="text" name="testingRequirements" asp-for=@Model.bloodForm.TestingRequirements />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Clinical Utility:</label>
+            </div>
+            <div class="col-md-2">
+                <label>Patient Management</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkPatientManagement" asp-for=@Model.bloodForm.isPatientManagement /><input type="text" name="isPatientManagement" id="txtPatientManagement" hidden />
+            </div>
+            <div class="col-md-2">
+                <label>Reproductive Decision Making Utility</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkReproductiveDecisionMaking" asp-for=@Model.bloodForm.isReproductiveDecisionMaking /><input type="text" name="isReproductiveDecisionMaking" id="txtReproductiveDecisionMaking" hidden />
+            </div>
+            <div class="col-md-2">
+                <label>Relative Predictive Testing</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkRelativePredictiveTesting" asp-for=@Model.bloodForm.isRelativePredictiveTesting /><input type="text" name="isRelativePredictiveTesting" id="txtRelativePredictiveTesting" hidden />
             </div>
         </div>
 
@@ -263,6 +287,11 @@
     document.getElementById("chkPresymptomatic").addEventListener("change", SetPresymptomatic);
     document.getElementById("chkDiagnostic").addEventListener("change", SetDiagnostic);
     document.getElementById("chkCarrier").addEventListener("change", SetCarrier);
+
+    document.getElementById("chkPatientManagement").addEventListener("change", SetPMTicked);
+    document.getElementById("chkReproductiveDecisionMaking").addEventListener("change", SetRDMTicked);
+    document.getElementById("chkRelativePredictiveTesting").addEventListener("change", SetRPTTicked);
+
     window.addEventListener("load", LoadForm);
     document.addEventListener("input", OnInputChange);
 
@@ -272,6 +301,41 @@
         document.getElementById("DoFormLinkNameChange").disabled = true;
         document.getElementById("DoFormLinkStandardPreview").hidden = true;
         document.getElementById("DoFormLinkNameChangePreview").disabled = true;        
+    }
+
+    function SetPMTicked() //because we can't do it all in one function, because it won't recognise the others being ticked once one has been ticked!!!!! FFS, seriously...
+    {
+        document.getElementById("chkReproductiveDecisionMaking").checked = false;
+        document.getElementById("chkRelativePredictiveTesting").checked = false;
+
+        SetClinicalUtility();
+    }
+
+    function SetRDMTicked() //because we can't do it all in one function, because it won't recognise the others being ticked once one has been ticked!!!!! FFS, seriously...
+    {
+        document.getElementById("chkPatientManagement").checked = false;
+        document.getElementById("chkRelativePredictiveTesting").checked = false;
+
+        SetClinicalUtility();
+    }
+
+    function SetRPTTicked() //because we can't do it all in one function, because it won't recognise the others being ticked once one has been ticked!!!!! FFS, seriously...
+    {
+        document.getElementById("chkReproductiveDecisionMaking").checked = false;
+        document.getElementById("chkPatientManagement").checked = false;
+
+        SetClinicalUtility();
+    }
+
+    function SetClinicalUtility()
+    {
+        var _pm = document.getElementById("chkPatientManagement");
+        var _rdm = document.getElementById("chkReproductiveDecisionMaking");
+        var _rpt = document.getElementById("chkRelativePredictiveTesting");
+        
+        document.getElementById("txtPatientManagement").value = _pm.checked;
+        document.getElementById("txtReproductiveDecisionMaking").value = _rdm.checked;
+        document.getElementById("txtRelativePredictiveTesting").value = _rpt.checked;
     }
 
 
@@ -315,6 +379,10 @@
         document.getElementById("txtPresymptomatic").value = document.getElementById("chkPresymptomatic").checked;
         document.getElementById("txtDiagnostic").value = document.getElementById("chkDiagnostic").checked;
         document.getElementById("txtCarrier").value = document.getElementById("chkCarrier").checked;
+        
+        document.getElementById("txtPatientManagement").value = document.getElementById("chkPatientManagement").checked;
+        document.getElementById("txtReproductiveDecisionMaking").value = document.getElementById("chkReproductiveDecisionMaking").checked;
+        document.getElementById("txtRelativePredictiveTesting").value = document.getElementById("chkRelativePredictiveTesting").checked;
     }
 
     function LoadForm()

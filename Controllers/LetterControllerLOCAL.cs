@@ -554,9 +554,17 @@ namespace ClinicalXPDataConnections.Meta
                         }
                         break;
                     case "Cons":
-                        var cons = _staffUser.GetStaffMemberDetailsByStaffCode(referral.PATIENT_TYPE_CODE);
-                        signOff = cons.NAME + Environment.NewLine + cons.POSITION;
-                        sigFilename = cons.StaffForename + cons.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        if (_lvm.staffMember.CLINIC_SCHEDULER_GROUPS == "Admin")
+                        {
+                            var cons = _staffUser.GetStaffMemberDetailsByStaffCode(referral.PATIENT_TYPE_CODE);
+                            signOff = cons.NAME + Environment.NewLine + cons.POSITION;
+                            sigFilename = cons.StaffForename + cons.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        }
+                        else
+                        {
+                            signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                            sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        }
                         break;
                     case "Logon":
                         signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -732,12 +740,12 @@ namespace ClinicalXPDataConnections.Meta
                     Column contentPatDOB = table1.AddColumn();
                     contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
                     table1.Rows.Height = 50;
-                    table1.Columns.Width = 200;
-                    contentRe.Width = 20;
+                    table1.Columns.Width = 150;
+                    contentRe.Width = 120;
                     Row row1_1 = table1.AddRow();
                     row1_1.VerticalAlignment = VerticalAlignment.Top;
                     row1_1.Format.Font.Bold = true;
-                    row1_1.Cells[0].AddParagraph("Re:");
+                    row1_1.Cells[0].AddParagraph("Re. recent referral of:");
                     row1_1.Cells[1].AddParagraph(patAddress);
                     row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
                     spacer = section.AddParagraph();
@@ -2566,8 +2574,8 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para5);
 
-                    StaffMember referralGC = _staffUser.GetStaffMemberDetailsByStaffCode(referral.GC_CODE);
-                    signOff = referralGC.NAME + Environment.NewLine + referralGC.POSITION;
+                    //StaffMember referralGC = _staffUser.GetStaffMemberDetailsByStaffCode(referral.GC_CODE);
+                    //signOff = referralGC.NAME + Environment.NewLine + referralGC.POSITION;
                 }
 
                 string phenotipsAvailable = _constantsData.GetConstant("PhenotipsURL", 2);
