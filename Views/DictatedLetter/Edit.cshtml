@@ -765,15 +765,22 @@
         }
         if (sLetterTo == "Referrer")
         {
-            sName = "@Model.referrer.TITLE" + " " + "@Model.referrer.FIRST_NAME" + " " + "@Model.referrer.NAME";
-            sAddress = "@Model.referrerFacility.NAME" + "\n" +
-                        "@Model.referrerFacility.ADDRESS" + "\n" +
-                        "@Model.referrerFacility.CITY" + "\n" +
-                        "@Model.referrerFacility.STATE" + "\n" +
-                        "@Model.referrerFacility.ZIP";
-            letterToCode.value = "Referrer";
+            if("@Model.referrer.NAME" == null)
+            {
+                window.alert("No details found for this referrer, please check the referral details");
+            }
+            else
+            {
+                sName = "@Model.referrer.TITLE" + " " + "@Model.referrer.FIRST_NAME" + " " + "@Model.referrer.NAME";
+                sAddress = "@Model.referrerFacility.NAME" + "\n" +
+                            "@Model.referrerFacility.ADDRESS" + "\n" +
+                            "@Model.referrerFacility.CITY" + "\n" +
+                            "@Model.referrerFacility.STATE" + "\n" +
+                            "@Model.referrerFacility.ZIP";
+                letterToCode.value = "Referrer";
 
-            _salut.value = "@Model.referrer.TITLE" + " " + "@Model.referrer.NAME";
+                _salut.value = "@Model.referrer.TITLE" + " " + "@Model.referrer.NAME";
+            }
         }
         
         if (sLetterTo == "Other") 

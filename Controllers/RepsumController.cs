@@ -175,11 +175,16 @@ namespace ClinicX.Controllers
             row2_3.Cells[1].AddParagraph(reviewByDetails);
             row2_4.Cells[0].AddParagraph().AddFormattedText("Final Review:", TextFormat.Bold);
             string finalReviewDetails = "";
-            if (icpc.FinalReviewedBy != null)
+            if (icpc.FinalReviewedBy != null && icpc.FinalReviewedBy != "")
             {
-                var staffmember = await _staffUser.GetStaffMemberDetailsByStaffCode(icpc.ReviewedBy);
+                var staffmember = await _staffUser.GetStaffMemberDetailsByStaffCode(icpc.FinalReviewedBy);
                 finalReviewDetails = $"{staffmember.NAME} on {icpc.FinalReviewedDate.Value.ToString("dd/MM/yyyy")}";
             }
+            else
+            {
+                finalReviewDetails = $"{staffMember.NAME} on {icpc.FinalReviewedDate.Value.ToString("dd/MM/yyyy")}";
+            }
+
             row2_4.Cells[1].AddParagraph(finalReviewDetails);
             Paragraph p1 = section.AddParagraph();
             p1.AddFormattedText("Additional Pre-clinic Review Notes:", TextFormat.Bold);
