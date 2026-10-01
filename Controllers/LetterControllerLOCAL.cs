@@ -2393,8 +2393,25 @@ namespace ClinicalXPDataConnections.Meta
 
                 if (docCode == "VHRProC")
                 {
-                    Paragraph letterContentPt = section.AddParagraph();
-                    letterContentPt.AddFormattedText(patName + ", DOB:" + patDOB.ToString("dd/MM/yyyy") ?? "DOB unknown", TextFormat.Bold);
+                    //Paragraph letterContentPt = section.AddParagraph();
+                    //letterContentPt.AddFormattedText(patName + ", DOB:" + patDOB.ToString("dd/MM/yyyy") ?? "DOB unknown", TextFormat.Bold);
+                    //spacer = section.AddParagraph();
+
+                    Table tableo4 = section.AddTable();
+                    Column contentPatAddress = tableo4.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = tableo4.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Center;
+                    Column contentPatNHS = tableo4.AddColumn();
+                    contentPatNHS.Format.Alignment = ParagraphAlignment.Right;
+                    tableo4.Rows.Height = 20;
+                    tableo4.Columns.Width = 150;
+                    Row row1_1 = tableo4.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
+                    row1_1.Cells[1].AddParagraph(patDOB.ToString("dd/MM/yyyy"));
+                    row1_1.Cells[2].AddParagraph("NHS number: " + patNHSNo);
                     spacer = section.AddParagraph();
 
                     content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + additionalText; //apparently we don't need the risk etc, just the additional text

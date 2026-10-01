@@ -1,0 +1,93 @@
+﻿@model ClinicX.ViewModels.SocialServicePathwayVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Social Service Pathways";
+}
+
+@{
+    ViewData["Title"] = "Clinic-X - Social Service Pathways";
+    ViewData["Page"] = "/ SocialServicePathway / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {   
+        Html.ActionLink("Social Services Pathway List", "Index", "SocialServicePathway", new { }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.socialServicePathway.MPI }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container card">
+    <div class="card-header">
+        <h1>Social Service Pathway for @Model.socialServicePathway.PatientName, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.socialServicePathway.MPI>@Model.socialServicePathway.CGU_No</a> </h1>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Status:</b></div>
+            <div class="col-md-4">@Model.socialServicePathway.SSPStatus</div>
+        </div>
+
+        <div class="row mb-2 g-2">            
+            <div class="col-md-4"><b>Date Created:</b></div>
+            <div class="col-md-2">@Model.socialServicePathway.CreatedDate.ToString("dd/MM/yyyy")</div>
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Social worker details:</b></div>
+            <div class="col-md-8">@Model.socialServicePathway.SocialWorker - @Model.socialServicePathway.SocialServiceDept</div>
+        </div>
+
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Parental Responsibility:</b></div>
+            <div class="col-md-8">@Model.socialServicePathway.ParentalResponsibility</div>
+        </div>
+        <hr />
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Date Information Requested:</b></div>
+            @if(Model.socialServicePathway.DateInformationReq.HasValue)
+            {                
+                <div class="col-md-4">@Model.socialServicePathway.DateInformationReq.Value.ToString("dd/MM/yyyy")</div>
+            }
+            else
+            {
+                <div class="col-md-6">Information not yet requested</div>
+            }
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Date Follow-up Requested:</b></div>
+            @if (Model.socialServicePathway.DateInformationReqFU.HasValue)
+            {                
+                <div class="col-md-4">@Model.socialServicePathway.DateInformationReqFU.Value.ToString("dd/MM/yyyy")</div>
+            }
+            else
+            {
+                <div class="col-md-6">Request not yet followed up</div>
+            }
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Date Information Received:</b></div>
+            @if (Model.socialServicePathway.DateInformationReceived.HasValue)
+            {                
+                <div class="col-md-4">@Model.socialServicePathway.DateInformationReceived.Value.ToString("dd/MM/yyyy")</div>
+            }
+            else
+            {
+                <div class="col-md-6">Information not yet received</div>
+            }
+        </div>
+        <hr />
+        @if (Model.socialServicePathway.Outcome != null)
+        {
+            <div class="row mb-2 g-2">
+                <div class="col-md-4"><b>Outcome:</b></div>
+                <div class="col-md-8">@Model.socialServicePathway.Outcome
+                    @if(Model.socialServicePathway.OtherOutcomeDetails != null)
+                    {
+                        <span> - @Model.socialServicePathway.OtherOutcomeDetails</span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

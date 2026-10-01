@@ -1,0 +1,76 @@
+﻿@model ClinicX.ViewModels.SocialServicePathwayVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Social Service Pathways";
+}
+
+@{
+    ViewData["Title"] = "Clinic-X - Social Service Pathways";
+    ViewData["Page"] = "/ SocialServicePathway / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+<div class="container card">
+    @if (!Model.isLive)
+    {
+        <h1 class="text-center redtext">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
+    }
+
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
+    <div class="card-header text-center">
+        <h2>Social Service Pathways</h2>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Patient</th>
+                    <th>Created Date</th>
+                    <th>Pathway Status</th>                    
+                    @*<th>Social Worker</th>
+                    <th>Parental Responsibility</th>*@
+                    <th>Active</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.socialServicePathwayList)
+                {
+                    <tr>
+                        <td><a type="button" class="btn btn-success" asp-action="SSPDetails" asp-route-id=@item.SSPID>Select</a></td>
+                        <td>@item.CGU_No - @item.PatientName</td>
+                        <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.SSPStatus</td>                        
+                        @*<td>@item.SocialWorker - @item.SocialServiceDept</td>
+                        <td>@item.ParentalResponsibility</td>*@
+                        @if(item.IsActive)
+                        {
+                            @*<td><span class="badge bg-success">Yes</span></td>*@
+                            <td>Yes</td>
+                        }
+                        else
+                        {
+                            @*<td><span class="badge bg-danger">No</span></td>*@
+                            <td>No</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -6,7 +6,7 @@ namespace ClinicX.Controllers
 {
     public class SocialServicePathwayController : Controller
     {
-        private readonly ClinicalNoteVM _cvm;
+        private readonly SocialServicePathwayVM _sspvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserDataAsync _staffUser;
         private readonly ISocialServicePathwayDataAsync _socialServicePathwayData;
@@ -20,12 +20,20 @@ namespace ClinicX.Controllers
             _staffUser = staffUserData;
             _socialServicePathwayData = socialServicePathwayData;
             _audit = auditService;
+            _sspvm = new SocialServicePathwayVM();
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            _sspvm.socialServicePathwayList = await _socialServicePathwayData.GetAllSocialServicePathways();
 
+            return View(_sspvm);
+        }
 
-            return View();
+        public async Task<IActionResult> SSPDetails(int id)
+        {
+            _sspvm.socialServicePathway = await _socialServicePathwayData.GetSocialServicePathwayById(id);
+
+            return View(_sspvm);
         }
     }
 }
