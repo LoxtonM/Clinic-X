@@ -36,7 +36,7 @@
         <h2>Social Service Pathways</h2>
     </div>
     <div class="card-body">
-        <table class="table">
+        <table class="table" id="myTable">
             <thead>
                 <tr>
                     <th></th>
@@ -74,3 +74,18 @@
         </table>
     </div>
 </div>
+
+<script>
+
+    window.addEventListener("load", LoadTable)
+    function LoadTable()
+    {
+
+        let table = new DataTable('#myTable',
+        {
+            "order": [], //disable initial sorting and allow the data sorting in the back-end
+            "pageLength": 25
+        });
+    }
+
+</script>
