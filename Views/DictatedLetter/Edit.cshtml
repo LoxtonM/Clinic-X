@@ -626,6 +626,13 @@
         document.querySelector('#ddlCC').closest('.choices').style.display = 'none';        
         document.querySelector('#ddlLetterToClinician').closest('.choices').style.display = 'none';
 
+        /*        
+        if((document.getElementById("txtLetterTo").value == "" || document.getElementById("txtLetterTo").value == null) && document.getElementById("ddlLetterTo").value != "")
+        {            
+            SetLetterTo();
+        }
+        */
+
         LoadEDMSLink(); //link to GEMR
     }
 

@@ -15,6 +15,7 @@
         Html.ActionLink("Clinical Notes", "Index", "ClinicalNote", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Reviews", "ReviewsForPatient", "Review", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
         Html.ActionLink("Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Patient Documents", "Index", "PatientDocuments", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         @*Html.ActionLink("New Dictated Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
         @*Html.ActionLink("New Standard Letter", "Index", "LetterMenu", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
         Html.ActionLink("Cancer Risks", "Index", "RiskAndSurveillance", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
@@ -23,6 +24,7 @@
         Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPhenotips", target="_blank" }),
         Html.ActionLink("Pedigree Assistant", "PedigreeAssistant", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPedigree" }),
         @*Html.ActionLink("Record Cancer Risk/Surveillance", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
+
     };
 }
 

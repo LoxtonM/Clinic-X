@@ -1,0 +1,44 @@
+﻿@model ClinicX.ViewModels.PatientDocumentsVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Patient Documents";
+}
+
+@{
+    ViewData["Title"] = "Clinic-X - Patient Documents";
+    ViewData["Page"] = "/ PatientDocuments / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "Index", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
+    };
+}
+
+<div class="container card">
+    <div class="card-header">
+        <h1>Patient documents for @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h1>
+    </div>
+    <div class="card-body">
+        <h3>Patient Documents</h3>
+
+        <ul class="list-group">
+            @foreach (var fileName in Model.fileNames)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>@fileName</span>                    
+                    <a asp-controller="PatientDocuments"
+                       asp-action="ViewFile"
+                       asp-route-subPath="@Model.folderPath"
+                       asp-route-fileName="@fileName"
+                       target="_blank"
+                       class="btn btn-sm btn-outline-primary">
+                        View Document
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
