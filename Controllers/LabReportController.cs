@@ -100,7 +100,17 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> SampleDetails(string labno)
         {
             _lvm.cytoReport = await _labData.GetCytoReport(labno);
-            _lvm.dnaReport = await _labData.GetDNAReport(labno);            
+            _lvm.dnaReport = await _labData.GetDNAReport(labno);
+
+            if (_lvm.cytoReport != null)
+            {                
+                _lvm.patient = await _labData.GetPatientDetails(_lvm.cytoReport.INTID);
+            }
+
+            if (_lvm.dnaReport != null)
+            {
+                _lvm.patient = await _labData.GetPatientDetails(_lvm.dnaReport.INTID);
+            }
 
             return View(_lvm);
         }
@@ -109,8 +119,13 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> DNALabReport(string labno, string indication, string reason) //needs more than the LabNo to get a specific report
         {            
             _lvm.dnaReportDetails = await _labData.GetDNAReportDetails(labno, indication, reason);
-            _lvm.dnaReport = await _labData.GetDNAReport(labno);            
-    
+            _lvm.dnaReport = await _labData.GetDNAReport(labno);
+
+            if (_lvm.dnaReport != null)
+            {
+                _lvm.patient = await _labData.GetPatientDetails(_lvm.dnaReport.INTID);
+            }
+
             return View(_lvm);
         }
 
@@ -118,6 +133,11 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> CytoLabReport(string labno)
         {
             _lvm.cytoReport = await _labData.GetCytoReport(labno);
+
+            if (_lvm.cytoReport != null)
+            {
+                _lvm.patient = await _labData.GetPatientDetails(_lvm.cytoReport.INTID);
+            }
 
             return View(_lvm);
         }

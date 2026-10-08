@@ -293,8 +293,7 @@ namespace ClinicX.Controllers
                 _tvm.dateOfNextAppt = null;
             }
 
-
-                return View(_tvm);
+            return View(_tvm);
         }
 
         [HttpPost]

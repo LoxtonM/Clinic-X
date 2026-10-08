@@ -1,4 +1,5 @@
 ﻿using APIControllers.Controllers;
+using APIControllers.Models;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
@@ -114,7 +115,7 @@ namespace ClinicX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> ICPDetails(int id)
+        public async Task<IActionResult> ICPDetails(int id, bool? success, string? message)
         {
             try
             {
@@ -223,6 +224,8 @@ namespace ClinicX.Controllers
                     }
                 }
 
+                _ivm.message = message;
+                _ivm.success = success.GetValueOrDefault();
 
                 return View(_ivm);
             }
@@ -242,12 +245,29 @@ namespace ClinicX.Controllers
                 ICP icp = await _triageData.GetICPDetails(icpID);
                 Referral referral = await _referralData.GetReferralDetails(icp.REFID);
                 StaffMember staffmember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+
                 string wlClinician = "";
                 
                 int mpi = icp.MPI;
                 int refID = icp.REFID;
                 int tp2;
                 string referrer = referral.ReferrerCode;
+
+                //because soooo many patients are coming through without a referrer, or a GP, now!
+                ClinicalXPDataConnections.Models.Patient patient = await _patientData.GetPatientDetails(icp.MPI);
+                ExternalClinician referringClinician = await _clinicianData.GetClinicianDetails(referrer);
+                ExternalClinician gp = await _clinicianData.GetClinicianDetails(patient.GP_Code);
+
+                if (referringClinician == null)
+                {
+                    return RedirectToAction("DoGeneralTriage", "Triage", new { id = icpID, success=false, message="Referring clinician not found. Please check the referral" });
+                }
+
+                if (gp == null)
+                {
+                    return RedirectToAction("DoGeneralTriage", "Triage", new { id = icpID, success = false, message = "Patient GP not found. Please check the referral" });
+                }
+
                 string sApptIntent = "";
                 string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;                            
 
@@ -408,7 +428,22 @@ namespace ClinicX.Controllers
                 bool printSuccess = false;
                 string message = "";
 
-                CRUD _crud = new CRUD(_config);
+                ClinicalXPDataConnections.Models.Patient patient = await _patientData.GetPatientDetails(icp.MPI);
+                ExternalClinician referringClinician = await _clinicianData.GetClinicianDetails(referrer);
+                ExternalClinician gp = await _clinicianData.GetClinicianDetails(patient.GP_Code);
+                              
+
+                if (referringClinician == null)
+                {
+                    return RedirectToAction("ICPDetails", "Triage", new { id = icpID, success = false, message = "Referring clinician not found. Please check the referral" });
+                }
+
+                if (gp == null)
+                {
+                    return RedirectToAction("ICPDetails", "Triage", new { id = icpID, success = false, message = "Patient GP not found. Please check the referral" });
+                }
+
+                //CRUD _crud = new CRUD(_config); //why did we declare a new CRUD, again?
                 int success = await _crud.CallStoredProcedure("ICP Cancer", "Triage", icpID, action, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canTriage(SQL)" }); }

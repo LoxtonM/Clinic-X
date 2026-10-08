@@ -55,9 +55,13 @@
     </div>
     
     <hr />
-    <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
-        <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
-    </h1>
+    
+    <div class="card-header">
+        <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
+            <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
+        </h1>
+    </div>
+    
     @*
     <h2 id="lblLetterRe">Re: @if(Model.dictatedLettersPatients.Count > 0)
         {
@@ -69,7 +73,7 @@
         }
     </h2>
     *@
-    <div class="container mb-5">
+    <div class="container mb-5 card-body">
         <form id="Preview" asp-action="PreviewDOT">
             <div class="row mb-5 g-5">
                 <div class="col-md-2">

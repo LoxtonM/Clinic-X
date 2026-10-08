@@ -269,7 +269,8 @@ namespace ClinicalXPDataConnections.Meta
             }
 
             //CCs, print count, etc
-            int printCount = 1;
+            //int printCount = 1;
+            int printCount = 0;
 
             List<DictatedLettersCopy> ccList = _dictatedLetterData.GetDictatedLettersCopiesList(_lvm.dictatedLetter.DoTID);
 
@@ -295,7 +296,7 @@ namespace ClinicalXPDataConnections.Meta
                     ccRow.Cells[0].AddParagraph("cc:");
                     ccRow.Cells[1].AddParagraph(item.CC);
 
-                    printCount = printCount += 1;
+                    //printCount = printCount += 1; //DOT Letters shouldn't have a print count
                 }
             }
 
@@ -939,7 +940,7 @@ namespace ClinicalXPDataConnections.Meta
                     row1_1.Cells[1].AddParagraph(patAddress);
                     row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy"));
                     spacer = section.AddParagraph();
-                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
+                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1);
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
                     spacer = section.AddParagraph();
@@ -964,7 +965,7 @@ namespace ClinicalXPDataConnections.Meta
                     row1_1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
                     row1_1.Cells[1].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy"));
                     spacer = section.AddParagraph();
-                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
+                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1);
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
                     spacer = section.AddParagraph();
@@ -1892,7 +1893,7 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText.ToLower() + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     //content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
@@ -1947,7 +1948,7 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText.ToLower() + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     Paragraph letterContentRecipient = section.AddParagraph();
@@ -1998,7 +1999,7 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText.ToLower() + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     //content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
@@ -2052,7 +2053,7 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText.ToLower() + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     Paragraph letterContentRecipient = section.AddParagraph();
@@ -3224,20 +3225,12 @@ namespace ClinicalXPDataConnections.Meta
 
             string result = WebUtility.HtmlDecode(sb.ToString()).Trim();
 
-            // 1. Strip out Word's internal hard line breaks that split sentences in half
             result = result.Replace("\r", "").Replace("\n", " ");
-
-            // 2. Clear out heavy duplicate spaces left behind
             result = Regex.Replace(result, @"[ ]{2,}", " ");
-
-            // 3. THE FIX: Convert tokens into single or double line breaks exactly as preferred
             result = result.Replace("__REAL_DOUBLE_BREAK__", Environment.NewLine + Environment.NewLine);
             result = result.Replace("__REAL_SINGLE_BREAK__", Environment.NewLine);
-
-            // 4. Clean up any trailing spaces sitting at the start of new lines
             result = Regex.Replace(result, @"(?<=\r?\n)[ ]+", "");
 
-            // 5. Final polish: If three or more newlines clump up together, scale them back to a double break
             return Regex.Replace(result, @"(\r?\n){3,}", Environment.NewLine + Environment.NewLine).Trim();
         }
 

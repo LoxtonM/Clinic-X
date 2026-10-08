@@ -4,53 +4,67 @@
     ViewData["Title"] = "Clinic-X - Lab Sample Details";
 }
 
-<div class="container">
-    @if(Model.cytoReport != null)
-    {
-        <h1>Cytogenetic sample details for @Model.cytoReport.LABNO</h1>
+<div class="container card">
 
-        <div>
-            <dl>
-                <dt class="col-md-2">Sample Type</dt>
-                <dd class="col-md-10">@Model.cytoReport.SAMPLETYPE</dd>
-                <dt class="col-md-2">Indication</dt>
-                <dd class="col-md-10">@Model.cytoReport.INDICATION</dd>                
-                <dt class="col-md-2"></dt>
-                <dd class="col-md-10">@Model.cytoReport.OTHER_INDICATION_TEXT</dd>                
-            </dl>
-        </div>
+    <div class="card-header">
+        @if(Model.patient != null)
+        {
+            @if (Model.patient.SOCIAL_SECURITY != null)
+            {
+                <h1>Patient: @Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.patient.DOB.Value.ToString("dd/MM/yyyy") - NHS No: @Model.patient.SOCIAL_SECURITY.Substring(0, 3) @Model.patient.SOCIAL_SECURITY.Substring(3, 3) @Model.patient.SOCIAL_SECURITY.Substring(6, 4)</h1>
+            }
+            else
+            {
+                <h1>Patient: @Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.patient.DOB.Value.ToString("dd/MM/yyyy") - NHS No: Unknown</h1>
+            }
+        }
+    </div>
 
-        <div class="row mb-5 g-5">
-            <a type="button" class="btn btn-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@Model.cytoReport.INTID>Back to Report List</a>
-        </div>
-    }
-    @if (Model.dnaReport != null)
-    {
-        <h1>Molecular sample details for @Model.dnaReport.LABNO</h1>
+    <div class="card-body">
+        @if(Model.cytoReport != null)
+        {
+            <h1>Cytogenetic sample details for @Model.cytoReport.LABNO</h1>
 
-        <div>
-            <dl>
-                <dt class="col-md-2">Sample Type</dt>
-                <dd class="col-md-10">@Model.dnaReport.SAMPLETYPE</dd>
-                @if (@Model.dnaReport.DATE_OBTAINED != null)
-                {
-                    <dt class="col-md-2">Date Obtained</dt>                
-                    <dd class="col-md-10">@Model.dnaReport.DATE_OBTAINED.Value.ToString("dd/MM/yyyy")</dd>
-                }
-                @if (@Model.dnaReport.DATE_RECEIVED != null)
-                {
-                    <dt class="col-md-2">Date Received</dt>
-                    <dd class="col-md-10">@Model.dnaReport.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</dd>
-                }
-            </dl>
-        </div>
+            <div>
+                <dl>
+                    <dt class="col-md-2">Sample Type</dt>
+                    <dd class="col-md-10">@Model.cytoReport.SAMPLETYPE</dd>
+                    <dt class="col-md-2">Indication</dt>
+                    <dd class="col-md-10">@Model.cytoReport.INDICATION</dd>                
+                    <dt class="col-md-2"></dt>
+                    <dd class="col-md-10">@Model.cytoReport.OTHER_INDICATION_TEXT</dd>                
+                </dl>
+            </div>
 
-        <div class="row mb-5 g-5">
-            <a type="button" class="btn btn-success" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@Model.dnaReport.INTID>Back to Report List</a>
-        </div>
-    }
+            <div class="row mb-5 g-5">
+                <a type="button" class="btn btn-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@Model.cytoReport.INTID>Back to Report List</a>
+            </div>
+        }
+        @if (Model.dnaReport != null)
+        {
+            <h1>Molecular sample details for @Model.dnaReport.LABNO</h1>
 
-    
+            <div>
+                <dl>
+                    <dt class="col-md-2">Sample Type</dt>
+                    <dd class="col-md-10">@Model.dnaReport.SAMPLETYPE</dd>
+                    @if (@Model.dnaReport.DATE_OBTAINED != null)
+                    {
+                        <dt class="col-md-2">Date Obtained</dt>                
+                        <dd class="col-md-10">@Model.dnaReport.DATE_OBTAINED.Value.ToString("dd/MM/yyyy")</dd>
+                    }
+                    @if (@Model.dnaReport.DATE_RECEIVED != null)
+                    {
+                        <dt class="col-md-2">Date Received</dt>
+                        <dd class="col-md-10">@Model.dnaReport.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</dd>
+                    }
+                </dl>
+            </div>
 
+            <div class="row mb-5 g-5">
+                <a type="button" class="btn btn-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@Model.dnaReport.INTID>Back to Report List</a>
+            </div>
+        }
+    </div>
 
 </div>

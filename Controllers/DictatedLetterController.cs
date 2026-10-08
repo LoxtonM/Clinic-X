@@ -177,13 +177,9 @@ namespace ClinicX.Controllers
                 if (sRefFacCode == null || sRefFacCode == "") { sRefFacCode = "Unknown"; } 
                 string sRefPhysCode = _lvm.activityDetails.REF_PHYS;
                 if (sRefPhysCode == null || sRefPhysCode == "") { sRefPhysCode = "Unknown"; }
-                _lvm.referrerFacility = await _externalFacilityData.GetFacilityDetails(sRefFacCode);
-                if (_lvm.referrerFacility == null)
-                {
-                    _lvm.referrerFacility = await _externalFacilityData.GetFacilityDetails("Unknown"); //because somehow there's a fucking null!!!!! Because of course there is.
-                }
-                _lvm.referrer = await _externalClinicianData.GetClinicianDetails(sRefPhysCode);                
-                _lvm.GPFacility = await _externalFacilityData.GetFacilityDetails(sGPCode);
+                _lvm.referrerFacility = await _externalFacilityData.GetFacilityDetails(sRefFacCode) ?? await _externalFacilityData.GetFacilityDetails("Unknown"); //because somehow there's a fucking null!!!!! Because of course there is.                
+                _lvm.referrer = await _externalClinicianData.GetClinicianDetails(sRefPhysCode) ?? await _externalClinicianData.GetClinicianDetails("Unknown"); //because some referrers aren't on the system.
+                _lvm.GPFacility = await _externalFacilityData.GetFacilityDetails(sGPCode) ?? await _externalFacilityData.GetFacilityDetails("Unknown1"); //for all the null GPs out there
                 _lvm.facilities = await _externalFacilityData.GetFacilityList();
                 _lvm.facilities = _lvm.facilities.Where(f => f.IS_GP_SURGERY == 0).ToList();
                 //including all clinicians will slow it down too much, so I'm taking a leap of logic here and assuming one wouldn't want to 

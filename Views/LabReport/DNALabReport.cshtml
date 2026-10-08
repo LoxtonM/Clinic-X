@@ -3,41 +3,55 @@
     ViewData["Title"] = "Clinic-X - DNA Lab Report";
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
+<div class="container card">
+    <div class="card-header">
         <h1>Report details for @Model.dnaReportDetails.LABNO</h1>
+        @if (Model.patient != null)
+        {
+            @if (Model.patient.SOCIAL_SECURITY != null)
+            {
+                <h1>Patient: @Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.patient.DOB.Value.ToString("dd/MM/yyyy") - NHS No: @Model.patient.SOCIAL_SECURITY.Substring(0, 3) @Model.patient.SOCIAL_SECURITY.Substring(3, 3) @Model.patient.SOCIAL_SECURITY.Substring(6, 4)</h1>
+            }
+            else
+            {
+                <h1>Patient: @Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.patient.DOB.Value.ToString("dd/MM/yyyy") - NHS No: Unknown</h1>
+            }
+        }       
+        
     </div>
     
-    @if (@Model.dnaReportDetails.REPORT_STATUS == "Final")
-    {
-        <div class="row mb-5 g-5">
-            <h3>@Model.dnaReportDetails.SUMMARY</h3>            
-        </div>
+    <div class="card-body">
+        @if (@Model.dnaReportDetails.REPORT_STATUS == "Final")
+        {
+            <div class="row mb-5 g-5">
+                <h3>@Model.dnaReportDetails.SUMMARY</h3>            
+            </div>
+
+            <div class="row mb-5 g-5">
+                <div class="col-md-1">
+                    <label>Interpretation:</label>
+                </div>
+                <div class="col-md-10">
+                    <p>@Model.dnaReportDetails.REPORT</p>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-1">
+                    <label>Basis of Test:</label>
+                </div>
+                <div class="col-md-10">
+                    <p>@Model.dnaReportDetails.DIAGNOSIS_REPORT</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <h3 class="redtext">This report is not finalised.</h3>
+        }
 
         <div class="row mb-5 g-5">
-            <div class="col-md-1">
-                <label>Interpretation:</label>
-            </div>
-            <div class="col-md-10">
-                <p>@Model.dnaReportDetails.REPORT</p>
-            </div>
+            <a type="button" class="btn btn-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@Model.dnaReport.INTID>Back to Report List</a>
         </div>
-        <div class="row mb-5 g-5">
-            <div class="col-md-1">
-                <label>Basis of Test:</label>
-            </div>
-            <div class="col-md-10">
-                <p>@Model.dnaReportDetails.DIAGNOSIS_REPORT</p>
-            </div>
-        </div>
-    }
-    else
-    {
-        <h3 class="redtext">This report is not finalised.</h3>
-    }
-
-    <div class="row mb-5 g-5">
-        <a type="button" class="btn btn-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@Model.dnaReport.INTID>Back to Report List</a>
     </div>
 
 </div>

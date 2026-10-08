@@ -64,26 +64,48 @@
                         <dd class="col-sm-1">
                             <input type="time" class="w-100" name="bookedTime" id="txtBookedTime" />
                         </dd>
-                        <dd class="col-sm-9"></dt>
+                        <dd class="col-sm-9"></dd>
                         <dt class="col-sm-2">
                             Time Spent:
                         </dt>
                         <dd class="col-sm-1">
                             <input class="w-100" name="timeSpent" id="txtDuration" />
-                        </dt>
-                        <dd class="col-sm-9"></dt>
+                        </dd>
+                        <dd class="col-sm-9"></dd>                        
                     </dl>
                 </div>
 
 
                 <div class="mb-5">
 
-                    <div id="TelAdmin" hidden>
+                    <div id="divClinic" hidden>
+                        <dl class="row mb-5">
+                            <dt class="col-sm-2">Clock Stop</dt>
+                            <dd class="col-sm-1">
+                                <select name="isClockStop">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </dd>
+                            <dd class="col-sm-9"></dd>
+                            <dt class="col-sm-2">Letter Required</dt>
+                            <dd class="col-sm-1">
+                                <select asp-for=@Model.activityItem.LetterReq id="ddlLetterRequired" name="letterRequired" class="w-100">
+                                    <option value="Yes - Within 10 Days">Yes - Within 10 Days</option>
+                                    <option value="Yes - Later">Yes - Later</option>
+                                    <option selected value="No">No</option>
+                                </select>
+                            </dd>
+                            <dd class="col-sm-9"></dd>
+                        </dl>
+                    </div>
+
+                    <div id="divContact" hidden>
                         <div class="row mb-5">                            
-                            <div class="col-md-2">
+                            <div class="col-md-2 text-md-end">
                                 <label>Note Type:</label>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-2 text-md-end">
                                 <select name="noteType">
                                     @foreach (var item in Model.noteTypeList)
                                     {
@@ -91,34 +113,38 @@
                                     }
                                 </select>
                             </div>
-                            <div class="col-md-2">
-                                <label>Urgent/Routine:</label>
-                            </div>
-                            <div class="col-md-2  text-md-end">
-                                <select name="urgency">
-                                    <option value="Routine" selected>Routine</option>
-                                    <option value="Urgent">Urgent</option>
-                                </select>
-                            </div>
                         </div>
-                        <div class="row mb-5">
-                            <div class="col-md-2 text-md-end">
-                                <label>Caller's Name:</label>
+                        <div id="divAdmin">
+                            <div class="row mb-5">
+                                <div class="col-md-2 text-md-end">
+                                    <label>Urgent/Routine:</label>
+                                </div>
+                                <div class="col-md-2  text-md-end">
+                                    <select name="urgency">
+                                        <option value="Routine" selected>Routine</option>
+                                        <option value="Urgent">Urgent</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-md-2">
-                                <input class="w-100" name="callersName" />
-                            </div>
-                            <div class="col-md-2 text-md-end">
-                                <label>Organisation:</label>
-                            </div>
-                            <div class="col-md-2">
-                                <input class="w-100" name="callersOrg" />
-                            </div>
-                            <div class="col-md-2  text-md-end">
-                                <label>Contact Number:</label>
-                            </div>
-                            <div class="col-md-2">
-                                <input class="w-100" name="callersTelNo" />
+                            <div class="row mb-5">
+                                <div class="col-md-2 text-md-end">
+                                    <label>Caller's Name:</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="w-100" name="callersName" />
+                                </div>
+                                <div class="col-md-2 text-md-end">
+                                    <label>Organisation:</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="w-100" name="callersOrg" />
+                                </div>
+                                <div class="col-md-2  text-md-end">
+                                    <label>Contact Number:</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="w-100" name="callersTelNo" />
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-5">
@@ -323,7 +349,9 @@
         if(CheckFormValid() == 1)
         {
             document.getElementById("ContactDetails").hidden = true;
-            document.getElementById("TelAdmin").hidden = true;
+            document.getElementById("divAdmin").hidden = true;
+            document.getElementById("divContact").hidden = true;
+            document.getElementById("divClinic").hidden = true;
             document.getElementById("SavedMessage").hidden = false;
             document.getElementById("btnCompleteCOF").disabled=true;        
             document.getElementById("ContactOutcome").submit();
@@ -334,12 +362,24 @@
     {
         var today = new Date();
         var clinicDate = document.getElementById("txtBookedDate");
+        document.getElementById("divAdmin").hidden = true;
+        document.getElementById("divClinic").hidden = true;
         
         clinicDate.value = today.toISOString().slice(0,10);
         document.getElementById("ContactDetails").hidden = true;
-        document.getElementById("TelAdmin").hidden = false;
-        document.getElementById("ddlVenue").value = "Telephone";   
         
+        document.getElementById("divContact").hidden = false;
+        
+        document.getElementById("ddlVenue").value = "Telephone";
+
+        if(document.getElementById("ddlAppType").value == "Tel. Admin")
+        {
+            document.getElementById("divAdmin").hidden = false;
+        }
+        else
+        {
+            document.getElementById("divClinic").hidden = false;
+        }
     }
 
     function SetAddAsNote()

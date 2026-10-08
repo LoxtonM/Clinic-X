@@ -384,6 +384,34 @@ namespace ClinicX.Controllers
                 _crud.CallStoredProcedure("Clinical Note", "Create", mpi, refID, 1, noteType, "", "", message, User.Identity.Name, null, null, isHidden, isFinalised);  //create straight into edms
             }
 
+            //Letter if required
+            if (letterReq == null) { letterReq = "No"; }
+
+            if (letterReq != "No")
+            {
+                int success2 = await _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "Post Clinic Draft", "", "", "", User.Identity.Name);
+
+                if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-createDOT(SQL)" }); }
+
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
+
+                List<DictatedLetter> dotList = await _dictatedLetterData.GetDictatedLettersList(staffCode);
+                dotList = dotList.Where(l => l.RefID == refID).OrderByDescending(l => l.CreatedDate).ToList();
+                DictatedLetter dot = dotList.First(); //SHOULD get the one you just did...
+                int dID = dot.DoTID;
+                var letter = await _dictatedLetterData.GetDictatedLetterDetails(dID);
+
+                int success3 = await _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, mpi, 0, "", "", "", "", User.Identity.Name); //add the patient to the DOT
+
+                if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-addFMtoDOT(SQL)" }); }
+
+                message += "  A letter has been created for dictation.";
+            }
+            else
+            {
+                message += "  A letter has not been created.";
+            }
+
             return RedirectToAction("ApptDetails", new { id = refID });
         }
 
