@@ -57,11 +57,13 @@ namespace ClinicX.ViewModels
         public string? patientAddress { get; set; }
         public bool isChild { get; set; }
         public string edmsLink { get; set; }
+        public string accurXLink { get; set; }
         public string canriskLink { get; set; }
         public string genomicsTestDirectoryLink { get; set; }
         public string riskGuide { get; set; }
         public DateTime dobAt16 { get; set; }
         public List<SocialServicePathway> socialServicePathways { get; set; }
+        public List<Alert> alertsList { get; set; }
         public DateTime breachDate { get; set; }
         public bool isPhenotipsAvailable { get; set; }
         public bool isCancerPPQScheduled { get; set; }

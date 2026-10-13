@@ -12,6 +12,7 @@
 @{
     ViewBag.HomeButton = new[]
     {
+        Html.ActionLink("AccurX", "Index", "WIP", new { }, new { @class = "btn btn-success m-1", id = "btnAccurX" }),
         Html.ActionLink("Create Quick Contact", "AddNew", "Clinic", new { mpi=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Create New Clinical Note", "Create", "ClinicalNote", new { id=Model.triage.RefID }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),
@@ -39,11 +40,29 @@
 
 <div class="container card">   
 
-    <h1>ICP Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.triage.CGU_No</a></h1>
+    <div class="card-header">
+        <h1>ICP Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.triage.CGU_No</a></h1>
+        @if(Model.alertsList.Count > 0)
+        {
+            <h2 class="redtext text-center">Alerts in effect</h2>
+            @* 
+            <ul>
+            @foreach(var item in Model.alertsList)
+            {
+                <li><b>@item.AlertType - @item.Comments</b></li>
+            }
+            </ul>
+            *@
+            @*TODO: check if they want alerts actually displayed*@
+        }
+    </div>
 
-    <div class="container">
+    <div class="card-body">
         <dl class="row">
-            <dt class="col-sm-6"></dt>
+            <dt class="col-sm-4"></dt>
+            <dt class="col-sm-2">
+                <a type="button" class="btn btn-success" asp-controller="Patient" asp-action="ChangeCGUNumber" asp-route-mpi=@Model.patient.MPI>Change CGU Number (merge into new file)</a>
+            </dt>
             <dt class="col-sm-2">
                 <a type="button" class="btn btn-success" asp-action="ChangeGeneralTriage" asp-route-id=@Model.triage.ICPID>Change Triaging Clinician(s)</a>
             </dt>
@@ -92,7 +111,7 @@
             <dt class="col-sm-2">
                 Contact numbers:
             </dt>
-            <dd class="col-sm-10">
+            <dd class="col-sm-6">
                 @if(Model.patient.TEL != null && Model.patient.TEL != "")
                 {
                     <span><b>Home:</b> @Html.DisplayFor(model => model.patient.TEL) </span>
@@ -106,68 +125,76 @@
                     <span><b>Mobile:</b> @Html.DisplayFor(model => model.patient.PtTelMobile) </span>
                 }                
             </dd>
+            <dd class="col-sm-4">
+                <button type="button" class="btn btn-outline-primary" id="btnCopyText">Copy Demographic Data</button>
+            </dd>
 
             <hr />
 
             <dt class="col-sm-2">
                 Referral Consultant:
             </dt>
-            <dd class="col-sm-10">
+            <dd class="col-sm-2">
                 @Html.DisplayFor(model => model.triage.ConsultantName)
             </dd>
             <dt class="col-sm-2">
                 Referral GC:
             </dt>
-            <dd class="col-sm-10">
+            <dd class="col-sm-2">
                 @Html.DisplayFor(model => model.triage.GCName)
             </dd>
             <dt class="col-sm-2">
                 Admin Contact:
             </dt>
-            <dd class="col-sm-10">
+            <dd class="col-sm-2">
                 @Html.DisplayFor(model => model.triage.AdminContactName)
             </dd>
             <dt class="col-sm-2">
                 Referral Date:
             </dt>
-            <dd class="col-sm-5">
-                @Html.DisplayFor(model => model.triage.RefDate) @if (Model.referralAgeDays != null)
-                {
-                    <span>&emsp;&emsp;<b>Referral Age:</b> @Model.referralAgeDays days (@Model.referralAgeWeeks weeks)</span>
-                }
+            <dd class="col-sm-2">
+                @Html.DisplayFor(model => model.triage.RefDate) 
             </dd>
+            @if (Model.referralAgeDays != null)
+            {
+                <dt class="col-sm-2">Referral Age:</dt> 
+                <dd class="col-sm-2">@Model.referralAgeDays days (@Model.referralAgeWeeks weeks)</dd>
+            }
+            else
+            {
+                <dt class="col-sm-4"></dt>
+            }
+            
             @if (Model.breachDate != null) @*because you KNOW there's gonna be one!*@
             {
                 <dt class="col-sm-2">
                     Breach Date:
                 </dt>
-                <dd class="col-sm-3">
+                <dd class="col-sm-2">
                     @Model.breachDate.ToString("dd/MM/yyyy")
                 </dd>
+            }
+            else
+            {
+                <dt class="col-sm-4"></dt>
             }
             <dt class="col-sm-2">
                 Pathway:
             </dt>
-            <dd class="col-sm-10" id="referralPathway">
-                @Html.DisplayFor(model => model.triage.ReferralPathway)
-            </dd>
+            <dd class="col-sm-2" id="referralPathway">
+                @Html.DisplayFor(model => model.referralDetails.PATHWAY)
+            </dd>            
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.triage.CGU_No)
+                Indication:
             </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.triage.CGU_No)
+            <dd class="col-sm-2">
+                @Html.DisplayFor(model => model.referralDetails.INDICATION)
             </dd>
             <dt class="col-sm-2">
                 Referred By:
             </dt>
-            <dd class="col-sm-10">
+            <dd class="col-sm-2">
                 @Html.DisplayFor(model => model.referralDetails.ReferringClinician) - @Html.DisplayFor(model => model.referralDetails.ReferringFacility)
-            </dd>
-            <dt class="col-sm-2">
-                Indication:
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.referralDetails.INDICATION)
             </dd>
         </dl>
         <form id="formIndicationNotes" asp-action="SaveIndicationNotes">
@@ -493,6 +520,8 @@
         {
             document.getElementById("btnEDMS").hidden = true;
         }
+
+        document.getElementById("btnAccurX").href = "@Model.accurXLink";
     }
 
     function GoBack()
@@ -802,6 +831,7 @@
 @if (Model.staffOptions != null) //because otherwise it throws a fit if it's null!
 {
     <script>
+        document.getElementById("btnCopyText").addEventListener("click", CopyDemographicText);
         window.addEventListener("load", AutoLoadEDMS);
 
         function AutoLoadEDMS()
@@ -817,5 +847,15 @@
                 }
             }
         }
+
+        function CopyDemographicText()
+        {
+            var textToCopy = "Name: " + "@Model.patient.FIRSTNAME" + " " + "@Model.patient.LASTNAME" + ", DOB:" + "@Model.patient.DOB.Value.ToString("dd/MM/yyyy")" + ", NHSNo: " + "@Model.patient.NHSNumber";
+
+            navigator.clipboard.writeText(textToCopy);
+
+            window.alert("Demographic data copied to clipboard!");
+        }
+
     </script>
 }

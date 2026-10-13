@@ -49,6 +49,10 @@
                         {
                             <td><span hidden>@item.RiskDate.Value.ToString("yyyyMMdd")</span>@item.RiskDate.Value.ToString("dd/MM/yyyy")</td>
                         }
+                        else
+                        {
+                            <td>Unknown</td>
+                        }
                         <td>@item.LifetimeRiskPercentage</td>
                         <td>@item.R25_29</td>
                         <td>@item.R30_40</td>

@@ -314,7 +314,7 @@ namespace ClinicX.Controllers
 
 
 
-            List<Study> studyList = await _studyData.GetStudiesList(patient.MPI);
+            List<Study> studyList = await _studyData.GetStudiesForPatient(patient.MPI);
             if (studyList.Count > 0)
             {
                 Paragraph pStudiesHeader = section.AddParagraph();

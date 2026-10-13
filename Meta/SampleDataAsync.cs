@@ -22,7 +22,8 @@ namespace ClinicX.Meta
         public async Task<List<SampleTypes>> GetSampleTypeList()
         {
             IQueryable<SampleTypes> items = from i in _cxContext.SampleTypes
-                                                   select i;
+                                            where i.InUseBloodForm == true
+                                            select i;
 
             return items.ToList();
         }

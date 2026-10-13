@@ -232,13 +232,14 @@ namespace ClinicX.Models
         [Key]
         public string SampleTypeCode { get; set; }
         public string SampleType { get; set; }
+        public bool InUseBloodForm { get; set; }
     }
 
     [Table("ListSampleRequirements", Schema = "dbo")]
     public class SampleRequirements
     {
         [Key] public int ID { get; set; }
-        public string SampleRequirement { get; set; }
+        public string SampleRequirement { get; set; }        
     }
 
     [Table("PatientRelativesRisk", Schema = "dbo")]
@@ -280,5 +281,7 @@ namespace ClinicX.Models
         public string? FIRST_NAME { get; set; }
         public string? NAME { get; set; }
         public string? JobTitle { get; set; }
-    }
+    }    
+
+    
 }

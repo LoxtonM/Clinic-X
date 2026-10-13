@@ -102,7 +102,7 @@
                     <label>Re:</label>
                 </div>
                 <div class="col-md-8">
-                    <textarea rows="2" cols="100" name="letterRe" id="txtLetterRe" class="w-100" asp-for=@Model.dictatedLetters.LetterRe></textarea>
+                    <textarea rows="5" cols="100" name="letterRe" id="txtLetterRe" class="w-100" asp-for=@Model.dictatedLetters.LetterRe></textarea>
                 </div>
             </div>
 
@@ -1290,6 +1290,11 @@
             if (document.getElementById("txtLetterTo").value == "")
             {
                 window.alert("Please choose a recipient before previewing the letter.")
+                isPreviewValid = 0;
+            }
+            if (document.getElementById("txtLetterFrom").value == "")
+            {
+                window.alert("Please choose a sign-off before previewing the letter.")
                 isPreviewValid = 0;
             }
             if(isPreviewValid == 1)

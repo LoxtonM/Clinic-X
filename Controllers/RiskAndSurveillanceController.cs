@@ -479,7 +479,7 @@ namespace ClinicX.Controllers
             _rsvm.riskDetails = await _riskData.GetRiskDetails(id);
             int icpID = _rsvm.riskDetails.ICP_Cancer_ID;
 
-            _crud.CallStoredProcedure("Risk", "Set Use Letter", id, 0, 0, "", "", "", "", User.Identity.Name, null, null, isUsingLetter, false);
+           int success = await _crud.CallStoredProcedure("Risk", "Set Use Letter", id, 0, 0, "", "", "", "", User.Identity.Name, null, null, isUsingLetter, false);
 
             return RedirectToAction("CancerReview", "Triage", new { id = icpID });
         }

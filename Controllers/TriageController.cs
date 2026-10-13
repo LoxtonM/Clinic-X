@@ -43,6 +43,7 @@ namespace ClinicX.Controllers
         private readonly ISocialServicePathwayDataAsync _socialServicePathwayData;
         private readonly IDictatedLetterDataAsync _dictatedLetterData;
         private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
+        private readonly IAlertDataAsync _alertData;
         private readonly IApiController _api;
 
         public TriageController(IConfiguration config, IStaffUserDataAsync staffUserData, IPathwayDataAsync pathwayData, IPriorityDataAsync priorityData, IReferralDataAsync referralData, ITriageDataAsync triageData,
@@ -50,7 +51,7 @@ namespace ClinicX.Controllers
             ICancerRequestDataAsync cancerRequestData, IExternalClinicianDataAsync externalClinicianData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IDocumentsDataAsync documentsData, ICRUD crud, 
             LetterController letterController, IAuditService auditService, IAgeCalculator ageCalculator, IPatientDataAsync patientData, ILeafletDataAsync leafletData, IConstantsDataAsync constantsData,
             IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData, IDictatedLetterDataAsync dictatedLetterData, IPhenotipsMirrorDataAsync phenotipsMirrorData,
-            IApiController apiController, ClinicalContext clinContext, DocumentContext docContext)
+            IAlertDataAsync alertData, IApiController apiController, ClinicalContext clinContext, DocumentContext docContext)
         {
             _clinContext = clinContext;            
             _docContext = docContext;
@@ -81,6 +82,7 @@ namespace ClinicX.Controllers
             _lc = letterController;
             _socialServicePathwayData = socialServicePathwayData;
             _dictatedLetterData = dictatedLetterData;
+            _alertData = alertData;
             _phenotipsMirrorData = phenotipsMirrorData;
             _api = apiController;
             //LetterController _lc = new LetterController(_clinContext, _docContext);
@@ -148,6 +150,7 @@ namespace ClinicX.Controllers
                 _ivm.priorityList = priorityList.OrderByDescending(p => p.PriorityLevel).ToList();
                 _ivm.cancerReviewActionsLists = await _icpActionData.GetICPCancerReviewActionsList();
                 _ivm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1);
+                _ivm.accurXLink = await _constantsData.GetConstant("AccurXLink", 1);
                 _ivm.dobAt16 = DateTime.Now.AddYears(-16);
                 _ivm.staffOptions = await _staffOptionsData.GetStaffOptions(staffCode);
                 var clins = await _staffUser.GetClinicalStaffList();
@@ -156,6 +159,7 @@ namespace ClinicX.Controllers
                 _ivm.GAs = clins.Where(s => s.POSITION == ("Genomics Associate") || s.POSITION == ("Genomic Associate")).ToList();
                 _ivm.GenPs = clins.Where(s => s.POSITION == ("Genomics Practitioner") || s.POSITION == ("Genomics Practitioner")).ToList();
                 _ivm.socialServicePathways = await _socialServicePathwayData.GetSocialServicePathwayList(id);
+                _ivm.alertsList = await _alertData.GetAlertsList(_ivm.patient.MPI);
 
                 if (_ivm.referralDetails.RefDate != null)
                 {
