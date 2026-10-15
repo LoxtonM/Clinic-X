@@ -25,6 +25,13 @@
 
     <div class="card-body">
         <div class="row mb-2 g-2">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+                <a type="button" class="btn btn-success" asp-controller="SocialServicePathway" asp-action="Edit" asp-route-sspID=@Model.socialServicePathway.SSPID>Edit</a>
+            </div>
+        </div>
+
+        <div class="row mb-2 g-2">
             <div class="col-md-4"><b>Status:</b></div>
             <div class="col-md-4">@Model.socialServicePathway.SSPStatus</div>
         </div>

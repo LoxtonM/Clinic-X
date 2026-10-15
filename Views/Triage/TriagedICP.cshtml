@@ -53,6 +53,10 @@
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.patient.DOB) <span>&emsp;&emsp;<b>Age:</b> @Model.patientAge years</span> <span>&emsp;&emsp;<b>Gender:</b> @Model.patient.SEX</span>
             </dd>
+            @if (Model.patient.DECEASED == -1)
+            {
+                <dt class="col-sm-12 text-center"><h1 class="redtext">Patient is deceased</h1></dt>
+            }
             <dt class="col-sm-2">
                 Address:
             </dt>

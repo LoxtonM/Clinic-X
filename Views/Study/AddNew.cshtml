@@ -1,0 +1,82 @@
+﻿@model ClinicX.ViewModels.StudyVM
+@{
+    ViewData["Title"] = "Clinic-X - Add New Study";
+}
+
+
+@{
+    ViewData["Title"] = "Clinic-X - Add New Study";
+    ViewData["Page"] = "/ Study / AddNew";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Studies Index", "Index", "Study", new { mpi = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container card">
+    <div class="card-header">
+        <h1>New Study for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (<a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a>)</h1>
+    </div>
+
+    <div class="card-body">
+        <form asp-action="AddNew">
+            <div class="row">
+                <input name="mpi" asp-for=@Model.patient.MPI hidden />
+            </div>
+            <div class="row mb-5">
+                <div class="col-md-2">Study:</div>
+                <div class="col-md-4">
+                    <select name="studyCode" class="w-100">
+                        <option value="">Select...</option>
+                        @foreach (var item in Model.studyList)
+                        {
+                            <option value=@item.StudyCode>@item.Study</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">Identified Date</div>
+                <div class="col-md-4">
+                    <input type="date" name="dateIdentified" />
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-md-2">Recruitment Status</div>
+                <div class="col-md-4">
+                    <select name="recruitedStatus" class="w-100">
+                        <option value="">Select...</option>
+                        @foreach (var item in Model.studyStatusList)
+                        {
+                            <option value=@item.StudyStatusCode>@item.StudyStatusDescr</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">Recruited Date</div>
+                <div class="col-md-4">
+                    <input type="date" name="dateRecruited" />
+                </div>
+            </div>
+            <div class="row mb-5">
+                <div class="col-md-2">Comments</div>
+                <div class="col-md-6">
+                    <textarea name="studyStatus"></textarea>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <input type="submit" class="btn btn-default btn-outline-success" value="Save" id="btnSubmit" />
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+        </form>
+
+    </div>
+</div>
+

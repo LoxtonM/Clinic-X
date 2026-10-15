@@ -1,5 +1,94 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model ClinicX.ViewModels.StudyVM
 @{
+    ViewData["Title"] = "Clinic-X - Studies";
 }
+
+@{
+    ViewData["Title"] = "Clinic-X - Studies";
+    ViewData["Page"] = "/ Study / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container card">
+
+    @if (!Model.isLive)
+    {
+        <h1 class="text-center redtext">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
+    }
+
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
+    <div class="card-header">
+        <h1>Studies for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (<a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a>)</h1>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Study</th>
+                    <th>Identified Date</th>
+                    <th>Identified By</th>
+                    <th>Recruitment status</th>
+                    <th>Study Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.studies)
+                {
+                    <tr>
+                        <td>
+                            <a type="button" class="btn btn-success" asp-controller="Study" asp-action="Edit" asp-route-studyId=@item.StudyRecID>Select</a>
+                        </td>
+                        <td>@item.StudyName</td>
+                        @if(item.IdentifiedDate != null)
+                        {
+                            <td>@item.IdentifiedDate.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <td>@item.IdentifiedClinician</td>
+                        @if(item.Recruited != null)
+                        {
+                            <td>@item.Recruited</td>                            
+                        }
+                        else
+                        {
+                            <td>Unknown</td>
+                        }    
+                        <td>@item.Status</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <a type="button" class="btn btn-success" asp-controller="Study" asp-action="AddNew" asp-route-mpi=@Model.patient.MPI>Add New</a>
+            </div>
+        </div>
+    </div>
+</div>

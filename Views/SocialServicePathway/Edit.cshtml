@@ -1,0 +1,115 @@
+﻿@model ClinicX.ViewModels.SocialServicePathwayVM
+
+@{
+    ViewData["Title"] = "Clinic-X - Social Service Pathways";
+}
+
+@{
+    ViewData["Title"] = "Clinic-X - Social Service Pathways";
+    ViewData["Page"] = "/ SocialServicePathway / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Social Services Pathway List", "Index", "SocialServicePathway", new { }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.socialServicePathway.MPI }, new { @class = "btn btn-success m-1" }),
+    };
+}
+
+<div class="container card">
+    <div class="card-header">
+        <h1>Social Service Pathway for @Model.socialServicePathway.PatientName, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.socialServicePathway.MPI>@Model.socialServicePathway.CGU_No</a> </h1>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <input asp-for=@Model.socialServicePathway.SSPID name="sspID" hidden />
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Status:</b></div>
+            <div class="col-md-4">
+                <select asp-for=@Model.socialServicePathway.SSPStatusID name="sspStatus">
+                    <option value="">Select...</option>
+                    @foreach(var item in Model.socialServicePathwayStatusList)
+                    {
+                        <option value="@item.SSPStatusID">@item.SSPStatus</option>
+                    }
+                </select>
+            </div>
+        </div>
+        
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Social worker details:</b></div>
+            <div class="col-md-8">
+                <select asp-for=@Model.socialServicePathway.SocialWorkerID>                    
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.socialWorkerList)
+                    {
+                        <option value="@item.SocialWorkerID">@item.FirstName @item.LastName, @item.SocialServicesDept</option>
+                    }                    
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Parental Responsibility:</b></div>
+            <div class="col-md-8"><input asp-for=@Model.socialServicePathway.ParentalResponsibility name="parentalResponsibility" class="w-100" /></div>
+        </div>
+        <hr />
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Date Information Requested:</b></div>
+            <div class="col-md-4"><input type="date" asp-for=@Model.socialServicePathway.DateInformationReq name="dateInfoReq" /></div>            
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Date Follow-up Requested:</b></div>
+            <div class="col-md-4"><input type="date" asp-for=@Model.socialServicePathway.DateInformationReqFU name="dateInfoFU" /></div>
+        </div>
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Date Information Received:</b></div>
+            <div class="col-md-4"><input type="date" asp-for=@Model.socialServicePathway.DateInformationReceived name="dateInfoRec" /></div>
+        </div>
+        <hr />
+        <div class="row mb-2 g-2">
+            <div class="col-md-4"><b>Outcome:</b></div>
+            <div class="col-md-8">
+                <select asp-for=@Model.socialServicePathway.OutcomeID name="outcome" id="ddlOutcome">
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.socialServicePathwayOutcomeList)
+                    {
+                        <option value="@item.ID">@item.Outcome</option>
+                    }
+                </select>                    
+            </div>        
+        </div>
+        <div class="row mb-2 g-2" id="divOtherDetails">
+            <div class="col-md-4"><b>Details:</b></div>
+            <div class="col-md-8">
+                <textarea rows="4" cols="100" asp-for=@Model.socialServicePathway.OtherOutcomeDetails name="otherOutcomeDetails"></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("ddlOutcome").addEventListener("change", ShowDetailsBox);
+    window.addEventListener("load", ShowDetailsBox);
+
+    function ShowDetailsBox()
+    {
+        var outcome = document.getElementById("ddlOutcome").value;
+        var detailsDiv = document.getElementById("divOtherDetails");
+
+        if(outcome == "5")
+        {
+            detailsDiv.hidden = false;
+        }
+        else
+        {
+            detailsDiv.hidden = true;
+        }
+    }
+
+
+</script>

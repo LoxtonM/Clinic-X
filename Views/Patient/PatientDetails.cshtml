@@ -14,15 +14,16 @@
         Html.ActionLink("Tests", "Index", "Test", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
         Html.ActionLink("Clinical Notes", "Index", "ClinicalNote", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Reviews", "ReviewsForPatient", "Review", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
-        Html.ActionLink("Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Patient Documents", "Index", "PatientDocuments", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),        
+        Html.ActionLink("Studies", "Index", "Study", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         @*Html.ActionLink("New Dictated Letter", "ActivityItems", "DictatedLetter", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
         @*Html.ActionLink("New Standard Letter", "Index", "LetterMenu", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
         Html.ActionLink("Cancer Risks", "Index", "RiskAndSurveillance", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
+        Html.ActionLink("Patient Documents", "Index", "PatientDocuments", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPatientDocuments" }),
         @*Html.ActionLink("Patient Documents", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPatientDocuments", target="_blank" }),*@
         Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPhenotips", target="_blank" }),
-        Html.ActionLink("Pedigree Assistant", "PedigreeAssistant", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPedigree" }),
+        @*Html.ActionLink("Pedigree Assistant", "PedigreeAssistant", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPedigree" }),*@
         @*Html.ActionLink("Record Cancer Risk/Surveillance", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
 
     };
@@ -1023,11 +1024,13 @@
         if ("@(Model.patient.DCTM_Folder_ID)" != "") 
         {            
             document.getElementById("btnEDMS").href = "@Model.edmsLink";
+            document.getElementById("btnPatientDocuments").hidden = true;
             //document.getElementById("btnEDMS").href = "@Model.edmsLink"  + "folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";            
         }
         else
         {
             document.getElementById("btnEDMS").hidden = true;
+            document.getElementById("btnPatientDocuments").hidden = false;
         }                
          //also load Phenotips link if there is one
         if("@(Model.isPatientInPhenotips)" == "True")
@@ -1040,10 +1043,12 @@
             //document.getElementById("btnImportRelatives").hidden = true;
         }
 
+        @*
         if("@(Model.isPhenotipsAvailable)" == "True")
         {
             document.getElementById("btnPedigree").hidden = true; //don't show the PA button if Phenotips is available
         }
+        *@
 
         if("@(Model.isProtectedAddress)" == "True")
         {
