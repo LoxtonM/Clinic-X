@@ -150,7 +150,11 @@ namespace ClinicX.Controllers
                 _ivm.priorityList = priorityList.OrderByDescending(p => p.PriorityLevel).ToList();
                 _ivm.cancerReviewActionsLists = await _icpActionData.GetICPCancerReviewActionsList();
                 _ivm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1);
+                
                 _ivm.accurXLink = await _constantsData.GetConstant("AccurXLink", 1);
+                _ivm.canriskLink = await _constantsData.GetConstant("CanriskURL", 1);
+                //_ivm.riskGuide = await _constantsData.GetConstant("CanriskURL", 1);
+
                 _ivm.dobAt16 = DateTime.Now.AddYears(-16);
                 _ivm.staffOptions = await _staffOptionsData.GetStaffOptions(staffCode);
                 var clins = await _staffUser.GetClinicalStaffList();
@@ -447,7 +451,16 @@ namespace ClinicX.Controllers
                     return RedirectToAction("ICPDetails", "Triage", new { id = icpID, success = false, message = "Patient GP not found. Please check the referral" });
                 }
 
-                //CRUD _crud = new CRUD(_config); //why did we declare a new CRUD, again?
+                if(action == 8)
+                {
+                    return RedirectToAction("OORTriage", "Triage", new { id = icpID });
+                }
+
+                if (action == 9)
+                {
+                    return RedirectToAction("DNMRCTriage", "Triage", new { id = icpID });
+                }
+
                 int success = await _crud.CallStoredProcedure("ICP Cancer", "Triage", icpID, action, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canTriage(SQL)" }); }
@@ -980,6 +993,22 @@ namespace ClinicX.Controllers
             {
                 _ivm.breachDate = _ivm.referralDetails.ClockStartDate.Value.AddDays(7 * 18);
             }
+
+            return View(_ivm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> OORTriage(int id)
+        {
+            _ivm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(id);
+
+            return View(_ivm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DNMRCTriage(int id)
+        {
+            _ivm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(id);
 
             return View(_ivm);
         }

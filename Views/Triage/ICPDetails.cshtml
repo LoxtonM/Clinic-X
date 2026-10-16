@@ -13,13 +13,15 @@
     ViewBag.HomeButton = new[]
     {
         
-        Html.ActionLink("Create Quick Contact", "AddNew", "Clinic", new { mpi=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),
-        Html.ActionLink("Create New Clinical Note", "Create", "ClinicalNote", new { id=Model.triage.RefID }, new { @class = "btn btn-success m-1" }),
+        @*Html.ActionLink("Create Quick Contact", "AddNew", "Clinic", new { mpi=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),*@
+        @*Html.ActionLink("Create New Clinical Note", "Create", "ClinicalNote", new { id=Model.triage.RefID }, new { @class = "btn btn-success m-1" }),*@
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Back to Triage Index", "Index", "Triage", new { }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),
         
         Html.ActionLink("AccurX", "Index", "WIP", new { }, new { @class = "btn btn-success m-1", id = "btnAccurX" }),
+        Html.ActionLink("Canrisk", "Index", "WIP", new { }, new { @class = "btn btn-success m-1", id = "btnCanrisk" }),
+        Html.ActionLink("Risk Guide", "Index", "WIP", new { }, new { @class = "btn btn-success m-1", id = "btnRiskGuide" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
     };
 }
@@ -43,6 +45,18 @@
 <div class="container card">   
 
     <div class="card-header">
+        <div class="row mb-2 g-2">
+            <div class="col-md-2">
+                <a type="button" class="btn btn-success" asp-controller="Clinic" asp-action="AddNew" asp-route-id=@Model.triage.RefID>Quick Contact</a>
+            </div>
+            <div class="col-md-2">
+                <a type="button" class="btn btn-success" asp-controller="ClinicalNote" asp-action="Create" asp-route-id=@Model.triage.MPI>New Clinical Note</a>
+            </div>
+            <div class="col-md-3">
+                <a type="button" class="btn btn-success" asp-controller="LetterMenu" asp-action="Index" asp-route-refID=@Model.triage.RefID asp-route-mpi="@Model.patient.MPI">Standard Letters/Reports</a>
+            </div>
+        </div>
+
         <h1>ICP Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.triage.CGU_No</a></h1>
         @if(Model.alertsList.Count > 0)
         {
@@ -170,19 +184,39 @@
             {
                 <dt class="col-sm-4"></dt>
             }
-            
-            @if (Model.breachDate != null) @*because you KNOW there's gonna be one!*@
+            <dt class="col-sm-4"></dt>
+            <dt class="col-sm-2">Clock Start Date:</dt>
+            @if (Model.referralDetails.ClockStartDate != null)
             {
-                <dt class="col-sm-2">
-                    Breach Date:
-                </dt>
+                <dd class="col-sm-2">@Model.referralDetails.ClockStartDate.Value.ToString("dd/MM/yyyy")</dd>
+            }
+            else
+            {
+                <dd class="col-sm-2">Not recorded</dd>
+            }
+            <dt class="col-sm-2">Clock Stop Date:</dt>
+            @if (Model.referralDetails.ClockStopDate != null)
+            {
+                <dd class="col-sm-2">@Model.referralDetails.ClockStopDate.Value.ToString("dd/MM/yyyy")</dd>
+            }
+            else
+            {
+                <dd class="col-sm-2">Not recorded</dd>
+            }
+
+            <dt class="col-sm-2">
+                Breach Date:
+            </dt>
+            @if (Model.breachDate != null && Model.breachDate != DateTime.Parse("0001-01-01")) @*because you KNOW there's gonna be one!*@
+            {
+                
                 <dd class="col-sm-2">
                     @Model.breachDate.ToString("dd/MM/yyyy")
                 </dd>
             }
             else
             {
-                <dt class="col-sm-4"></dt>
+                <dd class="col-sm-2">Not recorded</dd>
             }
             <dt class="col-sm-2">
                 Pathway:
@@ -527,7 +561,18 @@
             document.getElementById("btnEDMS").hidden = true;
         }
 
-        document.getElementById("btnAccurX").href = "@Model.accurXLink";
+        if("@Model.referralDetails.PATHWAY".trim() == "Cancer")
+        {
+            document.getElementById("btnAccurX").href = "@Model.accurXLink";
+            document.getElementById("btnCanrisk").href = "@Model.canriskLink";
+            document.getElementById("btnRiskGuide").href = "@Model.riskGuide";
+        }
+        else
+        {
+            document.getElementById("btnAccurX").hidden = true;
+            document.getElementById("btnCanrisk").hidden = true;
+            document.getElementById("btnRiskGuide").hidden = true;
+        }
     }
 
     function GoBack()
