@@ -1,5 +1,298 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model ClinicX.ViewModels.ICPVM
 @{
+    ViewData["Title"] = "Clinic-X - Does Not Meet Referral Criteria";
 }
+
+@{
+    ViewData["Title"] = "ClinicX - Does Not Meet Referral Criteria";
+    ViewData["Page"] = "/ Triage / Does Not Meet Referral Criteria";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-success m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+
+@*Html.ActionLink("Create Quick Contact", "AddNew", "Clinic", new { mpi=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),*@
+@*Html.ActionLink("Create New Clinical Note", "Create", "ClinicalNote", new { id=Model.triage.RefID }, new { @class = "btn btn-success m-1" }),*@
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Back to Triage Index", "Index", "Triage", new { }, new { @class = "btn btn-success m-1" }),
+        Html.ActionLink("Dictated Letters", "DictatedLettersForPatient", "DictatedLetter", new { id=Model.triage.MPI }, new { @class = "btn btn-success m-1" }),
+
+        //Html.ActionLink("AccurX", "Index", "WIP", new { }, new { @class = "btn btn-success m-1", id = "btnAccurX" }),
+        //Html.ActionLink("Canrisk", "Index", "WIP", new { }, new { @class = "btn btn-success m-1", id = "btnCanrisk" }),
+        //Html.ActionLink("Risk Guide", "Index", "WIP", new { }, new { @class = "btn btn-success m-1", id = "btnRiskGuide" }),
+        Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPhenotips", target="_blank" }),
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
+    };
+}
+
+@if (Model.message != null)
+{
+    @if (Model.success)
+    {
+        <div class="alert alert-success d-block text-center">
+            <h3>@Model.message</h3>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger d-block text-center">
+            <h3>@Model.message</h3>
+        </div>
+    }
+}
+
+<div class="container card">
+
+    <div class="card-header">
+        <div class="row mb-2 g-2">
+            <div class="col-md-1">
+                <a type="button" class="btn btn-success w-100 h-100" asp-controller="Clinic" asp-action="AddNew" asp-route-id=@Model.triage.RefID>Quick Contact</a>
+            </div>
+            <div class="col-md-2">
+                <a type="button" class="btn btn-success w-100 h-100" asp-controller="ClinicalNote" asp-action="Create" asp-route-id=@Model.triage.MPI>New Clinical Note</a>
+            </div>
+            <div class="col-md-2">
+                <a type="button" class="btn btn-success w-100 h-100" asp-controller="LetterMenu" asp-action="Index" asp-route-refID=@Model.triage.RefID asp-route-mpi="@Model.patient.MPI">Standard Letters/Reports</a>
+            </div>
+            <div class="col-md-4"></div>
+            <div class="col-md-1">
+                <a type="button" class="btn btn-success w-100 h-100" href="" id="btnAccurX">AccurX</a>
+            </div>
+            <div class="col-md-1">
+                <a type="button" class="btn btn-success w-100 h-100" href="" id="btnCanrisk">CanRisk</a>
+            </div>
+            <div class="col-md-1">
+                <a type="button" class="btn btn-success w-100 h-100" href="" id="btnRiskGuide">Risk Guide</a>
+            </div>
+        </div>
+
+        <h1>Does not meet referral criteria - @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.triage.CGU_No</a></h1>
+        @if (Model.alertsList.Count > 0)
+        {
+            <h2 class="redtext text-center">Alerts in effect</h2>
+            @* 
+            <ul>
+            @foreach(var item in Model.alertsList)
+            {
+                <li><b>@item.AlertType - @item.Comments</b></li>
+            }
+            </ul>
+            *@
+            @*TODO: check if they want alerts actually displayed*@
+        }
+    </div>
+
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-2">
+                Patient name:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.triage.Name)
+            </dd>
+            <dt class="col-sm-2">
+                NHS Number:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.patient.NHSNumber)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.patient.DOB):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.patient.DOB) <span>&emsp;&emsp;<b>Age:</b> @Model.patientAge years</span> <span>&emsp;&emsp;<b>Gender:</b> @Model.patient.SEX</span>
+            </dd>
+            @if (Model.patient.DECEASED == -1)
+            {
+                <dt class="col-sm-12 text-center"><h1 class="redtext">Patient is deceased</h1></dt>
+            }
+            else
+            {
+                <dt class="col-sm-12 text-center"></dt>
+            }
+
+            <dt class="col-sm-2">
+                Contact numbers:
+            </dt>
+            <dd class="col-sm-6">
+                @if (Model.patient.TEL != null && Model.patient.TEL != "")
+                {
+                    <span><b>Home:</b> @Html.DisplayFor(model => model.patient.TEL) </span>
+                }
+                @if (Model.patient.WORKTEL != null && Model.patient.WORKTEL != "")
+                {
+                    <span><b>Work:</b> @Html.DisplayFor(model => model.patient.WORKTEL) </span>
+                }
+                @if (Model.patient.PtTelMobile != null && Model.patient.PtTelMobile != "")
+                {
+                    <span><b>Mobile:</b> @Html.DisplayFor(model => model.patient.PtTelMobile) </span>
+                }
+            </dd>
+            <dd class="col-sm-4">
+                <button type="button" class="btn btn-outline-primary" id="btnCopyText">Copy Demographic Data</button>
+            </dd>
+
+            <hr />
+        </dl>
+
+        <form asp-action="DNMRCTriage">
+            <div class="row mb-2 g-2">
+                <input asp-for=@Model.triage.ICPID name="id" hidden />
+                <div class="col-md-2 text-end">
+                    Reject reason:
+                </div>
+                <div class="col-md-4">
+                    <textarea name="rejectReason" id="txtRejectReason" cols="50" rows="5"></textarea>
+                </div>
+                <div class="col-md-2 text-end">
+                    Letter:
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="dnmrcOption" id="optSendDNMRC" value="DNMRC" checked>
+                        <label class="form-check-label" for="optSendDNMRC">
+                            Send DNMRC letter
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="dnmrcOption" id="optSendDOT" value="DOT">
+                        <label class="form-check-label" for="optSendDOT">
+                            Dictate own DOT letter
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-2 g-2">
+                <div class="col-md-8"></div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-success" id="btnPreview">Preview</button>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-success">Complete ICP</button>
+                </div>
+            </div>
+        </form>
+            
+    </div>
+
+
+    <script>
+        document.getElementById("btnCopyText").addEventListener("click", CopyDemographicText);
+        document.getElementById("btnPreview").addEventListener("click", DoLetterPreview);
+        document.getElementById("optSendDNMRC").addEventListener("change", ShowPreviewButton);
+        document.getElementById("optSendDOT").addEventListener("change", ShowPreviewButton);
+        window.addEventListener("load", LoadEDMSLink);
+        
+        function LoadEDMSLink()
+        {
+            if ("@(Model.patient.DCTM_Folder_ID)" != "")
+            {
+                document.getElementById("btnEDMS").href = "@Model.edmsLink" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+            }
+            else
+            {
+                document.getElementById("btnEDMS").hidden = true;
+            }
+            
+            document.getElementById("btnAccurX").href = "@Model.accurXLink";
+            document.getElementById("btnCanrisk").href = "@Model.canriskLink";
+            document.getElementById("btnRiskGuide").href = "@Model.riskGuide";
+            
+
+            if("@(Model.isPatientInPhenotips)" == "True")
+            {
+                document.getElementById("btnPhenotips").href = "@Model.phenotipsLink" + "/" + "@Model.ptID";
+            }
+            else
+            {
+                document.getElementById("btnPhenotips").hidden = true;
+            }
+        }
+
+        function CopyDemographicText()
+        {
+            var textToCopy = "RE: " + "@Model.patient.FIRSTNAME" + " " + "@Model.patient.LASTNAME" + " - " + "@Model.patient.DOB.Value.ToString("dd/MM/yyyy")" + " - " + "@Model.patient.NHSNumber"
+            + " - CGU: " + "@Model.patient.CGU_No";
+
+            //navigator.clipboard.writeText(textToCopy); //because apparently this fucking thing craps out on the server!!! *sigh*
+
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+
+            document.body.appendChild(textArea);
+            textArea.select();
+
+            try
+            {
+                const success = document.execCommand("copy");
+                if(success)
+                {
+                    textArea.hidden = true;
+                    window.alert("Demographic data copied to clipboard!");
+                }
+                else
+                {
+                    window.alert("Nope!");
+                }
+            }
+            catch(err)
+            {
+                window.alert(err);
+            }
+
+            document.body.removeChild(textArea);
+
+                //window.alert("Demographic data copied to clipboard!");
+        }
+
+
+        function DoLetterPreview()
+        {
+            var opt = document.getElementsByName("dnmrcOption");
+            var choice = "";
+            
+            for (i = 0; i < opt.length; i++) 
+            {
+                if (opt[i].checked)
+                {
+                    choice = opt[i].value;
+                }
+            }
+
+            if(choice == "DNMRC")
+            {
+                var _url = "";
+                var _docID = 202;
+                _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/LetterPreview/DoLetter?docID=" + _docID + "&mpi=" + "@Model.patient.MPI" +  "&refID=" + "@Model.triage.RefID"
+                + "&user=mnln&referrerCode=" + "@Model.referralDetails.ReferrerCode" + "&isPreview=true&freeText=" + document.getElementById("txtRejectReason").value;
+
+                window.open(_url, '_blank').focus();
+            }
+
+        }
+
+        function ShowPreviewButton()
+        {
+            var opt = document.getElementsByName("dnmrcOption");
+            var choice = "";
+            
+            for (i = 0; i < opt.length; i++) 
+            {
+                if (opt[i].checked)
+                {
+                    choice = opt[i].value;
+                }
+            }
+            if(choice == "DNMRC")
+            {
+                document.getElementById("btnPreview").hidden = false;
+            }
+            else
+            {
+                document.getElementById("btnPreview").hidden = true;
+            }
+        }
+
+    </script>

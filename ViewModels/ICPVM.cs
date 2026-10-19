@@ -75,6 +75,7 @@ namespace ClinicX.ViewModels
         public int currentAge { get; set; }
         public ICP icp { get; set; }
         public bool isO4Required { get; set; }
+        public string ptID { get; set; }
         public bool isLive { get; set; }
     }
 }

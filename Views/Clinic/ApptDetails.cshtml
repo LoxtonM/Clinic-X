@@ -55,10 +55,15 @@
             <h4>NHS No: @Model.patient.NHSNumber</h4>
         </div>
         <div class="row">
-            <h4>Contact number(s):</h4> 
-            @if (@Model.patient.TEL != null){<h5>Home: @Model.patient.TEL </h5>}
-            @if (@Model.patient.WORKTEL != null){<h5>Work: @Model.patient.WORKTEL </h5>}
-            @if (@Model.patient.PtTelMobile != null){<h5>Mobile: @Model.patient.PtTelMobile </h5>}
+            <h4>Contact number(s):</h4>
+            <div class="col-md-10">
+                @if (@Model.patient.TEL != null){<h5>Home: @Model.patient.TEL </h5>}
+                @if (@Model.patient.WORKTEL != null){<h5>Work: @Model.patient.WORKTEL </h5>}
+                @if (@Model.patient.PtTelMobile != null){<h5>Mobile: @Model.patient.PtTelMobile </h5>}
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary" id="btnCopyText">Copy Demographic Data</button>            
+            </div>
         </div>
     </div>
 
@@ -228,6 +233,7 @@
 <script type="text/javascript">
 
     //document.getElementById("btnBack").addEventListener("click", GoBack);
+    document.getElementById("btnCopyText").addEventListener("click", CopyDemographicText);
     window.addEventListener("load", LoadClinic);
     window.addEventListener("load", LoadEDMSLink);
 
@@ -276,6 +282,38 @@
             document.getElementById("btnReview").hidden = true;
         }       
 
+    }
+
+    function CopyDemographicText()
+    {
+        var textToCopy = "RE: " + "@Model.patient.FIRSTNAME" + " " + "@Model.patient.LASTNAME" + " - " + "@Model.patient.DOB.Value.ToString("dd/MM/yyyy")" + " - " + "@Model.patient.NHSNumber"
+        + " - CGU: " + "@Model.patient.CGU_No";
+
+        const textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+
+        document.body.appendChild(textArea);
+        textArea.select();
+
+        try
+        {
+            const success = document.execCommand("copy");
+            if(success)
+            {
+                textArea.hidden = true;
+                window.alert("Demographic data copied to clipboard!");
+            }
+            else
+            {
+                window.alert("Nope!");
+            }
+        }
+        catch(err)
+        {
+            window.alert(err);
+        }
+
+        document.body.removeChild(textArea);
     }
         
     

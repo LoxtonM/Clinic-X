@@ -2579,7 +2579,7 @@ namespace ClinicalXPDataConnections.Meta
                 if (docCode == "DNMRC")
                 {
                     Paragraph letterContentPt = section.AddParagraph();
-                    letterContentPt.AddFormattedText(patName + ", " + patDOB, TextFormat.Bold);
+                    letterContentPt.AddFormattedText(patName + ", " + patDOB.ToString("dd/MM/yyyy"), TextFormat.Bold);
                     spacer = section.AddParagraph();
 
                     Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1);

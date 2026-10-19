@@ -13,7 +13,7 @@ namespace ClinicX.Controllers
 {
     public class TriageController : Controller
     {
-        private readonly ClinicalContext _clinContext;        
+        private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
         private readonly ICPVM _ivm;
         private readonly LetterController _lc;
@@ -48,12 +48,12 @@ namespace ClinicX.Controllers
 
         public TriageController(IConfiguration config, IStaffUserDataAsync staffUserData, IPathwayDataAsync pathwayData, IPriorityDataAsync priorityData, IReferralDataAsync referralData, ITriageDataAsync triageData,
             IICPActionDataAsync iCPActionData, IRiskDataAsync riskData, ISurveillanceDataAsync surveillanceData, ITestEligibilityDataAsync testEligibilityData, IDiaryDataAsync diaryData, IRelativeDataAsync relativeData,
-            ICancerRequestDataAsync cancerRequestData, IExternalClinicianDataAsync externalClinicianData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IDocumentsDataAsync documentsData, ICRUD crud, 
+            ICancerRequestDataAsync cancerRequestData, IExternalClinicianDataAsync externalClinicianData, IRelativeDiagnosisDataAsync relativeDiagnosisData, IDocumentsDataAsync documentsData, ICRUD crud,
             LetterController letterController, IAuditService auditService, IAgeCalculator ageCalculator, IPatientDataAsync patientData, ILeafletDataAsync leafletData, IConstantsDataAsync constantsData,
             IStaffOptionsDataAsync staffOptionsData, ISocialServicePathwayDataAsync socialServicePathwayData, IDictatedLetterDataAsync dictatedLetterData, IPhenotipsMirrorDataAsync phenotipsMirrorData,
             IAlertDataAsync alertData, IApiController apiController, ClinicalContext clinContext, DocumentContext docContext)
         {
-            _clinContext = clinContext;            
+            _clinContext = clinContext;
             _docContext = docContext;
             _config = config;
             _ivm = new ICPVM();
@@ -72,7 +72,7 @@ namespace ClinicX.Controllers
             _clinicianData = externalClinicianData;
             _relDiagData = relativeDiagnosisData;
             _documentsData = documentsData;
-            _crud = crud;            
+            _crud = crud;
             _audit = auditService;
             _ageCalculator = ageCalculator;
             _patientData = patientData;
@@ -150,10 +150,12 @@ namespace ClinicX.Controllers
                 _ivm.priorityList = priorityList.OrderByDescending(p => p.PriorityLevel).ToList();
                 _ivm.cancerReviewActionsLists = await _icpActionData.GetICPCancerReviewActionsList();
                 _ivm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1);
-                
+
                 _ivm.accurXLink = await _constantsData.GetConstant("AccurXLink", 1);
                 _ivm.canriskLink = await _constantsData.GetConstant("CanriskURL", 1);
-                //_ivm.riskGuide = await _constantsData.GetConstant("CanriskURL", 1);
+
+                string riskGuide = await _constantsData.GetConstant("CancerRiskGuide", 2);
+                _ivm.riskGuide = Url.Content($"~/SupportFiles/{riskGuide}");
 
                 _ivm.dobAt16 = DateTime.Now.AddYears(-16);
                 _ivm.staffOptions = await _staffOptionsData.GetStaffOptions(staffCode);
@@ -184,7 +186,7 @@ namespace ClinicX.Controllers
                 _ivm.patientAddress = _ivm.patientAddress + ", " + _ivm.patient.POSTCODE;
 
                 if (_ivm.referralDetails.ClockStartDate != null)
-                { 
+                {
                     _ivm.breachDate = _ivm.referralDetails.ClockStartDate.Value.AddDays(7 * 18);
                 }
 
@@ -195,7 +197,7 @@ namespace ClinicX.Controllers
                 _ivm.isPhenotipsAvailable = !string.IsNullOrEmpty(phenotipsAvailableFlag) && !phenotipsAvailableFlag.Contains("0", StringComparison.Ordinal);
 
                 //Constants table flag decides whether Phenotips is in use or not
-                if (_ivm.isPhenotipsAvailable)
+                if (_ivm.isPhenotipsAvailable || user.BILL_ID == "Technical")
                 {
                     var mirror = await _phenotipsMirrorData.GetPhenotipsPatientByID(_ivm.patient.MPI);
 
@@ -224,11 +226,11 @@ namespace ClinicX.Controllers
                         _ivm.isGeneralPPQScheduled = await generalPPQExists;
                         _ivm.isCancerPPQComplete = await cancerPPQComplete;
                         _ivm.isGeneralPPQComplete = await generalPPQComplete;
-                        string ptID = await phenotipsID;
+                        _ivm.ptID = await phenotipsID;
 
                         string baseURL = await _constantsData.GetConstant("PhenotipsURL", 1);
 
-                        if (!string.IsNullOrWhiteSpace(baseURL) && !string.IsNullOrWhiteSpace(ptID)) { _ivm.phenotipsLink = baseURL.TrimEnd('/') + "/" + ptID; }
+                        if (!string.IsNullOrWhiteSpace(baseURL) && !string.IsNullOrWhiteSpace(_ivm.ptID)) { _ivm.phenotipsLink = baseURL.TrimEnd('/'); }
                     }
                 }
 
@@ -242,10 +244,10 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-ICP" });
             }
         }
-        
+
         [HttpPost]
-        public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, 
-            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm, string? ga, string? genp, bool? closeReferral, bool? stopClock, string? indicationNotes, 
+        public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c,
+            int? tp2nc, int? wlPriority, int? requestPhotos, int? requestDevForm, string? ga, string? genp, bool? closeReferral, bool? stopClock, string? indicationNotes,
             string? clicsActions)
         {
             try
@@ -255,7 +257,7 @@ namespace ClinicX.Controllers
                 StaffMember staffmember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
 
                 string wlClinician = "";
-                
+
                 int mpi = icp.MPI;
                 int refID = icp.REFID;
                 int tp2;
@@ -268,7 +270,7 @@ namespace ClinicX.Controllers
 
                 if (referringClinician == null)
                 {
-                    return RedirectToAction("DoGeneralTriage", "Triage", new { id = icpID, success=false, message="Referring clinician not found. Please check the referral" });
+                    return RedirectToAction("DoGeneralTriage", "Triage", new { id = icpID, success = false, message = "Referring clinician not found. Please check the referral" });
                 }
 
                 if (gp == null)
@@ -277,9 +279,9 @@ namespace ClinicX.Controllers
                 }
 
                 string sApptIntent = "";
-                string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;                            
+                string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;
 
-                if(indicationNotes != null && indicationNotes != "")
+                if (indicationNotes != null && indicationNotes != "")
                 {
                     int success = await _crud.CallStoredProcedure("ICP General", "Indication Notes", icpID, 0, 0, "", "", "", indicationNotes, User.Identity.Name);
 
@@ -292,8 +294,8 @@ namespace ClinicX.Controllers
                     wlClinician = ga;
                     facility = await _constantsData.GetConstant("GAClinic", 1);
                 }
-                if(genp != null) 
-                { 
+                if (genp != null)
+                {
                     wlClinician = genp;
                     facility = await _constantsData.GetConstant("GenPClinic", 1);
                 }
@@ -307,12 +309,12 @@ namespace ClinicX.Controllers
 
                 if (sStaffType == "Consultant")
                 {
-                    if(wlClinician == "")
+                    if (wlClinician == "")
                     {
                         wlClinician = referral.PATIENT_TYPE_CODE;
                     }
 
-                    if(tp.GetValueOrDefault() == 3 || tp.GetValueOrDefault() == 5)
+                    if (tp.GetValueOrDefault() == 3 || tp.GetValueOrDefault() == 5)
                     {
                         tp2 = 0;
                     }
@@ -323,7 +325,7 @@ namespace ClinicX.Controllers
                         facility, sApptIntent, wlClinician, comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm, "", "", clicsActions);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }
-                        
+
                     }
                     else
                     {
@@ -346,12 +348,12 @@ namespace ClinicX.Controllers
                         facility, sApptIntent, wlClinician, comment, User.Identity.Name, null, null, isSPR, isChild, duration, requestPhotos, requestDevForm, "", "", clicsActions);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
-                        
+
                     }
                     else
                     {
                         int success = await _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), tp2,
-                        "", sApptIntent, wlClinician, comment, User.Identity.Name, null, null, false, false, 0,0,0,"", "", clicsActions);
+                        "", sApptIntent, wlClinician, comment, User.Identity.Name, null, null, false, false, 0, 0, 0, "", "", clicsActions);
 
                         if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
                     }
@@ -368,7 +370,7 @@ namespace ClinicX.Controllers
                 string qrCodeText = ""; //check and set up the Phenotips PPQ QR code if required
                 bool isPhenotipsAvailable = await _constantsData.GetConstant("PhenotipsURL", 2) == "1";
 
-                
+
                 if (tp2 == 2) //CTB letter
                 {
                     int success = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
@@ -378,10 +380,10 @@ namespace ClinicX.Controllers
 
                     LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
                     await lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID, "", "", 0, "", "", null, false, "", 0, true);
-                }                
+                }
 
                 if (tp2 == 6) //Dictate letter
-                { 
+                {
                     int success2 = await _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "ICP Draft", "", "", "", User.Identity.Name);
 
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-createLetter(SQL)" }); }
@@ -397,13 +399,13 @@ namespace ClinicX.Controllers
                 }
 
                 if (tp2 == 7) //Reject letter
-                {                    
+                {
                     await _lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, 0, "", "", 0, "", "", null, false, "", 0, true);
                 }
 
-                if(closeReferral.GetValueOrDefault())
+                if (closeReferral.GetValueOrDefault())
                 {
-                    int success3 = await _crud.CallStoredProcedure("Referral", "Close", refID,0,0,"","","","",User.Identity.Name, null,null,false,false);
+                    int success3 = await _crud.CallStoredProcedure("Referral", "Close", refID, 0, 0, "", "", "", "", User.Identity.Name, null, null, false, false);
 
                     if (success3 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-closeReferral(SQL)" }); }
                 }
@@ -439,7 +441,7 @@ namespace ClinicX.Controllers
                 ClinicalXPDataConnections.Models.Patient patient = await _patientData.GetPatientDetails(icp.MPI);
                 ExternalClinician referringClinician = await _clinicianData.GetClinicianDetails(referrer);
                 ExternalClinician gp = await _clinicianData.GetClinicianDetails(patient.GP_Code);
-                              
+
 
                 if (referringClinician == null)
                 {
@@ -451,7 +453,7 @@ namespace ClinicX.Controllers
                     return RedirectToAction("ICPDetails", "Triage", new { id = icpID, success = false, message = "Patient GP not found. Please check the referral" });
                 }
 
-                if(action == 8)
+                if (action == 8)
                 {
                     return RedirectToAction("OORTriage", "Triage", new { id = icpID });
                 }
@@ -467,7 +469,7 @@ namespace ClinicX.Controllers
 
                 var actions = await _icpActionData.GetICPCancerActionsList();
                 ICPAction icpAction = actions.First(a => a.ID == action);
-                
+
                 if (icpAction.RelatedLetterID != null)
                 {
                     var doc = await _documentsData.GetDocumentDetails(icpAction.RelatedLetterID.Value);
@@ -483,15 +485,15 @@ namespace ClinicX.Controllers
 
                     if (isPhenotipsAvailable && isPhenotipsQR)
                     {
-                        qrCodeText = await _api.GetPPQQRCode(mpi, referral.PATHWAY);                        
+                        qrCodeText = await _api.GetPPQQRCode(mpi, referral.PATHWAY);
                     }
 
                     LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
 
-                    printSuccess = await lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID, "", "", 0, "", "",
+                    printSuccess = await lc.DoPDF(icpAction.RelatedLetterID.GetValueOrDefault(), mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID, "", "", 0, "", "",
                         null, false, qrCodeText, 0, true);
 
-                    if(printSuccess)
+                    if (printSuccess)
                     {
                         message = docCode + " letter successfully printed to EDMS";
                     }
@@ -501,7 +503,7 @@ namespace ClinicX.Controllers
                     }
                 }
 
-                if(icpAction.ID == 8)
+                if (icpAction.ID == 8)
                 {
                     return RedirectToAction("Index", "LetterMenu", new { refID = refID });
                 }
@@ -514,7 +516,7 @@ namespace ClinicX.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("CancerReview", "Triage", new { id = _ivm.icpCancer.ICP_Cancer_ID, success=printSuccess, message=message });
+                    return RedirectToAction("CancerReview", "Triage", new { id = _ivm.icpCancer.ICP_Cancer_ID, success = printSuccess, message = message });
                 }
             }
             catch (Exception ex)
@@ -529,7 +531,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                if (id == null) { return RedirectToAction("NotFound", "WIP");}
+                if (id == null) { return RedirectToAction("NotFound", "WIP"); }
 
                 var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = user.STAFF_CODE;
@@ -543,7 +545,7 @@ namespace ClinicX.Controllers
 
                 _ivm.genomicsTestDirectoryLink = urlGenomicTestDirectoryurl;
                 _ivm.canriskLink = urlCanriskurl;
-                
+
                 _ivm.riskGuide = Url.Content($"~/SupportFiles/{riskGuide}");
                 var facilityList = await _triageData.GetClinicalFacilitiesList();
                 _ivm.clinicalFacilityList = facilityList.OrderBy(f => f.FACILITY).ToList();
@@ -582,9 +584,9 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CancerReview(int id, string finalReview, int priorityLevel, string? clinician = "", string? clinic = "", string? comments = "", 
-            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "", string? freeText1="", int? leafletID = 0) //, 
-            
+        public async Task<IActionResult> CancerReview(int id, string finalReview, int priorityLevel, string? clinician = "", string? clinic = "", string? comments = "",
+            string? addNotes = "", bool? isNotForCrossBooking = false, int? letter = 0, string? toBeReviewedBy = "", string? freeText1 = "", int? leafletID = 0) //, 
+
         {
             var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = user.STAFF_CODE;
@@ -594,10 +596,10 @@ namespace ClinicX.Controllers
             _ivm.icpCancer = await _triageData.GetCancerICPDetails(id);
             var icpDetails = await _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
             string reviewText = "";
-            
+
             string reviewBy = "";
             _ivm.cancerReviewActionsLists = await _icpActionData.GetICPCancerReviewActionsList();
-            
+
             int mpi = icpDetails.MPI;
             int refID = icpDetails.REFID;
 
@@ -607,7 +609,7 @@ namespace ClinicX.Controllers
             {
                 letterAlreadyDone = true;
             }
-            
+
             if (toBeReviewedBy == null) { toBeReviewedBy = ""; }//because the default value isn't being assigned for some reason!            
 
 
@@ -618,17 +620,17 @@ namespace ClinicX.Controllers
             if (finalReview == "Provisional")
             {
                 success = await _crud.CallStoredProcedure("ICP Cancer", "ICP Review", id, letter.GetValueOrDefault(), 0, reviewBy, finalReview, toBeReviewedBy, addNotes,
-                        User.Identity.Name, null, null, false, false, 0, 0, 0, clinician, clinic, comments);                
+                        User.Identity.Name, null, null, false, false, 0, 0, 0, clinician, clinic, comments);
             }
             else //save without actually completing the review
             {
                 success = await _crud.CallStoredProcedure("ICP Cancer", "ICP Review", id, letter.GetValueOrDefault(), 0, "", finalReview, "", addNotes,
-                        User.Identity.Name, null, null, false, false, 0, 0, 0, clinician, clinic, comments);                
+                        User.Identity.Name, null, null, false, false, 0, 0, 0, clinician, clinic, comments);
             }
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canReview" }); }
 
             if (finalReview == "Yes")
-            {                
+            {
                 //if (letter != null && letter != 0 && !letterAlreadyDone) //don't want to do the letter and diary every single time!!!
                 //{
                 _ivm.cancerAction = await _icpActionData.GetICPCancerAction(letter.GetValueOrDefault());
@@ -679,14 +681,14 @@ namespace ClinicX.Controllers
                 int successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "REPSUM", "", "", User.Identity.Name, null, null, false, false);
                 var diary = await _diaryData.GetLatestDiaryByRefID(refID, "REPSUM");
 
-                int diaryID = diary.DiaryID;                
+                int diaryID = diary.DiaryID;
 
                 return RedirectToAction("PrepareRepsum", "Repsum", new { id = id, diaryID = diaryID, docCode }); //redirects to REPSUM controller, which should redirect back here when done
                 //we HAVE to do it this way or it won't update the data model
-            }            
+            }
 
             return RedirectToAction("CancerReview", new { id = id });
-        }        
+        }
 
         [HttpGet]
         [Authorize]
@@ -706,7 +708,7 @@ namespace ClinicX.Controllers
                 _ivm.clinicians = await _clinicianData.GetClinicianList();
                 _ivm.specialities = await _clinicianData.GetClinicianTypeList();
                 _ivm.relativesDiagnoses = new List<RelativesDiagnosis>();
-                
+
                 if (_ivm.relatives.Count > 0)
                 {
                     foreach (var rel in _ivm.relatives)
@@ -727,7 +729,7 @@ namespace ClinicX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> FurtherRequest(int id, int request, string? freeText = "", int? relID = 0, string? clinicianCode = "", string? siteText = "",
-            string? freeText1="", string? freeText2="", string? additionalText="", DateTime? diagDate = null, bool? isPreview=false)
+            string? freeText1 = "", string? freeText2 = "", string? additionalText = "", DateTime? diagDate = null, bool? isPreview = false)
         {
             try
             {
@@ -738,7 +740,7 @@ namespace ClinicX.Controllers
 
                 _ivm.cancerRequest = await _cancerRequestData.GetCancerRequestDetail(request);
                 _ivm.icpCancer = await _triageData.GetCancerICPDetails(id);
-                var icpDetails = await _triageData.GetICPDetails(_ivm.icpCancer.ICPID);               
+                var icpDetails = await _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
                 //DateTime finalReviewDate = DateTime.Parse("1900-01-01");
                 int mpi = icpDetails.MPI;
                 int refID = icpDetails.REFID;
@@ -746,7 +748,7 @@ namespace ClinicX.Controllers
                 int docID2 = _ivm.cancerRequest.DocContentID2.GetValueOrDefault();
                 int docID3 = _ivm.cancerRequest.DocContentID3.GetValueOrDefault();
 
-                if(freeText != "") { freeText1 = freeText; }
+                if (freeText != "") { freeText1 = freeText; }
 
                 if (docID != null && docID != 0)
                 {
@@ -791,7 +793,7 @@ namespace ClinicX.Controllers
                 }
                 if (!isPreview.GetValueOrDefault())
                 {
-                    return RedirectToAction("CancerReview", new { id = id, message="Letter submitted for filing/printing in EDMS", success=true });
+                    return RedirectToAction("CancerReview", new { id = id, message = "Letter submitted for filing/printing in EDMS", success = true });
                 }
                 else
                 {
@@ -803,7 +805,7 @@ namespace ClinicX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-postclinicletter" });
             }
         }
-        
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> RiskAndSurveillance(int id)
@@ -860,7 +862,7 @@ namespace ClinicX.Controllers
         {
             try
             {
-                if(newConsultant == null) { newConsultant = ""; }
+                if (newConsultant == null) { newConsultant = ""; }
                 int success = await _crud.CallStoredProcedure("ICP General", "Change", icpId, 0, 0, newConsultant, newGC, "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-changeGenTriage(SQL)" }); }
@@ -886,7 +888,7 @@ namespace ClinicX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Change Triage Pathway", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.triage = await _triageData.GetTriageDetails(id);
-                _ivm.pathways = await _pathwayData.GetPathwayList();                
+                _ivm.pathways = await _pathwayData.GetPathwayList();
 
                 return View(_ivm);
             }
@@ -918,7 +920,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> ReturnToConsultant(int icpId)
         {
             try
-            {                
+            {
                 int success = await _crud.CallStoredProcedure("ICP General", "Return", icpId, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons" }); }
@@ -937,8 +939,8 @@ namespace ClinicX.Controllers
             try
             {
                 int success = await _crud.CallStoredProcedure("ICP General", "Indication Notes", icpID, 0, 0, "", "", "", indicationNotes, User.Identity.Name);
-                
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons(SQL)" }); }                
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-returnToCons(SQL)" }); }
 
                 return RedirectToAction("ICPDetails", "Triage", new { id = icpID });
             }
@@ -1008,9 +1010,114 @@ namespace ClinicX.Controllers
         [HttpGet]
         public async Task<IActionResult> DNMRCTriage(int id)
         {
-            _ivm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(id);
+            var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = user.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "ClinicX - DNMRC", "ID=" + id.ToString(), _ip.GetIPAddress());
+
+            _ivm.triage = await _triageData.GetTriageDetails(id);
+            _ivm.patient = await _patientData.GetPatientDetails(_ivm.triage.MPI);
+            _ivm.referralDetails = await _referralData.GetReferralDetails(_ivm.triage.RefID);
+            _ivm.clinicalFacilityList = await _triageData.GetClinicalFacilitiesList();
+            _ivm.clinicalFacilityList = _ivm.clinicalFacilityList.OrderBy(f => f.NAME).ToList();
+
+            _ivm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1);
+            _ivm.accurXLink = await _constantsData.GetConstant("AccurXLink", 1);
+            _ivm.canriskLink = await _constantsData.GetConstant("CanriskURL", 1);
+
+            string riskGuide = await _constantsData.GetConstant("CancerRiskGuide", 2);
+            _ivm.riskGuide = Url.Content($"~/SupportFiles/{riskGuide}");
+
+            _ivm.dobAt16 = DateTime.Now.AddYears(-16);
+
+            _ivm.alertsList = await _alertData.GetAlertsList(_ivm.patient.MPI);
+
+            if (_ivm.patient.DOB != null)
+            {
+                _ivm.patientAge = _ageCalculator.DateDifferenceDay(_ivm.patient.DOB.Value, DateTime.Now) / 365;
+            }
+
+            var phenotipsAvailableFlag = await _constantsData.GetConstant("PhenotipsURL", 2);
+            _ivm.isPhenotipsAvailable = !string.IsNullOrEmpty(phenotipsAvailableFlag) && !phenotipsAvailableFlag.Contains("0", StringComparison.Ordinal);
+
+            if (_ivm.isPhenotipsAvailable || user.BILL_ID == "Technical")
+            {
+                var mirror = await _phenotipsMirrorData.GetPhenotipsPatientByID(_ivm.patient.MPI);
+
+                if (mirror != null)
+                {
+                    _ivm.isPatientInPhenotips = true;
+
+                    if (mirror.FamilyID == null || mirror.FamilyID == "")
+                    {
+                        await _api.SynchroniseMirrorWithPhenotips(_ivm.patient.MPI);
+                    }
+
+                    var cancerPPQExists = _api.CheckPPQExists(_ivm.patient.MPI, "Cancer");
+                    var cancerPPQComplete = _api.CheckPPQSubmitted(_ivm.patient.MPI, "Cancer");
+                    var phenotipsID = _api.GetPhenotipsPatientID(_ivm.patient.MPI);
+
+                    await Task.WhenAll(cancerPPQExists, cancerPPQComplete, phenotipsID);
+
+                    _ivm.isCancerPPQScheduled = await cancerPPQExists;
+                    _ivm.isCancerPPQComplete = await cancerPPQComplete;
+                    _ivm.ptID = await phenotipsID;
+
+                    string baseURL = await _constantsData.GetConstant("PhenotipsURL", 1);
+
+                    if (!string.IsNullOrWhiteSpace(baseURL) && !string.IsNullOrWhiteSpace(_ivm.ptID)) { _ivm.phenotipsLink = baseURL.TrimEnd('/'); }
+                }
+            }            
 
             return View(_ivm);
+        }       
+
+        [HttpPost]
+        public async Task<IActionResult> DNMRCTriage(int id, string dnmrcOption)
+        {
+            var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = user.STAFF_CODE;
+            
+            _ivm.triage = await _triageData.GetTriageDetails(id);
+            int mpi = _ivm.triage.MPI;
+            int refID = _ivm.triage.RefID;
+            _ivm.patient = await _patientData.GetPatientDetails(mpi);
+            _ivm.referralDetails = await _referralData.GetReferralDetails(refID);
+
+            string docCode = "";
+
+            int success = await _crud.CallStoredProcedure("ICP Cancer", "Triage", id, 9, 0, "", "", "", "", User.Identity.Name);
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canTriage(SQL)" }); }
+
+            if (dnmrcOption == "DNMRC")
+            {
+                docCode = "DNMRC";
+                LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+
+                int successDiary = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "DNMRC", "", "", User.Identity.Name, null, null, false, false);
+                var diary = await _diaryData.GetLatestDiaryByRefID(refID, "REPSUM");
+                int diaryID = diary.DiaryID;
+
+                bool successLetter = await lc.DoPDF(202, _ivm.patient.MPI, refID, user.EMPLOYEE_NUMBER, _ivm.referralDetails.ReferrerCode, "", "", 0, "", false, false, diaryID, "", "", 0,
+                    "", "", null, false, "", 0, true);
+
+            }
+            else
+            {
+                docCode = "DOT";
+                int successDOT = await _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "ICP Draft", "", staffCode, "", User.Identity.Name);                
+            }
+
+            int successDiary2 = await _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "REPSUM", "", "", User.Identity.Name, null, null, false, false);
+            var diary2 = await _diaryData.GetLatestDiaryByRefID(refID, "REPSUM");
+            int diaryIDRepsum = diary2.DiaryID;
+            
+            _ivm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(id);
+
+            //Do REPSUM - will redirect to ICP page
+
+            return RedirectToAction("PrepareRepsum", "Repsum", new { id = _ivm.icpCancer.ICP_Cancer_ID, diaryID = diaryIDRepsum, docCode });
         }
     }
 }

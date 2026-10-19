@@ -182,7 +182,9 @@ namespace ClinicX.Controllers
             }
             else
             {
-                finalReviewDetails = $"{staffMember.NAME} on {icpc.FinalReviewedDate.Value.ToString("dd/MM/yyyy")}";
+                DateTime finalReviewDate = icpc.FinalReviewedDate ?? DateTime.Now;
+                
+                finalReviewDetails = $"{staffMember.NAME} on {finalReviewDate.ToString("dd/MM/yyyy")}";
             }
 
             row2_4.Cells[1].AddParagraph(finalReviewDetails);

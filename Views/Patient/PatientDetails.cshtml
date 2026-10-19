@@ -487,13 +487,17 @@
             <dt class="col-sm-2">
                 Sex (Gender):
             </dt>
-            <dd class="col-sm-4">
+            <dd class="col-sm-2">
                 @Html.DisplayFor(model => model.patient.SEX) 
                 @if(Model.patient.GenderIdentity != null) 
                 { 
                     <span>(</span>@Html.DisplayFor(model => model.patient.GenderIdentity)<span>)</span>
                 }
             </dd>    
+            <dd class="col-sm-2">
+                <button type="button" class="btn btn-outline-primary" id="btnCopyText">Copy Demographic Data</button>
+            </dd>
+            </dd>
 
             <dd class="col-sm-12"><hr /></dd>       
 
@@ -1014,7 +1018,44 @@
 
     document.getElementById("chkShowInactive").addEventListener("change", ShowInactive);
     document.getElementById("btnShowProtectedAddress").addEventListener("click", ShowProtectedAddress);
+    document.getElementById("btnCopyText").addEventListener("click", CopyDemographicText);
     window.addEventListener("load", LoadEDMSLink);
+
+    function CopyDemographicText()
+    {
+        var textToCopy = "RE: " + "@Model.patient.FIRSTNAME" + " " + "@Model.patient.LASTNAME" + " - " + "@Model.patient.DOB.Value.ToString("dd/MM/yyyy")" + " - " + "@Model.patient.NHSNumber"
+        + " - CGU: " + "@Model.patient.CGU_No";
+
+        //navigator.clipboard.writeText(textToCopy); //because apparently this fucking thing craps out on the server!!! *sigh*
+
+        const textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+
+        document.body.appendChild(textArea);
+        textArea.select();
+
+        try
+        {
+            const success = document.execCommand("copy");
+            if(success)
+            {
+                textArea.hidden = true;
+                window.alert("Demographic data copied to clipboard!");
+            }
+            else
+            {
+                window.alert("Nope!");
+            }
+        }
+        catch(err)
+        {
+            window.alert(err);
+        }
+
+        document.body.removeChild(textArea);
+
+            //window.alert("Demographic data copied to clipboard!");
+    }
 
     function LoadEDMSLink() 
     {
