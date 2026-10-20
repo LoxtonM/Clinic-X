@@ -22,6 +22,7 @@ namespace ClinicX.ViewModels
         public List<ExternalCliniciansAndFacilities> histoList { get; set; }
         public List<ExternalCliniciansAndFacilities> breastList { get; set; }
         public List<ExternalCliniciansAndFacilities> geneticsList { get; set; }
+        public List<ExternalCliniciansAndFacilities> labList { get; set; }
         public ExternalCliniciansAndFacilities patGP { get; set; }
         public List<ScreeningCoordinator> screeningCoordinatorList { get; set; }
         public List<Relative> relativeList { get; set; }

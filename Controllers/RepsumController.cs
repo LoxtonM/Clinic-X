@@ -1,6 +1,7 @@
 ﻿//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
+using ClinicX.Meta;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MigraDoc.DocumentObjectModel;
@@ -28,15 +29,17 @@ namespace ClinicX.Controllers
         private readonly IRelativeDataAsync _relData;
         private readonly IRelativeDiaryDataAsync _relDiaryData;
         private readonly IFHSummaryDataAsync _famData;
+        private readonly ICRUD _crud;
 
         public RepsumController(IConfiguration config, IStaffUserDataAsync staffUserData, IPatientDataAsync patientData, IReferralDataAsync referralData, IConstantsDataAsync constantsData, IRiskDataAsync riskData,
             ITriageDataAsync triageData, ISurveillanceDataAsync surveillanceData, IStudyDataAsync studyData, ITestEligibilityDataAsync testEligibilityData, IClinicDataAsync clinicData, IWaitingListDataAsync waitingListData,
-            IDiaryDataAsync diaryData, IRelativeDataAsync relativeData, IRelativeDiaryDataAsync relativeDiaryData, IFHSummaryDataAsync fHSummaryData)
+            IDiaryDataAsync diaryData, IRelativeDataAsync relativeData, IRelativeDiaryDataAsync relativeDiaryData, IFHSummaryDataAsync fHSummaryData, ICRUD crud)
         {
             //_clinContext = context;
             //_documentContext = documentContext;
             _staffUser = staffUserData;
             _patientData = patientData;
+            _crud = crud;
             _referralData = referralData;
             _constantsData = constantsData;
             _riskData = riskData;
@@ -99,13 +102,17 @@ namespace ClinicX.Controllers
         public async Task<bool> DoRepsum(int icpID, int diaryID, string user, bool isPreview) //actually builds the REPSUM print-out, and auto-saves it to EDMS
         {
             bool success = false;
+                        
+            ICPCancer icpc = await _triageData.GetCancerICPDetails(icpID);
+                        
+            
 
             StaffMember staffMember = new StaffMember();
             staffMember = await _staffUser.GetStaffMemberDetails(user);
             Patient patient = new Patient();
 
             //ITriageData triageData = new TriageData(_clinContext);
-            ICPCancer icpc = await _triageData.GetCancerICPDetails(icpID);
+            
             ICP icp = await _triageData.GetICPDetails(icpc.ICPID);
             Referral referral = await _referralData.GetReferralDetails(icp.REFID);
             patient = await _patientData.GetPatientDetails(referral.MPI);
@@ -174,6 +181,7 @@ namespace ClinicX.Controllers
             }
             row2_3.Cells[1].AddParagraph(reviewByDetails);
             row2_4.Cells[0].AddParagraph().AddFormattedText("Final Review:", TextFormat.Bold);
+            
             string finalReviewDetails = "";
             if (icpc.FinalReviewedBy != null && icpc.FinalReviewedBy != "")
             {
@@ -186,6 +194,7 @@ namespace ClinicX.Controllers
                 
                 finalReviewDetails = $"{staffMember.NAME} on {finalReviewDate.ToString("dd/MM/yyyy")}";
             }
+            
 
             row2_4.Cells[1].AddParagraph(finalReviewDetails);
             Paragraph p1 = section.AddParagraph();
@@ -783,6 +792,12 @@ namespace ClinicX.Controllers
                 string edmsPath = await _constantsData.GetConstant("PrintPathEDMS", 1);
 
                 System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-0-{dateTimeString}-{diaryIDString}.pdf");
+
+                if (!isPreview)
+                {
+                    int repsumSuccess = await _crud.CallStoredProcedure("ICP Cancer", "Final Review", icpID, 0, 0, finalReviewDetails, "", "", "", user, null, null, false, false);
+                    
+                }
             }
 
             success = true;

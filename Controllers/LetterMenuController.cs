@@ -96,9 +96,10 @@ namespace ClinicX.Controllers
             clins = clins.Distinct().OrderBy(c => c.FACILITY).ToList();
 
             _lvm.externalClinicians = clins;
-            _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).OrderBy(c => c.FACILITY).ToList();
+            _lvm.histoList = clinList.Where(c => c.SPECIALITY.Contains("Histo") || c.SPECIALITY.Contains("HI")).OrderBy(c => c.FACILITY).ToList();
             _lvm.breastList = clinList.Where(c => c.POSITION.Contains("Breast") || c.SPECIALITY.Contains("Breast")).OrderBy(c => c.FACILITY).ToList();
-            _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).OrderBy(c => c.FACILITY).ToList();
+            _lvm.geneticsList = clinList.Where(c => c.SPECIALITY.Contains("GS")).OrderBy(c => c.FACILITY).ToList();
+            _lvm.labList = clinList.Where(c => c.SPECIALITY.Contains("Molecular Genetics")).OrderBy(c => c.FACILITY).ToList();
 
             _lvm.screeningCoordinatorList = await _screeningCoordinatorData.GetScreeningCoordinatorList();
 

@@ -156,44 +156,35 @@
             </div>
             <div class="col-md-4">                
                 <select id="ddlScreeningCoordinator" hidden onchange=SetOtherClinician("screening")> @*inline is necessary because I can't pass a parameter otherwise*@
-                    <option value="">Select ...</option>
-                    @if (Model.patGP != null)
-                    {
-                        <option value=@Model.patGP.MasterClinicianCode>GP - @Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME</option>
-                    }
+                    <option value="">Select ...</option>                    
                     @foreach (var item in Model.screeningCoordinatorList)
                     {
                         <option value=@item.MasterClinicianCode>@item.FacilityName - @item.Contact</option>
                     }
                 </select>
                 <select id="ddlGeneticsCentre" hidden onchange=SetOtherClinician("genetics")>
-                    <option value="">Select ...</option>
-                    @if (Model.patGP != null)
-                    {
-                        <option value=@Model.patGP.MasterClinicianCode>GP - @Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME</option>
-                    }
+                    <option value="">Select ...</option>                    
                     @foreach (var item in Model.geneticsList)
                     {
                         <option value=@item.MasterClinicianCode>@item.FACILITY - @item.SPECIALITY - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.POSITION</option>
                     }
                 </select>
-                <select id="ddlHistoList" hidden onchange=SetOtherClinician("histo")>
-                    <option value="">Select ...</option>
-                    @if(Model.patGP != null)
+                <select id="ddlGeneticsLab" hidden onchange=SetOtherClinician("lab")>
+                    <option value="">Select ...</option>                    
+                    @foreach (var item in Model.labList)
                     {
-                        <option value=@Model.patGP.MasterClinicianCode>GP - @Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME</option>
+                        <option value=@item.MasterClinicianCode>@item.FACILITY - @item.SPECIALITY - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.POSITION</option>
                     }
+                </select>
+                <select id="ddlHistoList" hidden onchange=SetOtherClinician("histo")>
+                    <option value="">Select ...</option>                    
                     @foreach (var item in Model.histoList)
                     {
                         <option value=@item.MasterClinicianCode>@item.FACILITY - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
                     }
                 </select>
                 <select id="ddlBreastList" hidden onchange=SetOtherClinician("breast")>
-                    <option value="">Select ...</option>
-                    @if (Model.patGP != null)
-                    {
-                        <option value=@Model.patGP.MasterClinicianCode>GP - @Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME</option>
-                    }
+                    <option value="">Select ...</option>                    
                     @foreach (var item in Model.breastList)
                     {
                         <option value=@item.MasterClinicianCode>@item.FACILITY - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
@@ -394,6 +385,7 @@
         //var clinList = document.getElementById("ddlExtClinician");
         var screeningCoordinator = document.getElementById("ddlScreeningCoordinator");
         var geneticsCentre = document.getElementById("ddlGeneticsCentre");
+        var geneticsLab = document.getElementById("ddlGeneticsLab");
         var histoList = document.getElementById("ddlHistoList");
         var breastList = document.getElementById("ddlBreastList");
         var allHospitalList = document.getElementById("ddlAllHospitals");
@@ -409,6 +401,7 @@
         //initially hide all of them (the right one will be un-hidden later)
         screeningCoordinator.hidden = true;
         geneticsCentre.hidden = true;
+        geneticsLab.hidden = true;
         histoList.hidden = true;
         breastList.hidden = true;
         allHospitalList.hidden = true;
@@ -465,9 +458,13 @@
             document.getElementById("divExtClinician").hidden = false;      
             screeningCoordinator.hidden = false;
         }
-        else
+        else if (docCode == "PC01")
         {
-        
+            document.getElementById("divExtClinician").hidden = false;
+            geneticsLab.hidden = false;
+        }
+        else
+        {        
             switch(recip)
             {
                 case "Other":
@@ -654,6 +651,7 @@
         var clin = document.getElementById("txtRecipient");
         var screeningCoordinator = document.getElementById("ddlScreeningCoordinator");
         var geneticsCentre = document.getElementById("ddlGeneticsCentre");
+        var geneticsLab = document.getElementById("ddlGeneticsLab");
         var histoList = document.getElementById("ddlHistoList");
         var breastList = document.getElementById("ddlBreastList");
         var allHospitalList = document.getElementById("ddlAllHospitals");
@@ -665,6 +663,9 @@
                 break;
             case "genetics":
                 clin.value = geneticsCentre.value;
+                break;
+            case "lab":
+                clin.value = geneticsLab.value;
                 break;
             case "histo":
                 clin.value = histoList.value;
