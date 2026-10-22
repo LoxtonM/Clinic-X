@@ -140,7 +140,7 @@ namespace ClinicX.Controllers
         public async Task<IActionResult> Edit(int id, string? message, bool? success)
         {            
             try
-            {
+            {                
                 var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = user.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
@@ -195,7 +195,7 @@ namespace ClinicX.Controllers
 
                 _lvm.message = message;
                 _lvm.success = success.GetValueOrDefault();
-
+                
                 return View(_lvm);
             }
             catch (Exception ex)

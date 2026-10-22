@@ -308,6 +308,7 @@
                     <th>Status</th>
                     <th>Comments</th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -318,6 +319,7 @@
                         <td>@d.DESCRIPTION</td>
                         <td>@d.STATUS</td>
                         <td>@d.MAIN_SUB</td>
+                        <td><a type="button" class="btn btn-success" asp-controller="Diagnosis" asp-action="Edit" asp-route-id=@d.ID target="_blank">Edit</a></td>
                         <td><a type="button" class="btn btn-outline-danger" asp-action="DeleteDiseaseCode" asp-route-id=@d.ID asp-route-refID=@Model.activityItem.RefID>Delete</a></td>                        
                     </tr>
                 }

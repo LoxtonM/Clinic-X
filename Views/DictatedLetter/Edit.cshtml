@@ -54,8 +54,6 @@
         </div>       
     </div>
     
-    <hr />
-    
     <div class="card-header">
         <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
             <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
@@ -121,7 +119,7 @@
 
                 <div class="row">
                     <div class="col-md-2">                    
-                        <select class="w-100" id="ddlLetterTo">
+                        <select class="w-100" id="ddlLetterTo" disabled>
                             <option value="" selected>Select...</option>
                             <option value="Patient">Patient</option>
                             <option value="Relative">Relative</option>
@@ -171,7 +169,7 @@
                     </div>
 
                     <div class="col-md-2">
-                        <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
+                        <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode" disabled>
                             <option value="">Select...</option>                    
                             @foreach(var item in Model.staffMemberList)
                             {
@@ -437,7 +435,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="row mb-2 g-2">
-                            <select class="w-100" id="ddlCCType">
+                            <select class="w-100" id="ddlCCType" disabled>
                                 <option value="" selected>Select...</option>
                                 <option value="Patient">Patient</option>
                                 <option value="Relative">Relative</option>
@@ -550,19 +548,14 @@
     document.getElementById("txtLetterTo").addEventListener("change", SetLetterToTyped);
     document.getElementById("ddlLetterFrom").addEventListener("change", SetLetterFrom);
     document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
-    //document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
     document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);
-    //document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
     document.getElementById("ddlCC").addEventListener("change", SetCCClinician);
     document.getElementById("ddlRels").addEventListener("change", SetCCRelative);
     document.getElementById("ddlRelsTo").addEventListener("change", SetRelativeTo);
-    //document.getElementById("btnAddCC").addEventListener("click", AddCC);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     document.getElementById("btnPreview2").addEventListener("click", DoPreview); //because we can't have two buttons that do the same thing, oh no.
-    //document.getElementById("btnSearch").addEventListener("click", ClinicianSearch);    
     document.getElementById("ddlClockStop").addEventListener("change", SetClockStop);
     window.addEventListener("load", LoadLetter);
-    window.addEventListener("load", LoadEDMSLink);
     document.addEventListener("input", OnInputChange);
 
     function OnInputChange() 
@@ -629,15 +622,12 @@
         // when you want to hide:
         document.querySelector('#ddlCC').closest('.choices').style.display = 'none';        
         document.querySelector('#ddlLetterToClinician').closest('.choices').style.display = 'none';
-
-        /*        
-        if((document.getElementById("txtLetterTo").value == "" || document.getElementById("txtLetterTo").value == null) && document.getElementById("ddlLetterTo").value != "")
-        {            
-            SetLetterTo();
-        }
-        */
-
+        
         LoadEDMSLink(); //link to GEMR
+        document.getElementById("ddlLetterTo").disabled = false;
+        document.getElementById("ddlLetterFrom").disabled = false;
+        document.getElementById("ddlCCType").disabled = false;
+        
     }
 
     function SaveLetter() 

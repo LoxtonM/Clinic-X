@@ -901,9 +901,9 @@
 
             if (document.getElementById("ddlTreatPath2-Clinic").value == "3")
             {   
-                if(!"@Model.referralDetails.REASON_FOR_REFERRAL".toUpperCase().match("Process".toUpperCase()) || !document.getElementById("txtIndicationNotesTriage").value.toUpperCase().match("Process".toUpperCase()))
+                if(!"@Model.referralDetails.REASON_FOR_REFERRAL".toUpperCase().match("Process".toUpperCase()) && !document.getElementById("txtIndicationNotesTriage").value.toUpperCase().match("Process".toUpperCase()))
                 {                 
-                    window.alert("You have selected a CLICS pathway without specifying a process. Please rectify.");    
+                    window.alert("You have selected a CLICS pathway without specifying a process. Please rectify. (if you're not sure use 'Process 1' as the standard)");    
                     return 0;                 
                 }
             }
