@@ -16,6 +16,7 @@ namespace ClinicX.ViewModels
         public List<Triage> triages { get; set; }
         public List<ICPCancer> icpCancerListOwn { get; set; }
         public List<ICPCancer> icpCancerListOther { get; set; }
+        public List<ICPCancer> icpCancerListForPatient { get; set; }
         public Triage triage { get; set; }
         public ICPGeneral? icpGeneral { get; set; }
         public ICPCancer? icpCancer { get; set; }
@@ -77,5 +78,7 @@ namespace ClinicX.ViewModels
         public bool isO4Required { get; set; }
         public string ptID { get; set; }
         public bool isLive { get; set; }
+        public bool isCurrentICP { get; set; }
+        public int latestICPID { get; set; }
     }
 }

@@ -11,7 +11,7 @@
     {
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.riskDetails.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("Back to Risk Details", "RiskDetails", "RiskAndSurveillance", new { id=Model.riskDetails.RiskID }, new { @class = "btn btn-success m-1" }),
-        @*Html.ActionLink("Back to Cancer ICP", "CancerReview", "Triage", new { id=Model.riskDetails.ICP_Cancer_ID }, new { @class = "btn btn-success m-1" }),*@
+        Html.ActionLink("Back to Cancer ICP", "CancerReview", "Triage", new { id=Model.riskDetails.ICP_Cancer_ID }, new { @class = "btn btn-success m-1" }),
     };
 }
 

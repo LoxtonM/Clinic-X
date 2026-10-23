@@ -20,8 +20,7 @@
         @*Html.ActionLink("New Standard Letter", "Index", "LetterMenu", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
         Html.ActionLink("Cancer Risks", "Index", "RiskAndSurveillance", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnEDMS", target="_blank" }),
-        Html.ActionLink("Patient Documents", "Index", "PatientDocuments", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPatientDocuments" }),
-        @*Html.ActionLink("Patient Documents", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPatientDocuments", target="_blank" }),*@
+        @*Html.ActionLink("Patient Documents", "Index", "PatientDocuments", new { mpi=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPatientDocuments" }),*@
         Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-success m-1", id = "btnPhenotips", target="_blank" }),
         @*Html.ActionLink("Pedigree Assistant", "PedigreeAssistant", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1", id = "btnPedigree" }),*@
         @*Html.ActionLink("Record Cancer Risk/Surveillance", "Index", "Diagnosis", new { id=Model.patient.MPI }, new { @class = "btn btn-success m-1" }),*@
@@ -151,6 +150,7 @@
     {
         <h3 class="text-center">Patient not yet made electronic - no EDMS record exists</h3>
          @if(Model.fileLocation != null){ <h4 class="text-center">Last Recorded Location: @Model.fileLocation</h4> }
+         <h4 class="text-center">Patient documents may be available in @Model.patientDocsLocation</h4>
     }
     <div class="row mb-5">
         <dd class="col-sm-12"><hr /></dd>    
@@ -1065,13 +1065,11 @@
         if ("@(Model.patient.DCTM_Folder_ID)" != "") 
         {            
             document.getElementById("btnEDMS").href = "@Model.edmsLink";
-            document.getElementById("btnPatientDocuments").hidden = true;
             //document.getElementById("btnEDMS").href = "@Model.edmsLink"  + "folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";            
         }
         else
         {
             document.getElementById("btnEDMS").hidden = true;
-            document.getElementById("btnPatientDocuments").hidden = false;
         }                
          //also load Phenotips link if there is one
         if("@(Model.isPatientInPhenotips)" == "True")

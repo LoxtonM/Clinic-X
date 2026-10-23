@@ -205,7 +205,7 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
+        public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterFrom, string letterContent, string letterContentBold, 
             bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments,
             string salutation, string? ccAddress, bool? doPreview, bool? isClockStop, string? letterRe, bool? isLargeFont)
         {
@@ -240,7 +240,7 @@ namespace ClinicX.Controllers
                     if (isAddresseeChanged)
                     {
                         int success2 = await _crud.CallStoredProcedure("Letter", "UpdateAddresses", dID, 0, 0, salutation, letterToCode, letterFromCode, letterTo, User.Identity.Name,
-                            null, null, false, false, 0, 0, 0, letterRe);
+                            null, null, false, false, 0, 0, 0, letterFrom);
 
                         if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
                     }

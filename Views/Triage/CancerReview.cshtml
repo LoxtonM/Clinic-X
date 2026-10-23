@@ -43,6 +43,12 @@
         <div class="row">
             <h1>Cancer ICP Review for @Model.patient.FIRSTNAME @Model.patient.LASTNAME, <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.icpCancer.CGU_No</a></h1>
         </div>
+
+        @if(!Model.isCurrentICP)
+        {
+            <h2 class="redtext">Note: This is not the latest Cancer ICP for this patient. To get to the latest one, click <a asp-controller="Triage" asp-action="CancerReview" asp-route-id=@Model.latestICPID>here</a>.</h2>
+        }
+
         <div class="row">            
             @if (Model.patient.DOB != null)
             {

@@ -24,7 +24,10 @@
             <h1>Record Outcome for @Model.activityItem.TYPE - @Model.patient.FIRSTNAME @Model.patient.LASTNAME - <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a></h1>
         </div>
         <div class="row">
-            <h4>DOB: @Model.patient.DOB.Value.ToString("dd/MM/yyyy")</h4>
+            @if(Model.patient.DOB.Value != null)
+            {
+                <h4>DOB: @Model.patient.DOB.Value.ToString("dd/MM/yyyy")</h4>
+            }
         </div>
         <div class="row">
             <h4>NHS No: @Model.patient.NHSNumber</h4>
@@ -112,7 +115,7 @@
                     </select>
                 </div>
             </div>
-            <div id="AdditionalClinicians" hidden="true">
+            <div id="AdditionalClinicians" hidden>
                 <div class="row">
                     <div class="col-md-8"></div>                
                     <div class="col-md-4">

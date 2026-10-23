@@ -575,6 +575,21 @@ namespace ClinicX.Controllers
                 _ivm.success = success.GetValueOrDefault();
                 _ivm.isO4Required = o4Required.GetValueOrDefault();
 
+                var icpList = await _triageData.GetCancerICPListForPatient(_ivm.icpCancer.MPI);
+                _ivm.icpCancerListForPatient = icpList.OrderByDescending(i => i.REFERRAL_DATE).ToList();
+
+                var latestCancerICP = _ivm.icpCancerListForPatient.FirstOrDefault();
+                
+                if(latestCancerICP.REFERRAL_DATE != _ivm.icpCancer.REFERRAL_DATE)
+                {
+                    _ivm.isCurrentICP = false;
+                    _ivm.latestICPID = latestCancerICP.ICP_Cancer_ID;
+                }
+                else
+                {
+                    _ivm.isCurrentICP = true;
+                }
+                
                 return View(_ivm);
             }
             catch (Exception ex)

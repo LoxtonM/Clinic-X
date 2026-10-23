@@ -160,7 +160,7 @@
                             <option value="">Select...</option>
                             @foreach (var item in Model.clinicians)
                             {
-                                <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY</option>
+                                <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.POSITION, @item.FACILITY</option>
                             }
                         </select>                    
                     </div>
@@ -547,6 +547,7 @@
     document.getElementById("ddlLetterTo").addEventListener("change", SetLetterTo);
     document.getElementById("txtLetterTo").addEventListener("change", SetLetterToTyped);
     document.getElementById("ddlLetterFrom").addEventListener("change", SetLetterFrom);
+    document.getElementById("txtLetterFrom").addEventListener("change", SetLetterFromTyped);
     document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
     document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);
     document.getElementById("ddlCC").addEventListener("change", SetCCClinician);
@@ -716,6 +717,11 @@
 
     function SetLetterToTyped()
     {        
+        document.getElementById("txtisAddressChanged").value = "true";
+    }
+
+    function SetLetterFromTyped()
+    {
         document.getElementById("txtisAddressChanged").value = "true";
     }
 

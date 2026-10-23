@@ -256,6 +256,8 @@ namespace ClinicX.Controllers
                     }                    
                 }
 
+                var doscPath = await _constantsData.GetConstant("PatientDocsFldPath", 1);
+                _pvm.patientDocsLocation = doscPath.Replace("\\\\zion.matrix.local\\dfsrootbwh\\cling", "G:") + _pvm.patient.PEDNO + "_" + _pvm.patient.RegNo;
                 _pvm.isLive = _config.GetValue<bool>("IsLive");
 
                 return View(_pvm);

@@ -45,5 +45,6 @@ namespace ClinicX.ViewModels
         public bool isLive { get; set; }
         public string fileLocation { get; set; }
         public List<PhenotipsPatient> phenotipsPatients { get; set; }
+        public string patientDocsLocation { get; set; }
     }
 }

@@ -58,7 +58,7 @@
         
     </div>
 
-    <form asp-action="BloodFormEdit">
+    <form asp-action="BloodFormEdit" id="frmBloodFormEdit">
         <div hidden>
             <input asp-for=@Model.bloodForm.BloodFormID name="bloodFormID" />
         </div>
@@ -255,7 +255,7 @@
 
         <div class="row mb-5 g-5">
             <div action="col-md-2">
-                <button type="submit" class="btn btn-default btn-outline-success">Save Form Details</button>
+                <button type="button" id="btnSubmit" class="btn btn-default btn-outline-success">Save Form Details</button>
             </div>
         </div>
     </form>
@@ -292,8 +292,11 @@
     document.getElementById("chkReproductiveDecisionMaking").addEventListener("change", SetRDMTicked);
     document.getElementById("chkRelativePredictiveTesting").addEventListener("change", SetRPTTicked);
 
+    document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
+
     window.addEventListener("load", LoadForm);
     document.addEventListener("input", OnInputChange);
+
 
     function OnInputChange()
     {        
@@ -528,6 +531,27 @@
     function SetCarrier()
     {
         document.getElementById("txtCarrier").value = document.getElementById("chkCarrier").checked;
+    }
+
+    function CheckFormValid()
+    { //validation to ensure all required data is entered
+        if (document.getElementById("ddlSampleType").value == null || document.getElementById("ddlSampleType").value == "")
+        {
+            window.alert("Please select a sample type.");
+            return 0;
+        }
+
+        
+
+        return 1;
+    }
+
+    function DoSubmit()
+    {
+        if(CheckFormValid() == 1)
+        {
+            document.getElementById("frmBloodFormEdit").submit();
+        }
     }
 
 </script>
